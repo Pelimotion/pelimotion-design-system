@@ -1,13 +1,13 @@
 /**
- * GenerativePanel — Phase 3 (Updated with Shapes, Colors, Targets & Advanced Controls)
+ * GenerativePanel — Phase 4
  *
  * Sidebar controls for the Generative SVG engine.
  */
 import React, { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
-import { Activity, ChevronDown, ChevronRight, Info, Upload, Trash2, Settings2, Palette, Plus } from 'lucide-react'
-import type { NoiseChannel } from '@/types/motion.types'
+import { Activity, ChevronDown, ChevronRight, Info, Upload, Trash2, Settings2, Palette, Plus, MousePointer2 } from 'lucide-react'
+import type { NoiseChannel, GenerativeShapeType } from '@/types/motion.types'
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-elevated)', border: '1px solid var(--color-surface-border)',
@@ -97,26 +97,27 @@ function Campo({ label, valor, dica, children }: {
   )
 }
 
-const BASIC_SHAPES = [
-  { name: 'Círculo', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="var(--color-accent)" /></svg>` },
-  { name: 'Quadrado', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="80" height="80" rx="10" fill="var(--color-accent)" /></svg>` },
-  { name: 'Estrela', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35" fill="var(--color-accent)" /></svg>` },
-  { name: 'Grade 3x3', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="20" cy="20" r="12"/><circle cx="50" cy="20" r="12"/><circle cx="80" cy="20" r="12"/>
-    <circle cx="20" cy="50" r="12"/><circle cx="50" cy="50" r="12"/><circle cx="80" cy="50" r="12"/>
-    <circle cx="20" cy="80" r="12"/><circle cx="50" cy="80" r="12"/><circle cx="80" cy="80" r="12"/>
-  </svg>` },
-  { name: 'Onda', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 C25,20 75,80 100,50 L100,100 L0,100 Z" fill="var(--color-accent)" /></svg>`}
+const SHAPE_BUTTONS: { name: string; type: GenerativeShapeType }[] = [
+  { name: 'Círculo', type: 'circle' },
+  { name: 'Quadrado', type: 'square' },
+  { name: 'Estrela', type: 'star' },
+  { name: 'Hexágono', type: 'hexagon' },
+  { name: 'Grade 3x3', type: 'grid' },
+  { name: 'Onda', type: 'wave' },
+  { name: 'Spirograph', type: 'spirograph' },
+  { name: 'Orbital', type: 'orbital' },
 ]
 
 export function GenerativePanel() {
   const {
-    motionConfig, generativeLayers, addGenerativeLayer, removeGenerativeLayer, updateWiggle
+    motionConfig, generativeLayers, activeGenerativeLayerId,
+    addGenerativeLayer, removeGenerativeLayer, setActiveGenerativeLayerId, 
+    updateLayerTransform, updateLayerShapeProps, updateWiggle
   } = useEditorStore()
 
   const { 
     amplitude, frequency, octaves, persistence, noiseType, seed, 
-    propertyFps, targetMode, colorMode, colors, propertyAmplitudes, propertyFrequencies 
+    propertyFps, targetMode, colorMode, colors, propertyAmplitudes, propertyFrequencies, previewGrid 
   } = motionConfig.wiggle
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +128,13 @@ export function GenerativePanel() {
       reader.onload = (event) => {
         const svgString = event.target?.result as string
         if (svgString && svgString.includes('<svg')) {
-          addGenerativeLayer(svgString)
+          addGenerativeLayer({
+            id: Math.random().toString(36).substr(2, 9),
+            name: `Importado ${file.name}`,
+            type: 'raw',
+            svgString,
+            transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 }
+          })
         }
       }
       reader.readAsText(file)
@@ -135,16 +142,14 @@ export function GenerativePanel() {
     e.target.value = '' // reset input
   }
 
-  const setPropertyFps = (channel: NoiseChannel, fps: number | undefined) => {
-    updateWiggle({ propertyFps: { ...propertyFps, [channel]: fps } })
-  }
-
-  const setPropertyAmp = (channel: NoiseChannel, val: number) => {
-    updateWiggle({ propertyAmplitudes: { ...propertyAmplitudes, [channel]: val } })
-  }
-
-  const setPropertyFreq = (channel: NoiseChannel, val: number) => {
-    updateWiggle({ propertyFrequencies: { ...propertyFrequencies, [channel]: val } })
+  const addShape = (type: GenerativeShapeType, name: string) => {
+    addGenerativeLayer({
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      type,
+      transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+      shapeProps: {}
+    })
   }
 
   const handleColorChange = (index: number, newColor: string) => {
@@ -153,6 +158,7 @@ export function GenerativePanel() {
     updateWiggle({ colors: newColors });
   }
 
+  const activeLayer = generativeLayers.find(l => l.id === activeGenerativeLayerId);
   const channels: NoiseChannel[] = ['x', 'y', 'rotation', 'scale', 'scaleX', 'scaleY', 'skew', 'opacity']
   const fpsOptions = [2, 4, 6, 8, 10]
 
@@ -160,14 +166,14 @@ export function GenerativePanel() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
       
       {/* ─── SEÇÃO 0: IMPORTAR & FORMAS ───────────────────────────────── */}
-      <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Camadas SVG" defaultOpen>
+      <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Composição de Camadas" defaultOpen>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-            {BASIC_SHAPES.map((shape) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+            {SHAPE_BUTTONS.map((shape) => (
               <button 
                 key={shape.name} 
-                onClick={() => addGenerativeLayer(shape.svg)}
+                onClick={() => addShape(shape.type, shape.name)}
                 style={{ 
                   background: 'var(--color-surface-glass)', border: '1px solid var(--color-surface-border)', 
                   borderRadius: 4, padding: '6px', fontSize: '0.65rem', color: 'var(--color-text-secondary)',
@@ -187,26 +193,34 @@ export function GenerativePanel() {
             background: 'var(--color-bg-elevated)', transition: 'all 0.2s', marginTop: 4
           }}>
             <Upload size={16} />
-            <span>Importar SVGs customizados</span>
+            <span>Importar SVG Customizado</span>
             <input type="file" accept=".svg" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
           </label>
 
           {generativeLayers.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-              {generativeLayers.map((_layer, index) => (
-                <div key={index} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  background: 'var(--color-surface-glass)', padding: '6px 10px',
-                  borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-surface-border)'
-                }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-primary)' }}>Camada {index + 1}</span>
-                  <button onClick={() => removeGenerativeLayer(index)} style={{
-                    background: 'transparent', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 4
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+              {generativeLayers.map((layer) => {
+                const isActive = layer.id === activeGenerativeLayerId;
+                return (
+                  <div key={layer.id} onClick={() => setActiveGenerativeLayerId(layer.id)} style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: isActive ? 'rgba(167,139,250,0.1)' : 'var(--color-surface-glass)', 
+                    padding: '6px 10px',
+                    borderRadius: 'var(--radius-sm)', 
+                    border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
+                    cursor: 'pointer'
                   }}>
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
+                    <span style={{ fontSize: '0.75rem', color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', fontWeight: isActive ? 600 : 400 }}>
+                      {layer.name}
+                    </span>
+                    <button onClick={(e) => { e.stopPropagation(); removeGenerativeLayer(layer.id); }} style={{
+                      background: 'transparent', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 4
+                    }}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
@@ -214,16 +228,111 @@ export function GenerativePanel() {
 
       <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
 
+      {/* ─── SEÇÃO 1.5: EDIÇÃO DA CAMADA ATIVA ───────────────────────────────── */}
+      {activeLayer && (
+        <>
+          <Section icon={<MousePointer2 size={13} color="var(--color-accent)" />} title={`Editando: ${activeLayer.name}`} defaultOpen>
+            {/* Basic Transforms */}
+            <Row2>
+              <Campo label="Posição X" valor={activeLayer.transform.x}>
+                <input type="range" min={-500} max={500} step={1} value={activeLayer.transform.x} 
+                  onChange={(e) => updateLayerTransform(activeLayer.id, { x: parseFloat(e.target.value) })} style={sliderStyle} />
+              </Campo>
+              <Campo label="Posição Y" valor={activeLayer.transform.y}>
+                <input type="range" min={-500} max={500} step={1} value={activeLayer.transform.y} 
+                  onChange={(e) => updateLayerTransform(activeLayer.id, { y: parseFloat(e.target.value) })} style={sliderStyle} />
+              </Campo>
+            </Row2>
+            <Row2>
+              <Campo label="Escala" valor={activeLayer.transform.scale.toFixed(2)}>
+                <input type="range" min={0.1} max={5} step={0.1} value={activeLayer.transform.scale} 
+                  onChange={(e) => updateLayerTransform(activeLayer.id, { scale: parseFloat(e.target.value) })} style={sliderStyle} />
+              </Campo>
+              <Campo label="Rotação" valor={`${activeLayer.transform.rotation}°`}>
+                <input type="range" min={-180} max={180} step={1} value={activeLayer.transform.rotation} 
+                  onChange={(e) => updateLayerTransform(activeLayer.id, { rotation: parseFloat(e.target.value) })} style={sliderStyle} />
+              </Campo>
+            </Row2>
+            <Campo label="Opacidade" valor={activeLayer.transform.opacity.toFixed(2)}>
+              <input type="range" min={0} max={1} step={0.05} value={activeLayer.transform.opacity} 
+                onChange={(e) => updateLayerTransform(activeLayer.id, { opacity: parseFloat(e.target.value) })} style={sliderStyle} />
+            </Campo>
+
+            {/* Shape-specific props */}
+            {activeLayer.type === 'star' && (
+              <>
+                <Row2>
+                  <Campo label="Pontas" valor={activeLayer.shapeProps?.points || 5}>
+                    <input type="range" min={3} max={20} step={1} value={activeLayer.shapeProps?.points || 5} 
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { points: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Raio Interno" valor={activeLayer.shapeProps?.innerRadius || 20}>
+                    <input type="range" min={5} max={45} step={1} value={activeLayer.shapeProps?.innerRadius || 20} 
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { innerRadius: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+              </>
+            )}
+            
+            {activeLayer.type === 'spirograph' && (
+              <Row2>
+                <Campo label="Raio Externo" valor={activeLayer.shapeProps?.outerR || 30}>
+                  <input type="range" min={10} max={80} step={1} value={activeLayer.shapeProps?.outerR || 30} 
+                    onChange={(e) => updateLayerShapeProps(activeLayer.id, { outerR: parseInt(e.target.value) })} style={sliderStyle} />
+                </Campo>
+                <Campo label="Raio Interno" valor={activeLayer.shapeProps?.innerR || 12}>
+                  <input type="range" min={5} max={50} step={1} value={activeLayer.shapeProps?.innerR || 12} 
+                    onChange={(e) => updateLayerShapeProps(activeLayer.id, { innerR: parseInt(e.target.value) })} style={sliderStyle} />
+                </Campo>
+              </Row2>
+            )}
+
+            {activeLayer.type === 'orbital' && (
+              <Row2>
+                <Campo label="Anéis" valor={activeLayer.shapeProps?.rings || 3}>
+                  <input type="range" min={1} max={10} step={1} value={activeLayer.shapeProps?.rings || 3} 
+                    onChange={(e) => updateLayerShapeProps(activeLayer.id, { rings: parseInt(e.target.value) })} style={sliderStyle} />
+                </Campo>
+                <Campo label="Espaçamento" valor={activeLayer.shapeProps?.spacing || 10}>
+                  <input type="range" min={2} max={30} step={1} value={activeLayer.shapeProps?.spacing || 10} 
+                    onChange={(e) => updateLayerShapeProps(activeLayer.id, { spacing: parseInt(e.target.value) })} style={sliderStyle} />
+                </Campo>
+              </Row2>
+            )}
+
+            {activeLayer.type === 'circle' && (
+              <Campo label="Raio" valor={activeLayer.shapeProps?.radius || 40}>
+                <input type="range" min={5} max={100} step={1} value={activeLayer.shapeProps?.radius || 40} 
+                  onChange={(e) => updateLayerShapeProps(activeLayer.id, { radius: parseInt(e.target.value) })} style={sliderStyle} />
+              </Campo>
+            )}
+
+          </Section>
+          <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
+        </>
+      )}
+
       {/* ─── SEÇÃO 1: ESTILO & ALVO ───────────────────────────────── */}
-      <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Aparência & Alvo" defaultOpen>
-        <Campo label="Modo Alvo" dica="Aplica movimento ao SVG inteiro ou quebra o SVG em suas camadas internas (paths).">
-          <select value={targetMode || 'layers'} onChange={(e) => updateWiggle({ targetMode: e.target.value as any })} style={selectStyle}>
-            <option value="layers">Camadas Internas (Paths)</option>
-            <option value="group">SVG Inteiro (Grupo)</option>
+      <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Aparência Global & Alvo" defaultOpen={false}>
+        <Campo label="Visualização do Grid (Canvas)" dica="O Canva é infinito, mas você pode prever onde os limites do aspect ratio ocorrerão na exportação.">
+          <select value={previewGrid || 'none'} onChange={(e) => updateWiggle({ previewGrid: e.target.value as any })} style={selectStyle}>
+            <option value="none">Oculto (Livre)</option>
+            <option value="all">Todas as Proporções</option>
+            <option value="16:9">16:9 (Video Padrão)</option>
+            <option value="1:1">1:1 (Quadrado)</option>
+            <option value="4:5">4:5 (Instagram)</option>
+            <option value="9:16">9:16 (Stories/Reels)</option>
           </select>
         </Campo>
 
-        <Campo label="Modo de Cor" dica="Injeta cor Solid, Duotone ou Tritone automaticamente nas camadas do SVG.">
+        <Campo label="Modo Alvo" dica="Aplica movimento ao wrapper ou aos paths/svgs internos.">
+          <select value={targetMode || 'layers'} onChange={(e) => updateWiggle({ targetMode: e.target.value as any })} style={selectStyle}>
+            <option value="layers">Camadas Internas (Paths)</option>
+            <option value="group">Camada/Grupo Inteiro</option>
+          </select>
+        </Campo>
+
+        <Campo label="Modo de Cor" dica="Injeta cor Solid, Duotone ou Tritone automaticamente.">
           <select value={colorMode || 'solid'} onChange={(e) => updateWiggle({ colorMode: e.target.value as any })} style={selectStyle}>
             <option value="solid">Solid (1 Cor)</option>
             <option value="duotone">Duotone (2 Cores)</option>
@@ -247,12 +356,12 @@ export function GenerativePanel() {
       <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
 
       {/* ─── SEÇÃO 2: MOVIMENTO ORGÂNICO ─────────────────────────────── */}
-      <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Movimento Global" defaultOpen>
+      <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Ruído Perlin (Motor)" defaultOpen={false}>
         <Row2>
-          <Campo label="Amplitude Mestra" valor={amplitude} dica="O quanto os elementos se deslocam no geral.">
+          <Campo label="Amplitude" valor={amplitude} dica="O quanto os elementos se deslocam no geral.">
             <input type="range" min={1} max={100} step={1} value={amplitude} onChange={(e) => updateWiggle({ amplitude: parseFloat(e.target.value) })} style={sliderStyle} />
           </Campo>
-          <Campo label="Freq. Mestra" valor={frequency} dica="Velocidade base do movimento.">
+          <Campo label="Frequência" valor={frequency} dica="Velocidade base do movimento.">
             <input type="range" min={0.05} max={2.0} step={0.05} value={frequency} onChange={(e) => updateWiggle({ frequency: parseFloat(e.target.value) })} style={sliderStyle} />
           </Campo>
         </Row2>
@@ -265,7 +374,7 @@ export function GenerativePanel() {
           </Campo>
         </Row2>
         <Row2>
-          <Campo label="Tipo de ruído" dica="Simplex 2D ou 3D.">
+          <Campo label="Algoritmo" dica="Simplex 2D ou 3D.">
             <select value={noiseType} onChange={(e) => updateWiggle({ noiseType: e.target.value as any })} style={selectStyle}>
               <option value="simplex2D">Simplex 2D</option>
               <option value="simplex3D">Simplex 3D</option>
@@ -282,7 +391,7 @@ export function GenerativePanel() {
       <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
 
       {/* ─── SEÇÃO 3: CONTROLES AVANÇADOS ─────────────────────────────── */}
-      <Section icon={<Settings2 size={13} color="var(--color-warning)" />} title="Controles por Propriedade" defaultOpen={false}>
+      <Section icon={<Settings2 size={13} color="var(--color-warning)" />} title="Multiplicadores por Eixo" defaultOpen={false}>
         <p style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginBottom: 12 }}>
           Escale a Amplitude (Amp) e Frequência (Frq) especificamente para cada transformação, permitindo focar a distorção em um só eixo ou rotação. Posterize individual cria stop-motion.
         </p>
@@ -303,7 +412,7 @@ export function GenerativePanel() {
                     value={currentFps === undefined ? 'fluido' : currentFps.toString()} 
                     onChange={(e) => {
                       const val = e.target.value;
-                      setPropertyFps(channel, val === 'fluido' ? undefined : parseInt(val));
+                      updateWiggle({ propertyFps: { ...propertyFps, [channel]: val === 'fluido' ? undefined : parseInt(val) } })
                     }}
                     style={{ ...selectStyle, width: 'auto', minWidth: 90, padding: '2px 6px', fontSize: '0.7rem' }}
                   >
@@ -314,10 +423,10 @@ export function GenerativePanel() {
                 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <Campo label="Amp" valor={currentAmp.toFixed(1)}>
-                    <input type="range" min={0} max={3} step={0.1} value={currentAmp} onChange={(e) => setPropertyAmp(channel, parseFloat(e.target.value))} style={sliderStyle} />
+                    <input type="range" min={0} max={3} step={0.1} value={currentAmp} onChange={(e) => updateWiggle({ propertyAmplitudes: { ...propertyAmplitudes, [channel]: parseFloat(e.target.value) } })} style={sliderStyle} />
                   </Campo>
                   <Campo label="Frq" valor={currentFreq.toFixed(1)}>
-                    <input type="range" min={0} max={3} step={0.1} value={currentFreq} onChange={(e) => setPropertyFreq(channel, parseFloat(e.target.value))} style={sliderStyle} />
+                    <input type="range" min={0} max={3} step={0.1} value={currentFreq} onChange={(e) => updateWiggle({ propertyFrequencies: { ...propertyFrequencies, [channel]: parseFloat(e.target.value) } })} style={sliderStyle} />
                   </Campo>
                 </div>
               </div>

@@ -102,6 +102,31 @@ export interface WiggleConfig {
   propertyAmplitudes: Partial<Record<NoiseChannel, number>>;
   /** Property-specific frequency multipliers (defaults to 1.0) */
   propertyFrequencies: Partial<Record<NoiseChannel, number>>;
+  /** Aspect ratio grid overlay for the infinite canvas */
+  previewGrid: 'none' | 'all' | '16:9' | '1:1' | '9:16' | '4:5';
+}
+
+// ─── Generative Layers ───────────────────────────────────────────────────────
+
+export type GenerativeShapeType = 'raw' | 'circle' | 'square' | 'star' | 'grid' | 'wave' | 'spirograph' | 'orbital' | 'hexagon';
+
+export interface LayerTransform {
+  x: number;
+  y: number;
+  scale: number;
+  rotation: number;
+  opacity: number;
+}
+
+export interface GenerativeLayer {
+  id: string;
+  name: string;
+  type: GenerativeShapeType;
+  /** Used when type === 'raw' */
+  svgString?: string;
+  transform: LayerTransform;
+  /** Dynamic parameters for built-in shapes */
+  shapeProps?: any;
 }
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────

@@ -43,7 +43,8 @@
     "colorMode": "solid",
     "colors": ["#a78bfa", "#f472b6", "#38bdf8"],
     "propertyAmplitudes": {},
-    "propertyFrequencies": {}
+    "propertyFrequencies": {},
+    "previewGrid": "none"
   },
   "canvas": {
     "captureResolution": {

@@ -18,6 +18,8 @@ import type {
   WiggleConfig,
   TypographyConfig,
   ExportConfig,
+  GenerativeLayer,
+  LayerTransform,
 } from '@/types/motion.types'
 
 import globalMotionData from '@/config/global-motion.json'
@@ -48,8 +50,9 @@ interface EditorState {
   exportConfig: ExportConfig;
   exportState: ExportState;
 
-  // Generative Layers State (Raw SVG Strings)
-  generativeLayers: string[];
+  // Generative Layers State (Structured Objects)
+  generativeLayers: GenerativeLayer[];
+  activeGenerativeLayerId: string | null;
   
   // Local Fonts State
   availableFonts: string[];
@@ -69,9 +72,12 @@ interface EditorState {
   setActiveLibraryAssetId: (id: string | null) => void;
 
   // Generative actions
-  addGenerativeLayer: (svgContent: string) => void;
-  removeGenerativeLayer: (index: number) => void;
+  addGenerativeLayer: (layer: GenerativeLayer) => void;
+  removeGenerativeLayer: (id: string) => void;
   clearGenerativeLayers: () => void;
+  setActiveGenerativeLayerId: (id: string | null) => void;
+  updateLayerTransform: (id: string, transform: Partial<LayerTransform>) => void;
+  updateLayerShapeProps: (id: string, props: any) => void;
 
   // Posterize actions
   togglePosterize: () => void;
@@ -119,6 +125,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // Generative default state
   generativeLayers: [],
+  activeGenerativeLayerId: null,
 
   // Export pipeline
   exportConfig: {
@@ -181,9 +188,26 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // ─── Generative Actions ────────────────────────────────────────────────
 
-  addGenerativeLayer: (svgContent) => set((state) => ({ generativeLayers: [...state.generativeLayers, svgContent] })),
-  removeGenerativeLayer: (index) => set((state) => ({ generativeLayers: state.generativeLayers.filter((_, i) => i !== index) })),
-  clearGenerativeLayers: () => set({ generativeLayers: [] }),
+  addGenerativeLayer: (layer) => set((state) => ({ 
+    generativeLayers: [...state.generativeLayers, layer],
+    activeGenerativeLayerId: layer.id 
+  })),
+  removeGenerativeLayer: (id) => set((state) => ({ 
+    generativeLayers: state.generativeLayers.filter(l => l.id !== id),
+    activeGenerativeLayerId: state.activeGenerativeLayerId === id ? null : state.activeGenerativeLayerId
+  })),
+  clearGenerativeLayers: () => set({ generativeLayers: [], activeGenerativeLayerId: null }),
+  setActiveGenerativeLayerId: (id) => set({ activeGenerativeLayerId: id }),
+  updateLayerTransform: (id, transform) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l => 
+      l.id === id ? { ...l, transform: { ...l.transform, ...transform } } : l
+    )
+  })),
+  updateLayerShapeProps: (id, props) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l => 
+      l.id === id ? { ...l, shapeProps: { ...l.shapeProps, ...props } } : l
+    )
+  })),
 
   // ─── Posterize Actions ─────────────────────────────────────────────────
 
