@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "id": "alpha-movs",
+      "label": "Alpha Channel Videos",
+      "description": "Pre-rendered motion assets with transparency",
+      "basePath": "/assets/alpha-movs/"
+    },
+    {
+      "id": "svg-generative",
+      "label": "Generative SVGs",
+      "description": "Vector assets for DOM injection and procedural animation",
+      "basePath": "/assets/svg-generative/"
+    }
+  ],
+  "assets": [
+    {
+      "id": "intro-glitch-01",
+      "name": "Intro Glitch Sweep",
+      "category": "alpha-movs",
+      "filename": "intro-glitch-01.webm",
+      "format": "webm",
+      "resolution": "1920x1080",
+      "hasAlpha": true,
+      "tags": ["glitch", "intro", "sweep"]
+    },
+    {
+      "id": "lower-third-glass",
+      "name": "Glassmorphism Lower Third",
+      "category": "alpha-movs",
+      "filename": "lower-third-glass.webm",
+      "format": "webm",
+      "resolution": "1920x1080",
+      "hasAlpha": true,
+      "tags": ["lower-third", "glass", "ui"]
+    },
+    {
+      "id": "demo-blob-svg",
+      "name": "Organic Blob Gen",
+      "category": "svg-generative",
+      "filename": "blob-01.svg",
+      "format": "svg",
+      "resolution": "Vector",
+      "hasAlpha": true,
+      "tags": ["blob", "organic", "loop"]
+    }
+  ]
+}

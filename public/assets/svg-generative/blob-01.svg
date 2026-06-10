@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <path id="blob-a" d="M200,80 C260,60 340,100 360,160 C380,220 350,300 290,330 C230,360 150,350 110,300 C70,250 60,170 100,130 C130,100 160,95 200,80 Z" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <path id="blob-b" d="M200,110 C245,96 305,122 322,170 C339,218 318,280 272,304 C226,328 165,322 135,284 C105,246 100,184 128,152 C152,124 172,120 200,110 Z" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/>
+  <path id="blob-c" d="M200,140 C232,130 272,148 285,178 C298,208 285,250 258,268 C230,286 188,282 165,260 C142,238 140,200 158,175 C172,153 182,148 200,140 Z" stroke="currentColor" stroke-width="0.75" fill="none" opacity="0.3"/>
+  <circle id="center-dot" cx="200" cy="200" r="4" fill="currentColor" opacity="0.6"/>
+</svg>

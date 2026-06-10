@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "easing": {
+    "entrySmooth": "M0,0 C0.16,1,0.3,1,1,1",
+    "exitSharp": "M0,0 C0.7,0,0.84,0,1,1",
+    "elastic": "M0,0 C0.68,-0.55,0.265,1.55,1,1",
+    "bounceOut": "M0,0 C0.22,0.61,0.36,1,1,1",
+    "microInteraction": "M0,0 C0.25,0.1,0.25,1,1,1"
+  },
+  "posterizeTime": {
+    "masterFps": 12,
+    "uiBypass": true,
+    "availableRates": [8, 12, 15, 24]
+  },
+  "trail": {
+    "enabled": true,
+    "instances": 5,
+    "staggerDelay": 0.08,
+    "mainEntryDelay": 0.2,
+    "blendMode": "normal",
+    "opacityDecay": 0.18,
+    "scaleDecay": 0.02,
+    "blurIncrement": 1.5,
+    "strokeOnly": false,
+    "style": "solid",
+    "trailColor": "#a78bfa",
+    "trailMode": "persistent",
+    "trailLetterSpacing": 0,
+    "trailOffsetY": 0,
+    "trailOffsetX": 0,
+    "trailScaleMultiplier": 1.0,
+    "trailRotation": 0
+  },
+  "wiggle": {
+    "amplitude": 20,
+    "frequency": 0.5,
+    "octaves": 3,
+    "persistence": 0.5,
+    "noiseType": "simplex2D",
+    "seed": 42
+  },
+  "canvas": {
+    "captureResolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "captureFps": 60,
+    "backgroundColor": "rgba(0,0,0,0)"
+  },
+  "typography": {
+    "splitMode": "chars,words,lines",
+    "defaultStagger": 0.03,
+    "defaultDuration": 0.8,
+    "defaultEase": "entrySmooth",
+    "fontFamily": "Inter",
+    "fontWeight": 800,
+    "letterSpacing": 0,
+    "textTransform": "uppercase",
+    "timeOnScreen": 2.0,
+    "exitDuration": 0.6,
+    "idleMotion": "scaleUp",
+    "idleSpeed": 1.0,
+    "color": "#ffffff",
+    "lineHeight": 1.0,
+    "fontStyle": "normal"
+  }
+}

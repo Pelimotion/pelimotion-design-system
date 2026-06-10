@@ -1,0 +1,246 @@
+/* ─── Google Fonts: Inter + JetBrains Mono ────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Design Tokens (Vercel/Linear Aesthetic) ─────────────────────────────── */
+@theme {
+  /* Background Layers */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-bg-elevated: #1a1a1a;
+  --color-bg-hover: #1f1f1f;
+
+  /* Glass Surfaces */
+  --color-surface-glass: hsla(0, 0%, 100%, 0.04);
+  --color-surface-glass-hover: hsla(0, 0%, 100%, 0.07);
+  --color-surface-glass-active: hsla(0, 0%, 100%, 0.10);
+  --color-surface-border: hsla(0, 0%, 100%, 0.08);
+  --color-surface-border-hover: hsla(0, 0%, 100%, 0.14);
+
+  /* Text Hierarchy */
+  --color-text-primary: #ededed;
+  --color-text-secondary: #a1a1a1;
+  --color-text-muted: #666666;
+  --color-text-ghost: #444444;
+
+  /* Accent — Electric Cyan */
+  --color-accent: #00d4ff;
+  --color-accent-hover: #33ddff;
+  --color-accent-muted: hsla(191, 100%, 50%, 0.15);
+  --color-accent-glow: hsla(191, 100%, 50%, 0.25);
+
+  /* Status */
+  --color-success: #00cc88;
+  --color-warning: #ffaa00;
+  --color-error: #ff4444;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Spacing Scale */
+  --spacing-panel: 16px;
+  --spacing-section: 24px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px hsla(191, 100%, 50%, 0.08);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-deep: 0 16px 64px rgba(0, 0, 0, 0.6);
+
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+/* ─── Base Reset & Global Styles ──────────────────────────────────────────── */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  height: 100dvh;
+  width: 100dvw;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+/* ─── Scrollbar (Minimal Dark) ────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsla(0, 0%, 100%, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsla(0, 0%, 100%, 0.2);
+}
+
+/* ─── Glass Panel Component ───────────────────────────────────────────────── */
+
+.glass-panel {
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  transition: 
+    border-color var(--duration-normal) var(--ease-smooth),
+    background var(--duration-normal) var(--ease-smooth);
+}
+
+.glass-panel:hover {
+  border-color: var(--color-surface-border-hover);
+  background: var(--color-surface-glass-hover);
+}
+
+/* ─── Badge / Pill Component ──────────────────────────────────────────────── */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.status-badge--ready {
+  background: hsla(157, 100%, 40%, 0.12);
+  color: var(--color-success);
+  border: 1px solid hsla(157, 100%, 40%, 0.2);
+}
+
+.status-badge--pending {
+  background: hsla(40, 100%, 50%, 0.1);
+  color: var(--color-warning);
+  border: 1px solid hsla(40, 100%, 50%, 0.15);
+}
+
+/* ─── Sidebar Navigation Item ─────────────────────────────────────────────── */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: 
+    color var(--duration-fast) var(--ease-smooth),
+    background var(--duration-fast) var(--ease-smooth);
+  user-select: none;
+  font-size: 0.875rem;
+  font-weight: 450;
+}
+
+.nav-item:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-glass-hover);
+}
+
+.nav-item--active {
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
+}
+
+.nav-item--active:hover {
+  background: var(--color-accent-muted);
+}
+
+/* ─── Config Display Card ─────────────────────────────────────────────────── */
+
+.config-card {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-surface-border);
+}
+
+.config-card__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.config-card__value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-accent);
+}
+
+/* ─── Micro-Animations ────────────────────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px hsla(191, 100%, 50%, 0.08); }
+  50% { box-shadow: 0 0 24px hsla(191, 100%, 50%, 0.18); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s var(--ease-smooth) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ─── Utility: Stagger Delay ──────────────────────────────────────────────── */
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.30s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.40s; }

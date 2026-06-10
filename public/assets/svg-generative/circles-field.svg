@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <circle id="c-01" cx="200" cy="200" r="180" stroke="currentColor" stroke-width="0.5"  opacity="0.2"/>
+  <circle id="c-02" cx="200" cy="200" r="150" stroke="currentColor" stroke-width="0.75" opacity="0.3"/>
+  <circle id="c-03" cx="200" cy="200" r="120" stroke="currentColor" stroke-width="1"    opacity="0.4"/>
+  <circle id="c-04" cx="200" cy="200" r="90"  stroke="currentColor" stroke-width="1"    opacity="0.55"/>
+  <circle id="c-05" cx="200" cy="200" r="60"  stroke="currentColor" stroke-width="1.25" opacity="0.7"/>
+  <circle id="c-06" cx="200" cy="200" r="35"  stroke="currentColor" stroke-width="1.5"  opacity="0.85"/>
+  <circle id="c-07" cx="200" cy="200" r="14"  stroke="currentColor" stroke-width="1.5"  opacity="1"/>
+  <!-- Cross hairs -->
+  <line id="ch-h" x1="160" y1="200" x2="240" y2="200" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
+  <line id="ch-v" x1="200" y1="160" x2="200" y2="240" stroke="currentColor" stroke-width="0.75" opacity="0.4"/>
+  <!-- Outer accent dots at cardinal points -->
+  <circle id="dot-n" cx="200" cy="20"  r="2.5" fill="currentColor" opacity="0.5"/>
+  <circle id="dot-s" cx="200" cy="380" r="2.5" fill="currentColor" opacity="0.5"/>
+  <circle id="dot-w" cx="20"  cy="200" r="2.5" fill="currentColor" opacity="0.5"/>
+  <circle id="dot-e" cx="380" cy="200" r="2.5" fill="currentColor" opacity="0.5"/>
+</svg>
