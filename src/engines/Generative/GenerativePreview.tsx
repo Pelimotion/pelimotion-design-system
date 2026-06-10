@@ -56,8 +56,14 @@ export function GenerativePreview() {
       const paths = containerRef.current.querySelectorAll('.raw-svg-container svg *');
       const solidColor = colorPalette[0] || 'var(--color-accent)';
       paths.forEach(el => {
-        if (el.hasAttribute('fill') && el.getAttribute('fill') !== 'none') el.setAttribute('fill', solidColor);
-        if (el.hasAttribute('stroke') && el.getAttribute('stroke') !== 'none') el.setAttribute('stroke', solidColor);
+        if (el.hasAttribute('fill') && el.getAttribute('fill') !== 'none') {
+          el.setAttribute('fill', solidColor);
+          (el as HTMLElement).style.fill = solidColor;
+        }
+        if (el.hasAttribute('stroke') && el.getAttribute('stroke') !== 'none') {
+          el.setAttribute('stroke', solidColor);
+          (el as HTMLElement).style.stroke = solidColor;
+        }
       });
     } else {
       // Duotone / Tritone
@@ -72,9 +78,11 @@ export function GenerativePreview() {
         // Default to fill if neither is specified
         if (hasFill || (!hasFill && !hasStroke)) {
           el.setAttribute('fill', currentColor);
+          (el as HTMLElement).style.fill = currentColor;
         }
         if (hasStroke) {
           el.setAttribute('stroke', currentColor);
+          (el as HTMLElement).style.stroke = currentColor;
         }
         colorIndex++;
       });
@@ -85,7 +93,7 @@ export function GenerativePreview() {
     // If targetMode is 'layers', animate `.noise-target > svg > *`.
     const targets = targetMode === 'group' 
       ? Array.from(containerRef.current.querySelectorAll('.noise-target'))
-      : Array.from(containerRef.current.querySelectorAll('.noise-target > svg > *'));
+      : Array.from(containerRef.current.querySelectorAll('.noise-target > svg > *, .raw-svg-container svg > *'));
 
     if (targets.length === 0) return
 
@@ -133,6 +141,9 @@ export function GenerativePreview() {
       position: 'relative',
       overflow: 'hidden' // Infinite canvas bounds
     }}>
+      <style>{`
+        .raw-svg-container svg { overflow: visible !important; }
+      `}</style>
       
       {/* ── ASPECT RATIO GRIDS ── */}
       {previewGrid === '16:9' || previewGrid === 'all' ? <AspectRatioGrid ratio={1920/1080} label="16:9" color="rgba(255, 100, 100, 0.4)" /> : null}
@@ -197,7 +208,7 @@ export function GenerativePreview() {
                     dangerouslySetInnerHTML={{ __html: svgString }}
                   />
                 ) : (
-                  <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                  <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" overflow="visible">
                     {renderGenerativeShape(layer, layerColor)}
                   </svg>
                 )}

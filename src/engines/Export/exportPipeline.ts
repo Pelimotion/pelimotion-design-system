@@ -121,8 +121,12 @@ export async function runExportPipeline(
       // 2. Upload to Bunny (defaulting to 'Generativo' or 'Tipografia' folder based on some state, but we'll use 'Generativo' for now)
       // For robustness, in a real app we'd pass activePanel, but we'll infer it or just save to 'Tipografia' if it has no video bg
       const folder = format.includes('png') ? 'Tipografia' : 'Generativo'
-      onProgress({ errorMessage: 'Salvando na Nuvem...' })
-      await uploadToBunny(finalBlob, finalName, folder)
+      onProgress({ errorMessage: 'Salvando na Nuvem (Opcional)...' })
+      try {
+        await uploadToBunny(finalBlob, finalName, folder)
+      } catch (err) {
+        console.warn('Falha ao salvar na nuvem do BunnyCDN. Isso é esperado se a API Key não for fornecida. O arquivo já foi baixado localmente.', err)
+      }
     }
 
     // Restore playback
