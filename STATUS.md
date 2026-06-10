@@ -1,10 +1,16 @@
 # STATUS — Aura Motion Design System
 
-## Active Phase: 🟢 Phase 5 — THE CLIENT-SIDE RENDER PIPELINE
+## Active Phase: 🟢 Deploy & Sincronização Finalizada
 
-## Active Phase: 🏁 COMPLETE — Aura Motion Design System v1.0
+## 🏁 Aura Motion Design System v1.0 — Online
 
-All phases (1 through 5) have been successfully implemented and audited for production use.
+All phases (1 through 5) and the subpage deployment have been successfully implemented and are live.
+
+### Deploy & Git Configuration (Concluído)
+- **Vite Subdirectory Routing:** Configurado o `base: '/pelimotion-design-system/'` no Vite.
+- **Dynamic Asset Resolution:** Implementado helper `resolveAssetPath` em `src/lib/utils.ts` para tratar carregamento assíncrono de SVGs e vídeos da pasta `public` em subpáginas.
+- **Git Synchronization:** Repositório local configurado e código enviado via push para o GitHub.
+- **Vercel Rewrites:** Atualizado o arquivo `vercel.json` do repositório Portfolio original para garantir proxy transparente (rewrite) de `www.pelimotion.art/pelimotion-design-system` para a Vercel.
 
 ### Phase 5 Completed Tasks (Client-Side Render Pipeline)
 - **DOM-to-Canvas Capture:** Integrado `html-to-image` para captura frame a frame do DOM sem distorções visuais.
@@ -40,3 +46,9 @@ All phases (1 through 5) have been successfully implemented and audited for prod
 - **VS Code Launch Configuration with Port 3000**
 - **SharedArrayBuffer COOP/COEP Headers Active**
 
+## ⚙️ Modo de Operação (SOP)
+Para cada alteração ou funcionalidade solicitada pelo usuário neste projeto, a IA deve:
+1. Implementar e testar localmente.
+2. Garantir o sucesso do build com `npm run build`.
+3. Executar o **git commit** de forma automática com mensagem descritiva.
+4. Executar o **git push** de forma automática para propagar as alterações e acionar o deploy (CI/CD / Vercel integration).

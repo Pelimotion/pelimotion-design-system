@@ -1,108 +1,67 @@
 /**
- * GenerativePreview — Phase 3
+ * GenerativePreview — Phase 3 (Updated)
  *
  * Canvas component for the Generative SVG engine.
- * Handles SVG injection, noise-driven animation, and posterize integration.
- * All state is driven by the Zustand store (WiggleConfig + PosterizeConfig).
+ * Handles SVG injection, noise-driven animation, and property-based posterize.
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { SVG_CATALOG, loadSVG } from '../Generative/svgInjector'
-import { createNoiseDriver } from '../Generative/noiseEngine'
-import { startPosterize, stopPosterize, registerGatedCallback } from '../Generative/posterizeTime'
-import type { SVGAsset } from '../Generative/svgInjector'
-import type { NoiseDriver } from '../Generative/noiseEngine'
-import type { NoiseChannel } from '../Generative/noiseEngine'
-
-const DEFAULT_ASSET = SVG_CATALOG[0] as SVGAsset
-const DEFAULT_CHANNELS: NoiseChannel[] = ['x', 'y', 'rotation']
+import { createNoiseDriver, type NoiseDriver } from '../Generative/noiseEngine'
 
 export function GenerativePreview() {
-  const { motionConfig, posterizeEnabled, posterizeFps } = useEditorStore()
-  const { amplitude, frequency, octaves, persistence, noiseType, seed } = motionConfig.wiggle
+  const { motionConfig, generativeLayers, addGenerativeLayer } = useEditorStore()
+  const { amplitude, frequency, octaves, persistence, noiseType, seed, propertyFps } = motionConfig.wiggle
 
-  const svgContainerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const driverRef = useRef<NoiseDriver | null>(null)
-  const gatedCleanupRef = useRef<(() => void) | null>(null)
 
-  const [activeAsset, setActiveAsset] = useState<SVGAsset>(DEFAULT_ASSET)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(true)
 
-  // ── Posterize sync ─────────────────────────────────────────────────────────
+  // Demo asset if empty
   useEffect(() => {
-    if (posterizeEnabled) {
-      startPosterize(posterizeFps)
-    } else {
-      stopPosterize()
+    if (generativeLayers.length === 0) {
+      // Just inject a default circle as raw SVG
+      addGenerativeLayer(`<svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="var(--color-accent)" /></svg>`)
     }
-  }, [posterizeEnabled, posterizeFps])
+  }, [generativeLayers.length, addGenerativeLayer])
 
   // ── Load SVG + boot noise driver ──────────────────────────────────────────
   useLayoutEffect(() => {
-    if (!svgContainerRef.current) return
+    if (!containerRef.current || generativeLayers.length === 0) return
 
-    // Teardown previous driver
     driverRef.current?.stop()
     driverRef.current = null
-    gatedCleanupRef.current?.()
-    gatedCleanupRef.current = null
 
-    setLoading(true)
-    setError(null)
+    // Find all valid animatable elements inside the container
+    const targets = Array.from(containerRef.current.querySelectorAll('svg > *'))
 
-    let cancelled = false
+    if (targets.length === 0) return
 
-    loadSVG(activeAsset, svgContainerRef.current, 'var(--color-accent)')
-      .then(({ targets }) => {
-        if (cancelled || !targets.length) return
+    const driver = createNoiseDriver(targets, {
+      amplitude,
+      frequency,
+      octaves,
+      persistence,
+      noiseType,
+      seed,
+      channels: ['x', 'y', 'rotation', 'scale', 'scaleX', 'scaleY', 'skew', 'opacity'],
+      propertyFps: propertyFps || {},
+    })
 
-        const driver = createNoiseDriver(targets, {
-          amplitude,
-          frequency,
-          octaves,
-          persistence,
-          noiseType,
-          seed,
-          channels: DEFAULT_CHANNELS,
-        })
+    driverRef.current = driver
 
-        driverRef.current = driver
-
-        // Route driver through gated callbacks so posterize works.
-        // We use startHeadless so the driver does NOT also register on gsap.ticker —
-        // the gated callback is the only dispatcher, avoiding double-fire.
-        const cleanup = registerGatedCallback((time) => {
-          if (!driverRef.current) return
-          driverRef.current.tick(time)
-        })
-        gatedCleanupRef.current = cleanup
-
-        if (isPlaying) driver.startHeadless()
-        setLoading(false)
-      })
-      .catch((err) => {
-        if (cancelled) return
-        setError(err.message || 'Erro ao carregar SVG')
-        setLoading(false)
-      })
+    if (isPlaying) driver.start()
 
     return () => {
-      cancelled = true
       driverRef.current?.stop()
       driverRef.current = null
-      gatedCleanupRef.current?.()
-      gatedCleanupRef.current = null
     }
-  }, [activeAsset, amplitude, frequency, octaves, persistence, noiseType, seed])
+  }, [generativeLayers, amplitude, frequency, octaves, persistence, noiseType, seed, propertyFps])
 
   // ── Play / pause without full reload ─────────────────────────────────────
   useEffect(() => {
     if (!driverRef.current) return
-    // When pausing, call stop() to freeze the driver.
-    // When resuming, use startHeadless() — gated callback already handles dispatch.
-    if (isPlaying) driverRef.current.startHeadless()
+    if (isPlaying) driverRef.current.start()
     else driverRef.current.stop()
   }, [isPlaying])
 
@@ -113,35 +72,6 @@ export function GenerativePreview() {
       alignItems: 'center', justifyContent: 'center',
       position: 'relative',
     }}>
-
-      {/* Asset selector strip */}
-      <div style={{
-        position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: 8, zIndex: 10,
-      }}>
-        {SVG_CATALOG.map((asset) => (
-          <button
-            key={asset.id}
-            onClick={() => setActiveAsset(asset)}
-            title={asset.description}
-            style={{
-              padding: '5px 14px',
-              borderRadius: 99,
-              fontSize: '0.72rem',
-              fontWeight: 600,
-              border: `1px solid ${activeAsset.id === asset.id ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
-              background: activeAsset.id === asset.id ? 'var(--color-accent-muted)' : 'var(--color-surface-glass)',
-              color: activeAsset.id === asset.id ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            {asset.label}
-          </button>
-        ))}
-      </div>
-
       {/* Play / Pause */}
       <button
         onClick={() => setIsPlaying(!isPlaying)}
@@ -164,9 +94,9 @@ export function GenerativePreview() {
         {isPlaying ? '⏸ Pausar' : '▶ Animar'}
       </button>
 
-      {/* SVG Canvas */}
+      {/* Layers Container */}
       <div
-        ref={svgContainerRef}
+        ref={containerRef}
         style={{
           width: '60%',
           maxWidth: 420,
@@ -176,45 +106,15 @@ export function GenerativePreview() {
           justifyContent: 'center',
           position: 'relative',
         }}
-      />
-
-      {/* Loading / Error states */}
-      {loading && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--color-text-muted)', fontSize: '0.8rem',
-        }}>
-          Carregando SVG...
-        </div>
-      )}
-      {error && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--color-error)', fontSize: '0.8rem',
-        }}>
-          {error}
-        </div>
-      )}
-
-      {/* Posterize indicator */}
-      {posterizeEnabled && (
-        <div style={{
-          position: 'absolute', top: 20, right: 20,
-          padding: '4px 10px',
-          borderRadius: 99,
-          fontSize: '0.65rem',
-          fontWeight: 700,
-          background: 'hsla(40, 100%, 50%, 0.12)',
-          border: '1px solid hsla(40, 100%, 50%, 0.25)',
-          color: 'var(--color-warning)',
-          fontFamily: 'var(--font-mono)',
-          letterSpacing: '0.05em',
-        }}>
-          POSTERIZE {posterizeFps}fps
-        </div>
-      )}
+      >
+        {generativeLayers.map((svgStr, i) => (
+          <div
+            key={i}
+            style={{ position: 'absolute', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            dangerouslySetInnerHTML={{ __html: svgStr.replace(/fill="[^"]*"/g, 'fill="var(--color-accent)"') }}
+          />
+        ))}
+      </div>
     </div>
   )
 }

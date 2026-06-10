@@ -1,10 +1,9 @@
 /**
- * Export Preview — Phase 5
+ * Export Preview — Phase 5 (Updated with Composition)
  * 
  * Provides a dedicated container for the export pipeline.
- * We render the Typography Preview here at the precise target resolution
- * scaled down via CSS to fit the screen. This ensures the captured PNGs
- * are exactly the required dimensions (e.g. 1920x1080).
+ * Renders the Background and the Foreground (Typography/Generative)
+ * applying the selected aspect ratio and transformations.
  */
 import { useRef, useEffect } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -26,6 +25,36 @@ export function ExportPreview() {
     }
   }, [exportState.isExporting, exportState.stage, exportConfig, setExportState])
 
+  const { backgroundImageUrl, backgroundType, aspectRatioMode, overlayScale, overlayX, overlayY } = exportConfig
+
+  // Calculate foreground container style based on Aspect Ratio mode
+  let fgStyle: React.CSSProperties = {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  }
+
+  if (aspectRatioMode === 'manual') {
+    fgStyle = {
+      ...fgStyle,
+      transform: `translate(${overlayX}px, ${overlayY}px) scale(${overlayScale})`,
+    }
+  } else if (aspectRatioMode === 'fit') {
+    fgStyle = {
+      ...fgStyle,
+      objectFit: 'contain',
+    }
+  } else if (aspectRatioMode === 'crop') {
+    fgStyle = {
+      ...fgStyle,
+      objectFit: 'cover',
+    }
+  }
+
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -33,12 +62,6 @@ export function ExportPreview() {
       padding: '20px',
       overflow: 'hidden',
     }}>
-      {/* 
-        The Capture Container
-        It is strictly sized to the target resolution, but scaled down
-        visually using CSS transform so it fits the editor window.
-        html-to-image ignores the CSS scale and captures the true width/height.
-      */}
       <div style={{
         position: 'relative',
         width: '100%', height: '100%',
@@ -49,16 +72,37 @@ export function ExportPreview() {
           style={{
             width, height,
             position: 'absolute',
-            background: 'var(--color-bg-primary)',
-            // For preview, we scale it down to fit the container
+            background: backgroundImageUrl ? 'transparent' : 'var(--color-bg-primary)',
             transform: `scale(min(1, min(100% / ${width}, 100% / ${height})))`,
             transformOrigin: 'center center',
             overflow: 'hidden',
           }}
         >
-          {/* For now, we only export the Typography engine.
-              Generative export can be wired similarly by switching components. */}
-          <TypographyPreview />
+          {/* Background Layer */}
+          {backgroundImageUrl && backgroundType === 'image' && (
+            <img 
+              src={backgroundImageUrl} 
+              alt="bg" 
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} 
+            />
+          )}
+          
+          {backgroundImageUrl && backgroundType === 'video' && (
+            <video 
+              id="export-bg-video"
+              src={backgroundImageUrl} 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} 
+            />
+          )}
+
+          {/* Foreground Layer (Typography for now, can be dynamically switched to GenerativePreview) */}
+          <div style={fgStyle}>
+            <TypographyPreview />
+          </div>
         </div>
       </div>
 
@@ -71,7 +115,7 @@ export function ExportPreview() {
           color: 'white', gap: 16,
         }}>
           <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>
-            {exportState.stage === 'capturing' ? 'Capturando Frames...' : 'Codificando ZIP...'}
+            {exportState.stage === 'capturing' ? 'Capturando Frames...' : 'Codificando...'}
           </div>
           
           <div style={{ width: 300, height: 6, background: 'var(--color-surface-glass)', borderRadius: 99, overflow: 'hidden' }}>
@@ -84,7 +128,7 @@ export function ExportPreview() {
           <div style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-secondary)' }}>
             {exportState.stage === 'capturing' 
               ? `${exportState.currentFrame} / ${exportState.totalFrames} frames`
-              : 'Compactando PNGs...'
+              : 'Processando...'
             }
           </div>
         </div>

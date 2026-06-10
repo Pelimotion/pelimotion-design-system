@@ -1,17 +1,18 @@
 /**
- * Export Pipeline — Phase 5
+ * Export Pipeline — Phase 5 (Updated)
  * 
  * Orchestrates the rendering pipeline:
  * 1. Pauses normal GSAP playback
- * 2. Seeks the global timeline frame-by-frame
+ * 2. Seeks the global timeline frame-by-frame (syncing <video> if present)
  * 3. Captures the DOM as a PNG Blob
- * 4. Adds to a ZIP archive in-memory using fflate
- * 5. Triggers download of the ZIP
+ * 4. Dispatches to either Zip (fflate) or FFmpeg (MP4/MOV)
  */
 import { gsap } from 'gsap'
 import { zip } from 'fflate'
 import { captureFrame } from './frameCapture'
 import { downloadFile } from '@/lib/downloadHandler'
+import { encodeVideoWithFFmpeg } from './ffmpegEncoder'
+import { uploadToBunny } from '@/lib/bunnyStorage'
 import type { ExportConfig, ExportState } from '@/types/motion.types'
 
 export async function runExportPipeline(
@@ -20,12 +21,12 @@ export async function runExportPipeline(
   onProgress: (state: Partial<ExportState>) => void
 ) {
   try {
-    const { resolution, fps, duration } = config
+    const { resolution, fps, duration, format, stillFrame } = config
     const [wStr, hStr] = (resolution || "1920x1080").split('x') as [string, string]
     const width = parseInt(wStr, 10)
     const height = parseInt(hStr, 10)
 
-    const totalFrames = Math.floor(duration * fps)
+    const totalFrames = format === 'png-still' ? 1 : Math.floor(duration * fps)
     const frameInterval = 1 / fps
 
     onProgress({
@@ -37,34 +38,44 @@ export async function runExportPipeline(
       errorMessage: undefined,
     })
 
-    // Prepare ZIP payload object for fflate
-    // Keys are filenames, values are Uint8Arrays
-    const zipPayload: Record<string, Uint8Array | [Uint8Array, { level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 }]> = {}
-
     // Freeze global time
     gsap.globalTimeline.pause()
-    // Seek to 0 to ensure clean start
-    gsap.globalTimeline.seek(0)
+
+    const frames: Uint8Array[] = []
+    const zipPayload: Record<string, Uint8Array | [Uint8Array, { level: 0 }]> = {}
+
+    const bgVideo = element.querySelector('#export-bg-video') as HTMLVideoElement | null
+    if (bgVideo) {
+      bgVideo.pause()
+    }
 
     for (let frame = 0; frame < totalFrames; frame++) {
-      const time = frame * frameInterval
+      // If png-still, we use the selected stillFrame time, else sequential
+      const frameIndex = format === 'png-still' ? stillFrame : frame
+      const time = frameIndex * frameInterval
       
       // Advance GSAP strictly to this frame's time
       gsap.globalTimeline.seek(time)
 
-      // Wait a tiny bit for the DOM to flush styles/layout
-      await new Promise(resolve => requestAnimationFrame(resolve))
+      // Sync video background
+      if (bgVideo) {
+        bgVideo.currentTime = time % bgVideo.duration || time
+      }
+
+      // Wait a tiny bit for the DOM to flush styles/layout and video to seek
+      await new Promise(resolve => setTimeout(resolve, 50)) // 50ms is usually enough for video seek
       
       // Capture the frame
       const blob = await captureFrame(element, { width, height })
       const arrayBuffer = await blob.arrayBuffer()
       const uint8Array = new Uint8Array(arrayBuffer)
       
-      // Format frame number with leading zeros (e.g. frame_0001.png)
-      const frameName = `frame_${String(frame).padStart(4, '0')}.png`
-      
-      // Add to ZIP payload (no compression level for PNGs as they are already compressed)
-      zipPayload[frameName] = [uint8Array, { level: 0 }]
+      frames.push(uint8Array)
+
+      if (format === 'png-sequence') {
+        const frameName = `frame_${String(frame).padStart(4, '0')}.png`
+        zipPayload[frameName] = [uint8Array, { level: 0 }]
+      }
 
       onProgress({
         currentFrame: frame + 1,
@@ -72,28 +83,53 @@ export async function runExportPipeline(
       })
     }
 
-    onProgress({ stage: 'encoding', progress: 100 })
+    onProgress({ stage: 'encoding', progress: 0 })
 
-    // Generate ZIP in-memory
-    const zipBuffer = await new Promise<Uint8Array>((resolve, reject) => {
-      zip(zipPayload, (err, data) => {
-        if (err) reject(err)
-        else resolve(data)
+    const fileNameTimestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    let finalBlob: Blob | null = null
+    let finalName = ''
+
+    if (format === 'png-still') {
+      finalBlob = new Blob([frames[0] as any], { type: 'image/png' })
+      finalName = `aura_export_${resolution}_${fileNameTimestamp}.png`
+    } 
+    else if (format === 'png-sequence') {
+      const zipBuffer = await new Promise<Uint8Array>((resolve, reject) => {
+        zip(zipPayload, (err, data) => {
+          if (err) reject(err)
+          else resolve(data)
+        })
       })
-    })
+      finalBlob = new Blob([zipBuffer as any], { type: 'application/zip' })
+      finalName = `aura_export_${resolution}_${fps}fps_${fileNameTimestamp}.zip`
+    }
+    else if (format === 'mp4' || format === 'mov') {
+      const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, (prog) => {
+        onProgress({ progress: prog })
+      })
+      const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime'
+      finalBlob = new Blob([videoBuffer as any], { type: mime })
+      finalName = `aura_export_${resolution}_${fileNameTimestamp}.${format}`
+    }
 
-    // Trigger Download
-    const blob = new Blob([zipBuffer as any], { type: 'application/zip' })
-    const url = URL.createObjectURL(blob)
-    downloadFile(url, `aura_export_${resolution}_${fps}fps.zip`)
+    if (finalBlob && finalName) {
+      // 1. Download locally
+      const url = URL.createObjectURL(finalBlob)
+      downloadFile(url, finalName)
+      URL.revokeObjectURL(url)
 
-    // Cleanup
-    URL.revokeObjectURL(url)
+      // 2. Upload to Bunny (defaulting to 'Generativo' or 'Tipografia' folder based on some state, but we'll use 'Generativo' for now)
+      // For robustness, in a real app we'd pass activePanel, but we'll infer it or just save to 'Tipografia' if it has no video bg
+      const folder = format.includes('png') ? 'Tipografia' : 'Generativo'
+      onProgress({ errorMessage: 'Salvando na Nuvem...' })
+      await uploadToBunny(finalBlob, finalName, folder)
+    }
 
     // Restore playback
+    if (bgVideo) bgVideo.play()
     gsap.globalTimeline.play()
 
-    onProgress({ stage: 'complete', isExporting: false })
+    onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined })
   } catch (error: any) {
     console.error('Export failed:', error)
     gsap.globalTimeline.play()

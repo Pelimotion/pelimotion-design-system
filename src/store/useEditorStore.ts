@@ -48,6 +48,9 @@ interface EditorState {
   exportConfig: ExportConfig;
   exportState: ExportState;
 
+  // Generative Layers State (Raw SVG Strings)
+  generativeLayers: string[];
+  
   // Local Fonts State
   availableFonts: string[];
 
@@ -64,6 +67,11 @@ interface EditorState {
   setActivePanel: (panel: EditorPanel) => void;
   toggleSidebar: () => void;
   setActiveLibraryAssetId: (id: string | null) => void;
+
+  // Generative actions
+  addGenerativeLayer: (svgContent: string) => void;
+  removeGenerativeLayer: (index: number) => void;
+  clearGenerativeLayers: () => void;
 
   // Posterize actions
   togglePosterize: () => void;
@@ -109,12 +117,20 @@ export const useEditorStore = create<EditorState>((set) => ({
   // Library default state
   activeLibraryAssetId: null,
 
+  // Generative default state
+  generativeLayers: [],
+
   // Export pipeline
   exportConfig: {
     resolution: '1920x1080',
     fps: 60,
     duration: 5,
     format: 'png-sequence',
+    stillFrame: 0,
+    aspectRatioMode: 'fit',
+    overlayScale: 1,
+    overlayX: 0,
+    overlayY: 0,
   },
   exportState: initialExportState,
 
@@ -162,6 +178,12 @@ export const useEditorStore = create<EditorState>((set) => ({
   setActivePanel: (panel) => set({ activePanel: panel }),
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setActiveLibraryAssetId: (id) => set({ activeLibraryAssetId: id }),
+
+  // ─── Generative Actions ────────────────────────────────────────────────
+
+  addGenerativeLayer: (svgContent) => set((state) => ({ generativeLayers: [...state.generativeLayers, svgContent] })),
+  removeGenerativeLayer: (index) => set((state) => ({ generativeLayers: state.generativeLayers.filter((_, i) => i !== index) })),
+  clearGenerativeLayers: () => set({ generativeLayers: [] }),
 
   // ─── Posterize Actions ─────────────────────────────────────────────────
 

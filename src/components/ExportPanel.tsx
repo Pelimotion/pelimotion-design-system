@@ -6,6 +6,7 @@
 import React from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { Download, CheckCircle2 } from 'lucide-react'
+import { BackgroundUploader } from './BackgroundUploader'
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-elevated)',
@@ -118,9 +119,23 @@ export function ExportPanel() {
             disabled={exportState.isExporting}
           >
             <option value="png-sequence">Sequência PNG (Alpha nativo, ZIP)</option>
-            {/* <option value="webm">WebM Vídeo (Em breve)</option> */}
+            <option value="png-still">PNG Estático (1 Frame, Fundo Transparente/Bg)</option>
+            <option value="mp4">Vídeo MP4 (H.264, requer Background opaco)</option>
+            <option value="mov">Vídeo MOV (VP9 com Alpha ou Background)</option>
           </select>
         </Campo>
+
+        {exportConfig.format === 'png-still' && (
+          <Campo label="Frame a exportar" valor={exportConfig.stillFrame}>
+             <input type="range" min={0} max={exportConfig.duration * exportConfig.fps} step={1} value={exportConfig.stillFrame} onChange={e => updateExportConfig({ stillFrame: parseInt(e.target.value) })} style={{ width: '100%', accentColor: 'var(--color-accent)' }} disabled={exportState.isExporting} />
+          </Campo>
+        )}
+
+        <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
+        
+        <BackgroundUploader />
+        
+        <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
       </div>
 
       {exportState.stage === 'error' && (

@@ -90,6 +90,8 @@ export interface WiggleConfig {
   noiseType: NoiseType;
   /** Deterministic seed for reproducible motion */
   seed: number;
+  /** Property-specific posterize FPS (2, 4, 6, 8, 10). If undefined, uses unposterized time. */
+  propertyFps: Partial<Record<NoiseChannel, number>>;
 }
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────
@@ -192,6 +194,8 @@ export interface LibraryConfig {
 
 // ─── Editor State ────────────────────────────────────────────────────────────
 
+export type NoiseChannel = 'x' | 'y' | 'rotation' | 'scale' | 'opacity' | 'scaleX' | 'scaleY' | 'skew';
+
 export type EditorPanel = 'typography' | 'generative' | 'library' | 'export';
 
 export interface ExportState {
@@ -207,5 +211,14 @@ export interface ExportConfig {
   resolution: '1920x1080' | '1080x1080' | '1080x1920';
   fps: number;
   duration: number; // in seconds
-  format: 'png-sequence' | 'webm';
+  format: 'png-sequence' | 'mp4' | 'mov' | 'png-still';
+  stillFrame: number; // Frame to export if format is png-still
+  
+  // Background & Composition
+  backgroundImageUrl?: string;
+  backgroundType?: 'image' | 'video';
+  aspectRatioMode: 'fit' | 'crop' | 'manual';
+  overlayScale: number;
+  overlayX: number;
+  overlayY: number;
 }

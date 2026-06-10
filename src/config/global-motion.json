@@ -37,7 +37,8 @@
     "octaves": 3,
     "persistence": 0.5,
     "noiseType": "simplex2D",
-    "seed": 42
+    "seed": 42,
+    "propertyFps": {}
   },
   "canvas": {
     "captureResolution": {
