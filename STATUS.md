@@ -1,8 +1,8 @@
-# STATUS — Aura Motion Design System
+# STATUS — Pelimotion Design System
 
 ## Active Phase: 🟢 Deploy & Sincronização Finalizada
 
-## 🏁 Aura Motion Design System v1.0 — Online
+## 🏁 Pelimotion Design System v1.0 — Online
 
 All phases (1 through 5) and the subpage deployment have been successfully implemented and are live.
 

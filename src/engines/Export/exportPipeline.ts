@@ -91,7 +91,7 @@ export async function runExportPipeline(
 
     if (format === 'png-still') {
       finalBlob = new Blob([frames[0] as any], { type: 'image/png' })
-      finalName = `aura_export_${resolution}_${fileNameTimestamp}.png`
+      finalName = `pelimotion_export_${resolution}_${fileNameTimestamp}.png`
     } 
     else if (format === 'png-sequence') {
       const zipBuffer = await new Promise<Uint8Array>((resolve, reject) => {
@@ -101,7 +101,7 @@ export async function runExportPipeline(
         })
       })
       finalBlob = new Blob([zipBuffer as any], { type: 'application/zip' })
-      finalName = `aura_export_${resolution}_${fps}fps_${fileNameTimestamp}.zip`
+      finalName = `pelimotion_export_${resolution}_${fps}fps_${fileNameTimestamp}.zip`
     }
     else if (format === 'mp4' || format === 'mov') {
       const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, (prog) => {
@@ -109,7 +109,7 @@ export async function runExportPipeline(
       })
       const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime'
       finalBlob = new Blob([videoBuffer as any], { type: mime })
-      finalName = `aura_export_${resolution}_${fileNameTimestamp}.${format}`
+      finalName = `pelimotion_export_${resolution}_${fileNameTimestamp}.${format}`
     }
 
     if (finalBlob && finalName) {

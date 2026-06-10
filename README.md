@@ -1,12 +1,12 @@
-# 📚 Aura Motion Design System — Guia Rápido do Usuário
+# 📚 Pelimotion Design System — Guia Rápido do Usuário
 
-Bem-vindo ao **Aura Motion Design System**! Este guia prático foi criado para ensinar você, passo a passo, a extrair o máximo potencial criativo da nossa plataforma. Projetamos a interface com foco absoluto na intuição, para que você não precise ser um programador avançado ou um especialista em *Motion Graphics* para criar peças de extrema qualidade e impacto.
+Bem-vindo ao **Pelimotion Design System**! Este guia prático foi criado para ensinar você, passo a passo, a extrair o máximo potencial criativo da nossa plataforma. Projetamos a interface com foco absoluto na intuição, para que você não precise ser um programador avançado ou um especialista em *Motion Graphics* para criar peças de extrema qualidade e impacto.
 
 ---
 
 ## 🧭 1. Conhecendo a Interface Principal
 
-A área de trabalho do Aura é limpa e focada em resultados. Ela é dividida em três setores principais:
+A área de trabalho do Pelimotion é limpa e focada em resultados. Ela é dividida em três setores principais:
 
 1. **Painel Central (Preview em Tempo Real):** É o coração do sistema. Todas as suas mudanças refletem instantaneamente aqui. O que você vê no preview será exatamente o que o sistema vai exportar.
 2. **Barra Lateral Esquerda (Navegação):** É onde você escolhe a "ferramenta" do momento:
@@ -63,8 +63,8 @@ Toda vez que você exporta com sucesso um arquivo pelo nosso painel, o sistema e
 
 ## 💡 Dicas de Sucesso e Elegância (Boas Práticas)
 
-- **Acelere menos, aproveite mais:** O olho humano percebe requinte na suavidade. Use valores menores nas velocidades para gerar animações Premium (Aura Look).
+- **Acelere menos, aproveite mais:** O olho humano percebe requinte na suavidade. Use valores menores nas velocidades para gerar animações Premium (Pelimotion Look).
 - **Abuse do Contraste de Cor:** Letras escuras sólidas contornadas por sombras super-saturadas (roxo profundo, turquesa) geram um efeito Glassmorphism vibrante que moderniza 100% da sua peça.
 - **Mixe Módulos com Fundos:** O fluxo ideal em times criativos é gerar um `.MOV` da sua logomarca animada no *Generativo*, exportar e depois subir esse arquivo como fundo no módulo de *Tipografia* para inserir letreiros complementares na camada de cima.
 
-> *Qualquer erro local? Recarregue a página! O seu navegador carrega a força principal de processamento do Aura. Manter o cache limpo garante exportações sem gargalo no processador.*
+> *Qualquer erro local? Recarregue a página! O seu navegador carrega a força principal de processamento do Pelimotion. Manter o cache limpo garante exportações sem gargalo no processador.*

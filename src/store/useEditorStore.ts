@@ -1,7 +1,7 @@
 /**
  * Zustand Editor Store
  * 
- * Central state management for the Aura Motion Design System.
+ * Central state management for the Pelimotion Design System.
  * Zustand was chosen over React Context because:
  * 1. Selector-based re-renders (no unnecessary component updates)
  * 2. Works outside React (GSAP ticker callbacks need state access)

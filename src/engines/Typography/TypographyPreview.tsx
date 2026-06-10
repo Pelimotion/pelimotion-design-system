@@ -40,7 +40,7 @@ export function TypographyPreview() {
   const activeInstances = trailEnabled ? Math.min(instances, MAX_TRAIL_INSTANCES) : 0
 
   // Unique filter ID per color so React updates it reactively
-  const strokeFilterId = `aura-outer-stroke-${colorToId(trailColor || '#ffffff')}`
+  const strokeFilterId = `pelimotion-outer-stroke-${colorToId(trailColor || '#ffffff')}`
 
   // Stable remount key — all visual properties that affect DOM layout/split
   const remountKey = [
@@ -68,17 +68,17 @@ export function TypographyPreview() {
 
       const mainSplit = new SplitText(mainRef.current, {
         type: splitMode,
-        charsClass: 'aura-char inline-block',
-        wordsClass: 'aura-word inline-block',
-        linesClass: 'aura-line inline-block',
+        charsClass: 'pelimotion-char inline-block',
+        wordsClass: 'pelimotion-word inline-block',
+        linesClass: 'pelimotion-line inline-block',
       })
 
       const cloneSplits = validClones.map((clone) =>
         new SplitText(clone, {
           type: splitMode,
-          charsClass: 'aura-char-clone inline-block',
-          wordsClass: 'aura-word-clone inline-block',
-          linesClass: 'aura-line-clone inline-block',
+          charsClass: 'pelimotion-char-clone inline-block',
+          wordsClass: 'pelimotion-word-clone inline-block',
+          linesClass: 'pelimotion-line-clone inline-block',
         })
       )
 

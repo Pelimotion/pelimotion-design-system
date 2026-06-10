@@ -1,5 +1,5 @@
 /**
- * Aura Motion Design System — Type Definitions
+ * Pelimotion Design System — Type Definitions
  * 
  * Strict interfaces mirroring the JSON configuration files.
  * These types are the contract between the headless config layer

@@ -108,14 +108,14 @@ function App() {
                   letterSpacing: '-0.01em',
                   color: 'var(--color-text-primary)',
                 }}>
-                  Aura
+                  Pelimotion
                 </span>
                 <span style={{
                   fontWeight: 400,
                   fontSize: '0.95rem',
                   color: 'var(--color-text-muted)',
                 }}>
-                  Motion
+                  Design System
                 </span>
               </div>
               <div style={{

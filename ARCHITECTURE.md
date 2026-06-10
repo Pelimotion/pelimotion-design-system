@@ -1,12 +1,12 @@
-# Aura Motion Design System: Technical & Strategic Architecture
+# Pelimotion Design System: Technical & Strategic Architecture
 
-Este documento apresenta a arquitetura e a visão estratégica do **Aura Motion Design System**, uma plataforma desenvolvida sob os mais rigorosos padrões de engenharia de software e design de interação, alinhada com as melhores práticas adotadas por gigantes da tecnologia (Big Tech).
+Este documento apresenta a arquitetura e a visão estratégica do **Pelimotion Design System**, uma plataforma desenvolvida sob os mais rigorosos padrões de engenharia de software e design de interação, alinhada com as melhores práticas adotadas por gigantes da tecnologia (Big Tech).
 
 ---
 
 ## 1. Visão Estratégica & Proposta de Valor
 
-O Aura foi projetado não apenas como uma ferramenta criativa, mas como um **ecossistema de infraestrutura de design escalável**. Para clientes corporativos, agências e estúdios de ponta, o sistema resolve o maior gargalo da produção audiovisual moderna: a dependência de processos de renderização lentos, caros e inflexíveis.
+O Pelimotion foi projetado não apenas como uma ferramenta criativa, mas como um **ecossistema de infraestrutura de design escalável**. Para clientes corporativos, agências e estúdios de ponta, o sistema resolve o maior gargalo da produção audiovisual moderna: a dependência de processos de renderização lentos, caros e inflexíveis.
 
 ### 1.1 Vantagens Competitivas (Enterprise-Grade)
 - **Zero-Server Rendering (ZSR):** Ao transferir a carga pesada de renderização (Motion Graphics, tipografia cinética e processamento de vídeo) inteiramente para o cliente (Edge/Browser) utilizando WebAssembly e APIs modernas nativas, o custo de nuvem da operação despenca e a velocidade de entrega aumenta exponencialmente.
