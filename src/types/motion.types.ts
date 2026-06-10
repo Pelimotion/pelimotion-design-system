@@ -92,6 +92,16 @@ export interface WiggleConfig {
   seed: number;
   /** Property-specific posterize FPS (2, 4, 6, 8, 10). If undefined, uses unposterized time. */
   propertyFps: Partial<Record<NoiseChannel, number>>;
+  /** Animation targets: whole SVG container or individual inner layers */
+  targetMode: 'group' | 'layers';
+  /** Colorization strategy for SVG paths */
+  colorMode: 'solid' | 'duotone' | 'tritone';
+  /** Selected colors for the generative shape */
+  colors: string[];
+  /** Property-specific amplitude multipliers (defaults to 1.0) */
+  propertyAmplitudes: Partial<Record<NoiseChannel, number>>;
+  /** Property-specific frequency multipliers (defaults to 1.0) */
+  propertyFrequencies: Partial<Record<NoiseChannel, number>>;
 }
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────
@@ -208,7 +218,7 @@ export interface ExportState {
 }
 
 export interface ExportConfig {
-  resolution: '1920x1080' | '1080x1080' | '1080x1920';
+  resolution: '1920x1080' | '1080x1080' | '1080x1920' | '1350x1080';
   fps: number;
   duration: number; // in seconds
   format: 'png-sequence' | 'mp4' | 'mov' | 'png-still';

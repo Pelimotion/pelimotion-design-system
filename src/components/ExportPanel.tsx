@@ -84,6 +84,7 @@ export function ExportPanel() {
             <option value="1920x1080">1920×1080 (Horizontal / 16:9)</option>
             <option value="1080x1080">1080×1080 (Quadrado / 1:1)</option>
             <option value="1080x1920">1080×1920 (Vertical / 9:16)</option>
+            <option value="1350x1080">1350×1080 (Vertical / 4:5)</option>
           </select>
         </Campo>
 

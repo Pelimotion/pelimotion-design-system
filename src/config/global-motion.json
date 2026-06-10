@@ -38,7 +38,12 @@
     "persistence": 0.5,
     "noiseType": "simplex2D",
     "seed": 42,
-    "propertyFps": {}
+    "propertyFps": {},
+    "targetMode": "layers",
+    "colorMode": "solid",
+    "colors": ["#a78bfa", "#f472b6", "#38bdf8"],
+    "propertyAmplitudes": {},
+    "propertyFrequencies": {}
   },
   "canvas": {
     "captureResolution": {

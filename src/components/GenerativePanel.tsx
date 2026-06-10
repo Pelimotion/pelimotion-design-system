@@ -1,12 +1,12 @@
 /**
- * GenerativePanel — Phase 3 (Updated for SVG Upload & Per-Property FPS)
+ * GenerativePanel — Phase 3 (Updated with Shapes, Colors, Targets & Advanced Controls)
  *
  * Sidebar controls for the Generative SVG engine.
  */
 import React, { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
-import { Activity, ChevronDown, ChevronRight, Info, Upload, Trash2, Settings2 } from 'lucide-react'
+import { Activity, ChevronDown, ChevronRight, Info, Upload, Trash2, Settings2, Palette, Plus } from 'lucide-react'
 import type { NoiseChannel } from '@/types/motion.types'
 
 const selectStyle: React.CSSProperties = {
@@ -97,12 +97,27 @@ function Campo({ label, valor, dica, children }: {
   )
 }
 
+const BASIC_SHAPES = [
+  { name: 'Círculo', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="var(--color-accent)" /></svg>` },
+  { name: 'Quadrado', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="80" height="80" rx="10" fill="var(--color-accent)" /></svg>` },
+  { name: 'Estrela', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><polygon points="50,5 61,35 95,35 68,54 78,85 50,65 22,85 32,54 5,35 39,35" fill="var(--color-accent)" /></svg>` },
+  { name: 'Grade 3x3', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="12"/><circle cx="50" cy="20" r="12"/><circle cx="80" cy="20" r="12"/>
+    <circle cx="20" cy="50" r="12"/><circle cx="50" cy="50" r="12"/><circle cx="80" cy="50" r="12"/>
+    <circle cx="20" cy="80" r="12"/><circle cx="50" cy="80" r="12"/><circle cx="80" cy="80" r="12"/>
+  </svg>` },
+  { name: 'Onda', svg: `<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 C25,20 75,80 100,50 L100,100 L0,100 Z" fill="var(--color-accent)" /></svg>`}
+]
+
 export function GenerativePanel() {
   const {
     motionConfig, generativeLayers, addGenerativeLayer, removeGenerativeLayer, updateWiggle
   } = useEditorStore()
 
-  const { amplitude, frequency, octaves, persistence, noiseType, seed, propertyFps } = motionConfig.wiggle
+  const { 
+    amplitude, frequency, octaves, persistence, noiseType, seed, 
+    propertyFps, targetMode, colorMode, colors, propertyAmplitudes, propertyFrequencies 
+  } = motionConfig.wiggle
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -121,12 +136,21 @@ export function GenerativePanel() {
   }
 
   const setPropertyFps = (channel: NoiseChannel, fps: number | undefined) => {
-    updateWiggle({
-      propertyFps: {
-        ...propertyFps,
-        [channel]: fps
-      }
-    })
+    updateWiggle({ propertyFps: { ...propertyFps, [channel]: fps } })
+  }
+
+  const setPropertyAmp = (channel: NoiseChannel, val: number) => {
+    updateWiggle({ propertyAmplitudes: { ...propertyAmplitudes, [channel]: val } })
+  }
+
+  const setPropertyFreq = (channel: NoiseChannel, val: number) => {
+    updateWiggle({ propertyFrequencies: { ...propertyFrequencies, [channel]: val } })
+  }
+
+  const handleColorChange = (index: number, newColor: string) => {
+    const newColors = [...(colors || ['#a78bfa'])];
+    newColors[index] = newColor;
+    updateWiggle({ colors: newColors });
   }
 
   const channels: NoiseChannel[] = ['x', 'y', 'rotation', 'scale', 'scaleX', 'scaleY', 'skew', 'opacity']
@@ -135,18 +159,35 @@ export function GenerativePanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
       
-      {/* ─── SEÇÃO 0: IMPORTAR SVG ───────────────────────────────── */}
+      {/* ─── SEÇÃO 0: IMPORTAR & FORMAS ───────────────────────────────── */}
       <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Camadas SVG" defaultOpen>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+            {BASIC_SHAPES.map((shape) => (
+              <button 
+                key={shape.name} 
+                onClick={() => addGenerativeLayer(shape.svg)}
+                style={{ 
+                  background: 'var(--color-surface-glass)', border: '1px solid var(--color-surface-border)', 
+                  borderRadius: 4, padding: '6px', fontSize: '0.65rem', color: 'var(--color-text-secondary)',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4
+                }}
+              >
+                <Plus size={10} /> {shape.name}
+              </button>
+            ))}
+          </div>
+
           <label style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             padding: '12px', border: '1px dashed var(--color-surface-border)',
             borderRadius: 'var(--radius-sm)', cursor: 'pointer',
             color: 'var(--color-text-secondary)', fontSize: '0.8rem',
-            background: 'var(--color-bg-elevated)', transition: 'all 0.2s'
+            background: 'var(--color-bg-elevated)', transition: 'all 0.2s', marginTop: 4
           }}>
             <Upload size={16} />
-            <span>Importar um ou mais SVGs</span>
+            <span>Importar SVGs customizados</span>
             <input type="file" accept=".svg" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
           </label>
 
@@ -173,21 +214,53 @@ export function GenerativePanel() {
 
       <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
 
-      {/* ─── SEÇÃO 1: MOVIMENTO ORGÂNICO ─────────────────────────────── */}
-      <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Movimento Orgânico" defaultOpen>
+      {/* ─── SEÇÃO 1: ESTILO & ALVO ───────────────────────────────── */}
+      <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Aparência & Alvo" defaultOpen>
+        <Campo label="Modo Alvo" dica="Aplica movimento ao SVG inteiro ou quebra o SVG em suas camadas internas (paths).">
+          <select value={targetMode || 'layers'} onChange={(e) => updateWiggle({ targetMode: e.target.value as any })} style={selectStyle}>
+            <option value="layers">Camadas Internas (Paths)</option>
+            <option value="group">SVG Inteiro (Grupo)</option>
+          </select>
+        </Campo>
+
+        <Campo label="Modo de Cor" dica="Injeta cor Solid, Duotone ou Tritone automaticamente nas camadas do SVG.">
+          <select value={colorMode || 'solid'} onChange={(e) => updateWiggle({ colorMode: e.target.value as any })} style={selectStyle}>
+            <option value="solid">Solid (1 Cor)</option>
+            <option value="duotone">Duotone (2 Cores)</option>
+            <option value="tritone">Tritone (3 Cores)</option>
+          </select>
+        </Campo>
+
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+          {Array.from({ length: colorMode === 'solid' ? 1 : colorMode === 'duotone' ? 2 : 3 }).map((_, i) => (
+            <input 
+              key={i} 
+              type="color" 
+              value={(colors || [])[i] || '#a78bfa'} 
+              onChange={(e) => handleColorChange(i, e.target.value)} 
+              style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 4, cursor: 'pointer' }}
+            />
+          ))}
+        </div>
+      </Section>
+
+      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
+
+      {/* ─── SEÇÃO 2: MOVIMENTO ORGÂNICO ─────────────────────────────── */}
+      <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Movimento Global" defaultOpen>
         <Row2>
-          <Campo label="Amplitude" valor={amplitude} dica="O quanto cada elemento se desloca.">
+          <Campo label="Amplitude Mestra" valor={amplitude} dica="O quanto os elementos se deslocam no geral.">
             <input type="range" min={1} max={100} step={1} value={amplitude} onChange={(e) => updateWiggle({ amplitude: parseFloat(e.target.value) })} style={sliderStyle} />
           </Campo>
-          <Campo label="Frequência" valor={frequency} dica="Quão rápido o movimento muda de direção.">
+          <Campo label="Freq. Mestra" valor={frequency} dica="Velocidade base do movimento.">
             <input type="range" min={0.05} max={2.0} step={0.05} value={frequency} onChange={(e) => updateWiggle({ frequency: parseFloat(e.target.value) })} style={sliderStyle} />
           </Campo>
         </Row2>
         <Row2>
-          <Campo label="Camadas (Octaves)" valor={octaves} dica="Mais camadas = movimento mais complexo.">
+          <Campo label="Complexidade" valor={octaves} dica="Mais camadas (octaves) = movimento ruidoso.">
             <input type="range" min={1} max={6} step={1} value={octaves} onChange={(e) => updateWiggle({ octaves: parseInt(e.target.value) })} style={sliderStyle} />
           </Campo>
-          <Campo label="Persistência" valor={persistence} dica="Decaimento por camada.">
+          <Campo label="Persistência" valor={persistence} dica="Decaimento da complexidade.">
             <input type="range" min={0.1} max={0.9} step={0.05} value={persistence} onChange={(e) => updateWiggle({ persistence: parseFloat(e.target.value) })} style={sliderStyle} />
           </Campo>
         </Row2>
@@ -208,33 +281,45 @@ export function GenerativePanel() {
 
       <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
 
-      {/* ─── SEÇÃO 2: POSTERIZE POR PROPRIEDADE ─────────────────────────────── */}
-      <Section icon={<Settings2 size={13} color="var(--color-warning)" />} title="Posterize (FPS por Propriedade)" defaultOpen>
+      {/* ─── SEÇÃO 3: CONTROLES AVANÇADOS ─────────────────────────────── */}
+      <Section icon={<Settings2 size={13} color="var(--color-warning)" />} title="Controles por Propriedade" defaultOpen={false}>
         <p style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginBottom: 12 }}>
-          Configure o FPS individualmente para cada propriedade de transformação, criando visuais únicos de animação "travada" (Stop-Motion). Deixe como "Fluido" para não afetar a propriedade.
+          Escale a Amplitude (Amp) e Frequência (Frq) especificamente para cada transformação, permitindo focar a distorção em um só eixo ou rotação. Posterize individual cria stop-motion.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {channels.map(channel => {
             const currentFps = propertyFps?.[channel];
+            const currentAmp = propertyAmplitudes?.[channel] ?? 1.0;
+            const currentFreq = propertyFrequencies?.[channel] ?? 1.0;
+            
             return (
-              <div key={channel} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  {channel.toUpperCase()}
-                </span>
-                <select 
-                  value={currentFps === undefined ? 'fluido' : currentFps.toString()} 
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setPropertyFps(channel, val === 'fluido' ? undefined : parseInt(val));
-                  }}
-                  style={{ ...selectStyle, width: 'auto', minWidth: 100, padding: '4px 8px' }}
-                >
-                  <option value="fluido">Fluido (60+)</option>
-                  {fpsOptions.map(fps => (
-                    <option key={fps} value={fps}>{fps} fps</option>
-                  ))}
-                </select>
+              <div key={channel} style={{ background: 'var(--color-surface-glass)', padding: 10, borderRadius: 6, border: '1px solid var(--color-surface-border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {channel.toUpperCase()}
+                  </span>
+                  <select 
+                    value={currentFps === undefined ? 'fluido' : currentFps.toString()} 
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPropertyFps(channel, val === 'fluido' ? undefined : parseInt(val));
+                    }}
+                    style={{ ...selectStyle, width: 'auto', minWidth: 90, padding: '2px 6px', fontSize: '0.7rem' }}
+                  >
+                    <option value="fluido">Fluido</option>
+                    {fpsOptions.map(fps => <option key={fps} value={fps}>{fps} fps</option>)}
+                  </select>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <Campo label="Amp" valor={currentAmp.toFixed(1)}>
+                    <input type="range" min={0} max={3} step={0.1} value={currentAmp} onChange={(e) => setPropertyAmp(channel, parseFloat(e.target.value))} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Frq" valor={currentFreq.toFixed(1)}>
+                    <input type="range" min={0} max={3} step={0.1} value={currentFreq} onChange={(e) => setPropertyFreq(channel, parseFloat(e.target.value))} style={sliderStyle} />
+                  </Campo>
+                </div>
               </div>
             )
           })}
@@ -245,3 +330,4 @@ export function GenerativePanel() {
     </div>
   )
 }
+
