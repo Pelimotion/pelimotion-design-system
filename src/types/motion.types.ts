@@ -110,6 +110,30 @@ export interface WiggleConfig {
 
 export type GenerativeShapeType = 'raw' | 'circle' | 'square' | 'star' | 'grid' | 'wave' | 'spirograph' | 'orbital' | 'hexagon';
 
+/**
+ * How the layer's SVG elements are colorized.
+ * 'original' = preserve the SVG's own colors (no override)
+ * 'solid'    = all elements get one solid fill
+ * 'duotone'  = elements alternate between 2 colors
+ * 'tritone'  = elements cycle through 3 colors
+ */
+export type LayerColorMode = 'original' | 'solid' | 'duotone' | 'tritone';
+
+/**
+ * Which DOM nodes the noise engine animates for this layer.
+ * 'group' = the layer wrapper element as a whole
+ * 'paths' = each individual SVG child element
+ */
+export type LayerTargetMode = 'group' | 'paths';
+
+/**
+ * How opacity is handled for this layer.
+ * 'fixed'         = use the static transform.opacity slider
+ * 'wiggle-group'  = the entire layer wrapper opacity is noise-driven
+ * 'wiggle-paths'  = each individual SVG path has independent noise-driven opacity
+ */
+export type LayerOpacityMode = 'fixed' | 'wiggle-group' | 'wiggle-paths';
+
 export interface LayerTransform {
   x: number;
   y: number;
@@ -127,6 +151,15 @@ export interface GenerativeLayer {
   transform: LayerTransform;
   /** Dynamic parameters for built-in shapes */
   shapeProps?: any;
+  // ── Per-Layer Appearance ──────────────────────────────────────────────────
+  /** Color strategy for this layer's SVG elements. Default: 'original' */
+  colorMode: LayerColorMode;
+  /** Colors to use for solid/duotone/tritone modes. Default: ['#a78bfa'] */
+  colors: string[];
+  /** Whether noise engine targets the group or individual paths. Default: 'group' */
+  targetMode: LayerTargetMode;
+  /** How opacity is animated. Default: 'fixed' */
+  opacityMode: LayerOpacityMode;
 }
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────

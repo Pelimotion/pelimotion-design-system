@@ -20,6 +20,9 @@ import type {
   ExportConfig,
   GenerativeLayer,
   LayerTransform,
+  LayerColorMode,
+  LayerTargetMode,
+  LayerOpacityMode,
 } from '@/types/motion.types'
 
 import globalMotionData from '@/config/global-motion.json'
@@ -78,6 +81,12 @@ interface EditorState {
   setActiveGenerativeLayerId: (id: string | null) => void;
   updateLayerTransform: (id: string, transform: Partial<LayerTransform>) => void;
   updateLayerShapeProps: (id: string, props: any) => void;
+  updateLayerAppearance: (id: string, appearance: {
+    colorMode?: LayerColorMode;
+    colors?: string[];
+    targetMode?: LayerTargetMode;
+    opacityMode?: LayerOpacityMode;
+  }) => void;
 
   // Posterize actions
   togglePosterize: () => void;
@@ -188,7 +197,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // ─── Generative Actions ────────────────────────────────────────────────
 
-  addGenerativeLayer: (layer) => set((state) => ({ 
+  addGenerativeLayer: (layer: GenerativeLayer) => set((state) => ({ 
     generativeLayers: [...state.generativeLayers, layer],
     activeGenerativeLayerId: layer.id 
   })),
@@ -206,6 +215,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   updateLayerShapeProps: (id, props) => set((state) => ({
     generativeLayers: state.generativeLayers.map(l => 
       l.id === id ? { ...l, shapeProps: { ...l.shapeProps, ...props } } : l
+    )
+  })),
+  updateLayerAppearance: (id, appearance) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l =>
+      l.id === id ? { ...l, ...appearance } : l
     )
   })),
 
