@@ -45,41 +45,36 @@ function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
   const { colorMode, colors } = layer
   const palette = colors && colors.length > 0 ? colors.filter(Boolean) : ['#a78bfa']
 
-  // Select ALL svg descendant elements for this layer
-  const allEls = Array.from(container.querySelectorAll('svg *')) as SVGElement[]
+  // Gather all paintable SVG elements
+  const paintableEls = Array.from(container.querySelectorAll(
+    'svg path, svg rect, svg circle, svg polygon, svg ellipse, svg line, svg polyline, svg text, svg use'
+  )) as SVGElement[]
 
-  // CRITICAL: Always reset inline styles first to prevent ghost colors
-  allEls.forEach(el => {
+  // CRITICAL: ALWAYS clear ONLY inline styles — NEVER touch SVG attributes.
+  // This preserves the original fill/stroke attributes so 'original' mode can restore them.
+  paintableEls.forEach(el => {
     el.style.fill = ''
     el.style.stroke = ''
-    el.style.opacity = ''
+    el.style.color = ''
   })
 
   if (colorMode === 'original') {
-    // Restore SVG's own attributes — nothing to do after reset
+    // Inline styles cleared → original SVG attributes shine through. Done.
     return
   }
-
-  // Gather only paintable elements (those with fill or stroke)
-  const paintableEls = Array.from(container.querySelectorAll(
-    'svg path, svg rect, svg circle, svg polygon, svg ellipse, svg line, svg polyline, svg text'
-  )) as SVGElement[]
 
   if (colorMode === 'solid') {
     const solidColor = palette[0] || '#a78bfa'
     paintableEls.forEach(el => {
-      // Override both attribute and inline style for maximum specificity
-      el.setAttribute('fill', solidColor)
+      // Use inline style only — original attribute stays untouched underneath
       el.style.fill = solidColor
-      el.removeAttribute('stroke')
       el.style.stroke = 'none'
     })
   } else {
-    // Duotone (2) or Tritone (3)
+    // Duotone (2) or Tritone (3) — cycle colors across elements
     let colorIndex = 0
     paintableEls.forEach(el => {
       const color = palette[colorIndex % palette.length] || '#a78bfa'
-      el.setAttribute('fill', color)
       el.style.fill = color
       el.style.stroke = 'none'
       colorIndex++
