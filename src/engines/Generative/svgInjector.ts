@@ -6,6 +6,7 @@
  * Inline injection is required so GSAP can target individual <path> nodes
  * and so CSS currentColor inherits from the parent for easy theming.
  */
+import { resolveAssetPath } from '@/lib/utils'
 
 // ─── Catalog ──────────────────────────────────────────────────────────────────
 
@@ -50,9 +51,10 @@ export interface SVGAsset {
  * Throws if the file is not found or is malformed.
  */
 export async function fetchSVGElement(assetPath: string): Promise<SVGElement> {
-  const response = await fetch(assetPath)
+  const resolved = resolveAssetPath(assetPath)
+  const response = await fetch(resolved)
   if (!response.ok) {
-    throw new Error(`[SVGInjector] Failed to fetch: ${assetPath} (${response.status})`)
+    throw new Error(`[SVGInjector] Failed to fetch: ${resolved} (${response.status})`)
   }
   const text = await response.text()
   const parser = new DOMParser()

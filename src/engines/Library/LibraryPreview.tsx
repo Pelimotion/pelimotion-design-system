@@ -8,6 +8,7 @@
 import { useEditorStore } from '@/store/useEditorStore'
 import { AlphaVideoPlayer } from './AlphaVideoPlayer'
 import { SVG_CATALOG } from '@/engines/Generative/svgInjector'
+import { resolveAssetPath } from '@/lib/utils'
 
 export function LibraryPreview() {
   const { libraryConfig, activeLibraryAssetId } = useEditorStore()
@@ -47,8 +48,8 @@ export function LibraryPreview() {
       }}>
         {isVideo && (
           <AlphaVideoPlayer
-            webmSrc={activeAsset.filename.endsWith('.webm') ? `${category.basePath}${activeAsset.filename}` : undefined}
-            hevcSrc={activeAsset.filename.endsWith('.mov') || activeAsset.filename.endsWith('.mp4') ? `${category.basePath}${activeAsset.filename}` : undefined}
+            webmSrc={activeAsset.filename.endsWith('.webm') ? resolveAssetPath(`${category.basePath}${activeAsset.filename}`) : undefined}
+            hevcSrc={activeAsset.filename.endsWith('.mov') || activeAsset.filename.endsWith('.mp4') ? resolveAssetPath(`${category.basePath}${activeAsset.filename}`) : undefined}
           />
         )}
         
@@ -66,7 +67,7 @@ export function LibraryPreview() {
               if (svgData) {
                 return (
                   <div style={{ width: '40%', height: '40%' }}>
-                    <img src={svgData.path} alt={activeAsset.name} style={{ width: '100%', height: '100%', filter: 'invert(1)' }} />
+                    <img src={resolveAssetPath(svgData.path)} alt={activeAsset.name} style={{ width: '100%', height: '100%', filter: 'invert(1)' }} />
                   </div>
                 )
               }

@@ -7,6 +7,7 @@
 import { useEditorStore } from '@/store/useEditorStore'
 import { Film, Download, Layers } from 'lucide-react'
 import { downloadFile } from '@/lib/downloadHandler'
+import { resolveAssetPath } from '@/lib/utils'
 
 export function LibraryPanel() {
   const { libraryConfig, activeLibraryAssetId, setActiveLibraryAssetId } = useEditorStore()
@@ -18,7 +19,7 @@ export function LibraryPanel() {
     if (asset && category) {
       // In a real scenario, we might download the full-res MOV instead of the preview WEBM.
       // We assume the filename in library.json is the intended download file.
-      const url = `${category.basePath}${asset.filename}`
+      const url = resolveAssetPath(`${category.basePath}${asset.filename}`)
       downloadFile(url, asset.filename)
     }
   }
