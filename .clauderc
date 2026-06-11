@@ -1,3 +1,3 @@
 {
-  "customInstructions": "Sempre que fizer alterações no código, você DEVE automaticamente executar 'git add .', 'git commit -m \"descrição das mudanças\"' e 'git push' (ou o comando de deploy/push configurado) sem precisar que eu peça. Sempre faça deploy e commit no final de cada tarefa concluída."
+  "customInstructions": "Sempre que fizer alterações no código, você DEVE automaticamente: 1. Executar 'npm run build' para garantir que o build de produção passa com sucesso. 2. Executar 'git add .', 'git commit -m \"descrição das mudanças\"' e 'git push' para salvar as alterações e disparar o deploy automático na Vercel. 3. Se houver um deploy local configurado (ex: npx vercel --prod), execute-o. Nunca termine uma tarefa sem garantir o commit e o deploy."
 }

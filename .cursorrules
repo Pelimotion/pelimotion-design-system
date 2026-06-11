@@ -1,9 +1,10 @@
 # AI Assistant Rules
 
 Sempre que fizer alterações no código ou concluir uma tarefa, você DEVE, de forma automática e proativa:
-1. Adicionar todos os arquivos ao Git (`git add .`)
-2. Fazer o commit com uma mensagem descritiva (`git commit -m "feat: sua descrição"`)
-3. Fazer o push das alterações (`git push`)
-4. Se houver um comando de deploy aplicável (ex: Vercel, Netlify, ou script npm run deploy), execute-o.
+1. Executar `npm run build` para garantir que o build de produção não possui erros e compila perfeitamente.
+2. Adicionar todos os arquivos ao Git (`git add .`).
+3. Fazer o commit com uma mensagem descritiva (`git commit -m "feat: sua descrição"`).
+4. Fazer o push das alterações (`git push`), o que automaticamente ativa o pipeline de deploy na Vercel (CI/CD).
+5. Se o Vercel CLI estiver disponível e configurado localmente para deploys diretos, você pode opcionalmente rodar `npx vercel --prod` para forçar o deploy imediato.
 
-Não espere eu pedir. Terminou a alteração, faça o commit e o push.
+Não espere o usuário pedir. Terminou a alteração, valide com o build, faça o commit, o push e garanta o deploy.
