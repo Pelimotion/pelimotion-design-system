@@ -1,13 +1,30 @@
 /**
- * Typographic Engine — Phase 2
+ * Typographic Engine — v2
  * 
- * This module will handle:
- * - GSAP SplitText initialization and lifecycle (revert on cleanup)
- * - Timeline Factory for character/word/line animations
- * - Trail Effect: DOM cloning with staggered GSAP delays
- * - Aggressive garbage collection via gsap.context()
+ * Professional-grade kinetic typography system:
+ * - Dual-layer architecture (Title + Subtitle)
+ * - 10+ animation presets (entry + exit)
+ * - Custom property animation (x, y, scale, rotation, blur, opacity, skew)
+ * - Advanced stagger modes
+ * - Master timeline orchestration
+ * - GSAP Draggable for direct manipulation
+ * - Layout engine with 6 arrangement modes
  */
 
 export { TypographyPreview } from './TypographyPreview'
-export { createTypographyTimeline } from './typography.engine'
-export type { TypographyAnimOptions } from './typography.engine'
+export {
+  createTypographyTimeline,
+  createEntryTimeline,
+  createExitTimeline,
+  createIdleTimeline,
+  createLayerTimeline,
+  createMasterTimeline,
+  getEntryPresetValues,
+  getExitPresetValues,
+} from './typography.engine'
+export type {
+  TypographyAnimOptions,
+  AnimProps,
+  LayerTimelineOptions,
+  MasterTimelineOptions,
+} from './typography.engine'

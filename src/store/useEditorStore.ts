@@ -17,6 +17,10 @@ import type {
   TrailConfig,
   WiggleConfig,
   TypographyConfig,
+  TypographyLayer,
+  TypoLayerAnimation,
+  TypoLayerTransform,
+  TypographyLayoutMode,
   ExportConfig,
   GenerativeLayer,
   LayerTransform,
@@ -39,8 +43,8 @@ interface EditorState {
   activePanel: EditorPanel;
   sidebarCollapsed: boolean;
 
-  // Typography Preview Text
-  typographyText: string;
+  // Typography Layer Selection
+  activeTypoLayerId: 'title' | 'subtitle' | null;
 
   // Posterize State
   posterizeEnabled: boolean;
@@ -67,7 +71,18 @@ interface EditorState {
   updateTrail: (trail: Partial<TrailConfig>) => void;
   updateWiggle: (wiggle: Partial<WiggleConfig>) => void;
   updateTypography: (typography: Partial<TypographyConfig>) => void;
-  setTypographyText: (text: string) => void;
+
+  // Typography layer actions
+  updateTitleLayer: (patch: Partial<TypographyLayer>) => void;
+  updateSubtitleLayer: (patch: Partial<TypographyLayer>) => void;
+  updateTitleAnimation: (patch: Partial<TypoLayerAnimation>) => void;
+  updateSubtitleAnimation: (patch: Partial<TypoLayerAnimation>) => void;
+  updateTitleTransform: (patch: Partial<TypoLayerTransform>) => void;
+  updateSubtitleTransform: (patch: Partial<TypoLayerTransform>) => void;
+  setLayoutMode: (mode: TypographyLayoutMode) => void;
+  toggleLinkPosition: () => void;
+  toggleLinkAnimation: () => void;
+  setActiveTypoLayer: (id: 'title' | 'subtitle' | null) => void;
 
   // UI actions
   setActivePanel: (panel: EditorPanel) => void;
@@ -111,6 +126,28 @@ const initialExportState: ExportState = {
   stage: 'idle',
 }
 
+// ─── Helper: Sync legacy fields from title layer ─────────────────────────────
+
+function syncLegacyFields(typo: TypographyConfig): Partial<TypographyConfig> {
+  const t = typo.titleLayer;
+  return {
+    splitMode: t.animation.splitMode,
+    defaultStagger: t.animation.entryStagger,
+    defaultDuration: t.animation.entryDuration,
+    defaultEase: t.animation.entryEase as keyof EasingConfig,
+    fontFamily: t.fontFamily,
+    fontWeight: t.fontWeight,
+    letterSpacing: t.letterSpacing,
+    textTransform: t.textTransform as 'uppercase' | 'lowercase' | 'none',
+    exitDuration: t.animation.exitDuration,
+    idleMotion: t.animation.idleMotion as 'none' | 'scaleUp' | 'panX' | 'panY',
+    idleSpeed: t.animation.idleSpeed,
+    color: t.color,
+    lineHeight: t.lineHeight,
+    fontStyle: t.fontStyle,
+  };
+}
+
 // ─── Store Creation ──────────────────────────────────────────────────────────
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -122,8 +159,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   activePanel: 'typography',
   sidebarCollapsed: false,
 
-  // Typography Preview Text
-  typographyText: 'Pelimotion Design System',
+  // Typography active layer
+  activeTypoLayerId: 'title',
 
   // Posterize defaults from config
   posterizeEnabled: false,
@@ -187,7 +224,135 @@ export const useEditorStore = create<EditorState>((set) => ({
       },
     })),
 
-  setTypographyText: (text) => set({ typographyText: text }),
+  // ─── Typography Layer Actions ──────────────────────────────────────────
+
+  updateTitleLayer: (patch) =>
+    set((state) => {
+      const newTitle = { ...state.motionConfig.typography.titleLayer, ...patch };
+      const newTypo = { ...state.motionConfig.typography, titleLayer: newTitle };
+      // Sync legacy fields
+      Object.assign(newTypo, syncLegacyFields(newTypo));
+      return {
+        motionConfig: { ...state.motionConfig, typography: newTypo },
+      };
+    }),
+
+  updateSubtitleLayer: (patch) =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          subtitleLayer: { ...state.motionConfig.typography.subtitleLayer, ...patch },
+        },
+      },
+    })),
+
+  updateTitleAnimation: (patch) =>
+    set((state) => {
+      const newAnim = { ...state.motionConfig.typography.titleLayer.animation, ...patch };
+      const newTitle = { ...state.motionConfig.typography.titleLayer, animation: newAnim };
+      const newTypo = { ...state.motionConfig.typography, titleLayer: newTitle };
+      Object.assign(newTypo, syncLegacyFields(newTypo));
+      return {
+        motionConfig: { ...state.motionConfig, typography: newTypo },
+      };
+    }),
+
+  updateSubtitleAnimation: (patch) =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          subtitleLayer: {
+            ...state.motionConfig.typography.subtitleLayer,
+            animation: { ...state.motionConfig.typography.subtitleLayer.animation, ...patch },
+          },
+        },
+      },
+    })),
+
+  updateTitleTransform: (patch) =>
+    set((state) => {
+      const linked = state.motionConfig.typography.linkPosition;
+      const newTitleTransform = { ...state.motionConfig.typography.titleLayer.transform, ...patch };
+      const newTitle = { ...state.motionConfig.typography.titleLayer, transform: newTitleTransform };
+
+      // If linked, apply same delta to subtitle
+      let newSubtitle = state.motionConfig.typography.subtitleLayer;
+      if (linked) {
+        const newSubTransform = { ...newSubtitle.transform, ...patch };
+        newSubtitle = { ...newSubtitle, transform: newSubTransform };
+      }
+
+      return {
+        motionConfig: {
+          ...state.motionConfig,
+          typography: {
+            ...state.motionConfig.typography,
+            titleLayer: newTitle,
+            subtitleLayer: newSubtitle,
+          },
+        },
+      };
+    }),
+
+  updateSubtitleTransform: (patch) =>
+    set((state) => {
+      const linked = state.motionConfig.typography.linkPosition;
+      const newSubTransform = { ...state.motionConfig.typography.subtitleLayer.transform, ...patch };
+      const newSubtitle = { ...state.motionConfig.typography.subtitleLayer, transform: newSubTransform };
+
+      let newTitle = state.motionConfig.typography.titleLayer;
+      if (linked) {
+        const newTitleTransform = { ...newTitle.transform, ...patch };
+        newTitle = { ...newTitle, transform: newTitleTransform };
+      }
+
+      return {
+        motionConfig: {
+          ...state.motionConfig,
+          typography: {
+            ...state.motionConfig.typography,
+            titleLayer: newTitle,
+            subtitleLayer: newSubtitle,
+          },
+        },
+      };
+    }),
+
+  setLayoutMode: (mode) =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: { ...state.motionConfig.typography, layoutMode: mode },
+      },
+    })),
+
+  toggleLinkPosition: () =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          linkPosition: !state.motionConfig.typography.linkPosition,
+        },
+      },
+    })),
+
+  toggleLinkAnimation: () =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          linkAnimation: !state.motionConfig.typography.linkAnimation,
+        },
+      },
+    })),
+
+  setActiveTypoLayer: (id) => set({ activeTypoLayerId: id }),
 
   // ─── UI Actions ────────────────────────────────────────────────────────
 

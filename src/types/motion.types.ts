@@ -178,38 +178,208 @@ export interface CanvasConfig {
   backgroundColor: string;
 }
 
+// ─── Typography Layer System ─────────────────────────────────────────────────
+
+/** Spatial transform for a typography layer (position, scale, rotation on canvas) */
+export interface TypoLayerTransform {
+  /** Horizontal position offset from layout center (px) */
+  x: number;
+  /** Vertical position offset from layout center (px) */
+  y: number;
+  /** Scale multiplier (1.0 = 100%) */
+  scale: number;
+  /** Rotation in degrees */
+  rotation: number;
+  /** Layer opacity (0–1) */
+  opacity: number;
+}
+
+/** Animation preset names for entry transitions */
+export type EntryPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleIn'
+  | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'custom';
+
+/** Animation preset names for exit transitions */
+export type ExitPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleOut'
+  | 'rotateOut' | 'blurOut' | 'dissolve' | 'custom';
+
+/** Direction from which stagger cascades */
+export type StaggerFrom = 'start' | 'end' | 'center' | 'edges' | 'random';
+
+/** SplitText granularity for animation */
+export type SplitMode = 'chars' | 'words' | 'lines' | 'none';
+
+/** Idle motion style during hold time */
+export type IdleMotionType = 'none' | 'scaleUp' | 'panX' | 'panY' | 'float' | 'breathe' | 'wiggle';
+
+/** Full animation configuration for a single typography layer */
+export interface TypoLayerAnimation {
+  // ── Entry ───────────────────────────────────────────────────────────────
+  /** Named preset for entry animation */
+  entryPreset: EntryPreset;
+  /** Entry duration (seconds) */
+  entryDuration: number;
+  /** Entry stagger between split elements (seconds) */
+  entryStagger: number;
+  /** Entry easing curve (EasingConfig key) */
+  entryEase: string;
+  /** Delay before this layer starts animating (seconds) */
+  entryDelay: number;
+  /** How text is split for animation */
+  splitMode: SplitMode;
+  /** Stagger cascade direction */
+  staggerFrom: StaggerFrom;
+
+  // ── Entry Custom Properties (used when entryPreset === 'custom') ────────
+  /** Starting X offset (px) */
+  entryX: number;
+  /** Starting Y offset (px) */
+  entryY: number;
+  /** Starting scale */
+  entryScale: number;
+  /** Starting rotation (degrees) */
+  entryRotation: number;
+  /** Starting blur (px) */
+  entryBlur: number;
+  /** Starting opacity */
+  entryOpacity: number;
+  /** Starting skewX (degrees) */
+  entrySkewX: number;
+  /** Starting skewY (degrees) */
+  entrySkewY: number;
+
+  // ── Exit ────────────────────────────────────────────────────────────────
+  /** Named preset for exit animation */
+  exitPreset: ExitPreset;
+  /** Exit duration (seconds) */
+  exitDuration: number;
+  /** Exit stagger between split elements (seconds) */
+  exitStagger: number;
+  /** Exit easing curve */
+  exitEase: string;
+  /** Delay before exit starts (relative to hold end) */
+  exitDelay: number;
+
+  // ── Exit Custom Properties (used when exitPreset === 'custom') ──────────
+  /** Target X offset (px) */
+  exitX: number;
+  /** Target Y offset (px) */
+  exitY: number;
+  /** Target scale */
+  exitScale: number;
+  /** Target rotation (degrees) */
+  exitRotation: number;
+  /** Target blur (px) */
+  exitBlur: number;
+  /** Target opacity */
+  exitOpacity: number;
+  /** Target skewX (degrees) */
+  exitSkewX: number;
+  /** Target skewY (degrees) */
+  exitSkewY: number;
+
+  // ── Idle (during timeOnScreen) ──────────────────────────────────────────
+  /** Continuous motion type while text is on screen */
+  idleMotion: IdleMotionType;
+  /** Speed multiplier for idle motion */
+  idleSpeed: number;
+  /** Amplitude/intensity of idle motion */
+  idleIntensity: number;
+}
+
+/** A single typography layer (Title or Subtitle) */
+export interface TypographyLayer {
+  /** Layer identifier */
+  id: 'title' | 'subtitle';
+  /** Whether this layer is visible */
+  enabled: boolean;
+  /** The text content */
+  text: string;
+
+  // ── Typographic Properties ──────────────────────────────────────────────
+  /** Font family name */
+  fontFamily: string;
+  /** Font weight (100–900) */
+  fontWeight: number;
+  /** Font size in rem */
+  fontSize: number;
+  /** Letter spacing in em */
+  letterSpacing: number;
+  /** Line height multiplier */
+  lineHeight: number;
+  /** Text transformation */
+  textTransform: 'uppercase' | 'lowercase' | 'capitalize' | 'none';
+  /** Normal or italic */
+  fontStyle: 'normal' | 'italic';
+  /** Text color */
+  color: string;
+  /** Text alignment */
+  textAlign: 'left' | 'center' | 'right';
+  /** Max width as percentage of viewport (controls line wrapping) */
+  maxWidth: number;
+
+  // ── Spatial Transform ───────────────────────────────────────────────────
+  /** Position, scale, rotation on the canvas */
+  transform: TypoLayerTransform;
+
+  // ── Animation ───────────────────────────────────────────────────────────
+  /** Full animation configuration */
+  animation: TypoLayerAnimation;
+}
+
+/** Layout arrangement mode for title + subtitle */
+export type TypographyLayoutMode = 'center' | 'stack' | 'sideBySide' | 'diagonal' | 'overlap' | 'freeform';
+
 // ─── Typography Configuration ────────────────────────────────────────────────
 
 export interface TypographyConfig {
-  /** SplitText split mode: chars, words, lines */
-  splitMode: string;
-  /** Default stagger between split elements (seconds) */
-  defaultStagger: number;
-  /** Default animation duration (seconds) */
-  defaultDuration: number;
-  /** Reference to an EasingConfig key name */
-  defaultEase: keyof EasingConfig;
-  /** Font Family */
-  fontFamily: string;
-  /** Font Weight */
-  fontWeight: number;
-  /** Letter spacing in em */
-  letterSpacing: number;
-  /** Text transformation */
-  textTransform: 'uppercase' | 'lowercase' | 'none';
+  // ── Global Controls ─────────────────────────────────────────────────────
+  /** Layout arrangement mode */
+  layoutMode: TypographyLayoutMode;
+  /** Spacing between layers in px */
+  layoutGap: number;
   /** How long the text stays on screen after entry before exiting (seconds) */
   timeOnScreen: number;
-  /** Exit animation duration (seconds) */
+
+  // ── Layer Linking ───────────────────────────────────────────────────────
+  /** When true, dragging one layer moves both */
+  linkPosition: boolean;
+  /** When true, entry/exit timelines are synchronized */
+  linkAnimation: boolean;
+
+  // ── Layers ──────────────────────────────────────────────────────────────
+  /** Title layer configuration */
+  titleLayer: TypographyLayer;
+  /** Subtitle layer configuration */
+  subtitleLayer: TypographyLayer;
+
+  // ── Legacy Fields (backward compat with Trail engine) ───────────────────
+  /** @deprecated Use titleLayer.animation.splitMode */
+  splitMode: string;
+  /** @deprecated Use titleLayer.animation.entryStagger */
+  defaultStagger: number;
+  /** @deprecated Use titleLayer.animation.entryDuration */
+  defaultDuration: number;
+  /** @deprecated Use titleLayer.animation.entryEase */
+  defaultEase: keyof EasingConfig;
+  /** @deprecated Use titleLayer.fontFamily */
+  fontFamily: string;
+  /** @deprecated Use titleLayer.fontWeight */
+  fontWeight: number;
+  /** @deprecated Use titleLayer.letterSpacing */
+  letterSpacing: number;
+  /** @deprecated Use titleLayer.textTransform */
+  textTransform: 'uppercase' | 'lowercase' | 'none';
+  /** @deprecated Use titleLayer.animation.exitDuration */
   exitDuration: number;
-  /** Continuous motion style during idle time */
+  /** @deprecated Use titleLayer.animation.idleMotion */
   idleMotion: 'none' | 'scaleUp' | 'panX' | 'panY';
-  /** Speed scalar for idle motion */
+  /** @deprecated Use titleLayer.animation.idleSpeed */
   idleSpeed: number;
-  /** Text Color (Hex/RGB/CSS name) */
+  /** @deprecated Use titleLayer.color */
   color: string;
-  /** CSS Line Height multiplier */
+  /** @deprecated Use titleLayer.lineHeight */
   lineHeight: number;
-  /** Italic or normal */
+  /** @deprecated Use titleLayer.fontStyle */
   fontStyle: 'normal' | 'italic';
 }
 
