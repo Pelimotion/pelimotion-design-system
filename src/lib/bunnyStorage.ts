@@ -7,8 +7,8 @@
 const API_KEY = import.meta.env.VITE_BUNNY_API_KEY
 const STORAGE_ZONE = import.meta.env.VITE_BUNNY_STORAGE_ZONE
 
-// Standard storage endpoint (you can change this to a specific region if needed, e.g., ny.storage.bunnycdn.com)
-const STORAGE_ENDPOINT = 'https://storage.bunnycdn.com'
+// Storage endpoint (defaults to global, can be overridden via VITE_BUNNY_STORAGE_ENDPOINT for regional zones)
+const STORAGE_ENDPOINT = import.meta.env.VITE_BUNNY_STORAGE_ENDPOINT || 'https://storage.bunnycdn.com'
 
 export interface UploadResult {
   success: boolean
