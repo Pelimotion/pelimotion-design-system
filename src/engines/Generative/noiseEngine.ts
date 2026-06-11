@@ -205,7 +205,7 @@ export function createNoiseDriver(
         gsap.ticker.remove(tick)
       }
       if (targets.length) {
-        gsap.set(targets, { x: 0, y: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, opacity: 1, clearProps: 'all' })
+        gsap.set(targets, { x: 0, y: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, opacity: 1, clearProps: 'x,y,rotation,scale,scaleX,scaleY,skewX,skewY,opacity,transform' })
       }
     },
     tick,
