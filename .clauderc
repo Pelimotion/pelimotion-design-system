@@ -1,0 +1,3 @@
+{
+  "customInstructions": "Sempre que fizer alterações no código, você DEVE automaticamente executar 'git add .', 'git commit -m \"descrição das mudanças\"' e 'git push' (ou o comando de deploy/push configurado) sem precisar que eu peça. Sempre faça deploy e commit no final de cada tarefa concluída."
+}

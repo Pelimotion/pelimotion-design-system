@@ -50,36 +50,52 @@ function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
     'svg path, svg rect, svg circle, svg polygon, svg ellipse, svg line, svg polyline, svg text, svg use'
   )) as SVGElement[]
 
-  // CRITICAL: ALWAYS clear ONLY inline styles — NEVER touch SVG attributes.
-  // This preserves the original fill/stroke attributes so 'original' mode can restore them.
   paintableEls.forEach(el => {
-    el.style.fill = ''
-    el.style.stroke = ''
-    el.style.color = ''
+    // Save original inline styles the very first time
+    if (!el.hasAttribute('data-orig-fill-recorded')) {
+      el.setAttribute('data-orig-fill', el.style.fill || '')
+      el.setAttribute('data-orig-stroke', el.style.stroke || '')
+      el.setAttribute('data-orig-color', el.style.color || '')
+      el.setAttribute('data-orig-fill-recorded', 'true')
+    }
+  })
+
+  // Restore to original styles
+  paintableEls.forEach(el => {
+    el.style.fill = el.getAttribute('data-orig-fill') || ''
+    el.style.stroke = el.getAttribute('data-orig-stroke') || ''
+    el.style.color = el.getAttribute('data-orig-color') || ''
   })
 
   if (colorMode === 'original') {
-    // Inline styles cleared → original SVG attributes shine through. Done.
     return
   }
 
-  if (colorMode === 'solid') {
-    const solidColor = palette[0] || '#a78bfa'
-    paintableEls.forEach(el => {
-      // Use inline style only — original attribute stays untouched underneath
-      el.style.fill = solidColor
-      el.style.stroke = 'none'
-    })
-  } else {
-    // Duotone (2) or Tritone (3) — cycle colors across elements
-    let colorIndex = 0
-    paintableEls.forEach(el => {
-      const color = palette[colorIndex % palette.length] || '#a78bfa'
+  // Apply colors
+  let colorIndex = 0
+  paintableEls.forEach(el => {
+    const color = colorMode === 'solid' ? palette[0] || '#a78bfa' : palette[colorIndex % palette.length] || '#a78bfa'
+    
+    // Determine if element is stroke-based
+    const isLine = el.tagName.toLowerCase() === 'line' || el.tagName.toLowerCase() === 'polyline'
+    const hasFillNone = el.getAttribute('fill') === 'none' || el.getAttribute('data-orig-fill') === 'none'
+    const isStrokeBased = isLine || hasFillNone
+    
+    if (isStrokeBased) {
+      el.style.stroke = color
+      el.style.fill = 'none'
+    } else {
       el.style.fill = color
-      el.style.stroke = 'none'
-      colorIndex++
-    })
-  }
+      const originalStroke = el.getAttribute('stroke')
+      if (originalStroke && originalStroke !== 'none') {
+        el.style.stroke = color
+      } else {
+        el.style.stroke = 'none'
+      }
+    }
+    
+    colorIndex++
+  })
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────

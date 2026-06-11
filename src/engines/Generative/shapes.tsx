@@ -221,6 +221,47 @@ export function renderGenerativeShape(layer: GenerativeLayer, currentColor: stri
     );
   }
 
+  if (type === 'grid') {
+    const size = shapeProps?.size || 60;
+    const columns = shapeProps?.columns || 3;
+    const rows = shapeProps?.rows || 3;
+    const gap = shapeProps?.gap || 10;
+    const radius = shapeProps?.radius || 2;
+    const itemWidth = (size - gap * (columns - 1)) / columns;
+    const itemHeight = (size - gap * (rows - 1)) / rows;
+    
+    const elements = [];
+    for(let i=0; i<columns; i++) {
+      for(let j=0; j<rows; j++) {
+        const x = 50 - size/2 + i * (itemWidth + gap);
+        const y = 50 - size/2 + j * (itemHeight + gap);
+        elements.push(<rect key={`${i}-${j}`} x={x} y={y} width={itemWidth} height={itemHeight} rx={radius} fill={currentColor} />);
+      }
+    }
+    return <g>{elements}</g>;
+  }
+
+  if (type === 'wave') {
+    const width = shapeProps?.width || 80;
+    const amplitude = shapeProps?.amplitude || 15;
+    const frequency = shapeProps?.frequency || 2;
+    const strokeWidth = shapeProps?.strokeWidth || 3;
+    const points = 100;
+    let path = '';
+    
+    for (let i = 0; i <= points; i++) {
+      const x = 50 - width/2 + (i / points) * width;
+      const t = (i / points) * Math.PI * 2 * frequency;
+      const y = 50 + Math.sin(t) * amplitude;
+      if (i === 0) path += `M ${x} ${y} `;
+      else path += `L ${x} ${y} `;
+    }
+    
+    return (
+      <path d={path} fill="none" stroke={currentColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    );
+  }
+
   if (type === 'moire') {
     const lines = shapeProps?.lines || 40;
     const offsetAngle = shapeProps?.offsetAngle || 5;
@@ -237,10 +278,10 @@ export function renderGenerativeShape(layer: GenerativeLayer, currentColor: stri
     return (
       <g stroke={currentColor} strokeWidth={shapeProps?.strokeWidth || 0.5}>
         {/* Layer 1 - straight */}
-        <path d={renderLines()} />
+        <path d={renderLines()} fill="none" />
         {/* Layer 2 - rotated */}
         <g transform={`rotate(${offsetAngle} 50 50)`}>
-          <path d={renderLines()} />
+          <path d={renderLines()} fill="none" />
         </g>
       </g>
     );

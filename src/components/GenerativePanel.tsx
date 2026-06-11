@@ -397,6 +397,56 @@ export function GenerativePanel() {
               </Row2>
             )}
 
+            {activeLayer.type === 'grid' && (
+              <>
+                <Row2>
+                  <Campo label="Tamanho Base" valor={activeLayer.shapeProps?.size || 60}>
+                    <input type="range" min={20} max={100} step={1} value={activeLayer.shapeProps?.size || 60}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { size: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Espaçamento" valor={activeLayer.shapeProps?.gap || 10}>
+                    <input type="range" min={0} max={30} step={1} value={activeLayer.shapeProps?.gap || 10}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { gap: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+                <Row2>
+                  <Campo label="Colunas" valor={activeLayer.shapeProps?.columns || 3}>
+                    <input type="range" min={1} max={10} step={1} value={activeLayer.shapeProps?.columns || 3}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { columns: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Linhas" valor={activeLayer.shapeProps?.rows || 3}>
+                    <input type="range" min={1} max={10} step={1} value={activeLayer.shapeProps?.rows || 3}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { rows: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+              </>
+            )}
+
+            {activeLayer.type === 'wave' && (
+              <>
+                <Row2>
+                  <Campo label="Largura" valor={activeLayer.shapeProps?.width || 80}>
+                    <input type="range" min={20} max={150} step={1} value={activeLayer.shapeProps?.width || 80}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { width: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Amplitude" valor={activeLayer.shapeProps?.amplitude || 15}>
+                    <input type="range" min={1} max={50} step={1} value={activeLayer.shapeProps?.amplitude || 15}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { amplitude: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+                <Row2>
+                  <Campo label="Frequência" valor={activeLayer.shapeProps?.frequency || 2}>
+                    <input type="range" min={0.5} max={10} step={0.5} value={activeLayer.shapeProps?.frequency || 2}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { frequency: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Espessura" valor={activeLayer.shapeProps?.strokeWidth || 3}>
+                    <input type="range" min={0.5} max={10} step={0.5} value={activeLayer.shapeProps?.strokeWidth || 3}
+                      onChange={(e) => updateLayerShapeProps(activeLayer.id, { strokeWidth: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+              </>
+            )}
+
             {activeLayer.type === 'moire' && (
               <Row2>
                 <Campo label="Linhas" valor={activeLayer.shapeProps?.lines || 40}>

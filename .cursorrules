@@ -1,0 +1,9 @@
+# AI Assistant Rules
+
+Sempre que fizer alterações no código ou concluir uma tarefa, você DEVE, de forma automática e proativa:
+1. Adicionar todos os arquivos ao Git (`git add .`)
+2. Fazer o commit com uma mensagem descritiva (`git commit -m "feat: sua descrição"`)
+3. Fazer o push das alterações (`git push`)
+4. Se houver um comando de deploy aplicável (ex: Vercel, Netlify, ou script npm run deploy), execute-o.
+
+Não espere eu pedir. Terminou a alteração, faça o commit e o push.
