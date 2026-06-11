@@ -1,16 +1,19 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Deploy & Sincronização Finalizada
+## Active Phase: 🟢 Per-Layer Appearance System & DNS Infrastructure Completed
 
-## 🏁 Pelimotion Design System v1.0 — Online
+## 🏁 Pelimotion Design System v1.1 — Online & Updated
 
-All phases (1 through 5) and the subpage deployment have been successfully implemented and are live.
+All updates for the per-layer appearance engine, Bunny CDN regional storage, and production domain routing have been successfully implemented and are live.
 
-### Deploy & Git Configuration (Concluído)
-- **Vite Subdirectory Routing:** Configurado o `base: '/pelimotion-design-system/'` no Vite.
-- **Dynamic Asset Resolution:** Implementado helper `resolveAssetPath` em `src/lib/utils.ts` para tratar carregamento assíncrono de SVGs e vídeos da pasta `public` em subpáginas.
-- **Git Synchronization:** Repositório local configurado e código enviado via push para o GitHub.
-- **Vercel Rewrites:** Atualizado o arquivo `vercel.json` do repositório Portfolio original para garantir proxy transparente (rewrite) de `www.pelimotion.art/pelimotion-design-system` para a Vercel.
+### Session Achievements (Per-Layer Architecture & Infrastructure)
+- **Bunny CDN Regional Support:** Added support for `VITE_BUNNY_STORAGE_ENDPOINT` in `src/lib/bunnyStorage.ts` and set it to `https://br.storage.bunnycdn.com` in `.env` to prevent 401 Unauthorized issues with the Brazilian São Paulo storage zone.
+- **DNS & Domain Configuration:** Configured both `pelimotion.art` and `www.pelimotion.art` in Vercel. Configured Cloudflare A records (`76.76.21.21`) and CNAMEs. Verified successful SSL propagation and HTTP 200 responses.
+- **Per-Layer Appearance Properties:** Migrated `colorMode`, `colors`, `targetMode`, and `opacityMode` from the global config into the individual layer structure (`GenerativeLayer` in `motion.types.ts`).
+- **SVG Styling Clear Fix:** Fixed the ghost color/path disappearance bug by clearing inline fill/stroke style attributes before applying Solid, Duotone, or Tritone colors, leaving original attributes untouched underneath.
+- **Per-Layer Noise Drivers:** Reconfigured `GenerativePreview` to use a `Map` of independent `NoiseDriver` instances per layer, using unique offsets/seeds derived from the layer index.
+- **Independent Opacity Modes:** Implemented `opacityMode` options: `fixed` (static slider value), `wiggle-group` (animates group opacity), and `wiggle-paths` (animates each path's opacity individually with independent simplex noise offsets).
+- **Zustand & UI Updates:** Integrated per-layer controls inside the "Editando: [Layer Name]" section in `GenerativePanel.tsx`. Clean build verified and pushed to production.
 
 ### Phase 5 Completed Tasks (Client-Side Render Pipeline)
 - **DOM-to-Canvas Capture:** Integrado `html-to-image` para captura frame a frame do DOM sem distorções visuais.
