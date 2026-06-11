@@ -108,7 +108,7 @@ export interface WiggleConfig {
 
 // ─── Generative Layers ───────────────────────────────────────────────────────
 
-export type GenerativeShapeType = 'raw' | 'circle' | 'square' | 'star' | 'grid' | 'wave' | 'spirograph' | 'orbital' | 'hexagon';
+export type GenerativeShapeType = 'raw' | 'circle' | 'square' | 'star' | 'grid' | 'wave' | 'spirograph' | 'orbital' | 'hexagon' | 'mesh' | 'concentric' | 'fluid' | 'particles' | 'moire';
 
 /**
  * How the layer's SVG elements are colorized.
