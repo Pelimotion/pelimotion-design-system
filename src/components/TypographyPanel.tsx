@@ -5,7 +5,6 @@ import type {
   TypographyLayer,
   TypoLayerAnimation,
   TypoLayerTransform,
-  TypographyLayoutMode,
   EntryPreset,
   ExitPreset,
   SplitMode,
@@ -15,9 +14,12 @@ import type {
 import {
   Sparkles, ChevronDown, ChevronRight,
   Info, Eye, EyeOff, Layout, Link2, Unlink2,
-  Heading1, AlignLeft, Move,
-  GripVertical,
+  Heading1, Move,
+  GripVertical, Layers, Play, Wand2, Palette
 } from 'lucide-react'
+import { SubTabBar } from '@/components/SubTabBar'
+import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
+import { COLOR_PALETTES } from '@/config/color-palettes'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const selectStyle: React.CSSProperties = {
@@ -359,29 +361,32 @@ function LayerSection({
 // ─── Animation Section ────────────────────────────────────────────────────────
 
 const ENTRY_PRESET_LABELS: Record<EntryPreset, string> = {
-  fadeUp: '↑ Sobe suave',
-  fadeDown: '↓ Desce suave',
-  slideLeft: '→ Desliza da direita',
-  slideRight: '← Desliza da esquerda',
-  scaleIn: '⊕ Zoom de dentro',
-  rotateIn: '↻ Rotaciona entrando',
-  blurIn: '◎ Desfoque entrando',
-  typewriter: '⌨ Máquina de escrever',
-  elastic: '🔀 Elástico',
-  glitch: '⚡ Glitch',
-  custom: '🎛 Personalizado',
+  fadeUp: 'Sobe Suave',
+  fadeDown: 'Desce Suave',
+  slideLeft: 'Desliza da Direita',
+  slideRight: 'Desliza da Esquerda',
+  scaleIn: 'Zoom Interno',
+  rotateIn: 'Rotaciona Entrando',
+  blurIn: 'Desfoque',
+  typewriter: 'Máquina de Escrever',
+  elastic: 'Elástico',
+  glitch: 'Glitch Digital',
+  reveal: 'Revelação Vertical',
+  splitFlip: 'Flip 3D (Letras)',
+  custom: 'Personalizado',
 };
 
 const EXIT_PRESET_LABELS: Record<ExitPreset, string> = {
-  fadeUp: '↑ Sobe suave',
-  fadeDown: '↓ Desce suave',
-  slideLeft: '← Desliza p/ esquerda',
-  slideRight: '→ Desliza p/ direita',
-  scaleOut: '⊖ Zoom para fora',
-  rotateOut: '↻ Rotaciona saindo',
-  blurOut: '◎ Desfoque saindo',
-  dissolve: '✦ Dissolve',
-  custom: '🎛 Personalizado',
+  fadeUp: 'Sobe Suave',
+  fadeDown: 'Desce Suave',
+  slideLeft: 'Desliza Esq.',
+  slideRight: 'Desliza Dir.',
+  scaleOut: 'Zoom Externo',
+  rotateOut: 'Rotaciona Saindo',
+  blurOut: 'Desfoque',
+  dissolve: 'Dissolve',
+  reveal: 'Wipe Out Vertical',
+  custom: 'Personalizado',
 };
 
 const SPLIT_MODE_LABELS: Record<SplitMode, string> = {
@@ -392,11 +397,11 @@ const SPLIT_MODE_LABELS: Record<SplitMode, string> = {
 };
 
 const STAGGER_FROM_LABELS: Record<StaggerFrom, string> = {
-  start: 'Do início →',
-  end: '← Do fim',
-  center: '← Centro →',
-  edges: '→ Bordas ←',
-  random: '✦ Aleatório',
+  start: 'Do Início',
+  end: 'Do Fim',
+  center: 'Do Centro',
+  edges: 'Das Bordas',
+  random: 'Aleatório',
 };
 
 const IDLE_LABELS: Record<IdleMotionType, string> = {
@@ -656,16 +661,6 @@ function AnimationSection({
   )
 }
 
-// ─── Layout Mode Labels ──────────────────────────────────────────────────────
-
-const LAYOUT_LABELS: Record<TypographyLayoutMode, string> = {
-  center: '⊕ Centralizado',
-  stack: '▤ Empilhado',
-  sideBySide: '▥ Lado a lado',
-  diagonal: '⟋ Diagonal',
-  overlap: '▧ Sobreposição',
-  freeform: '✦ Livre (arrastar)',
-};
 
 // ─── Main Panel ──────────────────────────────────────────────────────────────
 
@@ -673,23 +668,22 @@ export function TypographyPanel() {
   const {
     motionConfig,
     updateTypography, updateTrail,
-    updateTitleLayer, updateSubtitleLayer,
-    updateTitleAnimation, updateSubtitleAnimation,
-    updateTitleTransform, updateSubtitleTransform,
-    setLayoutMode, toggleLinkPosition, toggleLinkAnimation,
+    addTypoLayer, removeTypoLayer, updateTypoLayer,
+    updateTypoLayerAnimation, updateTypoLayerTransform,
+    toggleLinkAnimation,
+    incrementAnimKey,
     availableFonts, fetchLocalFonts,
+    activeTypoLayerId, setActiveTypoLayer,
+    loadTypographyPreset,
+    applyColorPalette,
   } = useEditorStore();
 
-  const { titleLayer, subtitleLayer, layoutMode, layoutGap, timeOnScreen, linkPosition, linkAnimation } = motionConfig.typography;
+  const [activeTab, setActiveTab] = useState('camadas');
 
-  const {
-    enabled: trailEnabled,
-    instances, staggerDelay, mainEntryDelay, blendMode,
-    opacityDecay, scaleDecay, blurIncrement, style,
-    trailColor, trailMode,
-    trailLetterSpacing, trailOffsetY, trailOffsetX,
-    trailScaleMultiplier, trailRotation,
-  } = motionConfig.trail;
+  const { layers, layoutGap, timeOnScreen, linkAnimation } = motionConfig.typography;
+  const globalTrail = motionConfig.trail;
+
+  const activeLayer = layers.find(l => l.id === activeTypoLayerId) || layers[0];
 
   const easingKeys = Object.keys(motionConfig.easing);
   const nomesCurvas: Record<string, string> = {
@@ -700,295 +694,459 @@ export function TypographyPanel() {
     microInteraction: 'Sutil',
   };
 
+  const handleAddLayer = () => {
+    const newId = `layer-${Date.now()}`;
+    const defaultAnim = layers[0]?.animation || {
+      entryPreset: 'fadeUp', entryDuration: 1, entryStagger: 0.02, entryEase: 'entrySmooth', entryDelay: 0,
+      splitMode: 'chars', staggerFrom: 'start', exitPreset: 'fadeUp', exitDuration: 0.5, exitStagger: 0.01,
+      exitEase: 'exitSharp', exitDelay: 0, idleMotion: 'none', idleSpeed: 1, idleIntensity: 1,
+      entryX: 0, entryY: 50, entryScale: 0.9, entryRotation: 0, entryBlur: 10, entryOpacity: 0, entrySkewX: 0, entrySkewY: 0,
+      exitX: 0, exitY: -50, exitScale: 1.1, exitRotation: 0, exitBlur: 10, exitOpacity: 0, exitSkewX: 0, exitSkewY: 0
+    };
+
+    addTypoLayer({
+      id: newId,
+      name: `Texto ${layers.length + 1}`,
+      enabled: true,
+      text: 'Novo Texto',
+      fontFamily: 'Inter',
+      fontWeight: 700,
+      fontSize: 3,
+      letterSpacing: 0,
+      lineHeight: 1.1,
+      textTransform: 'none',
+      fontStyle: 'normal',
+      color: '#ffffff',
+      textAlign: 'center',
+      maxWidth: 80,
+      transform: { x: 0, y: 50, scale: 1, rotation: 0, opacity: 1 },
+      animation: { ...defaultAnim as any }
+    });
+  };
+
+  if (!activeLayer) return null;
+
+  // Trail config is now specific to the active layer, or falls back to global
+  const trailConf = activeLayer.trail || globalTrail;
+  const trailEnabled = trailConf.enabled;
+
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }}
       className="custom-scrollbar"
     >
+      <SubTabBar
+        tabs={[
+          { id: 'camadas', label: 'Camadas', icon: <Layers /> },
+          { id: 'animacao', label: 'Animação', icon: <Play /> },
+          { id: 'efeitos', label: 'Efeitos', icon: <Wand2 /> },
+          { id: 'cores', label: 'Cores', icon: <Palette /> },
+          { id: 'exemplos', label: 'Exemplos', icon: <Sparkles /> }
+        ]}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
 
-      {/* ─── LAYOUT ───────────────────────────────────────────────────── */}
-      <Section icon={<Layout size={13} color="var(--color-accent)" />} title="Layout" defaultOpen>
-        <Campo label="Modo de layout" dica="Como título e subtítulo são posicionados. 'Livre' permite arrastar com o mouse.">
-          <select value={layoutMode} onChange={(e) => setLayoutMode(e.target.value as TypographyLayoutMode)} style={selectStyle}>
-            {(Object.keys(LAYOUT_LABELS) as TypographyLayoutMode[]).map(k => (
-              <option key={k} value={k}>{LAYOUT_LABELS[k]}</option>
-            ))}
-          </select>
-        </Campo>
-
-        <Row2>
-          <Campo label="Espaçamento" valor={`${layoutGap}px`} dica="Distância entre título e subtítulo.">
-            <input type="range" min={0} max={100} step={2} value={layoutGap}
-              onChange={(e) => updateTypography({ layoutGap: parseInt(e.target.value) })} style={sliderStyle} />
-          </Campo>
-          <Campo label="Tempo em tela" valor={`${timeOnScreen}s`} dica="Quanto tempo o texto fica visível antes de sair.">
-            <input type="range" min={0.0} max={5.0} step={0.1} value={timeOnScreen}
-              onChange={(e) => updateTypography({ timeOnScreen: parseFloat(e.target.value) })} style={sliderStyle} />
-          </Campo>
-        </Row2>
-
-        <div style={{ display: 'flex', gap: 8 }}>
+      {/* ─── Seleção de Camadas ────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, marginTop: 8 }} className="custom-scrollbar">
+        {layers.map(layer => (
           <button
-            onClick={toggleLinkPosition}
+            key={layer.id}
+            onClick={() => setActiveTypoLayer(layer.id)}
             style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              background: linkPosition ? 'rgba(0,212,255,0.1)' : 'var(--color-bg-elevated)',
-              border: `1px solid ${linkPosition ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
-              borderRadius: 'var(--radius-sm)', padding: '8px',
-              color: linkPosition ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-              cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600,
-              transition: 'all 0.2s',
+              padding: '6px 12px', borderRadius: 99,
+              fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap',
+              background: activeLayer.id === layer.id ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
+              color: activeLayer.id === layer.id ? '#0a0a0f' : 'var(--color-text-secondary)',
+              border: `1px solid ${activeLayer.id === layer.id ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
+              cursor: 'pointer', transition: 'all 0.2s'
             }}
           >
-            {linkPosition ? <Link2 size={12} /> : <Unlink2 size={12} />}
-            Link Posição
+            {layer.name}
           </button>
-          <button
-            onClick={toggleLinkAnimation}
-            style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              background: linkAnimation ? 'rgba(0,212,255,0.1)' : 'var(--color-bg-elevated)',
-              border: `1px solid ${linkAnimation ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
-              borderRadius: 'var(--radius-sm)', padding: '8px',
-              color: linkAnimation ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-              cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600,
-              transition: 'all 0.2s',
-            }}
-          >
-            {linkAnimation ? <Link2 size={12} /> : <Unlink2 size={12} />}
-            Link Animação
-          </button>
+        ))}
+        <button
+          onClick={handleAddLayer}
+          style={{
+            padding: '6px 12px', borderRadius: 99,
+            fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap',
+            background: 'transparent',
+            color: 'var(--color-text-secondary)',
+            border: '1px dashed var(--color-surface-border)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4
+          }}
+        >
+          <span style={{ fontSize: '1rem', lineHeight: 1 }}>+</span> Add
+        </button>
+      </div>
+
+      {activeTab === 'exemplos' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '4px 2px' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+            Escolha um preset criativo para substituir a diagramação atual.
+          </div>
+          {TYPOGRAPHY_PRESETS.map((preset) => (
+            <div
+              key={preset.id}
+              onClick={() => loadTypographyPreset(preset.config)}
+              style={{
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-surface-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.transform = 'none' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {preset.name}
+                </span>
+                <span style={{ 
+                  fontSize: '0.6rem', 
+                  padding: '2px 6px', 
+                  borderRadius: 99, 
+                  background: 'var(--color-surface-hover)',
+                  color: 'var(--color-accent)',
+                  fontWeight: 600,
+                  textTransform: 'uppercase'
+                }}>
+                  {preset.density}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                {preset.description}
+              </span>
+            </div>
+          ))}
         </div>
-      </Section>
+      )}
 
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
+      {activeTab === 'camadas' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* ─── LAYOUT GLOBAL ─────────────────────────────────────────── */}
+          <Section icon={<Layout size={13} color="var(--color-accent)" />} title="Layout Global" defaultOpen={false}>
+            <Row2>
+              <Campo label="Espaçamento" valor={`${layoutGap}px`} dica="Distância entre camadas nos modos empilhado/lado-a-lado.">
+                <input type="range" min={0} max={100} step={2} value={layoutGap}
+                  onChange={(e) => updateTypography({ layoutGap: parseInt(e.target.value) })} style={sliderStyle} />
+              </Campo>
+              <Campo label="Tempo em tela" valor={`${timeOnScreen}s`} dica="Quanto tempo o texto fica visível antes de sair.">
+                <input type="range" min={0.0} max={5.0} step={0.1} value={timeOnScreen}
+                  onChange={(e) => updateTypography({ timeOnScreen: parseFloat(e.target.value) })} style={sliderStyle} />
+              </Campo>
+            </Row2>
 
-      {/* ─── TÍTULO ───────────────────────────────────────────────────── */}
-      <Section
-        icon={<Heading1 size={13} color="var(--color-accent)" />}
-        title="Título"
-        badge={titleLayer.enabled ? 'ON' : 'OFF'}
-        defaultOpen
-      >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
-          <ToggleButton
-            active={titleLayer.enabled}
-            onClick={() => updateTitleLayer({ enabled: !titleLayer.enabled })}
-            label={titleLayer.enabled ? 'Visível' : 'Oculto'}
-          />
-        </div>
-        {titleLayer.enabled && (
-          <LayerSection
-            layer={titleLayer}
-            updateLayer={updateTitleLayer}
-            updateTransform={updateTitleTransform}
-            availableFonts={availableFonts}
-            fetchLocalFonts={fetchLocalFonts}
-          />
-        )}
-      </Section>
+            <Campo label="Movimento IDLE Global" dica="Animação contínua aplicada a todas as camadas simultaneamente.">
+              <select value={motionConfig.typography.globalIdleMotion || 'none'} onChange={(e) => updateTypography({ globalIdleMotion: e.target.value as any })} style={selectStyle}>
+                {(Object.keys(IDLE_LABELS) as any[]).map(k => (
+                  <option key={k} value={k}>{IDLE_LABELS[k as keyof typeof IDLE_LABELS]}</option>
+                ))}
+              </select>
+            </Campo>
 
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={toggleLinkAnimation}
+                style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  background: linkAnimation ? 'rgba(0,212,255,0.1)' : 'var(--color-bg-elevated)',
+                  border: `1px solid ${linkAnimation ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
+                  borderRadius: 'var(--radius-sm)', padding: '8px',
+                  color: linkAnimation ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {linkAnimation ? <Link2 size={12} /> : <Unlink2 size={12} />}
+                Sincronizar Animações
+              </button>
 
-      {/* ─── SUBTÍTULO ────────────────────────────────────────────────── */}
-      <Section
-        icon={<AlignLeft size={13} color="var(--color-accent)" />}
-        title="Subtítulo"
-        badge={subtitleLayer.enabled ? 'ON' : 'OFF'}
-        defaultOpen={false}
-      >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
-          <ToggleButton
-            active={subtitleLayer.enabled}
-            onClick={() => updateSubtitleLayer({ enabled: !subtitleLayer.enabled })}
-            label={subtitleLayer.enabled ? 'Visível' : 'Oculto'}
-          />
-        </div>
-        {subtitleLayer.enabled && (
-          <LayerSection
-            layer={subtitleLayer}
-            updateLayer={updateSubtitleLayer}
-            updateTransform={updateSubtitleTransform}
-            availableFonts={availableFonts}
-            fetchLocalFonts={fetchLocalFonts}
-          />
-        )}
-      </Section>
-
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-
-      {/* ─── ANIMAÇÃO DO TÍTULO ───────────────────────────────────────── */}
-      <Section icon={<Sparkles size={13} color="var(--color-accent)" />} title="Animação — Título" defaultOpen>
-        <AnimationSection
-          animation={titleLayer.animation}
-          updateAnimation={updateTitleAnimation}
-          easingKeys={easingKeys}
-          nomesCurvas={nomesCurvas}
-          linked={false}
-        />
-      </Section>
-
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-
-      {/* ─── ANIMAÇÃO DO SUBTÍTULO ────────────────────────────────────── */}
-      {subtitleLayer.enabled && (
-        <>
-          <Section icon={<Sparkles size={13} color={linkAnimation ? 'var(--color-text-secondary)' : 'var(--color-accent)'} />} title="Animação — Subtítulo" defaultOpen={false}>
-            <AnimationSection
-              animation={subtitleLayer.animation}
-              updateAnimation={updateSubtitleAnimation}
-              easingKeys={easingKeys}
-              nomesCurvas={nomesCurvas}
-              linked={linkAnimation}
-            />
+              <button
+                onClick={incrementAnimKey}
+                title="Força a recriação completa da timeline de animação (útil após editar texto)"
+                style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  background: 'var(--color-bg-elevated)',
+                  border: '1px solid var(--color-surface-border)',
+                  borderRadius: 'var(--radius-sm)', padding: '8px',
+                  color: 'var(--color-text-secondary)',
+                  cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-accent)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-surface-border)'; }}
+              >
+                ↺ Reiniciar Efeito
+              </button>
+            </div>
           </Section>
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-        </>
+
+
+          {/* ─── CAMADA ATIVA ───────────────────────────────────────────── */}
+          <Section
+            icon={<Heading1 size={13} color="var(--color-accent)" />}
+            title={`Camada: ${activeLayer.name}`}
+            badge={activeLayer.enabled ? 'ON' : 'OFF'}
+            defaultOpen
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+              {layers.length > 1 ? (
+                <button
+                  onClick={() => removeTypoLayer(activeLayer.id)}
+                  style={{
+                    background: 'rgba(239,68,68,0.1)', color: '#ef4444',
+                    border: '1px solid rgba(239,68,68,0.3)', borderRadius: 'var(--radius-sm)',
+                    padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer'
+                  }}
+                >
+                  Excluir Camada
+                </button>
+              ) : <div />}
+              <ToggleButton
+                active={activeLayer.enabled}
+                onClick={() => updateTypoLayer(activeLayer.id, { enabled: !activeLayer.enabled })}
+                label={activeLayer.enabled ? 'Visível' : 'Oculto'}
+              />
+            </div>
+            
+            <Campo label="Nome da camada">
+              <input
+                type="text"
+                value={activeLayer.name}
+                onChange={(e) => updateTypoLayer(activeLayer.id, { name: e.target.value })}
+                style={{
+                  width: '100%', background: 'var(--color-bg-elevated)',
+                  border: '1px solid var(--color-surface-border)',
+                  borderRadius: 'var(--radius-sm)', color: 'var(--color-text-primary)',
+                  padding: '6px 10px', fontSize: '0.8rem', outline: 'none'
+                }}
+              />
+            </Campo>
+
+            {activeLayer.enabled && (
+              <LayerSection
+                layer={activeLayer}
+                updateLayer={(patch) => updateTypoLayer(activeLayer.id, patch)}
+                updateTransform={(patch) => updateTypoLayerTransform(activeLayer.id, patch)}
+                availableFonts={availableFonts}
+                fetchLocalFonts={fetchLocalFonts}
+              />
+            )}
+          </Section>
+        </div>
       )}
 
-      {/* ─── ECO & BRILHO ─────────────────────────────────────────────── */}
-      <Section
-        icon={<Sparkles size={13} color={trailEnabled ? 'var(--color-accent)' : 'var(--color-text-secondary)'} />}
-        title="Eco & Brilho"
-        badge={trailEnabled ? 'ATIVO' : 'OFF'}
-        defaultOpen={false}
-      >
-        {/* Toggle */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-surface-border)',
-          borderRadius: 'var(--radius-sm)', padding: '8px 12px',
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)', fontWeight: 600 }}>
-              Efeito de eco
-            </span>
-            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>
-              Cópias brilhantes atrás do título
-            </span>
-          </div>
-          <ToggleButton
-            active={trailEnabled}
-            onClick={() => updateTrail({ enabled: !trailEnabled })}
-            label={trailEnabled ? 'Ativado' : 'Desativado'}
-          />
-        </div>
-
-        {trailEnabled && (
-          <>
-            <Row2>
-              <Campo label="Visual do eco" dica="Aparência do eco.">
-                <select value={style} onChange={(e) => updateTrail({ style: e.target.value as any })} style={selectStyle}>
-                  <option value="solid">Sólido</option>
-                  <option value="stroke">Contorno</option>
-                  <option value="blur">Brilho</option>
-                  <option value="chromatic">Cromático</option>
-                </select>
-              </Campo>
-              <Campo label="Comportamento" dica="Quando o eco é visível.">
-                <select value={trailMode} onChange={(e) => updateTrail({ trailMode: e.target.value as any })} style={selectStyle}>
-                  <option value="persistent">Sempre visível</option>
-                  <option value="leading">Entra primeiro</option>
-                </select>
-              </Campo>
-            </Row2>
-
-            <Row2>
-              <Campo label="Cor do eco">
-                <input
-                  type="color" value={trailColor || '#a78bfa'}
-                  onChange={(e) => updateTrail({ trailColor: e.target.value })}
-                  style={{ width: '100%', height: 34, padding: 0, border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)', background: 'none', cursor: 'pointer' }}
-                />
-              </Campo>
-              <Campo label="Mistura">
-                <select value={blendMode} onChange={(e) => updateTrail({ blendMode: e.target.value })} style={selectStyle}>
-                  <option value="normal">Normal</option>
-                  <option value="screen">Screen</option>
-                  <option value="overlay">Overlay</option>
-                  <option value="lighten">Clarear</option>
-                  <option value="color-dodge">Dodge</option>
-                  <option value="difference">Diferença</option>
-                </select>
-              </Campo>
-            </Row2>
-
-            <Row2>
-              <Campo label="Camadas" valor={instances}>
-                <input type="range" min={1} max={12} step={1} value={instances}
-                  onChange={(e) => updateTrail({ instances: parseInt(e.target.value) })} style={sliderStyle} />
-              </Campo>
-              <Campo label="Transparência" valor={opacityDecay}>
-                <input type="range" min={0.0} max={0.5} step={0.01} value={opacityDecay}
-                  onChange={(e) => updateTrail({ opacityDecay: parseFloat(e.target.value) })} style={sliderStyle} />
-              </Campo>
-            </Row2>
-
-            <Row2>
-              <Campo label="Encolher" valor={scaleDecay}>
-                <input type="range" min={0.0} max={0.08} step={0.002} value={scaleDecay}
-                  onChange={(e) => updateTrail({ scaleDecay: parseFloat(e.target.value) })} style={sliderStyle} />
-              </Campo>
-              <Campo label="Desfoque" valor={`${blurIncrement}px`}>
-                <input type="range" min={0.0} max={4.0} step={0.1} value={blurIncrement}
-                  onChange={(e) => updateTrail({ blurIncrement: parseFloat(e.target.value) })} style={sliderStyle} />
-              </Campo>
-            </Row2>
-
-            <Row2>
-              <Campo label="Intervalo" valor={`${staggerDelay}s`}>
-                <input type="range" min={0.01} max={0.3} step={0.005} value={staggerDelay}
-                  onChange={(e) => updateTrail({ staggerDelay: parseFloat(e.target.value) })} style={sliderStyle} />
-              </Campo>
-              <Campo label="Atraso principal" valor={`${mainEntryDelay}s`}>
-                <input type="range" min={0.0} max={1.0} step={0.05} value={mainEntryDelay}
-                  onChange={(e) => updateTrail({ mainEntryDelay: parseFloat(e.target.value) })} style={sliderStyle} />
-              </Campo>
-            </Row2>
-
-            <details style={{ paddingTop: 2 }}>
-              <summary style={{
-                fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em',
-                textTransform: 'uppercase', color: 'var(--color-text-secondary)',
-                cursor: 'pointer', userSelect: 'none', listStyle: 'none',
-                display: 'flex', alignItems: 'center', gap: 6,
-                paddingBottom: 10, paddingTop: 4,
-              }}>
-                <ChevronDown size={11} /> Posição e forma do eco
-              </summary>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 4 }}>
-                <Row2>
-                  <Campo label="Espaço extra" valor={`${trailLetterSpacing ?? 0}em`}>
-                    <input type="range" min={-0.2} max={0.5} step={0.01} value={trailLetterSpacing ?? 0}
-                      onChange={(e) => updateTrail({ trailLetterSpacing: parseFloat(e.target.value) })} style={sliderStyle} />
-                  </Campo>
-                  <Campo label="Escala ×" valor={trailScaleMultiplier ?? 1}>
-                    <input type="range" min={0.8} max={1.3} step={0.01} value={trailScaleMultiplier ?? 1}
-                      onChange={(e) => updateTrail({ trailScaleMultiplier: parseFloat(e.target.value) })} style={sliderStyle} />
-                  </Campo>
-                </Row2>
-                <Row2>
-                  <Campo label="Offset X" valor={`${trailOffsetX ?? 0}px`}>
-                    <input type="range" min={-60} max={60} step={1} value={trailOffsetX ?? 0}
-                      onChange={(e) => updateTrail({ trailOffsetX: parseFloat(e.target.value) })} style={sliderStyle} />
-                  </Campo>
-                  <Campo label="Offset Y" valor={`${trailOffsetY ?? 0}px`}>
-                    <input type="range" min={-60} max={60} step={1} value={trailOffsetY ?? 0}
-                      onChange={(e) => updateTrail({ trailOffsetY: parseFloat(e.target.value) })} style={sliderStyle} />
-                  </Campo>
-                </Row2>
-                <Campo label="Rotação" valor={`${trailRotation ?? 0}°`}>
-                  <input type="range" min={-45} max={45} step={0.5} value={trailRotation ?? 0}
-                    onChange={(e) => updateTrail({ trailRotation: parseFloat(e.target.value) })} style={sliderStyle} />
-                </Campo>
+      {activeTab === 'animacao' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* ─── ANIMAÇÃO DA CAMADA ATIVA ─────────────────────────────────── */}
+          <Section icon={<Sparkles size={13} color="var(--color-accent)" />} title={`Animação: ${activeLayer.name}`} defaultOpen>
+            {activeLayer.enabled ? (
+              <AnimationSection
+                animation={activeLayer.animation}
+                updateAnimation={(patch) => updateTypoLayerAnimation(activeLayer.id, patch)}
+                easingKeys={easingKeys}
+                nomesCurvas={nomesCurvas}
+                linked={false}
+              />
+            ) : (
+              <div style={{ color: 'var(--color-text-ghost)', fontSize: '0.8rem', textAlign: 'center', padding: '16px' }}>
+                Ative a camada para editar a animação.
               </div>
-            </details>
-          </>
-        )}
-      </Section>
+            )}
+          </Section>
+        </div>
+      )}
+
+      {activeTab === 'efeitos' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* ─── ECO & BRILHO (POR CAMADA) ────────────────────────────────── */}
+          <Section
+            icon={<Sparkles size={13} color={trailEnabled ? 'var(--color-accent)' : 'var(--color-text-secondary)'} />}
+            title={`Eco & Brilho: ${activeLayer.name}`}
+            badge={trailEnabled ? 'ATIVO' : 'OFF'}
+            defaultOpen
+          >
+            {/* Toggle */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 'var(--radius-sm)', padding: '8px 12px',
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)', fontWeight: 600 }}>
+                  Efeito de eco
+                </span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>
+                  Aplica-se apenas a esta camada
+                </span>
+              </div>
+              <ToggleButton
+                active={trailEnabled}
+                onClick={() => updateTrail({ enabled: !trailEnabled })}
+                label={trailEnabled ? 'Ativado' : 'Desativado'}
+              />
+            </div>
+
+            {trailEnabled && (
+              <>
+                <Row2>
+                  <Campo label="Visual do eco" dica="Aparência do eco.">
+                    <select value={trailConf.style} onChange={(e) => updateTrail({ style: e.target.value as any })} style={selectStyle}>
+                      <option value="solid">Sólido</option>
+                      <option value="stroke">Contorno</option>
+                      <option value="blur">Brilho</option>
+                      <option value="chromatic">Cromático</option>
+                    </select>
+                  </Campo>
+                  <Campo label="Comportamento" dica="Quando o eco é visível.">
+                    <select value={trailConf.trailMode} onChange={(e) => updateTrail({ trailMode: e.target.value as any })} style={selectStyle}>
+                      <option value="persistent">Sempre visível</option>
+                      <option value="leading">Entra primeiro</option>
+                    </select>
+                  </Campo>
+                </Row2>
+
+                <Row2>
+                  <Campo label="Cor do eco">
+                    <input
+                      type="color" value={trailConf.trailColor || '#a78bfa'}
+                      onChange={(e) => updateTrail({ trailColor: e.target.value })}
+                      style={{ width: '100%', height: 34, padding: 0, border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)', background: 'none', cursor: 'pointer' }}
+                    />
+                  </Campo>
+                  <Campo label="Mistura">
+                    <select value={trailConf.blendMode} onChange={(e) => updateTrail({ blendMode: e.target.value })} style={selectStyle}>
+                      <option value="normal">Normal</option>
+                      <option value="screen">Screen</option>
+                      <option value="overlay">Overlay</option>
+                      <option value="lighten">Clarear</option>
+                      <option value="color-dodge">Dodge</option>
+                      <option value="difference">Diferença</option>
+                    </select>
+                  </Campo>
+                </Row2>
+
+                <Row2>
+                  <Campo label="Camadas" valor={trailConf.instances}>
+                    <input type="range" min={1} max={12} step={1} value={trailConf.instances}
+                      onChange={(e) => updateTrail({ instances: parseInt(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Transparência" valor={trailConf.opacityDecay}>
+                    <input type="range" min={0.0} max={0.5} step={0.01} value={trailConf.opacityDecay}
+                      onChange={(e) => updateTrail({ opacityDecay: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+
+                <Row2>
+                  <Campo label="Encolher" valor={trailConf.scaleDecay}>
+                    <input type="range" min={0.0} max={0.08} step={0.002} value={trailConf.scaleDecay}
+                      onChange={(e) => updateTrail({ scaleDecay: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <div />
+                </Row2>
+
+                <Row2>
+                  <Campo label="Intervalo" valor={`${trailConf.staggerDelay}s`}>
+                    <input type="range" min={0.01} max={0.3} step={0.005} value={trailConf.staggerDelay}
+                      onChange={(e) => updateTrail({ staggerDelay: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                  <Campo label="Atraso principal" valor={`${trailConf.mainEntryDelay}s`}>
+                    <input type="range" min={0.0} max={1.0} step={0.05} value={trailConf.mainEntryDelay}
+                      onChange={(e) => updateTrail({ mainEntryDelay: parseFloat(e.target.value) })} style={sliderStyle} />
+                  </Campo>
+                </Row2>
+
+                <details style={{ paddingTop: 2 }}>
+                  <summary style={{
+                    fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em',
+                    textTransform: 'uppercase', color: 'var(--color-text-secondary)',
+                    cursor: 'pointer', userSelect: 'none', listStyle: 'none',
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    paddingBottom: 10, paddingTop: 4,
+                  }}>
+                    <ChevronDown size={11} /> Posição e forma do eco
+                  </summary>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 4 }}>
+                    <Row2>
+                      <Campo label="Espaço extra" valor={`${trailConf.trailLetterSpacing ?? 0}em`}>
+                        <input type="range" min={-0.2} max={0.5} step={0.01} value={trailConf.trailLetterSpacing ?? 0}
+                          onChange={(e) => updateTrail({ trailLetterSpacing: parseFloat(e.target.value) })} style={sliderStyle} />
+                      </Campo>
+                      <Campo label="Escala ×" valor={trailConf.trailScaleMultiplier ?? 1}>
+                        <input type="range" min={0.8} max={1.3} step={0.01} value={trailConf.trailScaleMultiplier ?? 1}
+                          onChange={(e) => updateTrail({ trailScaleMultiplier: parseFloat(e.target.value) })} style={sliderStyle} />
+                      </Campo>
+                    </Row2>
+                    <Row2>
+                      <Campo label="Offset X" valor={`${trailConf.trailOffsetX ?? 0}px`}>
+                        <input type="range" min={-60} max={60} step={1} value={trailConf.trailOffsetX ?? 0}
+                          onChange={(e) => updateTrail({ trailOffsetX: parseFloat(e.target.value) })} style={sliderStyle} />
+                      </Campo>
+                      <Campo label="Offset Y" valor={`${trailConf.trailOffsetY ?? 0}px`}>
+                        <input type="range" min={-60} max={60} step={1} value={trailConf.trailOffsetY ?? 0}
+                          onChange={(e) => updateTrail({ trailOffsetY: parseFloat(e.target.value) })} style={sliderStyle} />
+                      </Campo>
+                    </Row2>
+                    <Campo label="Rotação" valor={`${trailConf.trailRotation ?? 0}°`}>
+                      <input type="range" min={-45} max={45} step={0.5} value={trailConf.trailRotation ?? 0}
+                        onChange={(e) => updateTrail({ trailRotation: parseFloat(e.target.value) })} style={sliderStyle} />
+                    </Campo>
+                  </div>
+                </details>
+              </>
+            )}
+          </Section>
+        </div>
+      )}
+
+      {activeTab === 'cores' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '4px 2px' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+            Selecione uma paleta para aplicar globalmente nas cores de texto, rastro e fundo.
+          </div>
+          {COLOR_PALETTES.map((palette) => (
+            <div
+              key={palette.id}
+              onClick={() => applyColorPalette(palette)}
+              style={{
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-surface-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.transform = 'none' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  {palette.name}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 8, height: 24, borderRadius: 4, overflow: 'hidden' }}>
+                <div style={{ flex: 1, backgroundColor: palette.background, border: '1px solid rgba(255,255,255,0.1)' }} title="Fundo" />
+                <div style={{ flex: 1, backgroundColor: palette.primary, border: '1px solid rgba(255,255,255,0.1)' }} title="Primária" />
+                <div style={{ flex: 1, backgroundColor: palette.secondary, border: '1px solid rgba(255,255,255,0.1)' }} title="Secundária" />
+                <div style={{ flex: 1, backgroundColor: palette.accent, border: '1px solid rgba(255,255,255,0.1)' }} title="Destaque (Eco)" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div style={{ height: 40 }} />
     </div>

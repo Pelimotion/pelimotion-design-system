@@ -23,7 +23,6 @@ export {
   getExitPresetValues,
 } from './typography.engine'
 export type {
-  TypographyAnimOptions,
   AnimProps,
   LayerTimelineOptions,
   MasterTimelineOptions,

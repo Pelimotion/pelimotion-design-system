@@ -20,7 +20,7 @@
     "blendMode": "normal",
     "opacityDecay": 0.18,
     "scaleDecay": 0.02,
-    "blurIncrement": 1.5,
+    "blurIncrement": 0,
     "strokeOnly": false,
     "style": "solid",
     "trailColor": "#a78bfa",

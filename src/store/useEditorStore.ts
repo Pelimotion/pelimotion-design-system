@@ -28,6 +28,7 @@ import type {
   LayerTargetMode,
   LayerOpacityMode,
 } from '@/types/motion.types'
+import type { ColorPalette } from '@/config/color-palettes'
 
 import globalMotionData from '@/config/global-motion.json'
 import libraryData from '@/config/library.json'
@@ -42,9 +43,13 @@ interface EditorState {
   // UI State
   activePanel: EditorPanel;
   sidebarCollapsed: boolean;
+  showGizmo: boolean;
+  activeAspectRatio: 'none' | '16:9' | '9:16' | '1:1' | '4:5';
+  // Increment to force animation rebuild (SplitText re-run)
+  animForceKey: number;
 
   // Typography Layer Selection
-  activeTypoLayerId: 'title' | 'subtitle' | null;
+  activeTypoLayerId: string | null;
 
   // Posterize State
   posterizeEnabled: boolean;
@@ -71,22 +76,26 @@ interface EditorState {
   updateTrail: (trail: Partial<TrailConfig>) => void;
   updateWiggle: (wiggle: Partial<WiggleConfig>) => void;
   updateTypography: (typography: Partial<TypographyConfig>) => void;
+  loadTypographyPreset: (presetConfig: Partial<TypographyConfig>) => void;
+  applyColorPalette: (palette: ColorPalette) => void;
 
   // Typography layer actions
-  updateTitleLayer: (patch: Partial<TypographyLayer>) => void;
-  updateSubtitleLayer: (patch: Partial<TypographyLayer>) => void;
-  updateTitleAnimation: (patch: Partial<TypoLayerAnimation>) => void;
-  updateSubtitleAnimation: (patch: Partial<TypoLayerAnimation>) => void;
-  updateTitleTransform: (patch: Partial<TypoLayerTransform>) => void;
-  updateSubtitleTransform: (patch: Partial<TypoLayerTransform>) => void;
+  addTypoLayer: (layer: TypographyLayer) => void;
+  removeTypoLayer: (id: string) => void;
+  updateTypoLayer: (id: string, patch: Partial<TypographyLayer>) => void;
+  updateTypoLayerAnimation: (id: string, patch: Partial<TypoLayerAnimation>) => void;
+  updateTypoLayerTransform: (id: string, patch: Partial<TypoLayerTransform>) => void;
   setLayoutMode: (mode: TypographyLayoutMode) => void;
   toggleLinkPosition: () => void;
   toggleLinkAnimation: () => void;
-  setActiveTypoLayer: (id: 'title' | 'subtitle' | null) => void;
+  setActiveTypoLayer: (id: string | null) => void;
 
   // UI actions
   setActivePanel: (panel: EditorPanel) => void;
   toggleSidebar: () => void;
+  toggleGizmo: () => void;
+  setAspectRatio: (ratio: 'none' | '16:9' | '9:16' | '1:1' | '4:5') => void;
+  incrementAnimKey: () => void;
   setActiveLibraryAssetId: (id: string | null) => void;
 
   // Generative actions
@@ -129,7 +138,8 @@ const initialExportState: ExportState = {
 // ─── Helper: Sync legacy fields from title layer ─────────────────────────────
 
 function syncLegacyFields(typo: TypographyConfig): Partial<TypographyConfig> {
-  const t = typo.titleLayer;
+  const t = typo.layers[0];
+  if (!t) return {};
   return {
     splitMode: t.animation.splitMode,
     defaultStagger: t.animation.entryStagger,
@@ -150,14 +160,29 @@ function syncLegacyFields(typo: TypographyConfig): Partial<TypographyConfig> {
 
 // ─── Store Creation ──────────────────────────────────────────────────────────
 
+const rawMotionData = globalMotionData as any;
+const initialMotionConfig: GlobalMotionConfig = {
+  ...rawMotionData,
+  typography: {
+    ...rawMotionData.typography,
+    layers: [
+      { ...rawMotionData.typography.titleLayer, id: 'title', name: 'Título', trail: rawMotionData.trail },
+      { ...rawMotionData.typography.subtitleLayer, id: 'subtitle', name: 'Subtítulo', trail: { ...rawMotionData.trail, enabled: false } }
+    ]
+  }
+};
+
 export const useEditorStore = create<EditorState>((set) => ({
   // Load configs from JSON at initialization
-  motionConfig: globalMotionData as GlobalMotionConfig,
+  motionConfig: initialMotionConfig,
   libraryConfig: libraryData as LibraryConfig,
 
   // Default UI state
   activePanel: 'typography',
   sidebarCollapsed: false,
+  showGizmo: true,
+  activeAspectRatio: 'none' as 'none' | '16:9' | '9:16' | '1:1' | '4:5',
+  animForceKey: 0,
 
   // Typography active layer
   activeTypoLayerId: 'title',
@@ -200,13 +225,24 @@ export const useEditorStore = create<EditorState>((set) => ({
       },
     })),
 
-  updateTrail: (trail) =>
-    set((state) => ({
-      motionConfig: {
-        ...state.motionConfig,
-        trail: { ...state.motionConfig.trail, ...trail },
-      },
-    })),
+  updateTrail: (trailPatch) =>
+    set((state) => {
+      const activeId = state.activeTypoLayerId;
+      if (!activeId) return state;
+      const newLayers = state.motionConfig.typography.layers.map(l => {
+        if (l.id === activeId) {
+          const currentTrail = l.trail || state.motionConfig.trail;
+          return { ...l, trail: { ...currentTrail, ...trailPatch } };
+        }
+        return l;
+      });
+      return {
+        motionConfig: {
+          ...state.motionConfig,
+          typography: { ...state.motionConfig.typography, layers: newLayers },
+        },
+      };
+    }),
 
   updateWiggle: (wiggle) =>
     set((state) => ({
@@ -224,99 +260,119 @@ export const useEditorStore = create<EditorState>((set) => ({
       },
     })),
 
+  loadTypographyPreset: (presetConfig) =>
+    set((state) => {
+      const newTypography = { ...state.motionConfig.typography, ...presetConfig };
+      // Safely reset the active layer id to the first layer of the new preset
+      const firstLayer = presetConfig.layers?.[0];
+      const newActiveId = firstLayer ? firstLayer.id : state.activeTypoLayerId;
+      
+      return {
+        motionConfig: {
+          ...state.motionConfig,
+          typography: newTypography,
+        },
+        activeTypoLayerId: newActiveId,
+        // Increment anim key to rebuild GSAP timelines with the new layout
+        animForceKey: state.animForceKey + 1,
+      };
+    }),
+
+  applyColorPalette: (palette) =>
+    set((state) => {
+      const newLayers = state.motionConfig.typography.layers.map((l, i) => {
+        const color = i === 0 ? palette.primary : palette.secondary;
+        const trailColor = palette.accent;
+        return {
+          ...l,
+          color,
+          trail: l.trail ? { ...l.trail, trailColor, style: l.trail.style === 'blur' ? 'solid' : l.trail.style } : undefined,
+        };
+      });
+
+      return {
+        motionConfig: {
+          ...state.motionConfig,
+          canvas: { ...state.motionConfig.canvas, backgroundColor: palette.background },
+          trail: { 
+            ...state.motionConfig.trail, 
+            trailColor: palette.accent,
+            style: state.motionConfig.trail.style === 'blur' ? 'solid' : state.motionConfig.trail.style 
+          },
+          typography: { ...state.motionConfig.typography, layers: newLayers },
+        },
+        animForceKey: state.animForceKey + 1,
+      };
+    }),
+
   // ─── Typography Layer Actions ──────────────────────────────────────────
 
-  updateTitleLayer: (patch) =>
+  addTypoLayer: (layer) =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          layers: [...state.motionConfig.typography.layers, layer],
+        },
+      },
+      activeTypoLayerId: layer.id,
+    })),
+
+  removeTypoLayer: (id) =>
+    set((state) => ({
+      motionConfig: {
+        ...state.motionConfig,
+        typography: {
+          ...state.motionConfig.typography,
+          layers: state.motionConfig.typography.layers.filter(l => l.id !== id),
+        },
+      },
+      activeTypoLayerId: state.activeTypoLayerId === id ? null : state.activeTypoLayerId,
+    })),
+
+  updateTypoLayer: (id, patch) =>
     set((state) => {
-      const newTitle = { ...state.motionConfig.typography.titleLayer, ...patch };
-      const newTypo = { ...state.motionConfig.typography, titleLayer: newTitle };
-      // Sync legacy fields
+      const newLayers = state.motionConfig.typography.layers.map(l =>
+        l.id === id ? { ...l, ...patch } : l
+      );
+      const newTypo = { ...state.motionConfig.typography, layers: newLayers };
       Object.assign(newTypo, syncLegacyFields(newTypo));
       return {
         motionConfig: { ...state.motionConfig, typography: newTypo },
       };
     }),
 
-  updateSubtitleLayer: (patch) =>
-    set((state) => ({
-      motionConfig: {
-        ...state.motionConfig,
-        typography: {
-          ...state.motionConfig.typography,
-          subtitleLayer: { ...state.motionConfig.typography.subtitleLayer, ...patch },
-        },
-      },
-    })),
-
-  updateTitleAnimation: (patch) =>
+  updateTypoLayerAnimation: (id, patch) =>
     set((state) => {
-      const newAnim = { ...state.motionConfig.typography.titleLayer.animation, ...patch };
-      const newTitle = { ...state.motionConfig.typography.titleLayer, animation: newAnim };
-      const newTypo = { ...state.motionConfig.typography, titleLayer: newTitle };
+      const newLayers = state.motionConfig.typography.layers.map(l =>
+        l.id === id ? { ...l, animation: { ...l.animation, ...patch } } : l
+      );
+      const newTypo = { ...state.motionConfig.typography, layers: newLayers };
       Object.assign(newTypo, syncLegacyFields(newTypo));
       return {
         motionConfig: { ...state.motionConfig, typography: newTypo },
       };
     }),
 
-  updateSubtitleAnimation: (patch) =>
-    set((state) => ({
-      motionConfig: {
-        ...state.motionConfig,
-        typography: {
-          ...state.motionConfig.typography,
-          subtitleLayer: {
-            ...state.motionConfig.typography.subtitleLayer,
-            animation: { ...state.motionConfig.typography.subtitleLayer.animation, ...patch },
-          },
-        },
-      },
-    })),
-
-  updateTitleTransform: (patch) =>
+  updateTypoLayerTransform: (id, patch) =>
     set((state) => {
       const linked = state.motionConfig.typography.linkPosition;
-      const newTitleTransform = { ...state.motionConfig.typography.titleLayer.transform, ...patch };
-      const newTitle = { ...state.motionConfig.typography.titleLayer, transform: newTitleTransform };
-
-      // If linked, apply same delta to subtitle
-      let newSubtitle = state.motionConfig.typography.subtitleLayer;
-      if (linked) {
-        const newSubTransform = { ...newSubtitle.transform, ...patch };
-        newSubtitle = { ...newSubtitle, transform: newSubTransform };
-      }
-
+      const newLayers = state.motionConfig.typography.layers.map(l => {
+        if (l.id === id) {
+          return { ...l, transform: { ...l.transform, ...patch } };
+        }
+        if (linked) {
+          return { ...l, transform: { ...l.transform, ...patch } };
+        }
+        return l;
+      });
       return {
         motionConfig: {
           ...state.motionConfig,
           typography: {
             ...state.motionConfig.typography,
-            titleLayer: newTitle,
-            subtitleLayer: newSubtitle,
-          },
-        },
-      };
-    }),
-
-  updateSubtitleTransform: (patch) =>
-    set((state) => {
-      const linked = state.motionConfig.typography.linkPosition;
-      const newSubTransform = { ...state.motionConfig.typography.subtitleLayer.transform, ...patch };
-      const newSubtitle = { ...state.motionConfig.typography.subtitleLayer, transform: newSubTransform };
-
-      let newTitle = state.motionConfig.typography.titleLayer;
-      if (linked) {
-        const newTitleTransform = { ...newTitle.transform, ...patch };
-        newTitle = { ...newTitle, transform: newTitleTransform };
-      }
-
-      return {
-        motionConfig: {
-          ...state.motionConfig,
-          typography: {
-            ...state.motionConfig.typography,
-            titleLayer: newTitle,
-            subtitleLayer: newSubtitle,
+            layers: newLayers,
           },
         },
       };
@@ -358,6 +414,9 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setActivePanel: (panel) => set({ activePanel: panel }),
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  toggleGizmo: () => set((state) => ({ showGizmo: !state.showGizmo })),
+  setAspectRatio: (ratio) => set({ activeAspectRatio: ratio }),
+  incrementAnimKey: () => set((state) => ({ animForceKey: state.animForceKey + 1 })),
   setActiveLibraryAssetId: (id) => set({ activeLibraryAssetId: id }),
 
   // ─── Generative Actions ────────────────────────────────────────────────

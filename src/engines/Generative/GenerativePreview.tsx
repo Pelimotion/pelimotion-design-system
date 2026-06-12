@@ -13,8 +13,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { createNoiseDriver, type NoiseDriver } from '../Generative/noiseEngine'
+import { gsap } from 'gsap'
+import { Draggable } from 'gsap/Draggable'
+import { useGSAP } from '@gsap/react'
 import { renderGenerativeShape } from './shapes'
 import type { GenerativeLayer } from '@/types/motion.types'
+
+gsap.registerPlugin(useGSAP, Draggable)
 
 // ── Aspect Ratio Grid Overlay ─────────────────────────────────────────────────
 
@@ -101,7 +106,10 @@ function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export function GenerativePreview() {
-  const { motionConfig, generativeLayers } = useEditorStore()
+  const { 
+    motionConfig, generativeLayers,
+    activeGenerativeLayerId, setActiveGenerativeLayerId, updateLayerTransform
+  } = useEditorStore()
   const {
     amplitude, frequency, octaves, persistence, noiseType, seed,
     propertyFps, propertyAmplitudes, propertyFrequencies, previewGrid
@@ -206,8 +214,72 @@ export function GenerativePreview() {
     })
   }, [isPlaying])
 
+  // ── Draggable Setup ──────────────────────────────────────────────────────────
+  const callbacksRef = useRef({ updateLayerTransform, setActiveGenerativeLayerId });
+  useEffect(() => {
+    callbacksRef.current = { updateLayerTransform, setActiveGenerativeLayerId };
+  }, [updateLayerTransform, setActiveGenerativeLayerId]);
+
+  useEffect(() => {
+    const draggables: Draggable[] = [];
+    generativeLayers.forEach(layer => {
+      const el = layerRefsMap.current.get(layer.id)?.parentElement; // The layer-base div
+      if (el) {
+        gsap.set(el, {
+          x: layer.transform.x,
+          y: layer.transform.y,
+          scale: layer.transform.scale,
+          rotation: layer.transform.rotation,
+          xPercent: -50,
+          yPercent: -50,
+          transformOrigin: 'center center'
+        });
+
+        const d = Draggable.create(el, {
+          type: 'x,y',
+          cursor: 'grab',
+          activeCursor: 'grabbing',
+          onPress: () => {
+            callbacksRef.current.setActiveGenerativeLayerId(layer.id);
+          },
+          onDragStart: () => {
+            callbacksRef.current.setActiveGenerativeLayerId(layer.id);
+          },
+          onDrag: function() {
+            callbacksRef.current.updateLayerTransform(layer.id, { x: this.x, y: this.y });
+          },
+          onDragEnd: function() {
+            callbacksRef.current.updateLayerTransform(layer.id, { x: this.x, y: this.y });
+          },
+        });
+        draggables.push(...d);
+      }
+    });
+
+    return () => {
+      draggables.forEach(d => d.kill());
+    };
+  }, [generativeLayers.length]); // Only rebind when layers are added/removed
+
+  // Sync state changes to GSAP
+  useEffect(() => {
+    generativeLayers.forEach(layer => {
+      const el = layerRefsMap.current.get(layer.id)?.parentElement;
+      if (el) {
+        gsap.set(el, {
+          x: layer.transform.x,
+          y: layer.transform.y,
+          scale: layer.transform.scale,
+          rotation: layer.transform.rotation,
+        });
+      }
+    });
+  }, [generativeLayers]);
+
   return (
-    <div style={{
+    <div
+      onClick={() => setActiveGenerativeLayerId(null)}
+      style={{
       width: '100%', height: '100%',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
@@ -249,17 +321,21 @@ export function GenerativePreview() {
           const { transform, type, svgString } = layer
           // For built-in shapes, use first layer color for initial render; noise colors applied via applyLayerColors
           const shapeColor = (layer.colors && layer.colors[0]) || '#a78bfa'
+          const isActive = layer.id === activeGenerativeLayerId
 
           return (
             <div
               key={layer.id}
               className="layer-base"
+              data-gizmo-target={isActive ? "active" : undefined}
               style={{
                 position: 'absolute',
-                transform: `translate(${transform.x}px, ${transform.y}px) rotate(${transform.rotation}deg) scale(${transform.scale})`,
+                left: '50%',
+                top: '50%',
                 opacity: layer.opacityMode === 'fixed' ? transform.opacity : 1,
                 width: 200, height: 200,
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: isActive ? 10 : 1
               }}
             >
               <div

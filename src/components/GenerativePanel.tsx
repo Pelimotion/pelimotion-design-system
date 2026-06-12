@@ -10,8 +10,9 @@ import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import {
   Activity, ChevronDown, ChevronRight, Info, Upload, Trash2,
-  Settings2, Palette, Plus, MousePointer2, Layers
+  Settings2, Palette, Plus, MousePointer2, Layers as LayersIcon
 } from 'lucide-react'
+import { SubTabBar } from '@/components/SubTabBar'
 import type { NoiseChannel, GenerativeShapeType } from '@/types/motion.types'
 
 const selectStyle: React.CSSProperties = {
@@ -129,7 +130,7 @@ export function GenerativePanel() {
 
   const {
     amplitude, frequency, octaves, persistence, noiseType, seed,
-    propertyFps, propertyAmplitudes, propertyFrequencies, previewGrid
+    propertyFps, propertyAmplitudes, propertyFrequencies
   } = motionConfig.wiggle
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,10 +189,23 @@ export function GenerativePanel() {
     updateLayerAppearance(activeLayer.id, { colors: newColors })
   }
 
+  const [activeTab, setActiveTab] = useState('camadas')
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
 
-      {/* ─── SEÇÃO 0: COMPOSIÇÃO ───────────────────────────────────────────── */}
+      <SubTabBar
+        tabs={[
+          { id: 'camadas', label: 'Camadas', icon: <LayersIcon /> },
+          { id: 'motor', label: 'Motor Global', icon: <Activity /> },
+        ]}
+        active={activeTab}
+        onChange={setActiveTab}
+      />
+
+      {activeTab === 'camadas' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* ─── SEÇÃO 0: COMPOSIÇÃO ───────────────────────────────────────────── */}
       <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Composição de Camadas" defaultOpen>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
@@ -266,7 +280,6 @@ export function GenerativePanel() {
 
       {/* ─── SEÇÃO 1: EDIÇÃO DA CAMADA ATIVA ──────────────────────────────── */}
       {activeLayer && (
-        <>
           <Section icon={<MousePointer2 size={13} color="var(--color-accent)" />} title={`Editando: ${activeLayer.name}`} defaultOpen>
 
             {/* ── Transforms ── */}
@@ -461,11 +474,11 @@ export function GenerativePanel() {
             )}
 
           </Section>
+        )}
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-
-          {/* ─── SEÇÃO 2: APARÊNCIA DA CAMADA ──────────────────────────────── */}
-          <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Aparência da Camada" defaultOpen>
+        {/* ─── SEÇÃO 2: APARÊNCIA DA CAMADA ──────────────────────────────── */}
+        {activeLayer && (
+            <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Aparência da Camada" defaultOpen>
 
             <Campo label="Modo de Cor" dica="Solid preenche tudo com 1 cor. Duotone/Tritone alternam cores entre os paths. Original preserva as cores do SVG.">
               <select
@@ -528,35 +541,21 @@ export function GenerativePanel() {
             </Campo>
 
           </Section>
+          )}
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-        </>
-      )}
 
       {!activeLayer && generativeLayers.length > 0 && (
         <div style={{ padding: '12px 8px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <Layers size={24} style={{ opacity: 0.3 }} />
+          <LayersIcon size={24} style={{ opacity: 0.3 }} />
           <span>Clique em uma camada para editar sua aparência e propriedades</span>
         </div>
       )}
+        </div>
+      )}
 
-      {/* ─── SEÇÃO 3: GRID DO CANVAS ─────────────────────────────────────── */}
-      <Section icon={<Palette size={13} color="var(--color-accent)" />} title="Canvas & Grid" defaultOpen={false}>
-        <Campo label="Visualização do Grid" dica="O Canva é infinito, mas você pode prever onde os limites do aspect ratio ocorrerão na exportação.">
-          <select value={previewGrid || 'none'} onChange={(e) => updateWiggle({ previewGrid: e.target.value as any })} style={selectStyle}>
-            <option value="none">Oculto (Livre)</option>
-            <option value="all">Todas as Proporções</option>
-            <option value="16:9">16:9 (Video Padrão)</option>
-            <option value="1:1">1:1 (Quadrado)</option>
-            <option value="4:5">4:5 (Instagram)</option>
-            <option value="9:16">9:16 (Stories/Reels)</option>
-          </select>
-        </Campo>
-      </Section>
-
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-surface-border)', margin: '4px 0' }} />
-
-      {/* ─── SEÇÃO 4: RUÍDO PERLIN ────────────────────────────────────────── */}
+      {activeTab === 'motor' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* ─── SEÇÃO 4: RUÍDO PERLIN ────────────────────────────────────────── */}
       <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Ruído Perlin (Motor Global)" defaultOpen={false}>
         <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginBottom: 4 }}>
           Controles aplicados a todas as camadas. Use os multiplicadores por eixo abaixo para diferenciação.
@@ -633,6 +632,8 @@ export function GenerativePanel() {
           })}
         </div>
       </Section>
+        </div>
+      )}
 
       <div style={{ height: 40 }} />
     </div>

@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
-  Activity,
   MonitorPlay,
 } from 'lucide-react'
 import { TypographyPanel } from '@/components/TypographyPanel'
@@ -20,6 +19,10 @@ import { TypographyPreview } from '@/engines/Typography'
 import { GenerativePreview } from '@/engines/Generative/GenerativePreview'
 import { LibraryPreview } from '@/engines/Library/LibraryPreview'
 import { ExportPreview } from '@/engines/Export/ExportPreview'
+import { TopToolbar } from '@/components/TopToolbar'
+import { GlobalGizmo } from '@/components/GlobalGizmo'
+import { CanvasGuides } from '@/components/CanvasGuides'
+import { useState, useRef, useEffect } from 'react'
 
 // ─── Navigation Items ────────────────────────────────────────────────────────
 
@@ -51,6 +54,27 @@ function App() {
     posterizeFps,
   } = useEditorStore()
 
+  const [sidebarWidth, setSidebarWidth] = useState(320)
+  const isResizing = useRef(false)
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing.current) return
+      const newWidth = Math.max(200, Math.min(600, e.clientX - 8))
+      setSidebarWidth(newWidth)
+    }
+    const handleMouseUp = () => {
+      isResizing.current = false
+      document.body.style.cursor = 'default'
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
+
   return (
     <div id="app-shell" style={{
       display: 'flex',
@@ -64,16 +88,34 @@ function App() {
         id="sidebar"
         className="glass-panel animate-fade-in"
         style={{
-          width: sidebarCollapsed ? 56 : 320,
-          minWidth: sidebarCollapsed ? 56 : 320,
+          width: sidebarCollapsed ? 56 : sidebarWidth,
+          minWidth: sidebarCollapsed ? 56 : sidebarWidth,
           margin: 8,
           marginRight: 0,
+          position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: isResizing.current ? 'none' : 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           overflow: 'hidden',
         }}
       >
+        {!sidebarCollapsed && (
+          <div
+            onMouseDown={() => {
+              isResizing.current = true
+              document.body.style.cursor = 'col-resize'
+            }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: 6,
+              height: '100%',
+              cursor: 'col-resize',
+              zIndex: 100,
+            }}
+          />
+        )}
         {/* Header */}
         <div style={{
           padding: sidebarCollapsed ? '16px 12px' : '20px 16px',
@@ -258,62 +300,7 @@ function App() {
           gap: 8,
         }}
       >
-        {/* Top Bar */}
-        <header
-          id="top-bar"
-          className="glass-panel animate-fade-in stagger-1"
-          style={{
-            padding: '10px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}>
-            <Activity size={16} color="var(--color-accent)" />
-            <span style={{
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              color: 'var(--color-text-secondary)',
-            }}>
-              {activePanel.charAt(0).toUpperCase() + activePanel.slice(1)} Engine
-            </span>
-            <span style={{
-              width: 1,
-              height: 16,
-              background: 'var(--color-surface-border)',
-              display: 'inline-block',
-            }} />
-            <span style={{
-              fontSize: '0.75rem',
-              color: 'var(--color-text-muted)',
-              fontFamily: 'var(--font-mono)',
-            }}>
-              {motionConfig.canvas.captureResolution.width}×{motionConfig.canvas.captureResolution.height} @ {motionConfig.canvas.captureFps}fps
-            </span>
-          </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-            <span className="status-badge status-badge--ready">
-              <span style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: 'var(--color-success)',
-                display: 'inline-block',
-              }} />
-                          Phase {activePanel === 'typography' ? '2 — Tipografia' : activePanel === 'generative' ? '3 — Generativo' : activePanel === 'library' ? '4 — Biblioteca' : activePanel === 'export' ? '5 — Exportação' : '2'} Pronto
-            </span>
-          </div>
-        </header>
-
+        <TopToolbar />
         {/* Canvas Area */}
         <div
           id="canvas-viewport"
@@ -339,6 +326,12 @@ function App() {
             backgroundSize: '40px 40px',
             pointerEvents: 'none',
           }} />
+
+          {/* GlobalGizmo — direct child of canvas-viewport so position:absolute anchors to canvas top-left */}
+          <GlobalGizmo />
+
+          {/* CanvasGuides — aspect ratio safe zone overlay */}
+          <CanvasGuides />
 
           {/* Center Content */}
           <div style={{

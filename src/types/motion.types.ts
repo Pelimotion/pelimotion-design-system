@@ -192,15 +192,19 @@ export interface TypoLayerTransform {
   rotation: number;
   /** Layer opacity (0–1) */
   opacity: number;
+  /** Width of the bounding box */
+  textBoxWidth?: number;
+  /** Height of the bounding box */
+  textBoxHeight?: number;
 }
 
 /** Animation preset names for entry transitions */
 export type EntryPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleIn'
-  | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'custom';
+  | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'reveal' | 'splitFlip' | 'custom';
 
 /** Animation preset names for exit transitions */
 export type ExitPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleOut'
-  | 'rotateOut' | 'blurOut' | 'dissolve' | 'custom';
+  | 'rotateOut' | 'blurOut' | 'dissolve' | 'reveal' | 'custom';
 
 /** Direction from which stagger cascades */
 export type StaggerFrom = 'start' | 'end' | 'center' | 'edges' | 'random';
@@ -286,10 +290,12 @@ export interface TypoLayerAnimation {
   idleIntensity: number;
 }
 
-/** A single typography layer (Title or Subtitle) */
+/** A single typography layer */
 export interface TypographyLayer {
   /** Layer identifier */
-  id: 'title' | 'subtitle';
+  id: string;
+  /** Display name in the UI */
+  name: string;
   /** Whether this layer is visible */
   enabled: boolean;
   /** The text content */
@@ -324,10 +330,14 @@ export interface TypographyLayer {
   // ── Animation ───────────────────────────────────────────────────────────
   /** Full animation configuration */
   animation: TypoLayerAnimation;
+
+  // ── Effects ─────────────────────────────────────────────────────────────
+  /** Per-layer trail/echo configuration overrides (optional) */
+  trail?: TrailConfig;
 }
 
 /** Layout arrangement mode for title + subtitle */
-export type TypographyLayoutMode = 'center' | 'stack' | 'sideBySide' | 'diagonal' | 'overlap' | 'freeform';
+export type TypographyLayoutMode = 'center' | 'stack' | 'sideBySide' | 'diagonal' | 'overlap' | 'freeform' | 'grid';
 
 // ─── Typography Configuration ────────────────────────────────────────────────
 
@@ -337,6 +347,12 @@ export interface TypographyConfig {
   layoutMode: TypographyLayoutMode;
   /** Spacing between layers in px */
   layoutGap: number;
+  /** Flex/Grid alignment (cross-axis) */
+  layoutAlignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
+  /** Flex/Grid alignment (main-axis) */
+  layoutJustifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between';
+  /** Global Idle Motion applied to all layers together */
+  globalIdleMotion?: IdleMotionType;
   /** How long the text stays on screen after entry before exiting (seconds) */
   timeOnScreen: number;
 
@@ -347,10 +363,8 @@ export interface TypographyConfig {
   linkAnimation: boolean;
 
   // ── Layers ──────────────────────────────────────────────────────────────
-  /** Title layer configuration */
-  titleLayer: TypographyLayer;
-  /** Subtitle layer configuration */
-  subtitleLayer: TypographyLayer;
+  /** Array of dynamic typography layers */
+  layers: TypographyLayer[];
 
   // ── Legacy Fields (backward compat with Trail engine) ───────────────────
   /** @deprecated Use titleLayer.animation.splitMode */
