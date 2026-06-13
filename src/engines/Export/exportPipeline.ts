@@ -203,6 +203,12 @@ async function exportWithWebCodecs(
       ctx.drawImage(img, 0, 0, width, height);
       URL.revokeObjectURL(url);
 
+      // Enterprise Watermark
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
+      ctx.textAlign = 'right';
+      ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
+
       const bitmap = await createImageBitmap(offscreenCanvas);
 
       while (inFlight >= MAX_IN_FLIGHT) {
@@ -380,6 +386,12 @@ async function exportWithFFmpeg(
       await new Promise(r => { img.onload = r; img.src = url })
       ctx.drawImage(img, 0, 0, width, height)
       URL.revokeObjectURL(url)
+
+      // Enterprise Watermark
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
+      ctx.textAlign = 'right';
+      ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
       
       const isJpeg = format === 'mp4'
       const mime = isJpeg ? 'image/jpeg' : 'image/png'

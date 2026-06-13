@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 3)
 
-- [ ] **Typography GPU Blur:** Injetar filtro nativo `<feGaussianBlur>` nas definições de Trail em `TypographyPreview.tsx` para substituir o CSS filter (Dev Sênior).
-- [ ] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em `exportPipeline.ts` (CEO).
-- [ ] **Global Hotkeys Engine:** Configurar um `useEffect` no `App.tsx` para deletar `activeCompositionLayerId` via Backspace e Play/Pause via Barra de Espaço (Product Designer).
+- [x] **Typography GPU Blur:** Injetar filtro nativo `<feGaussianBlur>` nas definições de Trail em `TypographyPreview.tsx` para substituir o CSS filter (Dev Sênior).
+- [x] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em `exportPipeline.ts` (CEO).
+- [x] **Global Hotkeys Engine:** Configurar um `useEffect` no `App.tsx` para deletar `activeCompositionLayerId` via Backspace e Play/Pause via Barra de Espaço (Product Designer).

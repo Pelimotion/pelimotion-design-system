@@ -202,19 +202,23 @@ function LayerNode({
           position: 'relative',
         }}>
 
-          {/* SVG filter for stroke trail style */}
-          {trailConf.enabled && trailConf.style === 'stroke' && (
-            <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
-              <defs>
+          {/* SVG filter for stroke trail style and GPU Blur */}
+          <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
+            <defs>
+              {trailConf.enabled && trailConf.style === 'stroke' && (
                 <filter id={strokeFilterId} x="-10%" y="-10%" width="120%" height="120%">
                   <feMorphology in="SourceAlpha" operator="dilate" radius="2" result="expanded" />
                   <feComposite in="expanded" in2="SourceAlpha" operator="out" result="outerRing" />
                   <feFlood floodColor={trailConf.trailColor || '#ffffff'} floodOpacity="1" result="strokeColor" />
                   <feComposite in="strokeColor" in2="outerRing" operator="in" />
                 </filter>
-              </defs>
-            </svg>
-          )}
+              )}
+              {/* Native GPU Motion Blur for Trails */}
+              <filter id={`blur-${animKey}`} x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" />
+              </filter>
+            </defs>
+          </svg>
 
           {/* Trail clones */}
           {trailConf.enabled && allTrailSlots.map((i) => {
@@ -249,7 +253,7 @@ function LayerNode({
                   mixBlendMode: trailConf.blendMode as any,
                   opacity,
                   transform: parts.join(' ') || undefined,
-                  filter: isStroke ? `url(#${strokeFilterId})` : 'none',
+                  filter: isStroke ? `url(#${strokeFilterId})` : (i > 0 && trailConf.trailMode === 'trailing' ? `url(#blur-${animKey})` : 'none'),
                   color: isStroke ? (trailConf.trailColor || '#ffffff') : colorStyle,
                   overflow: 'visible',
                 }}

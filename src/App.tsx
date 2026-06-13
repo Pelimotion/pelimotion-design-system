@@ -115,12 +115,23 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent default space scroll only if not typing in an input
-      if (e.code === 'Space' && (e.target === document.body || (e.target as HTMLElement).tagName !== 'INPUT')) {
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      if (isInput) return;
+
+      if (e.code === 'Space') {
         e.preventDefault();
         if (!isSpaceDown.current) {
           isSpaceDown.current = true;
           if (viewportRef.current) viewportRef.current.style.cursor = 'grab';
+          
+          // Toggle playback
+          const store = useEditorStore.getState();
+          store.setMotionConfig({ isPlaying: !store.motionConfig.isPlaying });
+        }
+      } else if (e.code === 'Backspace' || e.code === 'Delete') {
+        const store = useEditorStore.getState();
+        if (store.activeCompositionLayerId) {
+          store.deleteLayer(store.activeCompositionLayerId);
         }
       }
     };
