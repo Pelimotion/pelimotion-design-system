@@ -17,13 +17,13 @@ export function useKeyboardShortcuts() {
           break;
         case 'ArrowLeft':
           e.preventDefault();
-          const { currentTime: ctL, setCurrentTime: sctL } = useEditorStore.getState();
-          sctL(Math.max(0, ctL - 0.1));
+          const { currentTime: ctL, seek: seekL } = useEditorStore.getState();
+          seekL(Math.max(0, ctL - 0.1));
           break;
         case 'ArrowRight':
           e.preventDefault();
-          const { currentTime: ctR, exportConfig, setCurrentTime: sctR } = useEditorStore.getState();
-          sctR(Math.max(0, Math.min(exportConfig.duration, ctR + 0.1)));
+          const { currentTime: ctR, exportConfig, seek: seekR } = useEditorStore.getState();
+          seekR(Math.max(0, Math.min(exportConfig.duration, ctR + 0.1)));
           break;
       }
     };

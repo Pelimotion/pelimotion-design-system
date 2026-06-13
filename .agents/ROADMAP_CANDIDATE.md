@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 19:00:46*
-*Current Commit Hash: `16fdae3`*
+*Generated at: 13/06/2026, 19:20:38*
+*Current Commit Hash: `0000716`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Global Keyboard Shortcuts** (product_designer + dev_senior):
-  - *Descrição:* A ausência de atalhos de teclado (ex: Barra de Espaço para Play/Pause, Setas para avançar frames) atrasa massivamente o fluxo de trabalho. Adicionar hook global para atalhos.
+- **Collapsible Track Sections** (product_designer + dev_senior):
+  - *Descrição:* Quando a timeline chega a 10+ camadas, a rolagem vertical fica exaustiva. Adicionar estado de collapsed (recolhido) para as seções de Audio e Video.
 
-- **Playback Speed Control (TimeScale)** (diretor_criacao + analista_senior):
-  - *Descrição:* Animadores precisam revisar animações complexas em câmera lenta. Adicionar controle de velocidade de reprodução (0.5x, 1x, 2x) que altera o gsap.globalTimeline.timeScale.
+- **Canvas Resolution Quick Switcher** (diretor_criacao + ceo):
+  - *Descrição:* A troca de aspect ratio (16:9, 9:16, 1:1) não deve ficar escondida no painel de exportação avançado. Precisa de um atalho global rápido no cabeçalho da timeline.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 13)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)
 
-- [x] **Global Keyboard Shortcuts:** Criar hook `useKeyboardShortcuts` em `hooks/` para ouvir `keydown`. Implementar `Space` para `togglePlayback` e Setas Esquerda/Direita para pular frames (Product Designer).
-- [x] **Playback Speed Control (TimeScale):** Adicionar botão multiplicador de velocidade (1x, 2x, 0.5x) próximo ao botão Play na `CompositionTimeline.tsx` e aplicar `gsap.globalTimeline.timeScale()` e mutar a tag audio no HTML (Creative Director).
+- [ ] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
+- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).

@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 13)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 14)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'Global Keyboard Shortcuts',
+    title: 'Collapsible Track Sections',
     parties: ['product_designer', 'dev_senior'],
-    description: 'A ausência de atalhos de teclado (ex: Barra de Espaço para Play/Pause, Setas para avançar frames) atrasa massivamente o fluxo de trabalho. Adicionar hook global para atalhos.'
+    description: 'Quando a timeline chega a 10+ camadas, a rolagem vertical fica exaustiva. Adicionar estado de collapsed (recolhido) para as seções de Audio e Video.'
   });
 
-  // Creative Director vs Analyst Synergy
+  // Creative Director vs CEO Synergy
   synergies.push({
-    title: 'Playback Speed Control (TimeScale)',
-    parties: ['diretor_criacao', 'analista_senior'],
-    description: 'Animadores precisam revisar animações complexas em câmera lenta. Adicionar controle de velocidade de reprodução (0.5x, 1x, 2x) que altera o gsap.globalTimeline.timeScale.'
+    title: 'Canvas Resolution Quick Switcher',
+    parties: ['diretor_criacao', 'ceo'],
+    description: 'A troca de aspect ratio (16:9, 9:16, 1:1) não deve ficar escondida no painel de exportação avançado. Precisa de um atalho global rápido no cabeçalho da timeline.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 13)\n\n`;
-  markdown += `- [ ] **Global Keyboard Shortcuts:** Criar hook \`useKeyboardShortcuts\` em \`hooks/\` para ouvir \`keydown\`. Implementar \`Space\` para \`togglePlayback\` e Setas Esquerda/Direita para pular frames (Product Designer).\n`;
-  markdown += `- [ ] **Playback Speed Control (TimeScale):** Adicionar botão multiplicador de velocidade (1x, 2x, 0.5x) próximo ao botão Play na \`CompositionTimeline.tsx\` e aplicar \`gsap.globalTimeline.timeScale()\` e mutar a tag audio no HTML (Creative Director).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)\n\n`;
+  markdown += `- [ ] **Collapsible Track Sections:** Adicionar estados \`isCompExpanded\` e \`isAudioExpanded\` em \`CompositionTimeline.tsx\`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).\n`;
+  markdown += `- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do \`exportConfig.resolution\` para o cabeçalho master da \`CompositionTimeline.tsx\`, mostrando as opções (1080p, Vertical, Square) (Creative Director).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
