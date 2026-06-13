@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 15:00:32*
-*Current Commit Hash: `6b0fa5c`*
+*Generated at: 13/06/2026, 15:20:04*
+*Current Commit Hash: `8b1ba90`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 2)
 
-- [x] **Generative Domain Warping:** Atualizar o `fbm2D` no `generative.worker.ts` para realizar Domain Warping cruzado, gerando aparências líquidas orgânicas (Diretor de Criação).
-- [x] **Library Service Worker:** Implementar pré-fetch e caching em background dos assets do BunnyCDN para latência zero nos vídeos de preview (Dev Sênior + SEO).
-- [x] **Typography CSS Gizmo Engine:** Refatorar as lógicas de arrastar/escalar na tela aplicando um Gizmo responsivo para transformar os nós diretamente no canvas (Product Designer).
+- [ ] **Generative Domain Warping:** Atualizar o `fbm2D` no `generative.worker.ts` para realizar Domain Warping cruzado, gerando aparências líquidas orgânicas (Diretor de Criação).
+- [ ] **Library Service Worker:** Implementar pré-fetch e caching em background dos assets do BunnyCDN para latência zero nos vídeos de preview (Dev Sênior + SEO).
+- [ ] **Typography CSS Gizmo Engine:** Refatorar as lógicas de arrastar/escalar na tela aplicando um Gizmo responsivo para transformar os nós diretamente no canvas (Product Designer).
