@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "agent:research": "node scripts/agent-loop/orchestrator.cjs",
+    "agent:backup": "node scripts/agent-loop/git-helper.cjs backup",
+    "agent:restore": "node scripts/agent-loop/git-helper.cjs restore"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
