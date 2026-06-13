@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 16:20:29*
-*Current Commit Hash: `fc65e8e`*
+*Generated at: 13/06/2026, 16:40:05*
+*Current Commit Hash: `a39e62d`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 6)
 
-- [x] **Auto-Save Restoration:** Criar a action `restoreState(payload)` em `useEditorStore.ts` e acioná-la no Mount inicial do `App.tsx` lendo os bytes persistidos do localStorage (Analista).
-- [x] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em `CompositionTimeline.tsx` para injetar `hidden: true/false` em cada camada (Product Designer).
-- [x] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do `CompositionTimeline.tsx` gerando um array numérico que renderiza marcas `|` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).
+- [ ] **Auto-Save Restoration:** Criar a action `restoreState(payload)` em `useEditorStore.ts` e acioná-la no Mount inicial do `App.tsx` lendo os bytes persistidos do localStorage (Analista).
+- [ ] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em `CompositionTimeline.tsx` para injetar `hidden: true/false` em cada camada (Product Designer).
+- [ ] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do `CompositionTimeline.tsx` gerando um array numérico que renderiza marcas `|` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).
