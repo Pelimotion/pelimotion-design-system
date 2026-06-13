@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors } from 'lucide-react';
+import { formatTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
@@ -28,10 +29,11 @@ export function CompositionTimeline() {
   const [isCompExpanded, setIsCompExpanded] = useState(true);
   const [isAudioExpanded, setIsAudioExpanded] = useState(true);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [snapEnabled, setSnapEnabled] = useState(true);
+  const [snapTolerance, setSnapTolerance] = useState<number>(0.5);
   const containerRef = useRef<HTMLDivElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [timelineZoom, setTimelineZoom] = useState(100);
-  const [snapEnabled, setSnapEnabled] = useState(true);
   const playheadRef = useRef<HTMLDivElement>(null);
   
   // Playhead Realtime Sync
@@ -130,7 +132,8 @@ export function CompositionTimeline() {
     let time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
 
     if (snapEnabled && dragging.type !== 'playhead') {
-      time = Math.round(time * 2) / 2; // snap to 0.5s
+      const inv = 1 / snapTolerance;
+      time = Math.round(time * inv) / inv;
     }
 
     if (dragging.type === 'playhead') {
@@ -182,7 +185,7 @@ export function CompositionTimeline() {
           updateCompositionLayer(dragging.id, { duration: newDur });
        }
     }
-  }, [dragging, pixelsPerSecond, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek]);
+  }, [dragging, pixelsPerSecond, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek, snapEnabled, snapTolerance]);
 
   const handlePointerUp = useCallback(() => {
     setDragging(null);
@@ -258,9 +261,18 @@ export function CompositionTimeline() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Layers size={14} color="var(--color-accent)" /> Linha do Tempo
-        </h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h3 style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Layers size={14} color="var(--color-accent)" /> Linha do Tempo
+          </h3>
+          <div style={{ 
+            fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, 
+            color: 'var(--color-accent)', background: 'rgba(0,0,0,0.3)', 
+            padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)'
+          }}>
+            {formatTimecode(currentTime, exportConfig.fps)}
+          </div>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
             onClick={() => seek(0)}
@@ -345,24 +357,45 @@ export function CompositionTimeline() {
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
-          <button
-            onClick={() => setSnapEnabled(!snapEnabled)}
-            style={{
-              background: snapEnabled ? 'var(--color-surface-glass)' : 'transparent',
-              color: snapEnabled ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-              border: '1px solid ' + (snapEnabled ? 'var(--color-surface-border)' : 'transparent'),
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: '0.7rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
-            }}
-            title="Snap Magnético (0.5s)"
-          >
-            <Magnet size={12} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, background: 'var(--color-surface-glass)', borderRadius: 4, border: '1px solid var(--color-surface-border)', overflow: 'hidden' }}>
+            <button
+              onClick={() => setSnapEnabled(!snapEnabled)}
+              style={{
+                background: snapEnabled ? 'var(--color-accent)' : 'transparent',
+                color: snapEnabled ? '#fff' : 'var(--color-text-secondary)',
+                border: 'none',
+                padding: '4px 8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              title="Snap to Grid"
+            >
+              <Magnet size={12} />
+            </button>
+            {snapEnabled && (
+              <select
+                value={snapTolerance}
+                onChange={(e) => setSnapTolerance(Number(e.target.value))}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  borderLeft: '1px solid var(--color-surface-border)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: '0.65rem',
+                  padding: '2px 4px',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+                title="Tolerância Magnética"
+              >
+                <option value={0.1} style={{ color: 'black' }}>0.1s</option>
+                <option value={0.25} style={{ color: 'black' }}>0.25s</option>
+                <option value={0.5} style={{ color: 'black' }}>0.5s</option>
+                <option value={1.0} style={{ color: 'black' }}>1.0s</option>
+              </select>
+            )}
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Zoom:</span>

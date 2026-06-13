@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 15)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 16)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs Dev Senior Synergy
+  // Creative Director vs Product Designer
   synergies.push({
-    title: 'Alt+Scroll Timeline Zooming',
-    parties: ['product_designer', 'dev_senior'],
-    description: 'Ajustar o zoom da timeline usando um slider requer muitas viagens com o mouse. Adicionar um hook onWheel para alterar o zoom usando Alt+Scroll imita os NLEs padrões do mercado.'
+    title: 'Timecode Display',
+    parties: ['diretor_criacao', 'product_designer'],
+    description: 'Profissionais de vídeo não usam "0.5s". Precisamos de um relógio Timecode global (HH:MM:SS:FF) ao lado do título da timeline.'
   });
 
-  // Creative Director vs Analyst Synergy
+  // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Master Batch Controls (Lock/Mute/Hide All)',
-    parties: ['diretor_criacao', 'analista_senior'],
-    description: 'Com muitas camadas, isolar o que está sendo visto/escutado exige clicar dezenas de vezes. Inserir controles mestres de Ocultar Tudo e Bloquear Tudo nos cabeçalhos dos grupos de faixas.'
+    title: 'Magnet Snapping Tolerance Slider',
+    parties: ['product_designer', 'dev_senior'],
+    description: 'O snapping de 0.5s é muito rígido para certas animações e muito solto para outras. Adicionar um controle UI para alterar a tolerância magnética.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 15)\n\n`;
-  markdown += `- [ ] **Alt+Scroll Timeline Zooming:** Inserir listener \`onWheel\` na div raiz da Timeline que captura \`e.altKey\` e incrementa/decrementa o estado \`timelineZoom\`, mantendo os limites 100~500 (Product Designer).\n`;
-  markdown += `- [ ] **Master Batch Controls:** Adicionar botões \`Eye\` e \`Lock\` no cabeçalho agrupador de \`Camadas Visuais\` e botões \`Volume2\` e \`Lock\` no agrupador de \`Faixas de Áudio\` para varrer e mutar/ocultar todas as camadas simultaneamente via Zustand (Creative Director).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 16)\n\n`;
+  markdown += `- [x] **Timecode Display:** Criar utilitário \`formatTimecode\` e renderizar um display digital do playhead (Creative Director).\n`;
+  markdown += `- [x] **Magnet Snapping Tolerance Slider:** Adicionar controle \`snapTolerance\` com opções (0.1, 0.25, 0.5, 1.0) acoplado ao botão de ímã (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
