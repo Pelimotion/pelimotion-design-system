@@ -101,6 +101,10 @@ export function CompositionTimeline() {
 
     if (dragging.type === 'playhead') {
       seek(time);
+      import('gsap').then(({ gsap }) => {
+        gsap.globalTimeline.pause();
+        gsap.globalTimeline.seek(time);
+      });
       return;
     }
 
@@ -172,6 +176,10 @@ export function CompositionTimeline() {
     const trackWidth = rect.width - 24;
     const time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
     seek(time);
+    import('gsap').then(({ gsap }) => {
+      gsap.globalTimeline.pause();
+      gsap.globalTimeline.seek(time);
+    });
     setDragging({ id: 'playhead', type: 'playhead' });
   };
 
