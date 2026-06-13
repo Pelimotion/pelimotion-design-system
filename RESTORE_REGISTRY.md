@@ -36,3 +36,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T15-00-21-606Z** | `backup-branch-2026-06-13T15-00-21-606Z` | `2805d79` | 13/06/2026, 12:00:21 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T15-20-10-868Z** | `backup-branch-2026-06-13T15-20-10-868Z` | `f396bda` | 13/06/2026, 12:20:10 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T15-20-20-900Z** | `backup-branch-2026-06-13T15-20-20-900Z` | `fc9eefe` | 13/06/2026, 12:20:20 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T15-40-11-222Z** | `backup-branch-2026-06-13T15-40-11-222Z` | `a527b9e` | 13/06/2026, 12:40:11 | Auto-backup após análise de pesquisa |
