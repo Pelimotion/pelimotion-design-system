@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { Download, CheckCircle2, MonitorPlay, Zap } from 'lucide-react'
+import { Download, CheckCircle2, MonitorPlay, Zap, Settings2 } from 'lucide-react'
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-base)',
@@ -48,6 +48,7 @@ function Campo({ label, children, icon }: { label: string; children: React.React
 
 export function ExportPanel() {
   const { exportConfig, updateExportConfig, exportState, setExportState, resetExport } = useEditorStore()
+  const [showAdvanced, setShowAdvanced] = useState(false)
   
   const handleExport = () => {
     setExportState({ isExporting: true, stage: 'idle', progress: 0, errorMessage: undefined })
@@ -123,6 +124,42 @@ export function ExportPanel() {
              </div>
           </Campo>
         )}
+
+        <div style={{ borderTop: '1px solid var(--color-surface-border)', paddingTop: 12, marginTop: 4 }}>
+          <button 
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', fontSize: '0.75rem', cursor: 'pointer', padding: 0 }}
+          >
+            <Settings2 size={12} style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 0.3s ease' }} />
+            {showAdvanced ? 'Hide Advanced Options' : 'Show Advanced Options'}
+          </button>
+
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: 12,
+            maxHeight: showAdvanced ? 200 : 0,
+            opacity: showAdvanced ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            marginTop: showAdvanced ? 12 : 0
+          }}>
+            <Campo label="Resolution">
+              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value })} style={selectStyle} disabled={exportState.isExporting}>
+                <option value="1920x1080">1080p (FHD)</option>
+                <option value="3840x2160">4K (UHD)</option>
+                <option value="1080x1920">Vertical (Stories/Reels)</option>
+                <option value="1080x1080">Square (Instagram)</option>
+              </select>
+            </Campo>
+
+            <Campo label="Framerate">
+              <select value={exportConfig.fps} onChange={e => updateExportConfig({ fps: parseInt(e.target.value) })} style={selectStyle} disabled={exportState.isExporting}>
+                <option value={24}>24 FPS (Cinematic)</option>
+                <option value={30}>30 FPS (Standard)</option>
+                <option value={60}>60 FPS (Smooth)</option>
+              </select>
+            </Campo>
+          </div>
+        </div>
       </div>
 
       {exportState.stage === 'error' && (

@@ -248,24 +248,33 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
         const offscreen = canvas.transferControlToOffscreen();
         workerRef.current?.postMessage({
           type: 'INIT',
-          payload: { canvas: offscreen, config: { ...motionConfig.wiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' } }
+          payload: { canvas: offscreen, config: { ...useEditorStore.getState().motionConfig.wiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' } }
         }, [offscreen]);
         canvas.dataset.workerInit = 'true';
-      } else if (canvas) {
-        workerRef.current?.postMessage({
-          type: 'UPDATE_CONFIG',
-          payload: { ...motionConfig.wiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
-        });
       }
     });
 
     if (isPlaying) workerRef.current.postMessage({ type: 'START' });
     else workerRef.current.postMessage({ type: 'STOP' });
 
+    // Double-Buffering: Listen to Zustand store WITHOUT re-rendering React
+    const unsubscribe = useEditorStore.subscribe(
+      (state) => state.motionConfig.wiggle,
+      (newWiggle) => {
+        generativeLayers.forEach((layer: any) => {
+          workerRef.current?.postMessage({
+            type: 'UPDATE_CONFIG',
+            payload: { ...newWiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
+          });
+        });
+      }
+    );
+
     return () => {
+      unsubscribe();
       if (workerRef.current) workerRef.current.terminate();
     };
-  }, [generativeLayers, motionConfig.wiggle, isPlaying]);
+  }, [generativeLayers, isPlaying]);
 
   // ── Play / Pause ──────────────────────────────────────────────────────────────
   useEffect(() => {

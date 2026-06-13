@@ -66,6 +66,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP)
 
-- [ ] **Bento Grid Enhancements:** Adicionar painel adaptativo com micro-animações avançadas para edição de parâmetros de Exportação (Product Designer).
-- [ ] **WebCodecs Fallback Strategy:** Implementar a lógica de fallback para FFmpeg.wasm quando o browser não suportar WebCodecs. (Dev Sênior).
-- [ ] **Double-Buffering Worker:** Ajustar o Zustand para disparar mensagens unidirecionais ao invés de forçar re-render React nas camadas de preview (Dev Sênior).
+- [x] **Bento Grid Enhancements:** Adicionar painel adaptativo com micro-animações avançadas para edição de parâmetros de Exportação (Product Designer).
+- [x] **WebCodecs Fallback Strategy:** Implementar a lógica de fallback para FFmpeg.wasm quando o browser não suportar WebCodecs. (Dev Sênior).
+- [x] **Double-Buffering Worker:** Ajustar o Zustand para disparar mensagens unidirecionais ao invés de forçar re-render React nas camadas de preview (Dev Sênior).

@@ -260,11 +260,8 @@ async function exportWithWebCodecs(
       worker.terminate();
     }
     gsap.globalTimeline.play();
-    onProgress({ 
-      stage: 'error', 
-      isExporting: false, 
-      errorMessage: error.message || 'Unknown export error' 
-    });
+    console.warn('[Export] Auto-falling back to FFmpeg pipeline...');
+    return exportWithFFmpeg(element, config, onProgress);
   }
 }
 
