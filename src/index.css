@@ -314,3 +314,41 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* ─── Timeline Trims (UX) ────────────────────────────────────────────────── */
+
+.timeline-trim-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: col-resize;
+  z-index: 10;
+  transition: background 0.15s ease, width 0.15s ease, transform 0.15s ease;
+}
+
+.timeline-trim-handle.left {
+  left: 0;
+  transform-origin: left;
+}
+
+.timeline-trim-handle.right {
+  right: 0;
+  transform-origin: right;
+}
+
+.timeline-trim-handle:hover, .timeline-trim-handle.active {
+  background: var(--color-accent);
+  width: 12px;
+  box-shadow: 0 0 12px var(--color-accent-glow);
+}
+
+.timeline-track-block {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.timeline-track-block:hover {
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 8px var(--color-accent-muted);
+}
+

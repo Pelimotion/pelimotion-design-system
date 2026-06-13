@@ -156,16 +156,17 @@ export function CompositionTimeline() {
     touchAction: 'none'
   });
 
-  const handleStyle = (side: 'left' | 'right'): React.CSSProperties => ({
-    position: 'absolute',
-    [side]: 0,
-    top: 0,
-    bottom: 0,
-    width: 8,
-    background: 'rgba(255,255,255,0.2)',
-    cursor: 'col-resize',
-    zIndex: 10
-  });
+  const getHandleClass = (id: string, type: 'trim-left' | 'trim-right', side: 'left' | 'right') => {
+    const isActive = dragging?.id === id && dragging?.type === type;
+    return `timeline-trim-handle ${side} ${isActive ? 'active' : ''}`;
+  };
+
+  const tooltipStyle: React.CSSProperties = {
+    position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+    marginBottom: 6, background: 'var(--color-bg-elevated)', border: '1px solid var(--color-accent)',
+    padding: '4px 8px', borderRadius: 4, fontSize: '0.65rem', color: 'white', whiteSpace: 'nowrap',
+    zIndex: 100, boxShadow: 'var(--shadow-glow)', fontWeight: 600, fontFamily: 'var(--font-mono)'
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -326,12 +327,21 @@ export function CompositionTimeline() {
             </div>
             <div style={trackStyle}>
                <div 
+                  className="timeline-track-block"
                   style={blockStyle(exportConfig.bgTrimStart || 0, (exportConfig.bgTrimEnd || exportConfig.duration) - (exportConfig.bgTrimStart || 0), 'rgba(255, 100, 50, 0.2)')}
                   onPointerDown={(e) => handlePointerDown(e, 'bg', 'move', true)}
                >
-                 <div style={handleStyle('left')} onPointerDown={(e) => handlePointerDown(e, 'bg', 'trim-left', true)} />
+                 <div className={getHandleClass('bg', 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, 'bg', 'trim-left', true)}>
+                    {dragging?.id === 'bg' && dragging?.type === 'trim-left' && (
+                      <div style={tooltipStyle}>{(exportConfig.bgTrimStart || 0).toFixed(2)}s</div>
+                    )}
+                 </div>
                  <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>TRIM</span>
-                 <div style={handleStyle('right')} onPointerDown={(e) => handlePointerDown(e, 'bg', 'trim-right', true)} />
+                 <div className={getHandleClass('bg', 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, 'bg', 'trim-right', true)}>
+                    {dragging?.id === 'bg' && dragging?.type === 'trim-right' && (
+                      <div style={tooltipStyle}>{(exportConfig.bgTrimEnd || exportConfig.duration).toFixed(2)}s</div>
+                    )}
+                 </div>
                </div>
             </div>
           </div>
@@ -370,14 +380,23 @@ export function CompositionTimeline() {
                 </div>
                 <div style={trackStyle}>
                    <div 
+                      className="timeline-track-block"
                       style={blockStyle(layer.startTime, layer.duration, 'rgba(0, 150, 255, 0.2)')}
                       onPointerDown={(e) => handlePointerDown(e, layer.id, 'move')}
                    >
-                     <div style={handleStyle('left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')} />
+                     <div className={getHandleClass(layer.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')}>
+                        {dragging?.id === layer.id && dragging?.type === 'trim-left' && (
+                          <div style={tooltipStyle}>{layer.startTime.toFixed(2)}s</div>
+                        )}
+                     </div>
                      <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>
                        {layer.startTime.toFixed(1)}s - {(layer.startTime + layer.duration).toFixed(1)}s
                      </span>
-                     <div style={handleStyle('right')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-right')} />
+                     <div className={getHandleClass(layer.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-right')}>
+                        {dragging?.id === layer.id && dragging?.type === 'trim-right' && (
+                          <div style={tooltipStyle}>{(layer.startTime + layer.duration).toFixed(2)}s</div>
+                        )}
+                     </div>
                    </div>
                 </div>
               </div>
