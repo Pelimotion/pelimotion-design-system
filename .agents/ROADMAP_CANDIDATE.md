@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 19:20:38*
-*Current Commit Hash: `0000716`*
+*Generated at: 13/06/2026, 19:40:04*
+*Current Commit Hash: `e19b65f`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
@@ -58,5 +58,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)
 
-- [x] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
-- [x] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).
+- [ ] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
+- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).
