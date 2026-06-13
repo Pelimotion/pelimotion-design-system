@@ -173,6 +173,27 @@ function LayerNode({
         cursor: isFreeform ? 'grab' : 'default',
       }}
     >
+      {/* ── Bounding Box Gizmo for Active Layer ── */}
+      {isSelected && isFreeform && (
+        <div style={{
+          position: 'absolute',
+          top: -4, left: -4, right: -4, bottom: -4,
+          border: '1px dashed var(--color-accent)',
+          pointerEvents: 'none',
+          zIndex: 10
+        }}>
+          {/* Scale Handles */}
+          <div style={{ position: 'absolute', top: -5, left: -5, width: 10, height: 10, background: 'var(--color-bg-base)', border: '2px solid var(--color-accent)', cursor: 'nwse-resize', pointerEvents: 'auto' }} />
+          <div style={{ position: 'absolute', top: -5, right: -5, width: 10, height: 10, background: 'var(--color-bg-base)', border: '2px solid var(--color-accent)', cursor: 'nesw-resize', pointerEvents: 'auto' }} />
+          <div style={{ position: 'absolute', bottom: -5, left: -5, width: 10, height: 10, background: 'var(--color-bg-base)', border: '2px solid var(--color-accent)', cursor: 'nesw-resize', pointerEvents: 'auto' }} />
+          <div style={{ position: 'absolute', bottom: -5, right: -5, width: 10, height: 10, background: 'var(--color-bg-base)', border: '2px solid var(--color-accent)', cursor: 'nwse-resize', pointerEvents: 'auto' }} />
+          
+          {/* Rotation Handle */}
+          <div style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', width: 2, height: 26, background: 'var(--color-accent)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: -36, left: '50%', transform: 'translateX(-50%)', width: 12, height: 12, background: 'var(--color-bg-base)', border: '2px solid var(--color-accent)', borderRadius: '50%', cursor: 'ew-resize', pointerEvents: 'auto' }} />
+        </div>
+      )}
+
       <div style={wrapperStyle}>
         <div style={{
           width: '100%', height: '100%',
