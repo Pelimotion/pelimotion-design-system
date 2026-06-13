@@ -23,6 +23,7 @@ import { AudioEngine } from '@/engines/Audio/AudioEngine'
 import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
 import { ViewportControls } from '@/components/ViewportControls'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { CompositionTimeline } from '@/components/CompositionTimeline'
 import { CanvasGuides } from '@/components/CanvasGuides'
 import React, { useState, useEffect, useRef } from 'react'
@@ -54,6 +55,8 @@ const navItems: NavItem[] = [
 // ─── App Component ───────────────────────────────────────────────────────────
 
 function App() {
+  useKeyboardShortcuts()
+  
   const {
     motionConfig,
     activePanel,

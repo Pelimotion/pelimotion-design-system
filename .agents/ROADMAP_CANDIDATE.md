@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 19:00:05*
-*Current Commit Hash: `4c1d1e3`*
+*Generated at: 13/06/2026, 19:00:46*
+*Current Commit Hash: `16fdae3`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Inline Layer Renaming** (product_designer + analista_senior):
-  - *Descrição:* Usuários perdem a organização quando o projeto escala. Permitir duplo clique no nome da camada na Timeline para renomeá-la via input inline é fundamental.
+- **Global Keyboard Shortcuts** (product_designer + dev_senior):
+  - *Descrição:* A ausência de atalhos de teclado (ex: Barra de Espaço para Play/Pause, Setas para avançar frames) atrasa massivamente o fluxo de trabalho. Adicionar hook global para atalhos.
 
-- **Global Export Framerate (FPS)** (dev_senior + ceo):
-  - *Descrição:* O projeto suporta taxa de quadros variável por baixo dos panos, mas falta o seletor na interface principal. Adicionar controle de FPS (24, 30, 60) no cabeçalho mestre.
+- **Playback Speed Control (TimeScale)** (diretor_criacao + analista_senior):
+  - *Descrição:* Animadores precisam revisar animações complexas em câmera lenta. Adicionar controle de velocidade de reprodução (0.5x, 1x, 2x) que altera o gsap.globalTimeline.timeScale.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 12)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 13)
 
-- [ ] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das `compositionLayers` e `audioTracks` ao sofrerem duplo clique na `CompositionTimeline.tsx` (Product Designer).
-- [ ] **Global Export Framerate (FPS):** Adicionar um `<select>` (24, 30, 60 FPS) no painel de cabeçalho da `CompositionTimeline.tsx`, ligado a `exportConfig.fps` da Store (Dev Senior).
+- [x] **Global Keyboard Shortcuts:** Criar hook `useKeyboardShortcuts` em `hooks/` para ouvir `keydown`. Implementar `Space` para `togglePlayback` e Setas Esquerda/Direita para pular frames (Product Designer).
+- [x] **Playback Speed Control (TimeScale):** Adicionar botão multiplicador de velocidade (1x, 2x, 0.5x) próximo ao botão Play na `CompositionTimeline.tsx` e aplicar `gsap.globalTimeline.timeScale()` e mutar a tag audio no HTML (Creative Director).

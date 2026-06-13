@@ -1,5 +1,5 @@
 {
   "persona": "seo",
-  "timestamp": "2026-06-13T22:00:05.346Z",
+  "timestamp": "2026-06-13T22:00:46.219Z",
   "evaluation": "### [SEO REPORT] Indexability (Modules 1-3)\n*   **Typography & Generative:** Since these are canvas/WebGL heavy, they are invisible to search engines. We must generate static HTML/CSS fallbacks or server-side pre-rendered snapshots of popular generative typography templates for indexation.\n*   **Library:** Public templates in the library need dedicated, canonical URLs (e.g., /templates/generative-neon-text) with descriptive meta tags."
 }

@@ -24,6 +24,7 @@ export function CompositionTimeline() {
     togglePlayback
   } = useEditorStore();
 
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -292,6 +293,32 @@ export function CompositionTimeline() {
           >
             {isPlaying ? <Pause size={12} /> : <Play size={12} />}
             {isPlaying ? 'Pausar' : 'Play'}
+          </button>
+          
+          <button
+            onClick={() => {
+              let nextSpeed = 1;
+              if (playbackSpeed === 1) nextSpeed = 2;
+              else if (playbackSpeed === 2) nextSpeed = 0.5;
+              else nextSpeed = 1;
+              setPlaybackSpeed(nextSpeed);
+              gsap.globalTimeline.timeScale(nextSpeed);
+              document.querySelectorAll('audio').forEach(audio => { audio.playbackRate = nextSpeed; });
+            }}
+            style={{
+              background: 'var(--color-surface-glass)',
+              color: playbackSpeed !== 1 ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 4,
+              padding: '4px 8px',
+              fontSize: '0.65rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            title="Velocidade de Reprodução"
+          >
+            {playbackSpeed}x
           </button>
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />

@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 12)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 13)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs Analyst Synergy
+  // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'Inline Layer Renaming',
-    parties: ['product_designer', 'analista_senior'],
-    description: 'Usuários perdem a organização quando o projeto escala. Permitir duplo clique no nome da camada na Timeline para renomeá-la via input inline é fundamental.'
+    title: 'Global Keyboard Shortcuts',
+    parties: ['product_designer', 'dev_senior'],
+    description: 'A ausência de atalhos de teclado (ex: Barra de Espaço para Play/Pause, Setas para avançar frames) atrasa massivamente o fluxo de trabalho. Adicionar hook global para atalhos.'
   });
 
-  // Dev Senior vs CEO Synergy
+  // Creative Director vs Analyst Synergy
   synergies.push({
-    title: 'Global Export Framerate (FPS)',
-    parties: ['dev_senior', 'ceo'],
-    description: 'O projeto suporta taxa de quadros variável por baixo dos panos, mas falta o seletor na interface principal. Adicionar controle de FPS (24, 30, 60) no cabeçalho mestre.'
+    title: 'Playback Speed Control (TimeScale)',
+    parties: ['diretor_criacao', 'analista_senior'],
+    description: 'Animadores precisam revisar animações complexas em câmera lenta. Adicionar controle de velocidade de reprodução (0.5x, 1x, 2x) que altera o gsap.globalTimeline.timeScale.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 12)\n\n`;
-  markdown += `- [ ] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das \`compositionLayers\` e \`audioTracks\` ao sofrerem duplo clique na \`CompositionTimeline.tsx\` (Product Designer).\n`;
-  markdown += `- [ ] **Global Export Framerate (FPS):** Adicionar um \`<select>\` (24, 30, 60 FPS) no painel de cabeçalho da \`CompositionTimeline.tsx\`, ligado a \`exportConfig.fps\` da Store (Dev Senior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 13)\n\n`;
+  markdown += `- [ ] **Global Keyboard Shortcuts:** Criar hook \`useKeyboardShortcuts\` em \`hooks/\` para ouvir \`keydown\`. Implementar \`Space\` para \`togglePlayback\` e Setas Esquerda/Direita para pular frames (Product Designer).\n`;
+  markdown += `- [ ] **Playback Speed Control (TimeScale):** Adicionar botão multiplicador de velocidade (1x, 2x, 0.5x) próximo ao botão Play na \`CompositionTimeline.tsx\` e aplicar \`gsap.globalTimeline.timeScale()\` e mutar a tag audio no HTML (Creative Director).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
