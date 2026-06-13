@@ -71,6 +71,18 @@ function App() {
   useEffect(() => {
     if (!initialized.current) {
       useEditorStore.getState().applyColorPalette(COLOR_PALETTES.find(p => p.id === 'cyberpunk') || COLOR_PALETTES[0]!)
+      
+      // Load crash recovery state
+      try {
+        const saved = localStorage.getItem('pelimotion_autosave');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          useEditorStore.getState().restoreState(parsed);
+        }
+      } catch (err) {
+        console.warn('[Auto-Save] Failed to restore state from autosave', err);
+      }
+
       initialized.current = true
     }
   }, [])
