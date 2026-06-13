@@ -15,6 +15,7 @@ import { encodeVideoWithFFmpeg } from './ffmpegEncoder'
 import type { ExportConfig, ExportState } from '@/types/motion.types'
 import { useEditorStore } from '@/store/useEditorStore'
 import type { ExportWorkerConfig } from './exportWorker'
+import { Telemetry } from '@/lib/telemetry'
 
 function sendAndWait(worker: Worker, message: any, expectedResponseType: string): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -37,6 +38,8 @@ export async function runExportPipeline(
   config: ExportConfig,
   onProgress: (state: Partial<ExportState>) => void
 ) {
+  Telemetry.logEvent('EXPORT_STARTED', { format: config.format, resolution: config.resolution });
+
   // Check if we can use WebCodecs (Hardware Acceleration)
   const isVideo = config.format === 'mp4' || config.format === 'mov';
   if (isVideo && typeof VideoEncoder !== 'undefined') {
@@ -66,6 +69,7 @@ export async function runExportPipeline(
 
   // Fallback to existing FFmpeg.wasm / PNG Sequence pipeline
   console.warn('[Export] WebCodecs not supported or not a video. Falling back to FFmpeg/Zip.');
+  Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format });
   return exportWithFFmpeg(element, config, onProgress);
 }
 
@@ -240,10 +244,12 @@ async function exportWithWebCodecs(
     allVideos.forEach(vid => vid.play());
     gsap.globalTimeline.play();
 
+    Telemetry.logEvent('EXPORT_COMPLETED', { engine: 'webcodecs' });
     onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined });
 
   } catch (error: any) {
     console.error('WebCodecs Export failed:', error);
+    Telemetry.logEvent('EXPORT_CANCELLED', { engine: 'webcodecs', error: error.message });
     if (worker) {
       worker.postMessage({ type: 'ABORT' });
       worker.terminate();
@@ -425,9 +431,11 @@ async function exportWithFFmpeg(
     allVideos.forEach(vid => vid.play())
     gsap.globalTimeline.play()
 
+    Telemetry.logEvent('EXPORT_COMPLETED', { engine: 'ffmpeg' });
     onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined })
   } catch (error: any) {
     console.error('Export failed:', error)
+    Telemetry.logEvent('EXPORT_CANCELLED', { engine: 'ffmpeg', error: error.message });
     gsap.globalTimeline.play()
     onProgress({ 
       stage: 'error', 
