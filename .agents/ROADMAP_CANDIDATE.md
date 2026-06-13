@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 20:40:05*
-*Current Commit Hash: `a385784`*
+*Generated at: 13/06/2026, 20:41:24*
+*Current Commit Hash: `7ebc532`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Color Tags (Bento Organization)** (diretor_criacao + product_designer):
-  - *Descrição:* Quando as timelines ficam complexas, cores são a única forma de separar grupos lógicos (ex: Audio SFX verde, Voz amarelo, Vídeo principal azul). Adicionar tags coloridas por camada.
+- **Timeline Selection State** (diretor_criacao + product_designer):
+  - *Descrição:* Os blocos da timeline não possuíam estado "active", impedindo atalhos de teclado contextuais e a exibição do Transform Gizmo.
 
-- **Audio Solo Button** (product_designer + dev_senior):
-  - *Descrição:* Isolar um áudio para ouvir detalhes requer mutar todos os outros e depois desmutá-los. Um botão Solo (S) injetado na AudioEngine resolve isso via Zustand.
+- **Delete/Duplicate Keyboard Shortcuts** (product_designer + dev_senior):
+  - *Descrição:* Para agilizar o fluxo, usuários precisam conseguir deletar ou duplicar as camadas ativas diretamente pelas teclas Delete, Backspace e Cmd+D.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 17)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 18)
 
-- [x] **Layer Color Tags:** Injectar estado `colorTag` nas interfaces e renderizar toggles de cor em `CompositionTimeline.tsx`.
-- [x] **Audio Solo Controls:** Incorporar flag `solo` na `AudioEngine` com override global sobre as flags `muted` (Creative Director).
+- [x] **Timeline Selection State:** Acoplar o clique no bloco da timeline às flags `activeCompositionLayerId` e `activeAudioTrackId` do store (Product Designer).
+- [x] **Delete/Duplicate Shortcuts:** Escutar `Backspace/Delete` e `Cmd+D` no `useKeyboardShortcuts.ts` para manipular a camada ativa no momento (Dev Senior).

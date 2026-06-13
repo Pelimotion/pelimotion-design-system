@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 17)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 18)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Color Tags (Bento Organization)',
+    title: 'Timeline Selection State',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Quando as timelines ficam complexas, cores são a única forma de separar grupos lógicos (ex: Audio SFX verde, Voz amarelo, Vídeo principal azul). Adicionar tags coloridas por camada.'
+    description: 'Os blocos da timeline não possuíam estado "active", impedindo atalhos de teclado contextuais e a exibição do Transform Gizmo.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Audio Solo Button',
+    title: 'Delete/Duplicate Keyboard Shortcuts',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Isolar um áudio para ouvir detalhes requer mutar todos os outros e depois desmutá-los. Um botão Solo (S) injetado na AudioEngine resolve isso via Zustand.'
+    description: 'Para agilizar o fluxo, usuários precisam conseguir deletar ou duplicar as camadas ativas diretamente pelas teclas Delete, Backspace e Cmd+D.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 17)\n\n`;
-  markdown += `- [x] **Layer Color Tags:** Injectar estado \`colorTag\` nas interfaces e renderizar toggles de cor em \`CompositionTimeline.tsx\`.\n`;
-  markdown += `- [x] **Audio Solo Controls:** Incorporar flag \`solo\` na \`AudioEngine\` com override global sobre as flags \`muted\` (Creative Director).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 18)\n\n`;
+  markdown += `- [x] **Timeline Selection State:** Acoplar o clique no bloco da timeline às flags \`activeCompositionLayerId\` e \`activeAudioTrackId\` do store (Product Designer).\n`;
+  markdown += `- [x] **Delete/Duplicate Shortcuts:** Escutar \`Backspace/Delete\` e \`Cmd+D\` no \`useKeyboardShortcuts.ts\` para manipular a camada ativa no momento (Dev Senior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
