@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 16)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 17)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Timecode Display',
+    title: 'Color Tags (Bento Organization)',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Profissionais de vídeo não usam "0.5s". Precisamos de um relógio Timecode global (HH:MM:SS:FF) ao lado do título da timeline.'
+    description: 'Quando as timelines ficam complexas, cores são a única forma de separar grupos lógicos (ex: Audio SFX verde, Voz amarelo, Vídeo principal azul). Adicionar tags coloridas por camada.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Magnet Snapping Tolerance Slider',
+    title: 'Audio Solo Button',
     parties: ['product_designer', 'dev_senior'],
-    description: 'O snapping de 0.5s é muito rígido para certas animações e muito solto para outras. Adicionar um controle UI para alterar a tolerância magnética.'
+    description: 'Isolar um áudio para ouvir detalhes requer mutar todos os outros e depois desmutá-los. Um botão Solo (S) injetado na AudioEngine resolve isso via Zustand.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 16)\n\n`;
-  markdown += `- [x] **Timecode Display:** Criar utilitário \`formatTimecode\` e renderizar um display digital do playhead (Creative Director).\n`;
-  markdown += `- [x] **Magnet Snapping Tolerance Slider:** Adicionar controle \`snapTolerance\` com opções (0.1, 0.25, 0.5, 1.0) acoplado ao botão de ímã (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 17)\n\n`;
+  markdown += `- [x] **Layer Color Tags:** Injectar estado \`colorTag\` nas interfaces e renderizar toggles de cor em \`CompositionTimeline.tsx\`.\n`;
+  markdown += `- [x] **Audio Solo Controls:** Incorporar flag \`solo\` na \`AudioEngine\` com override global sobre as flags \`muted\` (Creative Director).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

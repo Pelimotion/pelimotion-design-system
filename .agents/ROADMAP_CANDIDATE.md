@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 20:20:11*
-*Current Commit Hash: `d3da8cc`*
+*Generated at: 13/06/2026, 20:22:15*
+*Current Commit Hash: `02df2ba`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Timecode Display** (diretor_criacao + product_designer):
-  - *Descrição:* Profissionais de vídeo não usam "0.5s". Precisamos de um relógio Timecode global (HH:MM:SS:FF) ao lado do título da timeline.
+- **Color Tags (Bento Organization)** (diretor_criacao + product_designer):
+  - *Descrição:* Quando as timelines ficam complexas, cores são a única forma de separar grupos lógicos (ex: Audio SFX verde, Voz amarelo, Vídeo principal azul). Adicionar tags coloridas por camada.
 
-- **Magnet Snapping Tolerance Slider** (product_designer + dev_senior):
-  - *Descrição:* O snapping de 0.5s é muito rígido para certas animações e muito solto para outras. Adicionar um controle UI para alterar a tolerância magnética.
+- **Audio Solo Button** (product_designer + dev_senior):
+  - *Descrição:* Isolar um áudio para ouvir detalhes requer mutar todos os outros e depois desmutá-los. Um botão Solo (S) injetado na AudioEngine resolve isso via Zustand.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 16)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 17)
 
-- [x] **Timecode Display:** Criar utilitário `formatTimecode` e renderizar um display digital do playhead (Creative Director).
-- [x] **Magnet Snapping Tolerance Slider:** Adicionar controle `snapTolerance` com opções (0.1, 0.25, 0.5, 1.0) acoplado ao botão de ímã (Product Designer).
+- [x] **Layer Color Tags:** Injectar estado `colorTag` nas interfaces e renderizar toggles de cor em `CompositionTimeline.tsx`.
+- [x] **Audio Solo Controls:** Incorporar flag `solo` na `AudioEngine` com override global sobre as flags `muted` (Creative Director).

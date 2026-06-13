@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle } from 'lucide-react';
 import { formatTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
@@ -104,6 +104,17 @@ export function CompositionTimeline() {
     // Reset input
     if (audioInputRef.current) {
       audioInputRef.current.value = '';
+    }
+  };
+
+  const toggleTrackColor = (id: string, type: 'audio' | 'comp', currentColor?: string) => {
+    const COLORS = ['#ff4b4b', '#fca130', '#f9ed32', '#21ce99', '#14a9ff', '#b146c2', 'transparent'];
+    const idx = currentColor ? COLORS.indexOf(currentColor) : -1;
+    const nextColor = COLORS[(idx + 1) % COLORS.length];
+    if (type === 'audio') {
+      updateAudioTrack(id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
+    } else {
+      updateCompositionLayer(id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
     }
   };
 
@@ -681,6 +692,13 @@ export function CompositionTimeline() {
                       onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                       onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
                     />
+                    <button 
+                      onClick={() => toggleTrackColor(layer.id, 'comp', layer.colorTag)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
+                      title="Mudar Cor da Camada"
+                    >
+                      <Circle size={10} fill={layer.colorTag || 'transparent'} color={layer.colorTag || 'var(--color-text-ghost)'} />
+                    </button>
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <input 
@@ -751,8 +769,8 @@ export function CompositionTimeline() {
                 <div style={trackStyle}>
                    <div 
                       className="timeline-track-block"
-                      style={blockStyle(layer.startTime, layer.duration, 'rgba(0, 150, 255, 0.2)')}
-                      onPointerDown={(e) => handlePointerDown(e, layer.id, 'move')}
+                      style={blockStyle(layer.startTime, layer.duration, layer.colorTag ? layer.colorTag + '33' : 'rgba(0, 150, 255, 0.2)')}
+                      onPointerDown={(e) => !layer.locked && handlePointerDown(e, layer.id, 'move')}
                    >
                      <div className={getHandleClass(layer.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')}>
                         {dragging?.id === layer.id && dragging?.type === 'trim-left' && (
@@ -821,6 +839,13 @@ export function CompositionTimeline() {
                       onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                       onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
                     />
+                    <button 
+                      onClick={() => toggleTrackColor(track.id, 'audio', track.colorTag)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
+                      title="Mudar Cor da Faixa"
+                    >
+                      <Circle size={10} fill={track.colorTag || 'transparent'} color={track.colorTag || 'var(--color-text-ghost)'} />
+                    </button>
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-base)', padding: '2px 4px', borderRadius: 4, gap: 4, marginRight: 4 }}>
@@ -848,12 +873,29 @@ export function CompositionTimeline() {
                     <button 
                       onClick={() => updateAudioTrack(track.id, { locked: !track.locked })} 
                       style={{ background: 'none', border: 'none', color: track.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={track.locked ? "Desbloquear faixa" : "Bloquear faixa"}
+                      title={track.locked ? "Desbloquear" : "Bloquear"}
                     >
                       {track.locked ? <Lock size={12} /> : <Unlock size={12} />}
                     </button>
-                    <button onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}>
-                      {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+                    <button 
+                      onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} 
+                      style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title={track.muted ? "Desmutar" : "Mutar"}
+                    >
+                      {track.muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                    </button>
+                    <button 
+                      onClick={() => updateAudioTrack(track.id, { solo: !track.solo })} 
+                      style={{ 
+                        background: track.solo ? 'var(--color-warning)' : 'transparent', 
+                        border: '1px solid ' + (track.solo ? 'var(--color-warning)' : 'var(--color-text-ghost)'), 
+                        borderRadius: 3,
+                        color: track.solo ? '#000' : 'var(--color-text-ghost)', 
+                        cursor: 'pointer', padding: '0 4px', fontSize: '0.55rem', fontWeight: 800, marginLeft: 4 
+                      }}
+                      title={track.solo ? "Remover Solo" : "Solo"}
+                    >
+                      S
                     </button>
                     <button 
                       onClick={() => {

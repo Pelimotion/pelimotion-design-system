@@ -6,10 +6,13 @@ export function AudioEngine() {
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
 
   useEffect(() => {
+    const hasSolo = audioTracks.some(t => t.solo);
+
     audioTracks.forEach(track => {
       const audio = audioRefs.current[track.id];
       if (audio) {
-        if (track.muted) {
+        const isMuted = track.muted || (hasSolo && !track.solo);
+        if (isMuted) {
            if (!audio.paused) audio.pause();
            return;
         }
