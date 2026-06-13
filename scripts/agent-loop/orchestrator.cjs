@@ -139,30 +139,30 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 4)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 5)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Dev Senior Conflict
   conflicts.push({
-    title: 'Animated Grid vs Rendering Budget',
+    title: 'Audio Scrubbing vs State Performance',
     parties: ['diretor_criacao', 'dev_senior'],
-    description: 'O Diretor de Criação acha o fundo quadriculado muito estático e quer um WebGL Shader Mesh pulsante. O Dev Sênior alerta que 2 web workers de canvas já rodam. Um terceiro WebGL explodiria GPUs fracas.',
-    compromise: 'Trocar o Grid por um fundo CSS puro com máscara de gradiente animado infinitamente (Breathing Mesh) usando CSS Keyframes, com zero impacto na thread principal ou GPU rendering.'
+    description: 'O Diretor de Criação quer que o áudio toque perfeitamente sincronizado com o vídeo quando o playhead for arrastado. O Dev Sênior pontua que o React render cycle é lento para áudio DOM manipulation.',
+    compromise: 'Criar um `<AudioEngine />` silencioso e head-less (sem renderização) que reage a um listener externo acoplado ao GSAP Global Timeline, manipulando as tags HTML5 `<audio>` por referência nativa.'
   });
 
-  // Product Designer vs Analyst Synergy
+  // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'Intuitive Drag & Drop Pipeline',
-    parties: ['product_designer', 'analista_senior'],
-    description: 'Usuários não estão entendendo como colocar mídias na composição. O Product Designer desenhou um Drag & Drop fluido da Biblioteca (Library) para o Canvas principal, aumentando absurdamente a conversão na telemetria do funil.'
+    title: 'Visual Z-Index Hierarchy',
+    parties: ['product_designer', 'dev_senior'],
+    description: 'O Product Designer quer que arrastar as camadas na linha do tempo mude a profundidade no Canvas principal. O Dev Sênior propõe injetar o index reverso do array (length - index) diretamente no style `zIndex` de cada nó na Composição.'
   });
 
-  // Dev Senior vs Product Designer Synergy
+  // Analyst vs CEO Synergy
   synergies.push({
-    title: 'Timeline Scrubber Engine',
-    parties: ['dev_senior', 'product_designer'],
-    description: 'O Dev Sênior notou que o GSAP Global Timeline tem métodos de Seek eficientes. O Product Designer quer que o usuário clique na régua (Timeline) e a agulha pule direto para aquele tempo exato com playhead sync.'
+    title: 'Auto-Save Crash Recovery',
+    parties: ['analista_senior', 'ceo'],
+    description: 'A retenção de usuários despenca se eles perderem progresso em um F5. Devemos adicionar um hook de Auto-Save passivo atrelado à loja Zustand que despeja a composição no LocalStorage para Disaster Recovery.'
   });
 
   return { conflicts, synergies };
@@ -200,10 +200,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 4)\n\n`;
-  markdown += `- [ ] **Library Drag & Drop:** Adicionar os atributos \`draggable\` aos vídeos em \`LibraryPreview.tsx\` e listeners de \`onDrop\` no \`App.tsx\` (Product Designer).\n`;
-  markdown += `- [ ] **Timeline GSAP Scrubber:** Fazer a \`CompositionTimeline.tsx\` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via \`gsap.globalTimeline.seek()\` (Dev Sênior).\n`;
-  markdown += `- [ ] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em \`App.tsx\` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 5)\n\n`;
+  markdown += `- [ ] **Headless Audio Engine:** Criar um componente silencioso \`<AudioEngine />\` em \`App.tsx\` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).\n`;
+  markdown += `- [ ] **Z-Index Visual Hierarchy:** Atualizar \`CompositionPreview.tsx\` para injetar \`zIndex: compositionLayers.length - index\` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).\n`;
+  markdown += `- [ ] **Auto-Save Telemetry:** Adicionar um \`useEditorStore.subscribe\` passivo dentro de \`App.tsx\` para realizar um backup debounceado no \`localStorage\` contra crashes indesejados (Analista + CEO).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
