@@ -1,5 +1,5 @@
 {
   "persona": "seo",
-  "timestamp": "2026-06-13T15:00:17.489Z",
+  "timestamp": "2026-06-13T15:20:06.638Z",
   "evaluation": "### [SEO REPORT] Indexability & Core Web Vitals\n*   **Current State:** v2.1 sidebar optimized, debug cards removed (good for initial page load and layout shift prevention).\n*   **On-Page SEO checklist status:**\n    *   Lighthouse score targets 100/100.\n    *   programmatic zipper strategy (Service + City) can drive organic search traffic for terms like \"Cinematic Motion Templates Toronto\", \"Visual Banner Generator São Paulo\".\n*   **Action items:**\n    *   Generate programmatic sitemap index listing dynamically created templates.\n    *   Enforce loading=\"lazy\" and fetchpriority=\"high\" for hero layouts."
 }
