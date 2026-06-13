@@ -1,21 +1,21 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 16:00:38*
-*Current Commit Hash: `9d1151b`*
+*Generated at: 13/06/2026, 16:20:29*
+*Current Commit Hash: `fc65e8e`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Audio Scrubbing vs State Performance** (diretor_criacao vs dev_senior):
-  - *Descrição:* O Diretor de Criação quer que o áudio toque perfeitamente sincronizado com o vídeo quando o playhead for arrastado. O Dev Sênior pontua que o React render cycle é lento para áudio DOM manipulation.
-  - *Compromisso Proposto:* **Criar um `<AudioEngine />` silencioso e head-less (sem renderização) que reage a um listener externo acoplado ao GSAP Global Timeline, manipulando as tags HTML5 `<audio>` por referência nativa.**
+- **Auto-Save Restoration Strategy** (analista_senior vs dev_senior):
+  - *Descrição:* O Auto-save está rodando. O Analista quer que o sistema restaure a sessão silenciosamente no boot. O Dev Sênior alerta para Zustand Hydration mismatches.
+  - *Compromisso Proposto:* **Criar um hook no `App.tsx` que lê o LocalStorage no `mount` inicial, valida a integridade estrutural, e injeta as camadas de volta silenciosamente via uma nova action `restoreState()` na store.**
 
 ### 🤝 Sinergias
-- **Visual Z-Index Hierarchy** (product_designer + dev_senior):
-  - *Descrição:* O Product Designer quer que arrastar as camadas na linha do tempo mude a profundidade no Canvas principal. O Dev Sênior propõe injetar o index reverso do array (length - index) diretamente no style `zIndex` de cada nó na Composição.
+- **Layer Visibility Toggles** (diretor_criacao + product_designer):
+  - *Descrição:* Composições complexas ficam impossíveis de enxergar. Precisamos de um botão de "Olho" (Visibility Toggle) no header de cada Track na Timeline para habilitar o modo "Solo" visual.
 
-- **Auto-Save Crash Recovery** (analista_senior + ceo):
-  - *Descrição:* A retenção de usuários despenca se eles perderem progresso em um F5. Devemos adicionar um hook de Auto-Save passivo atrelado à loja Zustand que despeja a composição no LocalStorage para Disaster Recovery.
+- **Dynamic Tick Ruler** (product_designer + diretor_criacao):
+  - *Descrição:* A régua de tempo está rústica mostrando apenas 0 e o Fim. Vamos criar uma grade matemática gerando traços (Ticks) a cada 1 segundo dinamicamente, permitindo a precisão cirúrgica no arrasto da agulha.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +60,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 5)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 6)
 
-- [x] **Headless Audio Engine:** Criar um componente silencioso `<AudioEngine />` em `App.tsx` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).
-- [x] **Z-Index Visual Hierarchy:** Atualizar `CompositionPreview.tsx` para injetar `zIndex: compositionLayers.length - index` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).
-- [x] **Auto-Save Telemetry:** Adicionar um `useEditorStore.subscribe` passivo dentro de `App.tsx` para realizar um backup debounceado no `localStorage` contra crashes indesejados (Analista + CEO).
+- [x] **Auto-Save Restoration:** Criar a action `restoreState(payload)` em `useEditorStore.ts` e acioná-la no Mount inicial do `App.tsx` lendo os bytes persistidos do localStorage (Analista).
+- [x] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em `CompositionTimeline.tsx` para injetar `hidden: true/false` em cada camada (Product Designer).
+- [x] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do `CompositionTimeline.tsx` gerando um array numérico que renderiza marcas `|` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).

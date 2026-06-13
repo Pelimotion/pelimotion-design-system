@@ -11,7 +11,7 @@ import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
 gsap.registerPlugin(useGSAP, Draggable)
 
 export function CompositionPreview() {
-  const { activePanel, compositionLayers, audioTracks, localLibraryItems, currentTime, isPlaying, activeCompositionLayerId, setActiveCompositionLayerId, exportConfig } = useEditorStore()
+  const { activePanel, compositionLayers, localLibraryItems, currentTime, isPlaying, activeCompositionLayerId, setActiveCompositionLayerId, exportConfig } = useEditorStore()
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({})
 

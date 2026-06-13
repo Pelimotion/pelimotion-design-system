@@ -139,30 +139,30 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 5)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 6)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Creative Director vs Dev Senior Conflict
+  // Creative Director vs Product Designer Synergy
+  synergies.push({
+    title: 'Layer Visibility Toggles',
+    parties: ['diretor_criacao', 'product_designer'],
+    description: 'Composições complexas ficam impossíveis de enxergar. Precisamos de um botão de "Olho" (Visibility Toggle) no header de cada Track na Timeline para habilitar o modo "Solo" visual.'
+  });
+
+  // Analyst vs Dev Senior Conflict
   conflicts.push({
-    title: 'Audio Scrubbing vs State Performance',
-    parties: ['diretor_criacao', 'dev_senior'],
-    description: 'O Diretor de Criação quer que o áudio toque perfeitamente sincronizado com o vídeo quando o playhead for arrastado. O Dev Sênior pontua que o React render cycle é lento para áudio DOM manipulation.',
-    compromise: 'Criar um `<AudioEngine />` silencioso e head-less (sem renderização) que reage a um listener externo acoplado ao GSAP Global Timeline, manipulando as tags HTML5 `<audio>` por referência nativa.'
+    title: 'Auto-Save Restoration Strategy',
+    parties: ['analista_senior', 'dev_senior'],
+    description: 'O Auto-save está rodando. O Analista quer que o sistema restaure a sessão silenciosamente no boot. O Dev Sênior alerta para Zustand Hydration mismatches.',
+    compromise: 'Criar um hook no `App.tsx` que lê o LocalStorage no `mount` inicial, valida a integridade estrutural, e injeta as camadas de volta silenciosamente via uma nova action `restoreState()` na store.'
   });
 
-  // Product Designer vs Dev Senior Synergy
+  // Product Designer vs Motion Lead Synergy
   synergies.push({
-    title: 'Visual Z-Index Hierarchy',
-    parties: ['product_designer', 'dev_senior'],
-    description: 'O Product Designer quer que arrastar as camadas na linha do tempo mude a profundidade no Canvas principal. O Dev Sênior propõe injetar o index reverso do array (length - index) diretamente no style `zIndex` de cada nó na Composição.'
-  });
-
-  // Analyst vs CEO Synergy
-  synergies.push({
-    title: 'Auto-Save Crash Recovery',
-    parties: ['analista_senior', 'ceo'],
-    description: 'A retenção de usuários despenca se eles perderem progresso em um F5. Devemos adicionar um hook de Auto-Save passivo atrelado à loja Zustand que despeja a composição no LocalStorage para Disaster Recovery.'
+    title: 'Dynamic Tick Ruler',
+    parties: ['product_designer', 'diretor_criacao'],
+    description: 'A régua de tempo está rústica mostrando apenas 0 e o Fim. Vamos criar uma grade matemática gerando traços (Ticks) a cada 1 segundo dinamicamente, permitindo a precisão cirúrgica no arrasto da agulha.'
   });
 
   return { conflicts, synergies };
@@ -200,10 +200,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 5)\n\n`;
-  markdown += `- [ ] **Headless Audio Engine:** Criar um componente silencioso \`<AudioEngine />\` em \`App.tsx\` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).\n`;
-  markdown += `- [ ] **Z-Index Visual Hierarchy:** Atualizar \`CompositionPreview.tsx\` para injetar \`zIndex: compositionLayers.length - index\` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).\n`;
-  markdown += `- [ ] **Auto-Save Telemetry:** Adicionar um \`useEditorStore.subscribe\` passivo dentro de \`App.tsx\` para realizar um backup debounceado no \`localStorage\` contra crashes indesejados (Analista + CEO).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 6)\n\n`;
+  markdown += `- [ ] **Auto-Save Restoration:** Criar a action \`restoreState(payload)\` em \`useEditorStore.ts\` e acioná-la no Mount inicial do \`App.tsx\` lendo os bytes persistidos do localStorage (Analista).\n`;
+  markdown += `- [ ] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em \`CompositionTimeline.tsx\` para injetar \`hidden: true/false\` em cada camada (Product Designer).\n`;
+  markdown += `- [ ] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do \`CompositionTimeline.tsx\` gerando um array numérico que renderiza marcas \`|\` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

@@ -167,6 +167,8 @@ interface EditorState {
   addAudioTrack: (track: AudioTrack) => void;
   removeAudioTrack: (id: string) => void;
   updateAudioTrack: (id: string, patch: Partial<AudioTrack>) => void;
+  
+  restoreState: (payload: any) => void;
   setActiveAudioTrackId: (id: string | null) => void;
 
   // Local Font actions
@@ -676,6 +678,12 @@ export const useEditorStore = create<EditorState>((set) => ({
         t.id === id ? { ...t, ...patch } : t
       ),
     })),
+
+  restoreState: (payload) => set((state) => ({
+    compositionLayers: payload.compositionLayers || state.compositionLayers,
+    audioTracks: payload.audioTracks || state.audioTracks,
+    exportConfig: payload.exportConfig || state.exportConfig
+  })),
 
   setActiveAudioTrackId: (id) => set({ activeAudioTrackId: id }),
 

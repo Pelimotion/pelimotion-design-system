@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
 
@@ -371,13 +371,17 @@ export function CompositionTimeline() {
           position: 'relative'
         }}
       >
-        {/* Timeline Axis */}
+        {/* Timeline Axis Ruler */}
         <div 
-          style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--color-text-ghost)', borderBottom: '1px solid var(--color-surface-border)', paddingBottom: 4, cursor: 'pointer', userSelect: 'none' }}
+          style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--color-text-ghost)', borderBottom: '1px solid var(--color-surface-border)', paddingBottom: 4, cursor: 'pointer', userSelect: 'none', position: 'relative', height: 20 }}
           onPointerDown={handleTimelinePointerDown}
         >
-          <span>0s</span>
-          <span>{exportConfig.duration}s</span>
+          {Array.from({ length: Math.ceil(exportConfig.duration) + 1 }).map((_, i) => (
+             <div key={i} style={{ position: 'absolute', left: `${(i / exportConfig.duration) * 100}%`, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: 'translateX(-50%)' }}>
+               <div style={{ width: 1, height: 4, background: 'var(--color-surface-border)' }} />
+               <span style={{ marginTop: 2 }}>{i}s</span>
+             </div>
+          ))}
         </div>
 
         {/* Playhead Indicator */}
@@ -457,7 +461,14 @@ export function CompositionTimeline() {
                     >
                       <ChevronDown size={12} />
                     </button>
-                    <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 8 }}>
+                    <button 
+                      onClick={() => updateCompositionLayer(layer.id, { hidden: !layer.hidden })} 
+                      style={{ background: 'none', border: 'none', color: layer.hidden ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title={layer.hidden ? "Mostrar camada" : "Ocultar camada"}
+                    >
+                      {layer.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
+                    </button>
+                    <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 4 }}>
                       <Trash2 size={10} />
                     </button>
                   </div>

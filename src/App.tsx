@@ -111,7 +111,22 @@ function App() {
 
   // ─── Auto-Save Persistence (Crash Recovery) ──────────────────────────────
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    // 1. Boot Restoration
+    try {
+      const saved = localStorage.getItem('pelimotion_autosave');
+      if (saved) {
+        const payload = JSON.parse(saved);
+        if (payload.compositionLayers && payload.compositionLayers.length > 0) {
+          useEditorStore.getState().restoreState(payload);
+          console.log('[Auto-Save] Session restored from LocalStorage.');
+        }
+      }
+    } catch(err) {
+      console.warn('[Auto-Save] Boot restoration failed', err);
+    }
+
+    // 2. Continuous Auto-Save
+    let timeoutId: any;
     const unsubscribe = useEditorStore.subscribe((state) => {
       // Debounce the save to LocalStorage
       clearTimeout(timeoutId);
