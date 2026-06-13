@@ -54,8 +54,8 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
 
       videoTrack = output.addVideoTrack({
         // @ts-ignore
-        codec: isWebm ? 'vp09' : 'avc',
-        width: msg.config.width,
+        codec: codecString,
+        width: safeWidth,
         height: safeHeight,
         frameRate: fps,
         bitrate: bitrate ?? 8_000_000, // 8 Mbps default

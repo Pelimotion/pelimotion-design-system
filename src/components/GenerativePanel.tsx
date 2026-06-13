@@ -206,12 +206,12 @@ export function GenerativePanel() {
         onChange={setActiveTab}
       />
 
-      <div style={{ padding: '0 4px', marginBottom: 8 }}>
+      <div style={{ padding: '0 4px', marginBottom: 8, display: 'flex', gap: 6 }}>
         <button
           onClick={() => {
             const item = {
               id: `gen-${Date.now()}`,
-              name: `Composição Generativa ${Date.now().toString().slice(-4)}`,
+              name: `Sessão: Generativo ${Date.now().toString().slice(-4)}`,
               type: 'generative',
               createdAt: Date.now(),
               data: {
@@ -222,13 +222,13 @@ export function GenerativePanel() {
             useEditorStore.getState().saveToLocalLibrary(item);
           }}
           style={{
-            width: '100%',
+            flex: 1,
             padding: '8px',
             background: 'var(--color-surface-glass)',
             color: 'var(--color-text-primary)',
             border: '1px solid var(--color-surface-border)',
             borderRadius: 'var(--radius-md)',
-            fontSize: '0.75rem',
+            fontSize: '0.7rem',
             fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
@@ -240,8 +240,45 @@ export function GenerativePanel() {
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)' }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
         >
+          <LayersIcon size={14} />
+          Salvar (Sessão)
+        </button>
+
+        <button
+          onClick={() => {
+            const item = {
+              id: `gen-global-${Date.now()}`,
+              name: `Global: Generativo ${Date.now().toString().slice(-4)}`,
+              type: 'generative',
+              createdAt: Date.now(),
+              data: {
+                layers: generativeLayers,
+                globalWiggle: motionConfig.wiggle
+              }
+            };
+            useEditorStore.getState().saveToGlobalLibrary(item);
+          }}
+          style={{
+            flex: 1,
+            padding: '8px',
+            background: 'var(--color-surface-glass)',
+            color: 'var(--color-accent)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass)'; }}
+        >
           <Sparkles size={14} />
-          Salvar na Biblioteca (Local)
+          Salvar (Global)
         </button>
       </div>
 

@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { Film, Download, Layers, Type, Combine, Image as ImageIcon, Play } from 'lucide-react'
+import { Film, Download, Layers, Type, Combine, Image as ImageIcon, Play, Sparkles, Trash2 } from 'lucide-react'
 import { downloadFile } from '@/lib/downloadHandler'
 import { fetchBunnyAssets, type BunnyAsset } from '@/lib/bunnyStorage'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
@@ -25,6 +25,7 @@ export function LibraryPanel() {
     loadTypographyPreset,
     setActivePanel,
     localLibraryItems,
+    globalLibraryItems,
     addCompositionLayer,
     exportConfig
   } = useEditorStore()
@@ -198,7 +199,7 @@ export function LibraryPanel() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Presets locais / templates */}
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Templates Editoriais (Locais)
+            Templates Editoriais (Sessão & Globais)
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -351,6 +352,90 @@ export function LibraryPanel() {
                 </div>
               )
             })}
+            {globalLibraryItems.filter(item => item.type === 'typography').map((preset) => {
+              const isActive = activeLibraryAssetId === preset.id
+              return (
+                <div
+                  key={preset.id}
+                  onClick={() => setActiveLibraryAssetId(preset.id)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', gap: 6,
+                    padding: '12px', cursor: 'pointer', transition: 'all 0.2s',
+                    background: isActive ? 'var(--color-surface-glass-hover)' : 'var(--color-surface-glass)',
+                    border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = 'var(--color-text-ghost)' }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = 'var(--color-surface-border)' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Sparkles size={14} color={isActive ? 'var(--color-accent)' : 'var(--color-text-secondary)'} />
+                      <span style={{ 
+                        fontSize: '0.8rem', fontWeight: 700, 
+                        color: isActive ? 'var(--color-accent)' : 'var(--color-text-primary)' 
+                      }}>
+                        {preset.name}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {isActive && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().updateTypography({
+                            layers: preset.data.layers,
+                            layoutMode: preset.data.layoutMode,
+                            layoutGap: preset.data.layoutGap,
+                            timeOnScreen: preset.data.timeOnScreen,
+                            globalIdleMotion: preset.data.globalIdleMotion
+                          })
+                          useEditorStore.getState().updateTrail(preset.data.trail)
+                          setActivePanel('typography')
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-accent)', color: '#0a0a0f',
+                          border: 'none', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Play size={12} /> Editor
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToComposition(preset.id, preset.name, 'localAsset', preset.data.timeOnScreen || 3)
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-surface-hover)', color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Layers size={12} /> Add Comp
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().removeFromGlobalLibrary(preset.id)
+                        }}
+                        style={{
+                          background: 'transparent', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 4
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           <div style={{ height: 1, background: 'var(--color-surface-border)', margin: '8px 0' }} />
@@ -365,7 +450,7 @@ export function LibraryPanel() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Presets locais / templates */}
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Composições Locais (Generativo)
+            Composições Generativas (Sessão & Globais)
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -437,7 +522,86 @@ export function LibraryPanel() {
                 </div>
               )
             })}
-            {localLibraryItems.filter(item => item.type === 'generative').length === 0 && (
+            {globalLibraryItems.filter(item => item.type === 'generative').map((preset) => {
+              const isActive = activeLibraryAssetId === preset.id
+              return (
+                <div
+                  key={preset.id}
+                  onClick={() => setActiveLibraryAssetId(preset.id)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', gap: 6,
+                    padding: '12px', cursor: 'pointer', transition: 'all 0.2s',
+                    background: isActive ? 'var(--color-surface-glass-hover)' : 'var(--color-surface-glass)',
+                    border: `1px solid ${isActive ? 'var(--color-accent)' : 'var(--color-surface-border)'}`,
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = 'var(--color-text-ghost)' }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = 'var(--color-surface-border)' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Sparkles size={14} color={isActive ? 'var(--color-accent)' : 'var(--color-text-secondary)'} />
+                      <span style={{ 
+                        fontSize: '0.8rem', fontWeight: 700, 
+                        color: isActive ? 'var(--color-accent)' : 'var(--color-text-primary)' 
+                      }}>
+                        {preset.name}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {isActive && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().clearGenerativeLayers()
+                          preset.data.layers.forEach((l: any) => useEditorStore.getState().addGenerativeLayer(l))
+                          useEditorStore.getState().updateWiggle(preset.data.globalWiggle)
+                          setActivePanel('generative')
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-accent)', color: '#0a0a0f',
+                          border: 'none', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Play size={12} /> Editor
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToComposition(preset.id, preset.name, 'localAsset', 3)
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-surface-hover)', color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Layers size={12} /> Add Comp
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().removeFromGlobalLibrary(preset.id)
+                        }}
+                        style={{
+                          background: 'transparent', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 4
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            {(localLibraryItems.filter(item => item.type === 'generative').length === 0 && globalLibraryItems.filter(item => item.type === 'generative').length === 0) && (
               <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Nenhuma composição salva.</span>
             )}
           </div>

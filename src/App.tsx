@@ -25,7 +25,7 @@ import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
 import { CompositionTimeline } from '@/components/CompositionTimeline'
 import { CanvasGuides } from '@/components/CanvasGuides'
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { COLOR_PALETTES } from '@/config/color-palettes'
 
@@ -90,22 +90,62 @@ function App() {
     }
   }, [])
 
+  const [scaleFactor, setScaleFactor] = useState(1)
+  const viewportRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!viewportRef.current) return
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: cw, height: ch } = entry.contentRect
+        const targetW = parseInt(exportConfig.resolution?.split('x')[0] || '1920', 10)
+        const targetH = parseInt(exportConfig.resolution?.split('x')[1] || '1080', 10)
+        
+        const padding = 64
+        const availableW = cw - padding
+        const availableH = ch - padding
+        
+        const sX = availableW / targetW
+        const sY = availableH / targetH
+        setScaleFactor(Math.min(sX, sY, 1))
+      }
+    })
+    ro.observe(viewportRef.current)
+    return () => ro.disconnect()
+  }, [exportConfig.resolution])
+
+  const targetW = parseInt(exportConfig.resolution?.split('x')[0] || '1920', 10)
+  const targetH = parseInt(exportConfig.resolution?.split('x')[1] || '1080', 10)
+
   const canvasArea = (
     <div
       id="canvas-viewport"
+      ref={viewportRef}
       className="glass-panel animate-fade-in stagger-2 animate-pulse-glow"
       style={{
         flex: 1,
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: exportConfig.backgroundColor,
+        backgroundColor: 'var(--color-bg-primary)',
         borderRadius: 'var(--radius-lg)',
       }}
     >
+      <div
+        id="canvas-fixed-resolution"
+        style={{
+          width: targetW,
+          height: targetH,
+          transform: `scale(${scaleFactor})`,
+          transformOrigin: 'center center',
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: exportConfig.backgroundColor,
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.05)',
+        }}
+      >
       {/* Background Media Layer */}
       {activePanel !== 'export' && activePanel !== 'library' && exportConfig.backgroundImageUrl && (
         <>
@@ -265,6 +305,7 @@ function App() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

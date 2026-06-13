@@ -753,12 +753,12 @@ export function TypographyPanel() {
         onChange={setActiveTab}
       />
 
-      <div style={{ padding: '0 4px', marginBottom: 8 }}>
+      <div style={{ padding: '0 4px', marginBottom: 8, display: 'flex', gap: 6 }}>
         <button
           onClick={() => {
             const item = {
               id: `typo-${Date.now()}`,
-              name: `Composição de Texto ${Date.now().toString().slice(-4)}`,
+              name: `Sessão: Texto ${Date.now().toString().slice(-4)}`,
               type: 'typography',
               createdAt: Date.now(),
               data: {
@@ -771,16 +771,15 @@ export function TypographyPanel() {
               }
             };
             useEditorStore.getState().saveToLocalLibrary(item);
-            // Optionally, show a success toast here
           }}
           style={{
-            width: '100%',
+            flex: 1,
             padding: '8px',
             background: 'var(--color-surface-glass)',
             color: 'var(--color-text-primary)',
             border: '1px solid var(--color-surface-border)',
             borderRadius: 'var(--radius-md)',
-            fontSize: '0.75rem',
+            fontSize: '0.7rem',
             fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
@@ -792,8 +791,49 @@ export function TypographyPanel() {
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)' }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
         >
+          <Layers size={14} />
+          Salvar (Sessão)
+        </button>
+        
+        <button
+          onClick={() => {
+            const item = {
+              id: `typo-global-${Date.now()}`,
+              name: `Global: Texto ${Date.now().toString().slice(-4)}`,
+              type: 'typography',
+              createdAt: Date.now(),
+              data: {
+                layers: motionConfig.typography.layers,
+                layoutMode: motionConfig.typography.layoutMode,
+                layoutGap: motionConfig.typography.layoutGap,
+                timeOnScreen: motionConfig.typography.timeOnScreen,
+                globalIdleMotion: motionConfig.typography.globalIdleMotion,
+                trail: globalTrail
+              }
+            };
+            useEditorStore.getState().saveToGlobalLibrary(item);
+          }}
+          style={{
+            flex: 1,
+            padding: '8px',
+            background: 'var(--color-surface-glass)',
+            color: 'var(--color-accent)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass)'; }}
+        >
           <Sparkles size={14} />
-          Salvar na Biblioteca (Local)
+          Salvar (Global)
         </button>
       </div>
 

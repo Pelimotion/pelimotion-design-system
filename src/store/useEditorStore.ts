@@ -76,12 +76,18 @@ interface EditorState {
   currentTime: number;
   isPlaying: boolean;
 
-  // Local Library State
+  // Local Library State (Session only)
   localLibraryItems: any[]; // Or LibraryLocalItem[] if imported
+
+  // Global Library State (Persistent)
+  globalLibraryItems: any[];
 
   // ─── Actions ─────────────────────────────────────────────────────────────
 
   saveToLocalLibrary: (item: any) => void;
+  removeFromLocalLibrary: (id: string) => void;
+  saveToGlobalLibrary: (item: any) => void;
+  removeFromGlobalLibrary: (id: string) => void;
 
   // Config mutations (for headless vibe-coding workflow)
   updateEasing: (easing: Partial<EasingConfig>) => void;
@@ -248,8 +254,18 @@ export const useEditorStore = create<EditorState>((set) => ({
   currentTime: 0,
   isPlaying: false,
 
-  // Local Library State
+  // Local Library State (Session only)
   localLibraryItems: [],
+
+  // Global Library State (Persistent)
+  globalLibraryItems: (() => {
+    try {
+      const stored = localStorage.getItem('pelimotion_global_library');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  })(),
 
   // ─── Config Mutations ──────────────────────────────────────────────────
 
@@ -257,6 +273,33 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({
       localLibraryItems: [...state.localLibraryItems, item],
     })),
+
+  removeFromLocalLibrary: (id: string) =>
+    set((state) => ({
+      localLibraryItems: state.localLibraryItems.filter((i) => i.id !== id),
+    })),
+
+  saveToGlobalLibrary: (item: any) =>
+    set((state) => {
+      const newItems = [...state.globalLibraryItems, item];
+      try {
+        localStorage.setItem('pelimotion_global_library', JSON.stringify(newItems));
+      } catch (e) {
+        console.error('Failed to save to global library', e);
+      }
+      return { globalLibraryItems: newItems };
+    }),
+
+  removeFromGlobalLibrary: (id: string) =>
+    set((state) => {
+      const newItems = state.globalLibraryItems.filter((i) => i.id !== id);
+      try {
+        localStorage.setItem('pelimotion_global_library', JSON.stringify(newItems));
+      } catch (e) {
+        console.error('Failed to save to global library', e);
+      }
+      return { globalLibraryItems: newItems };
+    }),
 
   updateEasing: (easing) =>
     set((state) => ({

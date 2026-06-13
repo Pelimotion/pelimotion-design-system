@@ -60,7 +60,7 @@ export function GlobalGizmo() {
         return;
       }
 
-      const canvasViewport = document.getElementById('canvas-viewport');
+      const canvasViewport = document.getElementById('canvas-fixed-resolution') || document.getElementById('canvas-viewport');
       if (!canvasViewport) return;
 
       // Use getBoundingClientRect for pixel-perfect size (includes CSS scale, flex sizing, etc.)
@@ -70,15 +70,19 @@ export function GlobalGizmo() {
       // Skip if element has no size (not yet rendered)
       if (targetBounds.width < 1 || targetBounds.height < 1) return;
 
+      // Un-scale the coordinates because the gizmo itself is inside the scaled container
+      const scaleX = canvasBounds.width / canvasViewport.offsetWidth;
+      const scaleY = canvasBounds.height / canvasViewport.offsetHeight;
+
       // Only rotation is from GSAP (boundingRect doesn't expose rotation)
       const rotation = (gsap.getProperty(target, 'rotation') as number) || 0;
 
-      // Center of the rendered target, relative to canvas top-left
-      const centerX = (targetBounds.left - canvasBounds.left) + targetBounds.width / 2;
-      const centerY = (targetBounds.top - canvasBounds.top) + targetBounds.height / 2;
+      // Center of the rendered target, relative to canvas top-left, un-scaled
+      const centerX = ((targetBounds.left - canvasBounds.left) + targetBounds.width / 2) / scaleX;
+      const centerY = ((targetBounds.top - canvasBounds.top) + targetBounds.height / 2) / scaleY;
 
-      const gizmoW = targetBounds.width;
-      const gizmoH = targetBounds.height;
+      const gizmoW = targetBounds.width / scaleX;
+      const gizmoH = targetBounds.height / scaleY;
 
       // Apply position/size/rotation via GSAP (no React overhead per tick)
       gsap.set(containerRef.current, {

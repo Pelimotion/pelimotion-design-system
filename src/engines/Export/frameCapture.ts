@@ -20,10 +20,7 @@ export async function captureFrame(element: HTMLElement, options: CaptureOptions
     pixelRatio: 1, // Force 1:1 pixel mapping, regardless of retina screens
     skipAutoScale: true,
     style: {
-      // Force element to render at target resolution for the capture
       transform: 'none',
-      width: `${options.width}px`,
-      height: `${options.height}px`,
     },
     // We want transparent PNGs for compositing
     backgroundColor: 'rgba(0,0,0,0)',
