@@ -1,10 +1,15 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Spatial Camera Navigation, WebCodecs Hotfix & Layout Polish (v2.1)
+## Active Phase: 🟢 Analytics, Lighthouse & Motion Dynamics (v2.2)
 
-## 🏁 Pelimotion Design System v2.1 — Production-Ready Motion Suite
+## 🏁 Pelimotion Design System v2.2 — Performance & Growth Ready
 
-All critical bugs involving viewport scaling (cropping/gizmo shift), asset library retention (Session vs. Global Storage), WebCodecs exports, and typography resizing have been resolved. The workspace is fully integrated, responsive, verified, and stable.
+All critical bugs involving viewport scaling (cropping/gizmo shift), asset library retention (Session vs. Global Storage), WebCodecs exports, and typography resizing have been resolved. The workspace is fully integrated, responsive, verified, and stable. Additional SEO, Telemetry, and advanced Motion features were shipped in v2.2.
+
+### Session Achievements (v2.2 - Analytics, Lighthouse & Motion Dynamics)
+- **Motion Easing & Blur Dynamics:** Added new presets `bounceIn`, `elasticWhip`, `bounceOut`, `elasticSnap`. Integrated global toggle for CSS motion blur filtering in `<CompositionPreview />`.
+- **Local Privacy-First Telemetry:** Developed `src/lib/telemetry.ts` logger. Instrumented `exportPipeline.ts` to capture `EXPORT_STARTED`, `EXPORT_COMPLETED`, and `WEBCODECS_FALLBACK` metrics directly to localStorage.
+- **Automated Lighthouse Validator:** Introduced `agent:lighthouse` script using `npx lighthouse` in headless mode to generate `.agents/reports/lighthouse-report.html` to guarantee strict 100/100 SEO and Performance targets.
 
 ### Session Achievements (v2.1 - Spatial Camera, UI Scaling & WebCodecs Hotfix)
 - **WebCodecs Deep Copy Validation Fix:** Solved the export error (`Error: source must be a VideoSource`) inside `src/engines/Export/exportPipeline.ts` by replacing the `transferToImageBitmap()` call with an asynchronous `createImageBitmap()` deep copy. This ensures the output frame remains origin-clean, preventing memory detachments when the frame is constructed inside the WebCodecs hardware encoder.

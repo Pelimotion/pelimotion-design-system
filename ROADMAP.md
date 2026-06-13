@@ -47,7 +47,12 @@
 - [x] **WebCodecs Deep Copy Fix:** Resolved the WebCodecs encoder crash by utilizing `createImageBitmap()` to copy frames securely without losing context inside strict browser environments.
 - [x] **Sidebar Workspace Optimization:** Removed the "Config Loaded" status card and other debug utilities to maximize vertical editing space.
 
-## Phase 9: Future Expansion (Backlog)
+## Phase 9: Analytics, Lighthouse & Motion Dynamics (v2.2)
+- [x] **Motion Easing & Blur Dynamics:** Added elastic GSAP curves (`bounceIn`, `elasticWhip`) and implemented a global CSS motion blur toggle during playback/export for increased "WOW" factor.
+- [x] **Local Privacy-First Telemetry:** Created a silent logger (`telemetry.ts`) that records export funnel metrics and WebCodecs fallbacks to localStorage.
+- [x] **Automated Lighthouse Validator:** Created a programmatic SEO script (`agent:lighthouse`) to continuously audit layout shifts and Core Web Vitals to maintain a 100/100 score.
+
+## Phase 10: Future Expansion (Backlog)
 - [ ] **Multi-track Audio Mixing:** Add support for importing and syncing audio tracks directly in the timeline, mixing audio buffers before final WebAssembly encoding.
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.
