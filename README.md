@@ -54,14 +54,12 @@ Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo fina
 
 ---
 
-## ☁️ 4. A Biblioteca em Nuvem Integrada
+## ☁️ 4. A Biblioteca Integrada (Nuvem e Presets)
 
-Você não precisa ficar enviando sua produção por e-mail para outras equipes.
-Toda vez que você exporta com sucesso um arquivo pelo nosso painel, o sistema em segundo plano **envia imediatamente** aquele arquivo original e puro direto para a rede na nuvem (Nossa estrutura ultra-rápida Bunny Edge Storage).
-
-- Acesse a aba **Biblioteca** na lateral.
-- Suas criações estarão organizadas por categorias (Tipografia, Generativo, etc).
-- Precisou pegar um vídeo que renderizou na semana passada em outro computador? Basta clicar e baixar!
+O Pelimotion conta com um acervo integrado de peças de design:
+- **Assets da Nuvem (BunnyCDN):** Nos catálogos de "Logo" e "Transição", você encontra arquivos de vídeo `.MOV` e `.MP4` hospedados direto na nossa estrutura Bunny Edge Storage, com suporte a pré-visualização no painel e botão de injeção instantânea na timeline da Composição.
+- **Biblioteca de Presets Criados:** Os estilos e configurações criados nos módulos de Tipografia e Generativo podem ser adicionados como camadas independentes na Composição por meio do botão "Add Comp".
+- **Trabalho Sem Sobrecarga:** Desativamos o upload automático de vídeos exportados na nuvem do BunnyCDN a cada exportação. Isso garante downloads locais imediatos e economiza banda de rede durante renderizações experimentais.
 
 ---
 

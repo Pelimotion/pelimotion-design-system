@@ -27,11 +27,12 @@ O sistema opera sob uma arquitetura de frontend desacoplada e reativa, dividida 
 ### 2.2. Pipeline de Exportação Híbrido Multiparalelo
 O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambiente de navegação web através de um pipeline de renderização em duas camadas:
 - **Canvas Capture (Deterministic Sync):** Snapshot ultra-preciso em 60 frames por segundo do Document Object Model (DOM) via `html-to-image`, com avanço algorítmico síncrono da timeline global do GSAP (`timeline.seek()`).
-- **Canvas Compositing (Video-DOM Hybrid Overlay):** Como elementos `<video>` no DOM causam instabilidades de performance e segurança CORS durante a renderização direta em imagem, o pipeline isola a captura:
-  1. O vídeo de fundo é ocultado temporariamente do fluxo de layout (`display: none`).
-  2. O DOM transparente (Tipografia e Generativos) é capturado como uma imagem PNG pura.
-  3. O vídeo é reexibido e o player síncrono é avançado para o tempo correto (`bgVideo.currentTime = videoTime`).
-  4. Um canvas off-screen unifica as camadas, desenhando primeiro o frame de vídeo ativo (`ctx.drawImage(bgVideo, ...)`) e depois sobrepondo a imagem PNG transparente capturada.
+- **Canvas Compositing & Video Bypass (Multi-Video Hybrid Overlay):** Como elementos `<video>` no DOM causam instabilidades de performance e segurança CORS durante a renderização direta em imagem, o pipeline isola a captura:
+  1. O vídeo de fundo (`#export-bg-video`) é ocultado temporariamente do fluxo de layout (`display: none`).
+  2. Todos os vídeos de camadas de composição (no primeiro plano) são sincronizados em tempo de reprodução e, para evitar que o renderizador de imagem trave devido a restrições de CORS/tainted-canvas, são temporariamente desenhados em canvases virtuais rápidos e substituídos por tags `<img>` em formato Data URL no DOM imediatamente antes da captura do frame.
+  3. O DOM transparente (Tipografia, Generativos e as imagens de substituição dos vídeos de camada) é capturado como uma imagem PNG pura.
+  4. O vídeo de fundo é reexibido e o player síncrono é avançado para o tempo correto (`bgVideo.currentTime = videoTime`). O mesmo ocorre para os vídeos de camada originais que são restaurados no DOM (removendo as imagens temporárias).
+  5. Um canvas off-screen unifica as camadas, desenhando primeiro o frame de vídeo de fundo ativo (`ctx.drawImage(bgVideo, ...)`) e depois sobrepondo a imagem PNG transparente capturada com o conteúdo restante.
 - **WebAssembly Orchestration (FFmpeg.wasm):** Os quadros compostos são armazenados como buffers binários e codificados diretamente no navegador. Para MP4s, convertemos os quadros em JPEG (com 90% de qualidade) em vez de PNG. Isso economiza até 80% de memória de heap no navegador, evitando erros de estouro de memória (Out-of-Memory) durante renders longos, enquanto mantém fidelidade visual impecável.
 
 ### 2.3. Módulo de Composição & Timeline Bento Grid
@@ -41,6 +42,7 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
   - Os eventos `pointermove` e `pointerup` são ouvidos no escopo do objeto `window` dinamicamente para garantir precisão física contínua do trim e do posicionamento mesmo quando o ponteiro deixa a área de render do editor.
   - Propriedades de CSS como `touch-action: none` e `user-select: none` previnem interrupções por gestos de scroll/zoom do navegador.
 - **Camada de Fundo (Background) Desacoplada:** O fundo (vídeo, imagem ou cor sólida) foi completamente isolado da lógica de paletas de cores globais. Isso permite que a tipografia e as artes generativas flutuem e interajam de forma limpa sobre fundos arbitrários, mantendo a integridade da marca e a consistência visual em todas as fases de render.
+- **Renderização Real de Camadas:** Em vez de usar placeholders opacos no editor, a área de composição renderiza visualizações reais das camadas de tipografia e arte generativa chamando os componentes `TypographyPreview` e `GenerativePreview` com presets específicos herdados, mantendo compatibilidade de animação e permitindo que vídeos de logo/transição carreguem tags `<video>` nativas sincronizadas em tempo real.
 
 ### 2.4. Infraestrutura Cloud Native
 - **Hospedagem Serverless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.

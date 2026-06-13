@@ -9,6 +9,7 @@ import { Film, Download, Layers, Type, Combine, Image as ImageIcon, Play } from 
 import { downloadFile } from '@/lib/downloadHandler'
 import { fetchBunnyAssets, type BunnyAsset } from '@/lib/bunnyStorage'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
+import type { CompositionLayer } from '@/types/motion.types'
 
 const TABS = [
   { id: 'Tipografia', label: 'Tipografia', icon: Type },
@@ -23,7 +24,9 @@ export function LibraryPanel() {
     setActiveLibraryAssetId,
     loadTypographyPreset,
     setActivePanel,
-    localLibraryItems
+    localLibraryItems,
+    addCompositionLayer,
+    exportConfig
   } = useEditorStore()
   
   const [activeTab, setActiveTab] = useState('Tipografia')
@@ -51,6 +54,20 @@ export function LibraryPanel() {
     downloadFile(url, asset.ObjectName)
   }
 
+  const handleAddToComposition = (id: string, name: string, type: 'localAsset' | 'cloudAsset' = 'localAsset', duration: number = 3) => {
+    const newLayer: CompositionLayer = {
+      id: crypto.randomUUID(),
+      name: name,
+      type: type,
+      assetId: id,
+      startTime: 0,
+      duration: Math.min(duration, exportConfig.duration),
+      transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+    }
+    addCompositionLayer(newLayer)
+    setActivePanel('composition')
+  }
+
   const renderCloudAssetsList = (isTipografiaTab: boolean) => {
     if (loading) {
       return (
@@ -71,13 +88,14 @@ export function LibraryPanel() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {assets.map((asset) => {
-          const isActive = activeLibraryAssetId === asset.ObjectName
+          const cloudId = `${activeTab}/${asset.ObjectName}`
+          const isActive = activeLibraryAssetId === cloudId
           const isVideo = asset.ObjectName.endsWith('.mp4') || asset.ObjectName.endsWith('.mov')
           
           return (
             <div
               key={asset.ObjectName}
-              onClick={() => setActiveLibraryAssetId(asset.ObjectName)}
+              onClick={() => setActiveLibraryAssetId(cloudId)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '10px 12px', cursor: 'pointer', transition: 'all 0.2s',
@@ -102,22 +120,40 @@ export function LibraryPanel() {
                 </div>
               </div>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleDownload(asset)
-                }}
-                title="Baixar Arquivo"
-                style={{
-                  background: 'transparent', border: 'none', cursor: 'pointer', padding: 6,
-                  borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--color-text-secondary)',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.background = 'var(--color-surface-glass)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
-              >
-                <Download size={16} />
-              </button>
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')
+                  }}
+                  title="Adicionar à Composição"
+                  style={{
+                    background: 'transparent', border: 'none', cursor: 'pointer', padding: 6,
+                    borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.background = 'var(--color-surface-glass)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
+                >
+                  <Layers size={16} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(asset)
+                  }}
+                  title="Baixar Arquivo"
+                  style={{
+                    background: 'transparent', border: 'none', cursor: 'pointer', padding: 6,
+                    borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.background = 'var(--color-surface-glass)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
+                >
+                  <Download size={16} />
+                </button>
+              </div>
             </div>
           )
         })}
@@ -205,23 +241,39 @@ export function LibraryPanel() {
                   </span>
                   
                   {isActive && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        loadTypographyPreset(preset.config)
-                        setActivePanel('typography')
-                      }}
-                      style={{
-                        marginTop: 4, width: '100%', padding: '6px 12px',
-                        background: 'var(--color-accent)', color: '#0a0a0f',
-                        border: 'none', borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
-                      }}
-                    >
-                      <Play size={12} />
-                      Aplicar no Editor &rarr;
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          loadTypographyPreset(preset.config)
+                          setActivePanel('typography')
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-accent)', color: '#0a0a0f',
+                          border: 'none', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Play size={12} /> Editor
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToComposition(preset.id, preset.name, 'localAsset', preset.config.timeOnScreen || 3)
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-surface-hover)', color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Layers size={12} /> Add Comp
+                      </button>
+                    </div>
                   )}
                 </div>
               )
@@ -255,30 +307,46 @@ export function LibraryPanel() {
                   </div>
                   
                   {isActive && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        useEditorStore.getState().updateTypography({
-                          layers: preset.data.layers,
-                          layoutMode: preset.data.layoutMode,
-                          layoutGap: preset.data.layoutGap,
-                          timeOnScreen: preset.data.timeOnScreen,
-                          globalIdleMotion: preset.data.globalIdleMotion
-                        })
-                        useEditorStore.getState().updateTrail(preset.data.trail)
-                        setActivePanel('typography')
-                      }}
-                      style={{
-                        marginTop: 4, width: '100%', padding: '6px 12px',
-                        background: 'var(--color-accent)', color: '#0a0a0f',
-                        border: 'none', borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
-                      }}
-                    >
-                      <Play size={12} />
-                      Aplicar no Editor &rarr;
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().updateTypography({
+                            layers: preset.data.layers,
+                            layoutMode: preset.data.layoutMode,
+                            layoutGap: preset.data.layoutGap,
+                            timeOnScreen: preset.data.timeOnScreen,
+                            globalIdleMotion: preset.data.globalIdleMotion
+                          })
+                          useEditorStore.getState().updateTrail(preset.data.trail)
+                          setActivePanel('typography')
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-accent)', color: '#0a0a0f',
+                          border: 'none', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Play size={12} /> Editor
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToComposition(preset.id, preset.name, 'localAsset', preset.data.timeOnScreen || 3)
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-surface-hover)', color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Layers size={12} /> Add Comp
+                      </button>
+                    </div>
                   )}
                 </div>
               )
@@ -330,25 +398,41 @@ export function LibraryPanel() {
                   </div>
                   
                   {isActive && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        useEditorStore.getState().clearGenerativeLayers()
-                        preset.data.layers.forEach((l: any) => useEditorStore.getState().addGenerativeLayer(l))
-                        useEditorStore.getState().updateWiggle(preset.data.globalWiggle)
-                        setActivePanel('generative')
-                      }}
-                      style={{
-                        marginTop: 4, width: '100%', padding: '6px 12px',
-                        background: 'var(--color-accent)', color: '#0a0a0f',
-                        border: 'none', borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
-                      }}
-                    >
-                      <Play size={12} />
-                      Aplicar no Editor &rarr;
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          useEditorStore.getState().clearGenerativeLayers()
+                          preset.data.layers.forEach((l: any) => useEditorStore.getState().addGenerativeLayer(l))
+                          useEditorStore.getState().updateWiggle(preset.data.globalWiggle)
+                          setActivePanel('generative')
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-accent)', color: '#0a0a0f',
+                          border: 'none', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Play size={12} /> Editor
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToComposition(preset.id, preset.name, 'localAsset', 3)
+                        }}
+                        style={{
+                          flex: 1, padding: '6px 12px',
+                          background: 'var(--color-surface-hover)', color: 'var(--color-text-primary)',
+                          border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                        }}
+                      >
+                        <Layers size={12} /> Add Comp
+                      </button>
+                    </div>
                   )}
                 </div>
               )

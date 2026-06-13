@@ -493,7 +493,7 @@ export interface ExportConfig {
 export interface CompositionLayer {
   id: string;
   name: string;
-  type: 'video' | 'localAsset' | 'remoteAsset';
+  type: 'video' | 'localAsset' | 'remoteAsset' | 'cloudAsset';
   /** ID referencing the LibraryLocalItem or LibraryAsset */
   assetId: string;
   /** Start time in the composition (seconds) */

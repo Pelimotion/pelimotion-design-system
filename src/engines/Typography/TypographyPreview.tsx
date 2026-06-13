@@ -260,14 +260,14 @@ function LayerNode({
 // Main Preview Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function TypographyPreview() {
-  const {
-    motionConfig,
-    activeTypoLayerId,
-    setActiveTypoLayer,
-    updateTypoLayerTransform,
-    animForceKey,
-  } = useEditorStore();
+export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) {
+  const store = useEditorStore();
+  const motionConfig = store.motionConfig;
+  
+  const activeTypoLayerId = overrideConfig ? null : store.activeTypoLayerId;
+  const setActiveTypoLayer = overrideConfig ? () => {} : store.setActiveTypoLayer;
+  const updateTypoLayerTransform = overrideConfig ? () => {} : store.updateTypoLayerTransform;
+  const animForceKey = overrideConfig ? 'static' : store.animForceKey;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const globalWrapperRef = useRef<HTMLDivElement>(null);
@@ -276,16 +276,16 @@ export function TypographyPreview() {
   // Track SplitText instances for proper cleanup
   const splitInstances = useRef<SplitText[]>([]);
 
-  const typoConfig = motionConfig.typography;
+  const typoConfig = overrideConfig || motionConfig.typography;
   const { layers, layoutMode, layoutGap, timeOnScreen } = typoConfig;
-  const globalTrail = motionConfig.trail;
+  const globalTrail = overrideConfig?.trail || motionConfig.trail;
 
   // animKey: changing this forces the GSAP timeline to rebuild
   // Includes animForceKey so the "Reiniciar Efeito" button works
   const animKey = JSON.stringify({
     forceKey: animForceKey,
     globalTrail,
-    layers: layers.map(l => ({
+    layers: layers.map((l: any) => ({
       id: l.id, text: l.text,
       font: [l.fontFamily, l.fontWeight, l.fontSize, l.letterSpacing, l.lineHeight, l.fontStyle, l.textTransform, l.color, l.textAlign],
       anim: l.animation,
@@ -298,7 +298,7 @@ export function TypographyPreview() {
     splitInstances.current.forEach(s => { try { s.revert(); } catch {} });
     splitInstances.current = [];
 
-    const layerOpts = layers.map(layer => {
+    const layerOpts = layers.map((layer: any) => {
       if (!layer.enabled) return null;
       const el = innerRefs.current[layer.id];
       if (!el) return null;
@@ -381,7 +381,7 @@ export function TypographyPreview() {
         idleIntensity: 1,
       };
       const maxTotalDuration = Math.max(
-        ...layers.map(l => l.animation.entryDuration + timeOnScreen + l.animation.exitDuration),
+        ...layers.map((l: any) => l.animation.entryDuration + timeOnScreen + l.animation.exitDuration),
         3
       );
       const idleTl = createIdleTimeline(globalWrapperRef.current, globalAnim, maxTotalDuration);
@@ -425,7 +425,7 @@ export function TypographyPreview() {
       style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
     >
       <div ref={globalWrapperRef} style={{ ...containerStyle, height: '100%' }}>
-        {layers.map(layer => {
+        {layers.map((layer: any) => {
           if (!layer.enabled) return null;
           const trailConf = layer.trail || globalTrail;
           const isSelected = activeTypoLayerId === layer.id;

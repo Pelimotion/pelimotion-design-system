@@ -23,6 +23,7 @@ import { CompositionPreview } from '@/engines/Composition/CompositionPreview'
 import { ExportPreview } from '@/engines/Export/ExportPreview'
 import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
+import { CompositionTimeline } from '@/components/CompositionTimeline'
 import { CanvasGuides } from '@/components/CanvasGuides'
 import { useState, useRef, useEffect } from 'react'
 
@@ -481,6 +482,13 @@ function App() {
             )}
           </div>
         </div>
+
+        {/* Timeline Panel (Full width when in composition) */}
+        {activePanel === 'composition' && (
+          <div className="glass-panel animate-fade-in" style={{ padding: '16px 24px', borderRadius: 'var(--radius-lg)', flexShrink: 0 }}>
+            <CompositionTimeline />
+          </div>
+        )}
 
         {/* Bottom Info Bar */}
         <footer

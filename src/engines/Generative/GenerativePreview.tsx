@@ -114,11 +114,14 @@ function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export function GenerativePreview() {
-  const { 
-    motionConfig, generativeLayers,
-    activeGenerativeLayerId, setActiveGenerativeLayerId, updateLayerTransform
-  } = useEditorStore()
+export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) {
+  const store = useEditorStore()
+  
+  const motionConfig = overrideConfig ? overrideConfig.motionConfig : store.motionConfig
+  const generativeLayers = overrideConfig ? overrideConfig.generativeLayers : store.generativeLayers
+  const activeGenerativeLayerId = overrideConfig ? null : store.activeGenerativeLayerId
+  const setActiveGenerativeLayerId = overrideConfig ? () => {} : store.setActiveGenerativeLayerId
+  const updateLayerTransform = overrideConfig ? () => {} : store.updateLayerTransform
   const {
     amplitude, frequency, octaves, persistence, noiseType, seed,
     propertyFps, propertyAmplitudes, propertyFrequencies, previewGrid
@@ -136,7 +139,7 @@ export function GenerativePreview() {
     driversRef.current.forEach(d => d.stop())
     driversRef.current.clear()
 
-    generativeLayers.forEach((layer, i) => {
+    generativeLayers.forEach((layer: any, i: number) => {
       const container = layerRefsMap.current.get(layer.id)
       if (!container) return
 
@@ -231,7 +234,7 @@ export function GenerativePreview() {
 
   useEffect(() => {
     const draggables: Draggable[] = [];
-    generativeLayers.forEach(layer => {
+    generativeLayers.forEach((layer: any) => {
       const el = layerRefsMap.current.get(layer.id)?.parentElement; // The layer-base div
       if (el) {
         gsap.set(el, {
@@ -272,7 +275,8 @@ export function GenerativePreview() {
 
   // Sync state changes to GSAP
   useEffect(() => {
-    generativeLayers.forEach(layer => {
+    if (overrideConfig) return; // Don't sync internal transforms if override is provided, or do it statically
+    generativeLayers.forEach((layer: any) => {
       const el = layerRefsMap.current.get(layer.id)?.parentElement;
       if (el) {
         gsap.set(el, {
@@ -283,7 +287,7 @@ export function GenerativePreview() {
         });
       }
     });
-  }, [generativeLayers]);
+  }, [generativeLayers, overrideConfig]);
 
   return (
     <div
@@ -306,27 +310,29 @@ export function GenerativePreview() {
       {previewGrid === '9:16' || previewGrid === 'all' ? <AspectRatioGrid ratio={1080/1920} label="9:16" color="rgba(100, 100, 255, 0.4)" /> : null}
       {previewGrid === '4:5' || previewGrid === 'all' ? <AspectRatioGrid ratio={1080/1350} label="4:5" color="rgba(255, 200, 100, 0.4)" /> : null}
 
-      {/* Play / Pause */}
-      <button
-        onClick={() => setIsPlaying(!isPlaying)}
-        style={{
-          position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-          padding: '6px 18px', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700,
-          border: '1px solid var(--color-surface-border)', background: 'var(--color-surface-glass)',
-          color: isPlaying ? 'var(--color-accent)' : 'var(--color-text-muted)',
-          cursor: 'pointer', backdropFilter: 'blur(8px)', letterSpacing: '0.05em',
-          textTransform: 'uppercase', zIndex: 100,
-        }}
-      >
-        {isPlaying ? '⏸ Pausar' : '▶ Animar'}
-      </button>
+      {/* Play / Pause - Hide if in override mode */}
+      {!overrideConfig && (
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          style={{
+            position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+            padding: '6px 18px', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700,
+            border: '1px solid var(--color-surface-border)', background: 'var(--color-surface-glass)',
+            color: isPlaying ? 'var(--color-accent)' : 'var(--color-text-muted)',
+            cursor: 'pointer', backdropFilter: 'blur(8px)', letterSpacing: '0.05em',
+            textTransform: 'uppercase', zIndex: 100,
+          }}
+        >
+          {isPlaying ? '⏸ Pausar' : '▶ Animar'}
+        </button>
+      )}
 
       {/* Layers Container (Free Canvas) */}
       <div style={{
         position: 'absolute', width: '100%', height: '100%',
         display: 'flex', alignItems: 'center', justifyContent: 'center'
       }}>
-        {generativeLayers.map((layer) => {
+        {generativeLayers.map((layer: any) => {
           const { transform, type, svgString } = layer
           // For built-in shapes, use first layer color for initial render; noise colors applied via applyLayerColors
           const shapeColor = (layer.colors && layer.colors[0]) || '#a78bfa'

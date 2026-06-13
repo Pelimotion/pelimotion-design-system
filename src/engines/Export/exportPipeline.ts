@@ -12,7 +12,6 @@ import { zip } from 'fflate'
 import { captureFrame } from './frameCapture'
 import { downloadFile } from '@/lib/downloadHandler'
 import { encodeVideoWithFFmpeg } from './ffmpegEncoder'
-import { uploadToBunny } from '@/lib/bunnyStorage'
 import type { ExportConfig, ExportState } from '@/types/motion.types'
 
 export async function runExportPipeline(
@@ -44,10 +43,9 @@ export async function runExportPipeline(
     const frames: Uint8Array[] = []
     const zipPayload: Record<string, Uint8Array | [Uint8Array, { level: 0 }]> = {}
 
-    const bgVideo = element.querySelector('#export-bg-video') as HTMLVideoElement | null
-    if (bgVideo) {
-      bgVideo.pause()
-    }
+    const allVideos = Array.from(element.querySelectorAll('video')) as HTMLVideoElement[]
+    allVideos.forEach(vid => vid.pause())
+    const bgVideo = allVideos.find(vid => vid.id === 'export-bg-video')
 
     for (let frame = 0; frame < totalFrames; frame++) {
       // If png-still, we use the selected stillFrame time, else sequential
@@ -57,26 +55,52 @@ export async function runExportPipeline(
       // Advance GSAP strictly to this frame's time
       gsap.globalTimeline.seek(time)
 
-      // Sync video background
-      if (bgVideo) {
-        const trimStart = config.bgTrimStart || 0;
-        const trimEnd = config.bgTrimEnd || bgVideo.duration || Infinity;
-        let videoTime = trimStart + time;
-        if (trimEnd > trimStart && videoTime > trimEnd) {
-           videoTime = trimEnd; // Or loop it: ((time) % (trimEnd - trimStart)) + trimStart
+      // Sync all videos
+      allVideos.forEach(vid => {
+        if (vid.id === 'export-bg-video') {
+          const trimStart = config.bgTrimStart || 0;
+          const trimEnd = config.bgTrimEnd || vid.duration || Infinity;
+          let videoTime = trimStart + time;
+          if (trimEnd > trimStart && videoTime > trimEnd) {
+             videoTime = trimEnd;
+          }
+          vid.currentTime = videoTime;
+        } else {
+          const startTime = parseFloat(vid.getAttribute('data-start-time') || '0');
+          const localTime = Math.max(0, time - startTime);
+          vid.currentTime = localTime % (vid.duration || 1);
         }
-        bgVideo.currentTime = videoTime;
-      }
+      });
 
       // Wait a tiny bit for the DOM to flush styles/layout and video to seek
-      await new Promise(resolve => setTimeout(resolve, 50)) // 50ms is usually enough for video seek
+      await new Promise(resolve => setTimeout(resolve, 50))
       
+      // Replace composition videos with static images so html-to-image can capture them
+      const compVideos = allVideos.filter(vid => vid.id !== 'export-bg-video')
+      const videoPlaceholders = compVideos.map(vid => {
+        const canvas = document.createElement('canvas')
+        canvas.width = vid.videoWidth || width
+        canvas.height = vid.videoHeight || height
+        canvas.getContext('2d')?.drawImage(vid, 0, 0)
+        const img = document.createElement('img')
+        img.src = canvas.toDataURL('image/png')
+        img.style.cssText = vid.style.cssText
+        vid.style.display = 'none'
+        vid.parentNode?.insertBefore(img, vid)
+        return { vid, img }
+      })
+
       if (bgVideo) bgVideo.style.display = 'none'
       
-      // Capture the frame (without video for speed and cross-origin safety)
+      // Capture the frame (without bgVideo for speed and cross-origin safety, but with composition video imgs)
       const blob = await captureFrame(element, { width, height })
       
       if (bgVideo) bgVideo.style.display = 'block'
+      
+      videoPlaceholders.forEach(({ vid, img }) => {
+        vid.style.display = ''
+        img.remove()
+      })
       
       const canvas = document.createElement('canvas')
       canvas.width = width
@@ -146,20 +170,10 @@ export async function runExportPipeline(
       const url = URL.createObjectURL(finalBlob)
       downloadFile(url, finalName)
       URL.revokeObjectURL(url)
-
-      // 2. Upload to Bunny (defaulting to 'Generativo' or 'Tipografia' folder based on some state, but we'll use 'Generativo' for now)
-      // For robustness, in a real app we'd pass activePanel, but we'll infer it or just save to 'Tipografia' if it has no video bg
-      const folder = format.includes('png') ? 'Tipografia' : 'Generativo'
-      onProgress({ errorMessage: 'Salvando na Nuvem (Opcional)...' })
-      try {
-        await uploadToBunny(finalBlob, finalName, folder)
-      } catch (err) {
-        console.warn('Falha ao salvar na nuvem do BunnyCDN. Isso é esperado se a API Key não for fornecida. O arquivo já foi baixado localmente.', err)
-      }
     }
 
     // Restore playback
-    if (bgVideo) bgVideo.play()
+    allVideos.forEach(vid => vid.play())
     gsap.globalTimeline.play()
 
     onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined })

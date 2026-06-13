@@ -1,10 +1,18 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Documentation & Vibe Coding Guidelines Established (v1.4)
+## Active Phase: 🟢 Overhauled Composition, Cloud Library Integration & Local Dev (v1.5)
 
-## 🏁 Pelimotion Design System v1.4 — Stable & Documented
+## 🏁 Pelimotion Design System v1.5 — Stable & Professional Editor Scaffold
 
-All updates for the Composition module timeline, dynamic preview components, global styling fixes, editor shell, and developer Vibe Coding documentation have been successfully completed.
+All updates for the full-screen timeline layout, real asset rendering in the composition preview, cloud asset previewing, multi-video frame synchronization, and the local dev server activation have been successfully completed.
+
+### Session Achievements (v1.5 - Overhauled Composition & Local Dev Testing)
+- **Horizontal Full-Screen Timeline Layout:** Repositioned the timeline to the bottom of the main editor workspace when in Composition mode, providing a professional and spacious NLE (Non-Linear Editor) UI.
+- **BunnyCDN Asset Previews & Timeline Injection:** Added full `.mp4`/`.mov` previews to the `LibraryPreview` panel. Integrated "Add to Composition" buttons to inject library presets and cloud assets directly as timeline layers.
+- **Real Render Previews in Composition:** Substituted static placeholders inside `CompositionPreview` with real, active components (`TypographyPreview` and `GenerativePreview`) and `<video>` nodes, synchronized frame-by-frame with the global timeline.
+- **Multi-Video Frame Sync & Render Bypass:** Overhauled `exportPipeline.ts` to coordinate, pause, and step through all video layers. Solved canvas-bleeding/CORS limitations by drawing current frames of timeline video layers onto an offscreen canvas and swapping them to temporary inline `<img>` tags during the capture phase.
+- **Removed Auto-Upload on Export:** Disabled automatic BunnyCDN uploads on every export to conserve bandwidth and guarantee high performance.
+- **Local Dev Server Activated:** Launched the local dev server successfully on `http://localhost:3000/pelimotion-design-system/` for comprehensive end-to-end testing.
 
 ### Session Achievements (v1.4 - Documentation & Vibe Coding Standards)
 - **Detailed Vibe Coding Manifesto:** Expanded `manifesto_vibe_coding_ux_ui.md` with guidelines on state management, atomic selectors for scrubbing, bento grid layout conventions, and native Pointer Events.

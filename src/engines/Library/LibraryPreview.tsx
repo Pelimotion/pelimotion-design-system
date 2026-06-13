@@ -30,6 +30,9 @@ export function LibraryPreview() {
   const activeAsset = libraryConfig.assets.find(a => a.id === activeLibraryAssetId)
   const category = libraryConfig.categories.find(c => c.id === activeAsset?.category)
 
+  // Cloud asset check
+  const isCloudAsset = activeLibraryAssetId && activeLibraryAssetId.includes('/') && !localPreset && !localSavedItem && !activeAsset;
+
   if (localPreset || localSavedItem) {
     const isTypo = localPreset || (localSavedItem && localSavedItem.type === 'typography')
     const name = localPreset ? localPreset.name : localSavedItem.name
@@ -222,7 +225,7 @@ export function LibraryPreview() {
     )
   }
 
-  if (!activeAsset || !category) {
+  if (!activeAsset && !category && !isCloudAsset) {
     return (
       <div style={{
         width: '100%', height: '100%',
@@ -236,8 +239,20 @@ export function LibraryPreview() {
     )
   }
 
-  const isVideo = activeAsset.format === 'mov' || activeAsset.format === 'webm' || activeAsset.format === 'mp4'
-  const isSvg = activeAsset.format === 'svg'
+  const isVideo = activeAsset ? (activeAsset.format === 'mov' || activeAsset.format === 'webm' || activeAsset.format === 'mp4') : 
+                  (isCloudAsset && (activeLibraryAssetId.endsWith('.mp4') || activeLibraryAssetId.endsWith('.mov') || activeLibraryAssetId.endsWith('.webm')));
+  const isSvg = activeAsset ? activeAsset.format === 'svg' : false;
+
+  let videoSrc;
+  if (isCloudAsset) {
+    const pullZone = import.meta.env.VITE_BUNNY_STORAGE_ZONE;
+    videoSrc = `https://${pullZone}.b-cdn.net/${activeLibraryAssetId}`;
+  } else if (activeAsset && category) {
+    videoSrc = resolveAssetPath(`${category.basePath}${activeAsset.filename}`);
+  }
+
+  const assetName = isCloudAsset ? activeLibraryAssetId.split('/')[1] : activeAsset?.name;
+  const assetFormat = isCloudAsset ? activeLibraryAssetId.split('.').pop()?.toUpperCase() : activeAsset?.format.toUpperCase();
 
   return (
     <div style={{
@@ -254,8 +269,8 @@ export function LibraryPreview() {
       }}>
         {isVideo && (
           <AlphaVideoPlayer
-            webmSrc={activeAsset.filename.endsWith('.webm') ? resolveAssetPath(`${category.basePath}${activeAsset.filename}`) : undefined}
-            hevcSrc={activeAsset.filename.endsWith('.mov') || activeAsset.filename.endsWith('.mp4') ? resolveAssetPath(`${category.basePath}${activeAsset.filename}`) : undefined}
+            webmSrc={videoSrc?.endsWith('.webm') ? videoSrc : undefined}
+            hevcSrc={(videoSrc?.endsWith('.mov') || videoSrc?.endsWith('.mp4')) ? videoSrc : undefined}
           />
         )}
         
@@ -269,15 +284,15 @@ export function LibraryPreview() {
           }}>
             {/* Try to load the SVG from Generative Catalog just for preview */}
             {(() => {
-              const svgData = SVG_CATALOG.find(s => s.path.includes(activeAsset.filename))
+              const svgData = SVG_CATALOG.find(s => s.path.includes(activeAsset?.filename || ''))
               if (svgData) {
                 return (
                   <div style={{ width: '40%', height: '40%' }}>
-                    <img src={resolveAssetPath(svgData.path)} alt={activeAsset.name} style={{ width: '100%', height: '100%', filter: 'invert(1)' }} />
+                    <img src={resolveAssetPath(svgData.path)} alt={activeAsset?.name || 'svg'} style={{ width: '100%', height: '100%', filter: 'invert(1)' }} />
                   </div>
                 )
               }
-              return <span>SVG File: {activeAsset.filename}</span>
+              return <span>SVG File: {activeAsset?.filename}</span>
             })()}
           </div>
         )}
@@ -285,10 +300,10 @@ export function LibraryPreview() {
 
       <div style={{ marginTop: 24, textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 4 }}>
-          {activeAsset.name}
+          {assetName}
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
-          {activeAsset.resolution} • {activeAsset.format.toUpperCase()} • {activeAsset.hasAlpha ? 'Alpha Channel' : 'Solid'}
+          {activeAsset?.resolution || 'Auto'} • {assetFormat} • {activeAsset ? (activeAsset.hasAlpha ? 'Alpha Channel' : 'Solid') : 'Cloud Video'}
         </p>
       </div>
     </div>

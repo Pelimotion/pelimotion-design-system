@@ -2,7 +2,6 @@ import React from 'react'
 import { Settings, Frame, Activity } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BackgroundUploader } from './BackgroundUploader'
-import { CompositionTimeline } from './CompositionTimeline'
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-base)',
@@ -112,9 +111,6 @@ export function CompositionPanel() {
       <div style={bentoCardStyle}>
         <BackgroundUploader />
       </div>
-
-      {/* TIMELINE */}
-      <CompositionTimeline />
     </div>
   )
 }
