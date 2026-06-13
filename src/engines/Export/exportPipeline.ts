@@ -12,6 +12,7 @@ import { zip } from 'fflate'
 import { captureFrame } from './frameCapture'
 import { downloadFile } from '@/lib/downloadHandler'
 import { encodeVideoWithFFmpeg } from './ffmpegEncoder'
+import { mixAudioTracksToWav } from '@/lib/audioMixer'
 import type { ExportConfig, ExportState } from '@/types/motion.types'
 import { useEditorStore } from '@/store/useEditorStore'
 import type { ExportWorkerConfig } from './exportWorker'
@@ -40,9 +41,13 @@ export async function runExportPipeline(
 ) {
   Telemetry.logEvent('EXPORT_STARTED', { format: config.format, resolution: config.resolution });
 
+  const audioTracks = useEditorStore.getState().audioTracks;
+  const hasAudio = audioTracks && audioTracks.some(t => !t.muted);
+
   // Check if we can use WebCodecs (Hardware Acceleration)
+  // WebCodecs standalone lacks an audio multiplexer in our current architecture.
   const isVideo = config.format === 'mp4' || config.format === 'mov';
-  if (isVideo && typeof VideoEncoder !== 'undefined') {
+  if (isVideo && typeof VideoEncoder !== 'undefined' && !hasAudio) {
     const isWebm = config.format === 'mov';
     const codecString = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028';
     
@@ -286,6 +291,13 @@ async function exportWithFFmpeg(
       errorMessage: undefined,
     })
 
+    const audioTracks = useEditorStore.getState().audioTracks
+    let audioWav: Uint8Array | null = null
+    if (audioTracks && audioTracks.length > 0) {
+      onProgress({ stage: 'encoding', errorMessage: 'Sintetizando Áudio...' })
+      audioWav = await mixAudioTracksToWav(audioTracks, duration)
+    }
+
     // Freeze global time
     gsap.globalTimeline.pause()
     
@@ -412,7 +424,7 @@ async function exportWithFFmpeg(
       finalName = `pelimotion_export_${resolution}_${fps}fps_${fileNameTimestamp}.zip`
     }
     else if (format === 'mp4' || format === 'mov') {
-      const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, (prog) => {
+      const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, audioWav, (prog) => {
         onProgress({ progress: prog })
       })
       const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime'

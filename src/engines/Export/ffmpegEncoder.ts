@@ -4,6 +4,7 @@ export async function encodeVideoWithFFmpeg(
   frames: Uint8Array[],
   fps: number,
   format: 'mp4' | 'mov',
+  audioWav: Uint8Array | null,
   onProgress: (prog: number) => void
 ): Promise<Uint8Array> {
   const ffmpeg = new FFmpeg()
@@ -40,9 +41,28 @@ export async function encodeVideoWithFFmpeg(
     args.push('-c:v', 'png', '-pix_fmt', 'rgba')
   }
 
-  args.push(outName)
-
-  await ffmpeg.exec(args)
+  if (audioWav) {
+    await ffmpeg.writeFile('mixed_audio.wav', audioWav as any)
+    // Insert audio input before the video encoding options, or after video input
+    // The easiest is to reconstruct args
+    const newArgs = [
+      '-framerate', `${fps}`,
+      '-i', `frame_%04d.${ext}`,
+      '-i', 'mixed_audio.wav'
+    ]
+    if (format === 'mp4') {
+      newArgs.push('-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2')
+    } else {
+      newArgs.push('-c:v', 'png', '-pix_fmt', 'rgba')
+    }
+    newArgs.push('-c:a', 'aac', '-b:a', '192k', '-shortest')
+    newArgs.push(outName)
+    
+    await ffmpeg.exec(newArgs)
+  } else {
+    args.push(outName)
+    await ffmpeg.exec(args)
+  }
 
   const data = await ffmpeg.readFile(outName)
   return data as Uint8Array
