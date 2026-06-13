@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 7)
 
-- [ ] **Aspect Ratio Live Crop:** Injetar o mapeamento de `aspectRatio` via CSS dinâmico no container do Canvas no `App.tsx` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).
-- [ ] **Master Duration Control:** Adicionar um input numérico no cabeçalho do `CompositionTimeline.tsx` para modificar dinamicamente o `exportConfig.duration` global (Analista).
-- [ ] **Pseudo-Waveform UI:** Adicionar um `backgroundImage` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).
+- [x] **Aspect Ratio Live Crop:** Injetar o mapeamento de `aspectRatio` via CSS dinâmico no container do Canvas no `App.tsx` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).
+- [x] **Master Duration Control:** Adicionar um input numérico no cabeçalho do `CompositionTimeline.tsx` para modificar dinamicamente o `exportConfig.duration` global (Analista).
+- [x] **Pseudo-Waveform UI:** Adicionar um `backgroundImage` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).

@@ -559,7 +559,17 @@ export const useEditorStore = create<EditorState>((set) => ({
   }),
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   toggleGizmo: () => set((state) => ({ showGizmo: !state.showGizmo })),
-  setAspectRatio: (ratio) => set({ activeAspectRatio: ratio }),
+  setAspectRatio: (ratio) => set((state) => {
+    let resolution = state.exportConfig.resolution;
+    if (ratio === '16:9') resolution = '1920x1080';
+    if (ratio === '9:16') resolution = '1080x1920';
+    if (ratio === '1:1') resolution = '1080x1080';
+    if (ratio === '4:5') resolution = '1080x1350';
+    return { 
+      activeAspectRatio: ratio,
+      exportConfig: { ...state.exportConfig, resolution }
+    };
+  }),
   incrementAnimKey: () => set((state) => ({ animForceKey: state.animForceKey + 1 })),
   setActiveLibraryAssetId: (id) => set({ activeLibraryAssetId: id }),
   setActiveLibraryTab: (tab) => set({ activeLibraryTab: tab }),

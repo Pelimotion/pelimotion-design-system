@@ -285,6 +285,21 @@ export function CompositionTimeline() {
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</span>
+            <input
+              type="number"
+              min="1" max="120"
+              value={exportConfig.duration}
+              onChange={(e) => updateExportConfig({ duration: Number(e.target.value) || 5 })}
+              style={{
+                background: 'transparent', border: 'none', color: 'var(--color-text-primary)', width: 30, fontSize: '0.7rem', outline: 'none', textAlign: 'center'
+              }}
+            />
+          </div>
+
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
           <input
             type="file"
             accept="audio/*,video/*"
@@ -521,7 +536,12 @@ export function CompositionTimeline() {
                 <div style={trackStyle}>
                    <div 
                       className="timeline-track-block"
-                      style={blockStyle(track.startTime, track.duration, 'rgba(0, 255, 100, 0.2)')}
+                      style={{
+                        ...blockStyle(track.startTime, track.duration, 'rgba(0, 255, 100, 0.2)'),
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 10 L2 14 M6 6 L6 16 M10 8 L10 12 M14 4 L14 18 M18 10 L18 14' stroke='rgba(0,255,100,0.4)' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: 'repeat-x',
+                        backgroundPosition: 'center'
+                      }}
                       onPointerDown={(e) => handlePointerDown(e, track.id, 'move', false, true)}
                    >
                      <div className={getHandleClass(track.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-left', false, true)}>
