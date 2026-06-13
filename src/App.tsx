@@ -14,10 +14,12 @@ import {
 import { TypographyPanel } from '@/components/TypographyPanel'
 import { GenerativePanel } from '@/components/GenerativePanel'
 import { LibraryPanel } from '@/components/LibraryPanel'
+import { CompositionPanel } from '@/components/CompositionPanel'
 import { ExportPanel } from '@/components/ExportPanel'
 import { TypographyPreview } from '@/engines/Typography'
 import { GenerativePreview } from '@/engines/Generative/GenerativePreview'
 import { LibraryPreview } from '@/engines/Library/LibraryPreview'
+import { CompositionPreview } from '@/engines/Composition/CompositionPreview'
 import { ExportPreview } from '@/engines/Export/ExportPreview'
 import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
@@ -38,7 +40,8 @@ const navItems: NavItem[] = [
   { id: 'typography', label: 'Tipografia', icon: <Type size={18} />, status: 'ready', phase: 2 },
   { id: 'generative', label: 'Generativo', icon: <Layers size={18} />, status: 'ready', phase: 3 },
   { id: 'library', label: 'Biblioteca', icon: <Film size={18} />, status: 'ready', phase: 4 },
-  { id: 'export', label: 'Exportar', icon: <Download size={18} />, status: 'ready', phase: 5 },
+  { id: 'composition', label: 'Composição', icon: <MonitorPlay size={18} />, status: 'ready', phase: 5 },
+  { id: 'export', label: 'Exportar', icon: <Download size={18} />, status: 'ready', phase: 6 },
 ]
 
 // ─── App Component ───────────────────────────────────────────────────────────
@@ -52,6 +55,7 @@ function App() {
     toggleSidebar,
     posterizeEnabled,
     posterizeFps,
+    exportConfig,
   } = useEditorStore()
 
   const [sidebarWidth, setSidebarWidth] = useState(320)
@@ -228,8 +232,9 @@ function App() {
               {activePanel === 'typography' && <TypographyPanel />}
               {activePanel === 'generative' && <GenerativePanel />}
               {activePanel === 'library' && <LibraryPanel />}
+              {activePanel === 'composition' && <CompositionPanel />}
               {activePanel === 'export' && <ExportPanel />}
-              {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'export' && (
+              {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'composition' && activePanel !== 'export' && (
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -313,8 +318,56 @@ function App() {
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
+            backgroundColor: exportConfig.backgroundColor,
+            borderRadius: 'var(--radius-lg)',
           }}
         >
+          {/* Background Media Layer */}
+          {activePanel !== 'export' && activePanel !== 'library' && exportConfig.backgroundImageUrl && (
+            <>
+              {exportConfig.backgroundType === 'image' ? (
+                <img
+                  src={exportConfig.backgroundImageUrl}
+                  alt="bg"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                    ...(exportConfig.aspectRatioMode === 'manual' ? {
+                      transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
+                    } : {
+                      objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
+                    })
+                  }}
+                />
+              ) : (
+                <video
+                  src={exportConfig.backgroundImageUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                    ...(exportConfig.aspectRatioMode === 'manual' ? {
+                      transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
+                    } : {
+                      objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
+                    })
+                  }}
+                />
+              )}
+            </>
+          )}
+
           {/* Grid Background Pattern */}
           <div style={{
             position: 'absolute',
@@ -325,6 +378,7 @@ function App() {
             `,
             backgroundSize: '40px 40px',
             pointerEvents: 'none',
+            zIndex: 1,
           }} />
 
           {/* GlobalGizmo — direct child of canvas-viewport so position:absolute anchors to canvas top-left */}
@@ -349,6 +403,8 @@ function App() {
               <GenerativePreview />
             ) : activePanel === 'library' ? (
               <LibraryPreview />
+            ) : activePanel === 'composition' ? (
+              <CompositionPreview />
             ) : activePanel === 'export' ? (
               <ExportPreview />
             ) : (

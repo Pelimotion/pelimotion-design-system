@@ -45,6 +45,10 @@ const ENTRY_PRESETS: Record<EntryPreset, AnimProps> = {
   reveal:     { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 1, skewX: 0,  skewY: 0, clipPath: 'inset(110% 0% 0% 0%)' },
   splitFlip:  { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, rotateX: -90 },
   custom:     { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0 },
+  brutalSlam: { x: 0,    y: 0,    scale: 4,    rotation: 0,   blur: 0,  opacity: 0, skewX: 30, skewY: 0 },
+  blurStretch:{ x: -100, y: 0,    scale: 1.2,  rotation: 0,   blur: 24, opacity: 0, skewX: -15,skewY: 0 },
+  elegantWipe:{ x: 0,    y: 15,   scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, clipPath: 'inset(100% 0% 0% 0%)' },
+  kineticChop:{ x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, rotateX: 90 },
 };
 
 const EXIT_PRESETS: Record<ExitPreset, AnimProps> = {
@@ -58,6 +62,10 @@ const EXIT_PRESETS: Record<ExitPreset, AnimProps> = {
   dissolve:  { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 16, opacity: 0, skewX: 0, skewY: 0 },
   reveal:    { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 1, skewX: 0, skewY: 0, clipPath: 'inset(0% 0% 110% 0%)' },
   custom:    { x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0, skewY: 0 },
+  brutalSlam: { x: 0,    y: 0,    scale: 4,    rotation: 0,   blur: 0,  opacity: 0, skewX: -30,skewY: 0 },
+  blurStretch:{ x: 100,  y: 0,    scale: 1.2,  rotation: 0,   blur: 24, opacity: 0, skewX: 15, skewY: 0 },
+  elegantWipe:{ x: 0,    y: -15,  scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, clipPath: 'inset(0% 0% 100% 0%)' },
+  kineticChop:{ x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, rotateX: -90 },
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

@@ -27,6 +27,7 @@ import type {
   LayerColorMode,
   LayerTargetMode,
   LayerOpacityMode,
+  CompositionLayer,
 } from '@/types/motion.types'
 import type { ColorPalette } from '@/config/color-palettes'
 
@@ -69,7 +70,16 @@ interface EditorState {
   // Local Fonts State
   availableFonts: string[];
 
+  // Composition State
+  compositionLayers: CompositionLayer[];
+  activeCompositionLayerId: string | null;
+
+  // Local Library State
+  localLibraryItems: any[]; // Or LibraryLocalItem[] if imported
+
   // ─── Actions ─────────────────────────────────────────────────────────────
+
+  saveToLocalLibrary: (item: any) => void;
 
   // Config mutations (for headless vibe-coding workflow)
   updateEasing: (easing: Partial<EasingConfig>) => void;
@@ -77,7 +87,7 @@ interface EditorState {
   updateWiggle: (wiggle: Partial<WiggleConfig>) => void;
   updateTypography: (typography: Partial<TypographyConfig>) => void;
   loadTypographyPreset: (presetConfig: Partial<TypographyConfig>) => void;
-  applyColorPalette: (palette: ColorPalette) => void;
+  applyColorPalette: (palette: ColorPalette, options?: { invert?: boolean }) => void;
 
   // Typography layer actions
   addTypoLayer: (layer: TypographyLayer) => void;
@@ -120,6 +130,13 @@ interface EditorState {
   updateExportConfig: (config: Partial<ExportConfig>) => void;
   setExportState: (state: Partial<ExportState>) => void;
   resetExport: () => void;
+
+  // Composition Actions
+  addCompositionLayer: (layer: CompositionLayer) => void;
+  removeCompositionLayer: (id: string) => void;
+  updateCompositionLayer: (id: string, patch: Partial<CompositionLayer>) => void;
+  setActiveCompositionLayerId: (id: string | null) => void;
+  reorderCompositionLayers: (startIndex: number, endIndex: number) => void;
 
   // Local Font actions
   fetchLocalFonts: () => Promise<void>;
@@ -205,17 +222,32 @@ export const useEditorStore = create<EditorState>((set) => ({
     duration: 5,
     format: 'png-sequence',
     stillFrame: 0,
+    backgroundColor: '#000000', // Default black background
     aspectRatioMode: 'fit',
     overlayScale: 1,
     overlayX: 0,
     overlayY: 0,
+    bgTrimStart: 0,
+    bgTrimEnd: 0,
   },
   exportState: initialExportState,
 
   // Local fonts cache
   availableFonts: [],
 
+  // Composition initial state
+  compositionLayers: [],
+  activeCompositionLayerId: null,
+
+  // Local Library State
+  localLibraryItems: [],
+
   // ─── Config Mutations ──────────────────────────────────────────────────
+
+  saveToLocalLibrary: (item: any) =>
+    set((state) => ({
+      localLibraryItems: [...state.localLibraryItems, item],
+    })),
 
   updateEasing: (easing) =>
     set((state) => ({
@@ -278,10 +310,23 @@ export const useEditorStore = create<EditorState>((set) => ({
       };
     }),
 
-  applyColorPalette: (palette) =>
+  applyColorPalette: (palette, options) =>
     set((state) => {
-      const newLayers = state.motionConfig.typography.layers.map((l, i) => {
-        const color = i === 0 ? palette.primary : palette.secondary;
+      const pPrimary = options?.invert ? palette.secondary : palette.primary;
+      const pSecondary = options?.invert ? palette.primary : palette.secondary;
+      
+      if (typeof document !== 'undefined') {
+        const root = document.documentElement;
+        // Set canvas scoped variables instead of global app theme
+        // Background is now explicitly ignored here (controlled by Composition panel)
+        root.style.setProperty('--canvas-primary', pPrimary);
+        root.style.setProperty('--canvas-secondary', pSecondary);
+        root.style.setProperty('--canvas-accent', palette.accent);
+      }
+
+      // Update Typography Layers
+      const newTypoLayers = state.motionConfig.typography.layers.map((l, i) => {
+        const color = i === 0 ? pPrimary : pSecondary;
         const trailColor = palette.accent;
         return {
           ...l,
@@ -290,17 +335,26 @@ export const useEditorStore = create<EditorState>((set) => ({
         };
       });
 
+      // Update Generative Layers if applicable
+      const newGenLayers = state.generativeLayers.map((l) => {
+        return {
+          ...l,
+          colors: [pPrimary, pSecondary]
+        };
+      });
+
       return {
         motionConfig: {
           ...state.motionConfig,
-          canvas: { ...state.motionConfig.canvas, backgroundColor: palette.background },
+          // Removed canvas background override to respect composition settings
           trail: { 
             ...state.motionConfig.trail, 
             trailColor: palette.accent,
             style: state.motionConfig.trail.style === 'blur' ? 'solid' : state.motionConfig.trail.style 
           },
-          typography: { ...state.motionConfig.typography, layers: newLayers },
+          typography: { ...state.motionConfig.typography, layers: newTypoLayers },
         },
+        generativeLayers: newGenLayers,
         animForceKey: state.animForceKey + 1,
       };
     }),
@@ -465,6 +519,39 @@ export const useEditorStore = create<EditorState>((set) => ({
     })),
 
   resetExport: () => set({ exportState: initialExportState }),
+
+  // ─── Composition Actions ───────────────────────────────────────────────
+
+  addCompositionLayer: (layer) =>
+    set((state) => ({
+      compositionLayers: [...state.compositionLayers, layer],
+      activeCompositionLayerId: layer.id,
+    })),
+
+  removeCompositionLayer: (id) =>
+    set((state) => ({
+      compositionLayers: state.compositionLayers.filter((l) => l.id !== id),
+      activeCompositionLayerId: state.activeCompositionLayerId === id ? null : state.activeCompositionLayerId,
+    })),
+
+  updateCompositionLayer: (id, patch) =>
+    set((state) => ({
+      compositionLayers: state.compositionLayers.map((l) =>
+        l.id === id ? { ...l, ...patch } : l
+      ),
+    })),
+
+  setActiveCompositionLayerId: (id) => set({ activeCompositionLayerId: id }),
+
+  reorderCompositionLayers: (startIndex, endIndex) =>
+    set((state) => {
+      const result = Array.from(state.compositionLayers);
+      const [removed] = result.splice(startIndex, 1);
+      if (removed) {
+        result.splice(endIndex, 0, removed);
+      }
+      return { compositionLayers: result };
+    }),
 
   // ─── Local Font Actions ────────────────────────────────────────────────
 

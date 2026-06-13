@@ -2,26 +2,39 @@
 
 ## Phase 1: Environment & Strict Configuration
 - [x] Bootstrap Vite + React + TypeScript + SWC.
-- [x] Configure Tailwind CSS v4 for a dark-mode, minimalist interface (Vercel/Linear aesthetic). Use `lucide-react` for iconography.
+- [x] Configure Tailwind CSS v4 for a dark-mode, minimalist interface (Vercel/Linear/Bento UI aesthetic). Use `lucide-react` for iconography.
 - [x] Establish exact path aliases (`@/`) in `tsconfig.json` and `vite.config.ts` to prevent broken import paths.
 - [x] Build the Zustand store and strictly typed interfaces for `/src/config/global-motion.json`.
 
 ## Phase 2: The Typographic Engine (Lettering)
 - [x] Integrate GSAP `SplitText` to handle dynamic text wrapping and character/word splitting.
-- [x] Build the Timeline Factory using GSAP. Expose parameters: `opacity`, `y/x position`, `scale`, and `filter: blur()`.
-- [x] **The Trail Effect Module:** Create a recursive component that clones the text DOM node based on `config.instances`. Apply mix-blend-modes and inject staggered delays via GSAP to create the pre-animation trail. Implement robust cleanup to prevent DOM bloat.
+- [x] Build the Timeline Factory using GSAP. Expose parameters: `opacity`, `y/x position`, `scale`, and support flat 2D trail aesthetics.
+- [x] **The Trail Effect Module:** Create a recursive component that clones the text DOM node. Apply mix-blend-modes and inject staggered delays via GSAP to create the pre-animation trail. Implement robust cleanup to prevent DOM bloat.
 
 ## Phase 3: The Generative SVG Engine
-- [ ] Create the SVG Injector that parses `public/assets/svg-generative/` directly into the DOM tree.
-- [ ] Implement organic wiggles utilizing Simplex Noise mapped to GSAP variables, controlling Transform (Scale, Rotate, Translate). Expose fine-tuning parameters (Amplitude, Frequency).
-- [ ] **PosterizeTime Implementation:** Override the default `gsap.ticker`. Create a custom update loop that forces the animation to tick only at specific intervals (e.g., 8fps, 12fps) defined in the configuration.
+- [x] Create the SVG Injector that parses `public/assets/svg-generative/` directly into the DOM tree.
+- [x] Implement organic wiggles utilizing Simplex Noise mapped to GSAP variables, controlling Transform (Scale, Rotate, Translate). Expose fine-tuning parameters (Amplitude, Frequency, Opacity wiggles).
+- [x] **PosterizeTime Implementation:** Override the default `gsap.ticker`. Create a custom update loop that forces the animation to tick only at specific intervals (e.g., 8fps, 12fps) defined in the configuration.
 
 ## Phase 4: Pre-Rendered Asset Management
-- [ ] Build the UI layer that parses `library.json`.
-- [ ] Implement HTML5 Video players specifically optimized to preview Alpha channels (HEVC for Safari, WebM for Chrome/Edge).
-- [ ] Create direct download handlers for the `.MOV` delivery files.
+- [x] Build the UI layer that parses `library.json` and supports local library item addition.
+- [x] Implement HTML5 Video players specifically optimized to preview Alpha channels (HEVC for Safari, WebM for Chrome/Edge) with checkerboard transparent background.
+- [x] Create direct download handlers and edge cloud synchronization via BunnyCDN storage upload.
 
 ## Phase 5: The Client-Side Render Pipeline (Critical Path)
-- [ ] Integrate a high-performance DOM-to-Canvas library (e.g., `modern-screenshot` or heavily optimized `html2canvas-pro`).
-- [ ] Implement the `WebCodecs API` as the primary encoder to generate `WebM` with Alpha channel (VP9) directly in-browser.
-- [ ] Setup `FFmpeg.wasm` (multi-threaded, optimized for ARM/M-series chips) as a fallback mechanism for rendering PNG sequences in a `.ZIP` file.
+- [x] Integrate a high-performance DOM-to-Canvas library (`html-to-image`) for precise frame-by-frame capture.
+- [x] Implement deterministic GSAP timeline scrubbing (`timeline.seek()`) during export to guarantee frame-rate synchronization.
+- [x] Integrate `fflate` for client-side synchronous/asynchronous ZIP encoding of PNG sequences.
+- [x] Integrate `FFmpeg.wasm` for direct MP4 and MOV (with alpha transparency) encoding in the browser.
+
+## Phase 6: Composition Module, Drag & Drop Timeline & Stability
+- [x] **Decoupled Background & Composition Shell:** Migrate aspect ratio, framerate, duration, background video/image/color upload, and controls from Export to the new Composition Panel.
+- [x] **Bento Grid Refactoring:** Redesign Editor panels to a premium SaaS Bento Grid interface using thin lines, HSL colors, glassmorphism, and responsive CSS grids.
+- [x] **Native Pointer Events Timeline:** Build a custom React drag-and-drop timeline track for compositional layers and background trimming without using external layout drag-and-drop engines.
+- [x] **Canvas Compositing Pipeline:** Implement dual-pass rendering (capturing transparent DOM overlay while hiding background video, then compositing them via Canvas API).
+- [x] **WebAssembly FFmpeg Optimizations:** Optimize MP4 exports by converting frames to JPEG buffers to avoid browser Out-of-Memory crashes and force even-numbered dimensions for the `libx264` codec.
+
+## Phase 7: Future Expansion (Backlog)
+- [ ] **Multi-track Audio Mixing:** Add support for importing and syncing audio tracks directly in the timeline, mixing audio buffers before final WebAssembly encoding.
+- [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
+- [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.

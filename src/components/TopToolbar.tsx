@@ -428,6 +428,7 @@ export function TopToolbar() {
             {activePanel === 'typography' ? 'Tipografia'
               : activePanel === 'generative' ? 'Generativo'
               : activePanel === 'library' ? 'Biblioteca'
+              : activePanel === 'composition' ? 'Composição'
               : 'Exportar'}
           </span>
         </div>

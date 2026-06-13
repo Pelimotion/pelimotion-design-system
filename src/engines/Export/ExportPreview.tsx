@@ -9,10 +9,11 @@ import { useRef, useEffect } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { TypographyPreview } from '@/engines/Typography'
 import { GenerativePreview } from '@/engines/Generative/GenerativePreview'
+import { CompositionPreview } from '@/engines/Composition/CompositionPreview'
 import { runExportPipeline } from './exportPipeline'
 
 export function ExportPreview() {
-  const { activePanel, exportConfig, exportState, setExportState } = useEditorStore()
+  const { activePanel, exportConfig, exportState, setExportState, compositionLayers } = useEditorStore()
   const captureRef = useRef<HTMLDivElement>(null)
 
   const [wStr, hStr] = (exportConfig.resolution || "1920x1080").split('x') as [string, string]
@@ -102,7 +103,11 @@ export function ExportPreview() {
 
           {/* Foreground Layer */}
           <div style={fgStyle}>
-            {activePanel === 'generative' ? <GenerativePreview /> : <TypographyPreview />}
+            {compositionLayers.length > 0 ? (
+              <CompositionPreview />
+            ) : (
+              activePanel === 'generative' ? <GenerativePreview /> : <TypographyPreview />
+            )}
           </div>
         </div>
       </div>

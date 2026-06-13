@@ -19,21 +19,22 @@ export async function encodeVideoWithFFmpeg(
     wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm',
   })
 
+  const ext = format === 'mp4' ? 'jpg' : 'png'
   // Write PNG frames to virtual FS
   for (let i = 0; i < frames.length; i++) {
-    const frameName = `frame_${String(i).padStart(4, '0')}.png`
+    const frameName = `frame_${String(i).padStart(4, '0')}.${ext}`
     await ffmpeg.writeFile(frameName, frames[i] as any)
   }
 
   const outName = `output.${format}`
   const args = [
     '-framerate', `${fps}`,
-    '-i', 'frame_%04d.png'
+    '-i', `frame_%04d.${ext}`
   ]
 
   if (format === 'mp4') {
-    // Standard H.264 MP4 (no alpha)
-    args.push('-c:v', 'libx264', '-pix_fmt', 'yuv420p')
+    // Standard H.264 MP4 (no alpha). Scale ensures even dimensions to avoid libx264 errors
+    args.push('-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2')
   } else if (format === 'mov') {
     // QuickTime Animation (RLE) or PNG codec for Alpha support
     args.push('-c:v', 'png', '-pix_fmt', 'rgba')

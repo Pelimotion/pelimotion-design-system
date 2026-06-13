@@ -154,6 +154,14 @@ function LayerNode({
     <div
       ref={dragRef}
       data-gizmo-target={isSelected ? 'active' : undefined}
+      onPointerDown={(e) => {
+        // Se não for freeform, o Draggable do GSAP está desativado e não dispara o onSelect.
+        // Precisamos selecionar manualmente para que o Gizmo apareça.
+        if (!isFreeform) {
+          e.stopPropagation();
+          onSelect();
+        }
+      }}
       style={{
         // Freeform: absolute, center-anchored via GSAP xPercent/yPercent
         // Structured: relative, participates in flex/grid flow
@@ -209,7 +217,7 @@ function LayerNode({
 
             return (
               <div
-                key={i}
+                key={`${i}-${animKey}`}
                 ref={(el) => cloneRef(i, el)}
                 style={{
                   position: 'absolute', inset: 0,
@@ -276,6 +284,7 @@ export function TypographyPreview() {
   // Includes animForceKey so the "Reiniciar Efeito" button works
   const animKey = JSON.stringify({
     forceKey: animForceKey,
+    globalTrail,
     layers: layers.map(l => ({
       id: l.id, text: l.text,
       font: [l.fontFamily, l.fontWeight, l.fontSize, l.letterSpacing, l.lineHeight, l.fontStyle, l.textTransform, l.color, l.textAlign],

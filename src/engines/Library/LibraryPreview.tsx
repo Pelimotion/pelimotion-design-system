@@ -10,24 +10,39 @@ import { AlphaVideoPlayer } from './AlphaVideoPlayer'
 import { SVG_CATALOG } from '@/engines/Generative/svgInjector'
 import { resolveAssetPath } from '@/lib/utils'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
-import { Type, Play } from 'lucide-react'
+import { Type, Play, Layers } from 'lucide-react'
 
 export function LibraryPreview() {
   const { 
     libraryConfig, 
     activeLibraryAssetId,
     loadTypographyPreset,
-    setActivePanel
+    setActivePanel,
+    localLibraryItems,
   } = useEditorStore()
 
   const localPreset = activeLibraryAssetId && activeLibraryAssetId.startsWith('preset-')
     ? TYPOGRAPHY_PRESETS.find(p => p.id === activeLibraryAssetId)
     : null
 
+  const localSavedItem = localLibraryItems.find(item => item.id === activeLibraryAssetId)
+
   const activeAsset = libraryConfig.assets.find(a => a.id === activeLibraryAssetId)
   const category = libraryConfig.categories.find(c => c.id === activeAsset?.category)
 
-  if (localPreset) {
+  if (localPreset || localSavedItem) {
+    const isTypo = localPreset || (localSavedItem && localSavedItem.type === 'typography')
+    const name = localPreset ? localPreset.name : localSavedItem.name
+    const description = localPreset ? localPreset.description : `Salvo em ${new Date(localSavedItem.createdAt).toLocaleString()}`
+    
+    // Config based on type
+    let typoConfig = null;
+    let genData = null;
+
+    if (localPreset) typoConfig = localPreset.config;
+    if (localSavedItem && localSavedItem.type === 'typography') typoConfig = localSavedItem.data;
+    if (localSavedItem && localSavedItem.type === 'generative') genData = localSavedItem.data;
+
     return (
       <div style={{
         width: '100%', height: '100%',
@@ -51,24 +66,26 @@ export function LibraryPreview() {
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             <div style={{
               width: 48, height: 48, borderRadius: 12,
-              background: 'linear-gradient(135deg, var(--color-accent), #7c3aed)',
+              background: isTypo 
+                ? 'linear-gradient(135deg, var(--color-accent), #7c3aed)'
+                : 'linear-gradient(135deg, #10b981, #047857)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: 'var(--shadow-glow)'
             }}>
-              <Type size={22} color="#fff" />
+              {isTypo ? <Type size={22} color="#fff" /> : <Layers size={22} color="#fff" />}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Preset de Tipografia
+                Preset de {isTypo ? 'Tipografia' : 'Motor Generativo'}
               </span>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
-                {localPreset.name}
+                {name}
               </h2>
             </div>
           </div>
 
           <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
-            {localPreset.description}
+            {description}
           </p>
 
           {/* Details Table */}
@@ -81,67 +98,101 @@ export function LibraryPreview() {
             flexDirection: 'column',
             gap: 12
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Modo de Layout</span>
-              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
-                {localPreset.config.layoutMode === 'sideBySide' ? 'Lado a Lado' : localPreset.config.layoutMode === 'freeform' ? 'Livre' : 'Empilhado'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Espaçamento</span>
-              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                {localPreset.config.layoutGap ? `${localPreset.config.layoutGap}px` : 'N/A'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Tempo em Tela</span>
-              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                {localPreset.config.timeOnScreen}s
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Camadas de Texto</span>
-              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                {localPreset.config.layers?.length || 0}
-              </span>
-            </div>
+            {isTypo && typoConfig && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Modo de Layout</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
+                    {typoConfig.layoutMode === 'sideBySide' ? 'Lado a Lado' : typoConfig.layoutMode === 'freeform' ? 'Livre' : 'Empilhado'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Espaçamento</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {typoConfig.layoutGap ? `${typoConfig.layoutGap}px` : 'N/A'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Tempo em Tela</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {typoConfig.timeOnScreen}s
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Camadas de Texto</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {typoConfig.layers?.length || 0}
+                  </span>
+                </div>
+              </>
+            )}
+
+            {!isTypo && genData && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Camadas Generativas</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {genData.layers?.length || 0}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Ruído (Wiggle)</span>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
+                    {genData.globalWiggle?.noiseType || 'simplex'}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Text preview lines */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Linhas de Texto:
-            </span>
-            <div style={{
-              display: 'flex', flexDirection: 'column', gap: 8,
-              background: 'var(--color-bg-primary)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-surface-border)',
-              padding: '14px 16px',
-            }}>
-              {localPreset.config.layers?.map((layer, index) => (
-                <div key={layer.id || index} style={{ display: 'flex', gap: 10, fontSize: '0.8rem', alignItems: 'flex-start' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--color-accent)', minWidth: 20, marginTop: 1 }}>
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <span style={{ color: 'var(--color-text-primary)', fontStyle: layer.fontStyle === 'italic' ? 'italic' : 'normal', fontWeight: layer.fontWeight }}>
-                      "{layer.text}"
+          {isTypo && typoConfig && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                Linhas de Texto:
+              </span>
+              <div style={{
+                display: 'flex', flexDirection: 'column', gap: 8,
+                background: 'var(--color-bg-primary)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--color-surface-border)',
+                padding: '14px 16px',
+              }}>
+                {typoConfig.layers?.map((layer: any, index: number) => (
+                  <div key={layer.id || index} style={{ display: 'flex', gap: 10, fontSize: '0.8rem', alignItems: 'flex-start' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--color-accent)', minWidth: 20, marginTop: 1 }}>
+                      {String(index + 1).padStart(2, '0')}
                     </span>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      Fonte: {layer.fontFamily} • Peso: {layer.fontWeight} • Tam: {layer.fontSize}vw
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span style={{ color: 'var(--color-text-primary)', fontStyle: layer.fontStyle === 'italic' ? 'italic' : 'normal', fontWeight: layer.fontWeight }}>
+                        "{layer.text}"
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        Fonte: {layer.fontFamily} • Peso: {layer.fontWeight} • Tam: {layer.fontSize}vw
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Apply Button */}
           <button
             onClick={() => {
-              loadTypographyPreset(localPreset.config)
-              setActivePanel('typography')
+              if (isTypo && typoConfig) {
+                loadTypographyPreset(typoConfig)
+                setActivePanel('typography')
+              } else if (genData) {
+                useEditorStore.setState((state) => ({
+                  generativeLayers: genData.layers || [],
+                  motionConfig: {
+                    ...state.motionConfig,
+                    wiggle: genData.globalWiggle || state.motionConfig.wiggle
+                  }
+                }))
+                setActivePanel('generative')
+              }
             }}
             style={{
               width: '100%',

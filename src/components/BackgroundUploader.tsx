@@ -44,6 +44,22 @@ export function BackgroundUploader() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>Cor de Fundo</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-accent)' }}>{exportConfig.backgroundColor}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="color"
+            value={exportConfig.backgroundColor}
+            onChange={(e) => updateExportConfig({ backgroundColor: e.target.value })}
+            style={{ width: '100%', height: 36, padding: 2, border: '1px solid var(--color-surface-border)', borderRadius: 6, cursor: 'pointer', background: 'var(--color-surface-glass)' }}
+            disabled={exportState.isExporting}
+          />
+        </div>
+      </div>
+
       {!backgroundImageUrl ? (
         <label style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -53,7 +69,7 @@ export function BackgroundUploader() {
           background: 'var(--color-surface-glass)', transition: 'all 0.2s', opacity: exportState.isExporting ? 0.5 : 1
         }}>
           <Upload size={16} />
-          <span>Upload Background (Imagem ou MP4)</span>
+          <span>Upload Background (Imagem/MP4 Opcional)</span>
           <input 
             type="file" 
             accept="image/*,video/mp4" 
@@ -84,7 +100,12 @@ export function BackgroundUploader() {
             <img src={backgroundImageUrl} alt="Background Preview" style={{ width: '100%', height: 60, objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
           )}
           {backgroundType === 'video' && (
-            <video src={backgroundImageUrl} style={{ width: '100%', height: 60, objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <video src={backgroundImageUrl} style={{ width: '100%', height: 60, objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+              <div style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', background: 'var(--color-surface-glass)', padding: '6px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+                ℹ️ Utilize a Linha do Tempo abaixo para configurar o Trim (corte) deste vídeo.
+              </div>
+            </div>
           )}
         </div>
       )}

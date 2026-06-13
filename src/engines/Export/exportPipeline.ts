@@ -59,15 +59,44 @@ export async function runExportPipeline(
 
       // Sync video background
       if (bgVideo) {
-        bgVideo.currentTime = time % bgVideo.duration || time
+        const trimStart = config.bgTrimStart || 0;
+        const trimEnd = config.bgTrimEnd || bgVideo.duration || Infinity;
+        let videoTime = trimStart + time;
+        if (trimEnd > trimStart && videoTime > trimEnd) {
+           videoTime = trimEnd; // Or loop it: ((time) % (trimEnd - trimStart)) + trimStart
+        }
+        bgVideo.currentTime = videoTime;
       }
 
       // Wait a tiny bit for the DOM to flush styles/layout and video to seek
       await new Promise(resolve => setTimeout(resolve, 50)) // 50ms is usually enough for video seek
       
-      // Capture the frame
+      if (bgVideo) bgVideo.style.display = 'none'
+      
+      // Capture the frame (without video for speed and cross-origin safety)
       const blob = await captureFrame(element, { width, height })
-      const arrayBuffer = await blob.arrayBuffer()
+      
+      if (bgVideo) bgVideo.style.display = 'block'
+      
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')!
+      
+      if (bgVideo) {
+        ctx.drawImage(bgVideo, 0, 0, width, height)
+      }
+      
+      const img = new Image()
+      const url = URL.createObjectURL(blob)
+      await new Promise(r => { img.onload = r; img.src = url })
+      ctx.drawImage(img, 0, 0, width, height)
+      URL.revokeObjectURL(url)
+      
+      const isJpeg = format === 'mp4'
+      const mime = isJpeg ? 'image/jpeg' : 'image/png'
+      const finalCanvasBlob = await new Promise<Blob>(r => canvas.toBlob(r as any, mime, 0.9))
+      const arrayBuffer = await finalCanvasBlob.arrayBuffer()
       const uint8Array = new Uint8Array(arrayBuffer)
       
       frames.push(uint8Array)

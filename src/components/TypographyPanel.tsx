@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { SubTabBar } from '@/components/SubTabBar'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
-import { COLOR_PALETTES } from '@/config/color-palettes'
+import { ColorManager } from '@/components/ColorManager'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const selectStyle: React.CSSProperties = {
@@ -374,6 +374,10 @@ const ENTRY_PRESET_LABELS: Record<EntryPreset, string> = {
   reveal: 'Revelação Vertical',
   splitFlip: 'Flip 3D (Letras)',
   custom: 'Personalizado',
+  brutalSlam: 'Brutal Slam',
+  blurStretch: 'Blur Stretch',
+  elegantWipe: 'Elegant Wipe',
+  kineticChop: 'Kinetic Chop',
 };
 
 const EXIT_PRESET_LABELS: Record<ExitPreset, string> = {
@@ -387,6 +391,10 @@ const EXIT_PRESET_LABELS: Record<ExitPreset, string> = {
   dissolve: 'Dissolve',
   reveal: 'Wipe Out Vertical',
   custom: 'Personalizado',
+  brutalSlam: 'Brutal Slam',
+  blurStretch: 'Blur Stretch',
+  elegantWipe: 'Elegant Wipe',
+  kineticChop: 'Kinetic Chop',
 };
 
 const SPLIT_MODE_LABELS: Record<SplitMode, string> = {
@@ -675,7 +683,6 @@ export function TypographyPanel() {
     availableFonts, fetchLocalFonts,
     activeTypoLayerId, setActiveTypoLayer,
     loadTypographyPreset,
-    applyColorPalette,
   } = useEditorStore();
 
   const [activeTab, setActiveTab] = useState('camadas');
@@ -740,15 +747,58 @@ export function TypographyPanel() {
           { id: 'camadas', label: 'Camadas', icon: <Layers /> },
           { id: 'animacao', label: 'Animação', icon: <Play /> },
           { id: 'efeitos', label: 'Efeitos', icon: <Wand2 /> },
-          { id: 'cores', label: 'Cores', icon: <Palette /> },
-          { id: 'exemplos', label: 'Exemplos', icon: <Sparkles /> }
+          { id: 'cores', label: 'Cores', icon: <Palette /> }
         ]}
         active={activeTab}
         onChange={setActiveTab}
       />
 
+      <div style={{ padding: '0 4px', marginBottom: 8 }}>
+        <button
+          onClick={() => {
+            const item = {
+              id: `typo-${Date.now()}`,
+              name: `Composição de Texto ${Date.now().toString().slice(-4)}`,
+              type: 'typography',
+              createdAt: Date.now(),
+              data: {
+                layers: motionConfig.typography.layers,
+                layoutMode: motionConfig.typography.layoutMode,
+                layoutGap: motionConfig.typography.layoutGap,
+                timeOnScreen: motionConfig.typography.timeOnScreen,
+                globalIdleMotion: motionConfig.typography.globalIdleMotion,
+                trail: globalTrail
+              }
+            };
+            useEditorStore.getState().saveToLocalLibrary(item);
+            // Optionally, show a success toast here
+          }}
+          style={{
+            width: '100%',
+            padding: '8px',
+            background: 'var(--color-surface-glass)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
+        >
+          <Sparkles size={14} />
+          Salvar na Biblioteca (Local)
+        </button>
+      </div>
+
       {/* ─── Seleção de Camadas ────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, marginTop: 8 }} className="custom-scrollbar">
+      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, marginTop: 8, flexShrink: 0 }} className="custom-scrollbar">
         {layers.map(layer => (
           <button
             key={layer.id}
@@ -1110,42 +1160,7 @@ export function TypographyPanel() {
       )}
 
       {activeTab === 'cores' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '4px 2px' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: 8 }}>
-            Selecione uma paleta para aplicar globalmente nas cores de texto, rastro e fundo.
-          </div>
-          {COLOR_PALETTES.map((palette) => (
-            <div
-              key={palette.id}
-              onClick={() => applyColorPalette(palette)}
-              style={{
-                background: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-surface-border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '12px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.transform = 'none' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                  {palette.name}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 8, height: 24, borderRadius: 4, overflow: 'hidden' }}>
-                <div style={{ flex: 1, backgroundColor: palette.background, border: '1px solid rgba(255,255,255,0.1)' }} title="Fundo" />
-                <div style={{ flex: 1, backgroundColor: palette.primary, border: '1px solid rgba(255,255,255,0.1)' }} title="Primária" />
-                <div style={{ flex: 1, backgroundColor: palette.secondary, border: '1px solid rgba(255,255,255,0.1)' }} title="Secundária" />
-                <div style={{ flex: 1, backgroundColor: palette.accent, border: '1px solid rgba(255,255,255,0.1)' }} title="Destaque (Eco)" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <ColorManager />
       )}
 
       <div style={{ height: 40 }} />

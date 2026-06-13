@@ -48,7 +48,16 @@ function AspectRatioGrid({ ratio, label, color = 'rgba(255,255,255,0.2)' }: {
 
 function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
   const { colorMode, colors } = layer
-  const palette = colors && colors.length > 0 ? colors.filter(Boolean) : ['#a78bfa']
+  
+  // Base palette from user choice if solid
+  let palette = colors && colors.length > 0 ? colors.filter(Boolean) : ['#a78bfa']
+  
+  // Override for duotone and tritone to lock to global palette
+  if (colorMode === 'duotone') {
+    palette = ['var(--canvas-primary)', 'var(--canvas-accent)']
+  } else if (colorMode === 'tritone') {
+    palette = ['var(--canvas-primary)', 'var(--canvas-accent)', 'var(--canvas-secondary)']
+  }
 
   // Gather all paintable SVG elements
   const paintableEls = Array.from(container.querySelectorAll(

@@ -200,11 +200,13 @@ export interface TypoLayerTransform {
 
 /** Animation preset names for entry transitions */
 export type EntryPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleIn'
-  | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'reveal' | 'splitFlip' | 'custom';
+  | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'reveal' | 'splitFlip' | 'custom'
+  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop';
 
 /** Animation preset names for exit transitions */
 export type ExitPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleOut'
-  | 'rotateOut' | 'blurOut' | 'dissolve' | 'reveal' | 'custom';
+  | 'rotateOut' | 'blurOut' | 'dissolve' | 'reveal' | 'custom'
+  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop';
 
 /** Direction from which stagger cascades */
 export type StaggerFrom = 'start' | 'end' | 'center' | 'edges' | 'random';
@@ -448,7 +450,15 @@ export interface LibraryConfig {
 
 export type NoiseChannel = 'x' | 'y' | 'rotation' | 'scale' | 'opacity' | 'scaleX' | 'scaleY' | 'skew';
 
-export type EditorPanel = 'typography' | 'generative' | 'library' | 'export';
+export type EditorPanel = 'typography' | 'generative' | 'library' | 'composition' | 'export';
+
+export interface LibraryLocalItem {
+  id: string;
+  name: string;
+  type: 'typography' | 'generative';
+  createdAt: number;
+  data: any; // A payload containing the layers and config
+}
 
 export interface ExportState {
   isExporting: boolean;
@@ -467,10 +477,43 @@ export interface ExportConfig {
   stillFrame: number; // Frame to export if format is png-still
   
   // Background & Composition
+  backgroundColor: string;
   backgroundImageUrl?: string;
   backgroundType?: 'image' | 'video';
   aspectRatioMode: 'fit' | 'crop' | 'manual';
   overlayScale: number;
   overlayX: number;
   overlayY: number;
+  bgTrimStart?: number;
+  bgTrimEnd?: number;
+}
+
+// ─── Composition State ───────────────────────────────────────────────────────
+
+export interface CompositionLayer {
+  id: string;
+  name: string;
+  type: 'video' | 'localAsset' | 'remoteAsset';
+  /** ID referencing the LibraryLocalItem or LibraryAsset */
+  assetId: string;
+  /** Start time in the composition (seconds) */
+  startTime: number;
+  /** Duration in the composition (seconds) */
+  duration: number;
+  /** Start offset for video trimming (seconds) */
+  trimStart?: number;
+  /** End offset for video trimming (seconds) */
+  trimEnd?: number;
+  /** Layer spatial transform */
+  transform: {
+    x: number;
+    y: number;
+    scale: number;
+    rotation: number;
+    opacity: number;
+  };
+  /** Whether the layer is hidden in the preview */
+  hidden?: boolean;
+  /** Whether the layer is locked from editing */
+  locked?: boolean;
 }

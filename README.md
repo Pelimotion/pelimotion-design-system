@@ -10,11 +10,12 @@ A área de trabalho do Pelimotion é limpa e focada em resultados. Ela é dividi
 
 1. **Painel Central (Preview em Tempo Real):** É o coração do sistema. Todas as suas mudanças refletem instantaneamente aqui. O que você vê no preview será exatamente o que o sistema vai exportar.
 2. **Barra Lateral Esquerda (Navegação):** É onde você escolhe a "ferramenta" do momento:
-   - *Tipografia:* Para textos animados e títulos de impacto.
-   - *Generativo:* Para dar vida a formas e ícones SVG.
-   - *Exportar:* Onde você empacota e baixa sua arte.
-   - *Biblioteca:* O seu acervo de projetos finalizados na nuvem.
-3. **Barra Lateral Direita (Controles):** O painel mágico de ajustes finos. Ali ficam todos os "botões e controles deslizantes" para definir cor, velocidade, traços e comportamento da sua arte.
+   - *Tipografia:* Para criar e configurar textos animados e títulos de impacto.
+   - *Generativo:* Para gerar e customizar formas orgânicas e ícones baseados em SVG e motores de ruído.
+   - *Biblioteca:* O seu acervo de presets locais e arquivos finalizados salvos em nuvem.
+   - *Composição:* O centro de controle da cena (onde se define resolução, duração, FPS e fundos de vídeo/imagem/cor sólida).
+   - *Exportar:* Onde você inicia o pipeline de render do projeto para arquivos MP4, MOV ou PNG.
+3. **Barra Lateral Direita (Controles):** O painel de ajustes finos. Ali ficam todos os botões e controles deslizantes para definir cor, velocidade, efeitos e comportamento das camadas ativas.
 
 ---
 
@@ -34,19 +35,22 @@ Aqui as formas livres tomam vida, flutuando como se estivessem em um ambiente na
 
 ---
 
-## 🎬 3. O Grande Momento: Módulo de Exportação
+## 🎬 3. Configuração de Cena & Exportação
 
-Terminou os ajustes e a animação está hipnotizante? Hora de fechar o arquivo:
+Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo final:
 
-1. Vá até a aba **Exportar** na lateral esquerda.
-2. **Resolução e Tempo:** Digite as proporções desejadas (ex: `1080x1920` para stories de Instagram ou TikTok) e escolha quantos segundos sua peça deve durar.
-3. **Adicionando um Fundo Próprio:** Quer que sua arte animada flutue sobre um vídeo institucional seu? Use o **Upload de Background** para carregar um vídeo MP4 do seu computador. Na opção *Modo (Aspect Ratio)*, altere para **Manual** se desejar pinçar a escala e arrastar as coordenadas (X e Y) do seu texto ou ícone por cima do vídeo, exatamente onde deve ficar.
-4. **Escolhendo o Formato Certo:**
-   - **Vídeo MP4:** O formato leve e clássico para redes sociais. *Dica: requer que você tenha um vídeo ou imagem de background aplicado.*
-   - **Vídeo MOV (Com Alpha):** A "carta na manga" dos editores de vídeo. Gera a animação com **fundo invisível**. Ideal para importar no Premiere e colocar por cima de qualquer cena de TV.
-   - **Sequência PNG ou PNG Estático:** Ideal para web, sites e aprovação rápida de cenas.
+### Passo A: Ajustar a Cena na aba "Composição"
+1. Vá até o painel **Composição** na lateral esquerda.
+2. **Resolução e Aspect Ratio:** Defina as proporções desejadas (como 16:9 widescreen, 9:16 vertical para Instagram/TikTok, ou proporção livre) e selecione o Framerate (FPS) e a Duração total da timeline.
+3. **Definir o Fundo (Background):** Escolha uma cor sólida como fundo ou faça o upload de um arquivo de vídeo (MP4) ou imagem estática. Na opção de enquadramento (Aspect Ratio), escolha **Fit**, **Crop** ou **Manual** (onde você pode ajustar a escala e mover os eixos X e Y).
 
-Por fim, clique em **Exportar Vídeo**. Uma barra carregará frame a frame. No final, o navegador salvará automaticamente na sua máquina.
+### Passo B: Renderizar e Baixar na aba "Exportar"
+1. Clique no painel **Exportar** na barra lateral.
+2. **Escolhendo o Formato Certo:**
+   - **Vídeo MP4:** O formato ideal e leve para mídias sociais. *Atenção: requer um vídeo ou imagem de fundo ativo.*
+   - **Vídeo MOV (Com Alpha):** A ferramenta favorita dos editores de vídeo, gerando o render com fundo transparente (canal Alpha). Ideal para sobreposições em softwares de edição externos.
+   - **Sequência PNG (ZIP):** Exporta todos os frames da timeline como arquivos PNG individuais agrupados em um ZIP de alta qualidade.
+3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística e fará o download automático em sua máquina.
 
 ---
 

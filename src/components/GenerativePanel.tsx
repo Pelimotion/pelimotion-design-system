@@ -10,9 +10,10 @@ import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import {
   Activity, ChevronDown, ChevronRight, Info, Upload, Trash2,
-  Settings2, Palette, Plus, MousePointer2, Layers as LayersIcon
+  Settings2, Palette, Plus, MousePointer2, Layers as LayersIcon, Sparkles
 } from 'lucide-react'
 import { SubTabBar } from '@/components/SubTabBar'
+import { ColorManager } from '@/components/ColorManager'
 import type { NoiseChannel, GenerativeShapeType } from '@/types/motion.types'
 
 const selectStyle: React.CSSProperties = {
@@ -198,10 +199,52 @@ export function GenerativePanel() {
         tabs={[
           { id: 'camadas', label: 'Camadas', icon: <LayersIcon /> },
           { id: 'motor', label: 'Motor Global', icon: <Activity /> },
+          { id: 'cores', label: 'Cores', icon: <Palette /> },
         ]}
         active={activeTab}
         onChange={setActiveTab}
       />
+
+      <div style={{ padding: '0 4px', marginBottom: 8 }}>
+        <button
+          onClick={() => {
+            const item = {
+              id: `gen-${Date.now()}`,
+              name: `Composição Generativa ${Date.now().toString().slice(-4)}`,
+              type: 'generative',
+              createdAt: Date.now(),
+              data: {
+                layers: generativeLayers,
+                globalWiggle: motionConfig.wiggle
+              }
+            };
+            useEditorStore.getState().saveToLocalLibrary(item);
+          }}
+          style={{
+            width: '100%',
+            padding: '8px',
+            background: 'var(--color-surface-glass)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
+        >
+          <Sparkles size={14} />
+          Salvar na Biblioteca (Local)
+        </button>
+      </div>
+
+      {activeTab === 'cores' && <ColorManager />}
 
       {activeTab === 'camadas' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -493,25 +536,33 @@ export function GenerativePanel() {
               </select>
             </Campo>
 
-            {/* Color pickers — only when mode is not 'original' */}
-            {colorCount > 0 && (
+            {/* Color pickers — only when mode is 'solid' */}
+            {colorCount === 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ ...labelStyle, flexShrink: 0 }}>Cores</span>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  {Array.from({ length: colorCount }).map((_, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <input
-                        type="color"
-                        value={(activeLayer.colors || DEFAULT_LAYER_COLORS)[i] || '#a78bfa'}
-                        onChange={(e) => handleLayerColorChange(i, e.target.value)}
-                        style={{ width: 36, height: 36, padding: 2, border: '2px solid var(--color-surface-border)', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
-                      />
-                      <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>
-                        {['C1', 'C2', 'C3'][i]}
-                      </span>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                    <input
+                      type="color"
+                      value={(activeLayer.colors || DEFAULT_LAYER_COLORS)[0] || '#a78bfa'}
+                      onChange={(e) => handleLayerColorChange(0, e.target.value)}
+                      style={{ width: 36, height: 36, padding: 2, border: '2px solid var(--color-surface-border)', borderRadius: 6, cursor: 'pointer', background: 'transparent' }}
+                    />
+                    <span style={{ fontSize: '0.6rem', color: 'var(--color-text-muted)' }}>C1</span>
+                  </div>
                 </div>
+              </div>
+            )}
+            
+            {/* Helper message for Duotone / Tritone */}
+            {(colorCount === 2 || colorCount === 3) && (
+              <div style={{ padding: '8px', background: 'rgba(167, 139, 250, 0.08)', border: '1px solid var(--color-surface-border)', borderRadius: 'var(--radius-sm)' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--color-accent)', fontWeight: 600, display: 'block', marginBottom: 4 }}>
+                  {activeLayer.colorMode === 'duotone' ? 'Modo Duotone' : 'Modo Tritone'} Ativo
+                </span>
+                <p style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                  As cores estão <strong>travadas</strong> à sua Paleta de Cores Global (Cores Principais e Destaque). Para alterar as cores, mude a paleta ou inverta as cores na aba Motor Global &gt; Cores.
+                </p>
               </div>
             )}
 

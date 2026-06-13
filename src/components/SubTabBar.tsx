@@ -18,6 +18,7 @@ export function SubTabBar({ tabs, active, onChange }: SubTabBarProps) {
       className="sub-tab-bar-container"
       style={{
         display: 'flex',
+        flexShrink: 0,
         gap: 4,
         background: 'var(--color-bg-elevated)',
         padding: 4,

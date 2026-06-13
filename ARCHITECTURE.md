@@ -25,12 +25,25 @@ O sistema opera sob uma arquitetura de frontend desacoplada e reativa, dividida 
 - **GSAP Premium Engine:** Motor matemático de animação adotado na indústria cinematográfica e por gigantes do Vale do Silício. Incorporamos o módulo estrutural de *SplitText* e manipulação avançada de matrizes SVG acoplada a *CustomWiggles* (guiados por ruído Simplex multicanal), permitindo um movimento orgânico, não-linear e imprevisível.
 
 ### 2.2. Pipeline de Exportação Híbrido Multiparalelo
-O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambiente de navegação web:
-- **Canvas Capture (Deterministic Sync):** Snapshot ultra-preciso em 60 frames por segundo do Document Object Model (DOM), com avanço algorítmico do tempo da animação. Sincronia de áudio e vídeo perfeita, operando independentemente de limitações ou sobrecarga do hardware local.
-- **WebAssembly Orchestration (FFmpeg):** O buffer de quadros injetado via memória compartilhada (*SharedArrayBuffer*) é reprocessado in-browser gerando formatos broadcast-ready (H.264 MP4 de alta compressão, e VP9/HEVC MOV com retenção absoluta do canal Alpha para fundos transparentes de estúdio).
+O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambiente de navegação web através de um pipeline de renderização em duas camadas:
+- **Canvas Capture (Deterministic Sync):** Snapshot ultra-preciso em 60 frames por segundo do Document Object Model (DOM) via `html-to-image`, com avanço algorítmico síncrono da timeline global do GSAP (`timeline.seek()`).
+- **Canvas Compositing (Video-DOM Hybrid Overlay):** Como elementos `<video>` no DOM causam instabilidades de performance e segurança CORS durante a renderização direta em imagem, o pipeline isola a captura:
+  1. O vídeo de fundo é ocultado temporariamente do fluxo de layout (`display: none`).
+  2. O DOM transparente (Tipografia e Generativos) é capturado como uma imagem PNG pura.
+  3. O vídeo é reexibido e o player síncrono é avançado para o tempo correto (`bgVideo.currentTime = videoTime`).
+  4. Um canvas off-screen unifica as camadas, desenhando primeiro o frame de vídeo ativo (`ctx.drawImage(bgVideo, ...)`) e depois sobrepondo a imagem PNG transparente capturada.
+- **WebAssembly Orchestration (FFmpeg.wasm):** Os quadros compostos são armazenados como buffers binários e codificados diretamente no navegador. Para MP4s, convertemos os quadros em JPEG (com 90% de qualidade) em vez de PNG. Isso economiza até 80% de memória de heap no navegador, evitando erros de estouro de memória (Out-of-Memory) durante renders longos, enquanto mantém fidelidade visual impecável.
 
-### 2.3. Infraestrutura Cloud Native
-- **Hospedagem Severless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.
+### 2.3. Módulo de Composição & Timeline Bento Grid
+- **Centralização de Cena:** Parâmetros de enquadramento (Aspect Ratio), Duração da Linha do Tempo e Taxa de Quadros (FPS) são gerenciados centralmente na store global do Zustand.
+- **Timeline de Alta Performance (Pointer Events Nativos):** Desenvolvemos um controle de tracks e agulha reativo sem dependências de frameworks pesados (como `react-beautiful-dnd`). O arraste e trim das tracks usam a API nativa de **Pointer Events**:
+  - O evento `pointerdown` inicial é capturado na track correspondente.
+  - Os eventos `pointermove` e `pointerup` são ouvidos no escopo do objeto `window` dinamicamente para garantir precisão física contínua do trim e do posicionamento mesmo quando o ponteiro deixa a área de render do editor.
+  - Propriedades de CSS como `touch-action: none` e `user-select: none` previnem interrupções por gestos de scroll/zoom do navegador.
+- **Camada de Fundo (Background) Desacoplada:** O fundo (vídeo, imagem ou cor sólida) foi completamente isolado da lógica de paletas de cores globais. Isso permite que a tipografia e as artes generativas flutuem e interajam de forma limpa sobre fundos arbitrários, mantendo a integridade da marca e a consistência visual em todas as fases de render.
+
+### 2.4. Infraestrutura Cloud Native
+- **Hospedagem Serverless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.
 - **Micro-Armazenamento:** APIs diretas e contínuas entre Web Workers isolados e o Edge Storage (BunnyCDN), criando workflows automatizados onde peças criadas e validadas são instantaneamente provisionadas em catálogos baseados em nuvem.
 
 ---
@@ -40,17 +53,22 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
 ```text
 ├── public/                 # Assets globais estáticos (SVGs injetáveis, vídeos pré-renderizados com Alpha)
 ├── src/
-│   ├── components/         # Módulos de interface encapsulados (Tailwind CSS v4 + Glassmorphism)
+│   ├── components/         # Módulos de interface encapsulados (Bento Grid, Tailwind CSS v4 + Glassmorphism)
 │   ├── config/             # Matrizes de dicionários (Headless Configuration Architecture)
 │   ├── engines/            # Processadores algorítmicos profundos:
 │   │   ├── Generative/     # Parse de SVGs on-the-fly, ruído estocástico, multi-timings dinâmicos
 │   │   ├── Typography/     # Processamento de nós de texto virtuais, clonagem iterativa de DOM para raster trails
-│   │   └── Export/         # Orquestração FFmpeg.wasm, bridge SharedBuffer, codificação síncrona ZIP (fflate)
-│   ├── store/              # Controle de memória e estado da sessão via Zustand
-│   └── lib/                # Adaptadores de rede, drivers Cloud e utils de serialização
+│   │   ├── Composition/    # Orquestração de camadas da cena e timeline
+│   │   └── Export/         # Orquestração FFmpeg.wasm, canvas compositor, codificação síncrona ZIP (fflate)
+│   ├── store/              # Controle de memória e estado da sessão via Zustand (Seletores Atômicos)
+│   └── lib/                # Adaptadores de rede, drivers Cloud (BunnyCDN regional) e utils de serialização
 ```
 
 ## 4. Padrões de Qualidade e Blindagem (Quality Assurance)
 1. **Tipagem Estrita (Type Safety):** Uso compulsório das diretrizes de TypeScript estendido (`motion.types.ts`) na camada de dados visando mitigar quebras inesperadas no motor gerativo.
-2. **Resiliência de Memória (Garbage Collection):** Regras extremas para destruição sistêmica e cíclica de nós do DOM flutuantes e suspensão arbitrária de instâncias não utilizadas no motor GSAP, evitando latência no tempo de execução ou Memory Leaks de longo prazo.
-3. **Padrão Estético de Interface (Premium Big Tech Standard):** Aplicação de curvas Bezier de alta fidelidade exclusivas; animações mecanizadas (lineares) são tecnicamente proibidas via linter estético. Sensação tátil e de peso nos pixels equiparável ao ecossistema Apple Design.
+2. **Resiliência de Memória (Garbage Collection):** Regras extremas para destruição sistêmica e cíclica de nós do DOM flutuantes e revogação imediata de URLs de Blob (`URL.revokeObjectURL`) no loop de exportação. Limpeza rigorosa do buffer de frames na heap antes e depois do processamento FFmpeg.
+3. **Padrão Estético de Interface (Premium Big Tech Standard - Bento UI):** Layouts organizados em Bento Grids limpos, linhas finas de divisão (`1px solid var(--color-surface-border)`), glassmorphism vibrante nos botões e painéis, e micro-animações físicas de hover.
+4. **Isolamento de Erros e Prevenção de Falhas de Tela Preta:** Todas as propriedades complexas de estado (como `exportConfig`) devem ser devidamente desestruturadas e tipadas nas views principais. Componentes secundários (ex: `ColorManager`) devem ser carregados de forma limpa sem imports circulares ou dependências de estilos órfãos para evitar crash do React no Fast Refresh.
+5. **Garantia de Dimensões no Codificador (FFmpeg Alignment):** O codec `libx264` exige dimensões de vídeo pares. O motor de exportação aplica obrigatoriamente a normalização `-vf scale=trunc(iw/2)*2:trunc(ih/2)*2` no FFmpeg para evitar falhas silenciosas ou de runtime em resoluções ímpares personalizadas.
+6. **Desempenho de Scrubbing (Zustand Atomic Architecture):** Para manter 60fps durante interações diretas na timeline, o estado de tempo e trim é lido de forma atômica por meio de hooks de leitura fina do Zustand, isolando as atualizações para as tracks e agulhas afetadas sem redisparar a árvore do editor inteiro.
+
