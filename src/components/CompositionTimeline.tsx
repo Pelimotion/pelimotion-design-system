@@ -557,7 +557,7 @@ export function CompositionTimeline() {
             <div style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
               <Music size={10} /> Faixas de Áudio
             </div>
-            {audioTracks.map((track, index) => (
+            {audioTracks.map((track) => (
               <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <span>Áudio: {track.name}</span>

@@ -1,20 +1,20 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 17:20:07*
-*Current Commit Hash: `1039604`*
+*Generated at: 13/06/2026, 17:40:39*
+*Current Commit Hash: `5a4ba45`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Layer Locking Mechanism** (product_designer + analista_senior):
-  - *Descrição:* Usuários perdem edições por arrastar camadas acidentalmente. Adicionar cadeados (Lock/Unlock) nas faixas bloqueia eventos de ponteiro, protegendo as trilhas cruciais do projeto.
+- **Playhead Realtime Gliding** (diretor_criacao + dev_senior):
+  - *Descrição:* A agulha da Timeline (Playhead) fica estática durante o Play. Precisamos plugar a globalTimeline do GSAP em um Ticker que injeta a posição no React para deslizamento visual super fluido a 60fps.
 
-- **Track Opacity Slider** (diretor_criacao + product_designer):
-  - *Descrição:* Composições profissionais exigem mesclagem visual de camadas. Precisamos de um slider de Opacidade acoplado diretamente ao cabeçalho da Track, espelhando-se no Canvas instantaneamente.
+- **Audio Cinematic Fades** (diretor_criacao + product_designer):
+  - *Descrição:* Cortes secos de áudio destroem a qualidade da obra. Precisamos adicionar FadeIn e FadeOut nas trilhas, computados frame-a-frame na AudioEngine para controle suave de decibéis.
 
-- **Timeline Scale Zoom** (dev_senior + product_designer):
-  - *Descrição:* Ao mudar a duração para 60s, a Timeline fica engarrafada e inavegável. Vamos implementar um controle de Zoom (Width dinâmico via CSS) com Overflow Horizontal para navegação cirúrgica.
+- **Magnetic Timeline Snapping** (analista_senior + product_designer):
+  - *Descrição:* Sem uma grade magnética, alinhar o áudio com as transições de tipografia é infernal. Adicionar um botão "Ímã" (Magnet) para arredondar o arraste para frações de 0.5s resolve o problema.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -59,8 +59,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 8)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 9)
 
-- [x] **Layer Locking Mechanism:** Atualizar `CompositionLayer` e `CompositionTimeline.tsx` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).
-- [x] **Track Opacity Slider:** Embutir um `<input type="range">` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da `layer.transform.opacity` (Diretor de Criação).
-- [x] **Timeline Scale Zoom:** Refatorar o container das tracks com `overflowX: auto` e um controle mestre de `zoom` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).
+- [ ] **Playhead Realtime Sync:** Plugar `gsap.ticker` no `CompositionTimeline.tsx` para atualizar o `currentTime` da store ou re-renderizar a agulha enquanto `isPlaying === true` (Dev Sênior).
+- [ ] **Audio Cinematic Fades:** Adicionar `fadeIn` e `fadeOut` no `AudioTrack` e calcular o targetVolume dinamicamente no `AudioEngine.tsx` baseando-se no `localTime` (Diretor de Criação).
+- [ ] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, `handlePointerMove` arredonda os segundos (ex: `Math.round(time * 2) / 2`) para encaixes perfeitos em 0.5s (Product Designer).

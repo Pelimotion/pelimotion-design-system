@@ -139,29 +139,29 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 8)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 9)\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs Analyst Synergy
+  // Creative Director vs Dev Senior Synergy
   synergies.push({
-    title: 'Layer Locking Mechanism',
-    parties: ['product_designer', 'analista_senior'],
-    description: 'Usuários perdem edições por arrastar camadas acidentalmente. Adicionar cadeados (Lock/Unlock) nas faixas bloqueia eventos de ponteiro, protegendo as trilhas cruciais do projeto.'
+    title: 'Playhead Realtime Gliding',
+    parties: ['diretor_criacao', 'dev_senior'],
+    description: 'A agulha da Timeline (Playhead) fica estática durante o Play. Precisamos plugar a globalTimeline do GSAP em um Ticker que injeta a posição no React para deslizamento visual super fluido a 60fps.'
   });
 
   // Creative Director vs Product Designer Synergy
   synergies.push({
-    title: 'Track Opacity Slider',
+    title: 'Audio Cinematic Fades',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Composições profissionais exigem mesclagem visual de camadas. Precisamos de um slider de Opacidade acoplado diretamente ao cabeçalho da Track, espelhando-se no Canvas instantaneamente.'
+    description: 'Cortes secos de áudio destroem a qualidade da obra. Precisamos adicionar FadeIn e FadeOut nas trilhas, computados frame-a-frame na AudioEngine para controle suave de decibéis.'
   });
 
-  // Dev Senior vs Product Designer Synergy
+  // Analyst vs Product Designer Synergy
   synergies.push({
-    title: 'Timeline Scale Zoom',
-    parties: ['dev_senior', 'product_designer'],
-    description: 'Ao mudar a duração para 60s, a Timeline fica engarrafada e inavegável. Vamos implementar um controle de Zoom (Width dinâmico via CSS) com Overflow Horizontal para navegação cirúrgica.'
+    title: 'Magnetic Timeline Snapping',
+    parties: ['analista_senior', 'product_designer'],
+    description: 'Sem uma grade magnética, alinhar o áudio com as transições de tipografia é infernal. Adicionar um botão "Ímã" (Magnet) para arredondar o arraste para frações de 0.5s resolve o problema.'
   });
 
   return { conflicts, synergies };
@@ -199,10 +199,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 8)\n\n`;
-  markdown += `- [ ] **Layer Locking Mechanism:** Atualizar \`CompositionLayer\` e \`CompositionTimeline.tsx\` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).\n`;
-  markdown += `- [ ] **Track Opacity Slider:** Embutir um \`<input type="range">\` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da \`layer.transform.opacity\` (Diretor de Criação).\n`;
-  markdown += `- [ ] **Timeline Scale Zoom:** Refatorar o container das tracks com \`overflowX: auto\` e um controle mestre de \`zoom\` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 9)\n\n`;
+  markdown += `- [ ] **Playhead Realtime Sync:** Plugar \`gsap.ticker\` no \`CompositionTimeline.tsx\` para atualizar o \`currentTime\` da store ou re-renderizar a agulha enquanto \`isPlaying === true\` (Dev Sênior).\n`;
+  markdown += `- [ ] **Audio Cinematic Fades:** Adicionar \`fadeIn\` e \`fadeOut\` no \`AudioTrack\` e calcular o targetVolume dinamicamente no \`AudioEngine.tsx\` baseando-se no \`localTime\` (Diretor de Criação).\n`;
+  markdown += `- [ ] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, \`handlePointerMove\` arredonda os segundos (ex: \`Math.round(time * 2) / 2\`) para encaixes perfeitos em 0.5s (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

@@ -62,3 +62,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T19-40-44-345Z** | `backup-branch-2026-06-13T19-40-44-345Z` | `7f464f4` | 13/06/2026, 16:40:44 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T19-42-23-456Z** | `backup-branch-2026-06-13T19-42-23-456Z` | `1039604` | 13/06/2026, 16:42:23 | Iteration 12: Massive Loop Phase 7 (Aspect Ratio Sync, Duration Input, Waveform UI) |
 | **restore-2026-06-13T20-21-15-320Z** | `backup-branch-2026-06-13T20-21-15-320Z` | `445a391` | 13/06/2026, 17:21:15 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T20-21-41-072Z** | `backup-branch-2026-06-13T20-21-41-072Z` | `5a4ba45` | 13/06/2026, 17:21:41 | Iteration 13: Massive Loop Phase 8 (Layer Lock, Opacity Slider, Timeline Zoom) |
