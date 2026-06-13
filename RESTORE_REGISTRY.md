@@ -43,3 +43,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T16-40-20-948Z** | `backup-branch-2026-06-13T16-40-20-948Z` | `acb6250` | 13/06/2026, 13:40:20 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T16-46-21-924Z** | `backup-branch-2026-06-13T16-46-21-924Z` | `37aa6f2` | 13/06/2026, 13:46:21 | Backup pós atualização detalhada de documentação e STATUS |
 | **restore-2026-06-13T17-01-17-066Z** | `backup-branch-2026-06-13T17-01-17-066Z` | `62378ba` | 13/06/2026, 14:01:17 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T17-18-14-124Z** | `backup-branch-2026-06-13T17-18-14-124Z` | `8a2fd76` | 13/06/2026, 14:18:14 | Typography Memory: Debounce rigoroso no input de texto e otimização de React Keys para SplitText Trails |
