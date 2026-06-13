@@ -72,3 +72,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T21-40-38-247Z** | `backup-branch-2026-06-13T21-40-38-247Z` | `fd210f6` | 13/06/2026, 18:40:38 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T21-41-42-080Z** | `backup-branch-2026-06-13T21-41-42-080Z` | `4c1d1e3` | 13/06/2026, 18:41:42 | Iteration 20: Massive Loop Phase 12 (Layer Renaming & FPS Selector) |
 | **restore-2026-06-13T22-00-37-912Z** | `backup-branch-2026-06-13T22-00-37-912Z` | `dca33f1` | 13/06/2026, 19:00:37 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T22-01-59-888Z** | `backup-branch-2026-06-13T22-01-59-888Z` | `0000716` | 13/06/2026, 19:01:59 | Iteration 21: Massive Loop Phase 13 (Keyboard Shortcuts & TimeScale) |
