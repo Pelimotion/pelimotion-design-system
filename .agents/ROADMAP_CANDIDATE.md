@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 4)
 
-- [ ] **Library Drag & Drop:** Adicionar os atributos `draggable` aos vídeos em `LibraryPreview.tsx` e listeners de `onDrop` no `App.tsx` (Product Designer).
-- [ ] **Timeline GSAP Scrubber:** Fazer a `CompositionTimeline.tsx` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via `gsap.globalTimeline.seek()` (Dev Sênior).
-- [ ] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em `App.tsx` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).
+- [x] **Library Drag & Drop:** Adicionar os atributos `draggable` aos vídeos em `LibraryPreview.tsx` e listeners de `onDrop` no `App.tsx` (Product Designer).
+- [x] **Timeline GSAP Scrubber:** Fazer a `CompositionTimeline.tsx` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via `gsap.globalTimeline.seek()` (Dev Sênior).
+- [x] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em `App.tsx` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).

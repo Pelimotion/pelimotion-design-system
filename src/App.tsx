@@ -239,6 +239,26 @@ function App() {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        try {
+          const data = JSON.parse(e.dataTransfer.getData('application/json'));
+          if (data && data.id) {
+            useEditorStore.getState().addCompositionLayer({
+              id: crypto.randomUUID(),
+              name: data.name,
+              type: data.type || 'cloudAsset',
+              assetId: data.id,
+              startTime: 0,
+              duration: 3,
+              transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+            });
+          }
+        } catch(err) {
+          console.error('Drop error', err);
+        }
+      }}
       className="glass-panel animate-fade-in stagger-2 animate-pulse-glow"
       style={{
         flex: 1,
@@ -317,15 +337,23 @@ function App() {
         </>
       )}
 
-      {/* Grid Background Pattern */}
+      {/* Breathing Animated Mesh Background */}
+      <style>{`
+        @keyframes breathing-mesh {
+          0% { background-position: 0 0; }
+          50% { background-position: 100% 100%; }
+          100% { background-position: 0 0; }
+        }
+      `}</style>
       <div style={{
         position: 'absolute',
         inset: 0,
-        backgroundImage: `
-          linear-gradient(hsla(0,0%,100%,0.02) 1px, transparent 1px),
-          linear-gradient(90deg, hsla(0,0%,100%,0.02) 1px, transparent 1px)
+        background: `
+          radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+          radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 40%)
         `,
-        backgroundSize: '40px 40px',
+        backgroundSize: '200% 200%',
+        animation: 'breathing-mesh 15s ease-in-out infinite',
         pointerEvents: 'none',
         zIndex: 1,
       }} />

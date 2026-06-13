@@ -43,8 +43,16 @@ function LazyAssetCard({
     <div 
       ref={containerRef}
       className="glass-panel asset-card" 
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/json', JSON.stringify({
+          id: asset.ObjectName,
+          name: asset.ObjectName,
+          type: 'cloudAsset'
+        }));
+      }}
       style={{
-        borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer',
+        borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'grab',
         opacity: 0, transform: 'translateY(20px)' // Initial state for GSAP
       }} 
       onMouseEnter={(e) => { 
