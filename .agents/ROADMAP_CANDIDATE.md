@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 13:00:17*
-*Current Commit Hash: `bbd5e33`*
+*Generated at: 13/06/2026, 13:40:02*
+*Current Commit Hash: `8e20939`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
