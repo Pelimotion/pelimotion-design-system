@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
@@ -25,6 +25,8 @@ export function CompositionTimeline() {
   } = useEditorStore();
 
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+  const [isCompExpanded, setIsCompExpanded] = useState(true);
+  const [isAudioExpanded, setIsAudioExpanded] = useState(true);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -376,6 +378,21 @@ export function CompositionTimeline() {
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Res:</span>
+            <select
+              value={exportConfig.resolution}
+              onChange={(e) => updateExportConfig({ resolution: e.target.value as any })}
+              style={{ background: 'transparent', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.7rem', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="1920x1080" style={{ color: 'black' }}>16:9 (1080p)</option>
+              <option value="1080x1920" style={{ color: 'black' }}>9:16 (Vertical)</option>
+              <option value="1080x1080" style={{ color: 'black' }}>1:1 (Square)</option>
+            </select>
+          </div>
+
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Fundo:</span>
             <input
               type="color"
@@ -579,7 +596,14 @@ export function CompositionTimeline() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-            {compositionLayers.map((layer, index) => (
+            <div 
+              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setIsCompExpanded(!isCompExpanded)}
+            >
+              {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              Camadas Visuais ({compositionLayers.length})
+            </div>
+            {isCompExpanded && compositionLayers.map((layer, index) => (
               <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -687,10 +711,14 @@ export function CompositionTimeline() {
         {/* Audio Tracks */}
         {audioTracks.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 24, borderTop: '1px solid var(--color-surface-border)', paddingTop: 16 }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Music size={10} /> Faixas de Áudio
+            <div 
+              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', userSelect: 'none' }}
+              onClick={() => setIsAudioExpanded(!isAudioExpanded)}
+            >
+              {isAudioExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              Faixas de Áudio ({audioTracks.length})
             </div>
-            {audioTracks.map((track) => (
+            {isAudioExpanded && audioTracks.map((track) => (
               <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

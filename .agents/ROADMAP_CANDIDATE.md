@@ -58,5 +58,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)
 
-- [ ] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
-- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).
+- [x] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
+- [x] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).
