@@ -1,5 +1,5 @@
 {
   "persona": "analista_senior",
-  "timestamp": "2026-06-13T16:00:07.006Z",
+  "timestamp": "2026-06-13T16:00:17.008Z",
   "evaluation": "### [ANALYST REPORT] Telemetry & Flow Performance\n*   **Export Funnel Track:** Need to track drops during export (e.g. user triggers MP4 but closes before completion).\n*   **WebCodecs Fail Rate:** WebCodecs is highly device-dependent. Track and log error counts to trigger WASM fallback automatically.\n*   **Action items:**\n    *   Setup local telemetry interface inside `src/lib/telemetry.ts` using a privacy-first collector.\n    *   Correlate export times with canvas layers complexity."
 }
