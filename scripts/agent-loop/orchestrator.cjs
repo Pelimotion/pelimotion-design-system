@@ -139,29 +139,29 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 7)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 8)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs CEO Synergy
+  // Product Designer vs Analyst Synergy
   synergies.push({
-    title: 'Aspect Ratio Live Crop',
-    parties: ['product_designer', 'ceo'],
-    description: 'O CEO quer atrair criadores do TikTok/Reels. O Product Designer notou que mudar o Aspect Ratio no painel não altera visualmente o Canvas. Precisamos forçar o CSS Aspect-Ratio dinamicamente no contêiner principal da Cena.'
+    title: 'Layer Locking Mechanism',
+    parties: ['product_designer', 'analista_senior'],
+    description: 'Usuários perdem edições por arrastar camadas acidentalmente. Adicionar cadeados (Lock/Unlock) nas faixas bloqueia eventos de ponteiro, protegendo as trilhas cruciais do projeto.'
   });
 
-  // Analyst vs Product Designer Synergy
+  // Creative Director vs Product Designer Synergy
   synergies.push({
-    title: 'Master Duration Control',
-    parties: ['analista_senior', 'product_designer'],
-    description: 'Os usuários ficam frustrados ao ver que o vídeo trava em 5 segundos. Precisamos adicionar um `<input type="number">` minimalista no cabeçalho da Timeline para controlar livremente o `exportConfig.duration`.'
+    title: 'Track Opacity Slider',
+    parties: ['diretor_criacao', 'product_designer'],
+    description: 'Composições profissionais exigem mesclagem visual de camadas. Precisamos de um slider de Opacidade acoplado diretamente ao cabeçalho da Track, espelhando-se no Canvas instantaneamente.'
   });
 
-  // Creative Director vs Dev Senior Conflict
-  conflicts.push({
-    title: 'Audio Waveforms vs Canvas Performance',
-    parties: ['diretor_criacao', 'dev_senior'],
-    description: 'O Diretor de Criação quer Waveforms reais processados por Web Audio API. O Dev Sênior proíbe isso no Main Thread. Acordo: Implementar pseudo-waveforms elegantes usando SVG Patterns/CSS no bloco da Timeline de Áudio.'
+  // Dev Senior vs Product Designer Synergy
+  synergies.push({
+    title: 'Timeline Scale Zoom',
+    parties: ['dev_senior', 'product_designer'],
+    description: 'Ao mudar a duração para 60s, a Timeline fica engarrafada e inavegável. Vamos implementar um controle de Zoom (Width dinâmico via CSS) com Overflow Horizontal para navegação cirúrgica.'
   });
 
   return { conflicts, synergies };
@@ -199,10 +199,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 7)\n\n`;
-  markdown += `- [ ] **Aspect Ratio Live Crop:** Injetar o mapeamento de \`aspectRatio\` via CSS dinâmico no container do Canvas no \`App.tsx\` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).\n`;
-  markdown += `- [ ] **Master Duration Control:** Adicionar um input numérico no cabeçalho do \`CompositionTimeline.tsx\` para modificar dinamicamente o \`exportConfig.duration\` global (Analista).\n`;
-  markdown += `- [ ] **Pseudo-Waveform UI:** Adicionar um \`backgroundImage\` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 8)\n\n`;
+  markdown += `- [ ] **Layer Locking Mechanism:** Atualizar \`CompositionLayer\` e \`CompositionTimeline.tsx\` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).\n`;
+  markdown += `- [ ] **Track Opacity Slider:** Embutir um \`<input type="range">\` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da \`layer.transform.opacity\` (Diretor de Criação).\n`;
+  markdown += `- [ ] **Timeline Scale Zoom:** Refatorar o container das tracks com \`overflowX: auto\` e um controle mestre de \`zoom\` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

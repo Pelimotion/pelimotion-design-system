@@ -564,7 +564,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     if (ratio === '16:9') resolution = '1920x1080';
     if (ratio === '9:16') resolution = '1080x1920';
     if (ratio === '1:1') resolution = '1080x1080';
-    if (ratio === '4:5') resolution = '1080x1350';
+    if (ratio === '4:5') resolution = '1350x1080';
     return { 
       activeAspectRatio: ratio,
       exportConfig: { ...state.exportConfig, resolution }

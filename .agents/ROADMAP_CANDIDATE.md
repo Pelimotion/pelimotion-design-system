@@ -1,21 +1,20 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 16:40:41*
-*Current Commit Hash: `31a5458`*
+*Generated at: 13/06/2026, 17:20:07*
+*Current Commit Hash: `1039604`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Audio Waveforms vs Canvas Performance** (diretor_criacao vs dev_senior):
-  - *Descrição:* O Diretor de Criação quer Waveforms reais processados por Web Audio API. O Dev Sênior proíbe isso no Main Thread. Acordo: Implementar pseudo-waveforms elegantes usando SVG Patterns/CSS no bloco da Timeline de Áudio.
-  - *Compromisso Proposto:* **undefined**
-
 ### 🤝 Sinergias
-- **Aspect Ratio Live Crop** (product_designer + ceo):
-  - *Descrição:* O CEO quer atrair criadores do TikTok/Reels. O Product Designer notou que mudar o Aspect Ratio no painel não altera visualmente o Canvas. Precisamos forçar o CSS Aspect-Ratio dinamicamente no contêiner principal da Cena.
+- **Layer Locking Mechanism** (product_designer + analista_senior):
+  - *Descrição:* Usuários perdem edições por arrastar camadas acidentalmente. Adicionar cadeados (Lock/Unlock) nas faixas bloqueia eventos de ponteiro, protegendo as trilhas cruciais do projeto.
 
-- **Master Duration Control** (analista_senior + product_designer):
-  - *Descrição:* Os usuários ficam frustrados ao ver que o vídeo trava em 5 segundos. Precisamos adicionar um `<input type="number">` minimalista no cabeçalho da Timeline para controlar livremente o `exportConfig.duration`.
+- **Track Opacity Slider** (diretor_criacao + product_designer):
+  - *Descrição:* Composições profissionais exigem mesclagem visual de camadas. Precisamos de um slider de Opacidade acoplado diretamente ao cabeçalho da Track, espelhando-se no Canvas instantaneamente.
+
+- **Timeline Scale Zoom** (dev_senior + product_designer):
+  - *Descrição:* Ao mudar a duração para 60s, a Timeline fica engarrafada e inavegável. Vamos implementar um controle de Zoom (Width dinâmico via CSS) com Overflow Horizontal para navegação cirúrgica.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +59,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 7)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 8)
 
-- [x] **Aspect Ratio Live Crop:** Injetar o mapeamento de `aspectRatio` via CSS dinâmico no container do Canvas no `App.tsx` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).
-- [x] **Master Duration Control:** Adicionar um input numérico no cabeçalho do `CompositionTimeline.tsx` para modificar dinamicamente o `exportConfig.duration` global (Analista).
-- [x] **Pseudo-Waveform UI:** Adicionar um `backgroundImage` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).
+- [ ] **Layer Locking Mechanism:** Atualizar `CompositionLayer` e `CompositionTimeline.tsx` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).
+- [ ] **Track Opacity Slider:** Embutir um `<input type="range">` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da `layer.transform.opacity` (Diretor de Criação).
+- [ ] **Timeline Scale Zoom:** Refatorar o container das tracks com `overflowX: auto` e um controle mestre de `zoom` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).

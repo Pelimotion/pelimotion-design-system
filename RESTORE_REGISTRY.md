@@ -60,3 +60,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T19-21-43-922Z** | `backup-branch-2026-06-13T19-21-43-922Z` | `ebc5496` | 13/06/2026, 16:21:43 | Iteration 11: Massive Loop Phase 6 (Boot Restore, Layer Visibility, Dynamic Ruler) |
 | **restore-2026-06-13T19-22-32-317Z** | `backup-branch-2026-06-13T19-22-32-317Z` | `41972af` | 13/06/2026, 16:22:32 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T19-40-44-345Z** | `backup-branch-2026-06-13T19-40-44-345Z` | `7f464f4` | 13/06/2026, 16:40:44 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T19-42-23-456Z** | `backup-branch-2026-06-13T19-42-23-456Z` | `1039604` | 13/06/2026, 16:42:23 | Iteration 12: Massive Loop Phase 7 (Aspect Ratio Sync, Duration Input, Waveform UI) |
