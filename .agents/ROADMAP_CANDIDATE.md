@@ -1,21 +1,21 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 16:00:05*
+*Generated at: 13/06/2026, 16:00:38*
 *Current Commit Hash: `9d1151b`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Animated Grid vs Rendering Budget** (diretor_criacao vs dev_senior):
-  - *Descrição:* O Diretor de Criação acha o fundo quadriculado muito estático e quer um WebGL Shader Mesh pulsante. O Dev Sênior alerta que 2 web workers de canvas já rodam. Um terceiro WebGL explodiria GPUs fracas.
-  - *Compromisso Proposto:* **Trocar o Grid por um fundo CSS puro com máscara de gradiente animado infinitamente (Breathing Mesh) usando CSS Keyframes, com zero impacto na thread principal ou GPU rendering.**
+- **Audio Scrubbing vs State Performance** (diretor_criacao vs dev_senior):
+  - *Descrição:* O Diretor de Criação quer que o áudio toque perfeitamente sincronizado com o vídeo quando o playhead for arrastado. O Dev Sênior pontua que o React render cycle é lento para áudio DOM manipulation.
+  - *Compromisso Proposto:* **Criar um `<AudioEngine />` silencioso e head-less (sem renderização) que reage a um listener externo acoplado ao GSAP Global Timeline, manipulando as tags HTML5 `<audio>` por referência nativa.**
 
 ### 🤝 Sinergias
-- **Intuitive Drag & Drop Pipeline** (product_designer + analista_senior):
-  - *Descrição:* Usuários não estão entendendo como colocar mídias na composição. O Product Designer desenhou um Drag & Drop fluido da Biblioteca (Library) para o Canvas principal, aumentando absurdamente a conversão na telemetria do funil.
+- **Visual Z-Index Hierarchy** (product_designer + dev_senior):
+  - *Descrição:* O Product Designer quer que arrastar as camadas na linha do tempo mude a profundidade no Canvas principal. O Dev Sênior propõe injetar o index reverso do array (length - index) diretamente no style `zIndex` de cada nó na Composição.
 
-- **Timeline Scrubber Engine** (dev_senior + product_designer):
-  - *Descrição:* O Dev Sênior notou que o GSAP Global Timeline tem métodos de Seek eficientes. O Product Designer quer que o usuário clique na régua (Timeline) e a agulha pule direto para aquele tempo exato com playhead sync.
+- **Auto-Save Crash Recovery** (analista_senior + ceo):
+  - *Descrição:* A retenção de usuários despenca se eles perderem progresso em um F5. Devemos adicionar um hook de Auto-Save passivo atrelado à loja Zustand que despeja a composição no LocalStorage para Disaster Recovery.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +60,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 4)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 5)
 
-- [ ] **Library Drag & Drop:** Adicionar os atributos `draggable` aos vídeos em `LibraryPreview.tsx` e listeners de `onDrop` no `App.tsx` (Product Designer).
-- [ ] **Timeline GSAP Scrubber:** Fazer a `CompositionTimeline.tsx` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via `gsap.globalTimeline.seek()` (Dev Sênior).
-- [ ] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em `App.tsx` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).
+- [ ] **Headless Audio Engine:** Criar um componente silencioso `<AudioEngine />` em `App.tsx` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).
+- [ ] **Z-Index Visual Hierarchy:** Atualizar `CompositionPreview.tsx` para injetar `zIndex: compositionLayers.length - index` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).
+- [ ] **Auto-Save Telemetry:** Adicionar um `useEditorStore.subscribe` passivo dentro de `App.tsx` para realizar um backup debounceado no `localStorage` contra crashes indesejados (Analista + CEO).
