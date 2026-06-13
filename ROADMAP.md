@@ -33,6 +33,9 @@
 - [x] **Native Pointer Events Timeline:** Build a custom React drag-and-drop timeline track for compositional layers and background trimming without using external layout drag-and-drop engines.
 - [x] **Canvas Compositing Pipeline:** Implement dual-pass rendering (capturing transparent DOM overlay while hiding background video, then compositing them via Canvas API).
 - [x] **WebAssembly FFmpeg Optimizations:** Optimize MP4 exports by converting frames to JPEG buffers to avoid browser Out-of-Memory crashes and force even-numbered dimensions for the `libx264` codec.
+- [x] **Active Viewport Scaling & Gizmo Alignment:** Solved canvas cropping and alignment issues (left-side shift) by implementing a dual-layer CSS scaling container (`#canvas-viewport` + `#canvas-fixed-resolution` via `ResizeObserver`).
+- [x] **Dynamic Dual-Library System:** Split library storage into `localLibraryItems` (temporary session-only memory) and `globalLibraryItems` (persistent browser cache via `localStorage`), giving users complete control over template storage.
+- [x] **WebCodecs MP4 Export Resolution & Codec Fix:** Fixed MP4 export pipeline failures by forcing even-numbered dimensions (`safeWidth`/`safeHeight` multiples of 2) and configuring precise hardware-accelerated profiles (`avc1.4d0028` and `vp09.00.10.08`).
 
 ## Phase 7: Future Expansion (Backlog)
 - [ ] **Multi-track Audio Mixing:** Add support for importing and syncing audio tracks directly in the timeline, mixing audio buffers before final WebAssembly encoding.

@@ -1,10 +1,15 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Overhauled Composition, Cloud Library Integration & Local Dev (v1.5)
+## Active Phase: 🟢 Scale Optimization, Dual-Library & WebCodecs Fixes (v2.0)
 
-## 🏁 Pelimotion Design System v1.5 — Stable & Professional Editor Scaffold
+## 🏁 Pelimotion Design System v2.0 — Production-Ready Motion Suite
 
-All updates for the full-screen timeline layout, real asset rendering in the composition preview, cloud asset previewing, multi-video frame synchronization, and the local dev server activation have been successfully completed.
+All critical bugs involving viewport scaling (cropping/gizmo shift), asset library retention (Session vs. Global Storage), and MP4 WebCodecs exports have been resolved. The workspace is fully integrated, verified, and stable.
+
+### Session Achievements (v2.0 - Scale Fixing, Dual-Library & WebCodecs Export)
+- **Dual-Layer Canvas Viewport & Gizmo Alignment (Canvas Scaling):** Solved canvas cropping and left-side misalignment by introducing a dual-layer container structure: an outer `#canvas-viewport` container that scales dynamically via CSS `transform: scale()` to fit the workspace, and an inner `#canvas-fixed-resolution` wrapper that locks the exact target resolution pixels (e.g., 1080x1080, 1920x1080). This ensures the Gizmo bounding box matches coordinates perfectly, avoiding scaling distortions.
+- **Dynamic Dual-Library System (Session vs. Global):** Re-architected library storage to distinguish session-only projects from persistent, cross-session templates. `localLibraryItems` now represents temporary, memory-only session files, whereas `globalLibraryItems` leverages `localStorage` persistence under key `pelimotion_global_library`, allowing users to explicitly choose where to save.
+- **WebCodecs MP4 Export Resolution & Codec Fix:** Fixed MP4 export pipeline failures by implementing automatic dimensions normalization (ensuring width and height are multiples of 2 using `safeWidth` and `safeHeight`). Additionally, updated the VideoEncoder configuration to use detailed profile codec strings (e.g., `avc1.4d0028` for High Profile, `avc1.42e01f` for Baseline Profile) based on frame height, replacing the generic `'avc'` string which failed on many browsers.
 
 ### Session Achievements (v1.5 - Overhauled Composition & Local Dev Testing)
 - **Horizontal Full-Screen Timeline Layout:** Repositioned the timeline to the bottom of the main editor workspace when in Composition mode, providing a professional and spacious NLE (Non-Linear Editor) UI.
