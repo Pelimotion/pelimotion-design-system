@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 14)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 15)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'Collapsible Track Sections',
+    title: 'Alt+Scroll Timeline Zooming',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Quando a timeline chega a 10+ camadas, a rolagem vertical fica exaustiva. Adicionar estado de collapsed (recolhido) para as seções de Audio e Video.'
+    description: 'Ajustar o zoom da timeline usando um slider requer muitas viagens com o mouse. Adicionar um hook onWheel para alterar o zoom usando Alt+Scroll imita os NLEs padrões do mercado.'
   });
 
-  // Creative Director vs CEO Synergy
+  // Creative Director vs Analyst Synergy
   synergies.push({
-    title: 'Canvas Resolution Quick Switcher',
-    parties: ['diretor_criacao', 'ceo'],
-    description: 'A troca de aspect ratio (16:9, 9:16, 1:1) não deve ficar escondida no painel de exportação avançado. Precisa de um atalho global rápido no cabeçalho da timeline.'
+    title: 'Master Batch Controls (Lock/Mute/Hide All)',
+    parties: ['diretor_criacao', 'analista_senior'],
+    description: 'Com muitas camadas, isolar o que está sendo visto/escutado exige clicar dezenas de vezes. Inserir controles mestres de Ocultar Tudo e Bloquear Tudo nos cabeçalhos dos grupos de faixas.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)\n\n`;
-  markdown += `- [ ] **Collapsible Track Sections:** Adicionar estados \`isCompExpanded\` e \`isAudioExpanded\` em \`CompositionTimeline.tsx\`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).\n`;
-  markdown += `- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do \`exportConfig.resolution\` para o cabeçalho master da \`CompositionTimeline.tsx\`, mostrando as opções (1080p, Vertical, Square) (Creative Director).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 15)\n\n`;
+  markdown += `- [ ] **Alt+Scroll Timeline Zooming:** Inserir listener \`onWheel\` na div raiz da Timeline que captura \`e.altKey\` e incrementa/decrementa o estado \`timelineZoom\`, mantendo os limites 100~500 (Product Designer).\n`;
+  markdown += `- [ ] **Master Batch Controls:** Adicionar botões \`Eye\` e \`Lock\` no cabeçalho agrupador de \`Camadas Visuais\` e botões \`Volume2\` e \`Lock\` no agrupador de \`Faixas de Áudio\` para varrer e mutar/ocultar todas as camadas simultaneamente via Zustand (Creative Director).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

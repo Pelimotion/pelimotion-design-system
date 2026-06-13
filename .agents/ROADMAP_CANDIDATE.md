@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 19:40:04*
-*Current Commit Hash: `e19b65f`*
+*Generated at: 13/06/2026, 19:40:34*
+*Current Commit Hash: `897386f`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Collapsible Track Sections** (product_designer + dev_senior):
-  - *Descrição:* Quando a timeline chega a 10+ camadas, a rolagem vertical fica exaustiva. Adicionar estado de collapsed (recolhido) para as seções de Audio e Video.
+- **Alt+Scroll Timeline Zooming** (product_designer + dev_senior):
+  - *Descrição:* Ajustar o zoom da timeline usando um slider requer muitas viagens com o mouse. Adicionar um hook onWheel para alterar o zoom usando Alt+Scroll imita os NLEs padrões do mercado.
 
-- **Canvas Resolution Quick Switcher** (diretor_criacao + ceo):
-  - *Descrição:* A troca de aspect ratio (16:9, 9:16, 1:1) não deve ficar escondida no painel de exportação avançado. Precisa de um atalho global rápido no cabeçalho da timeline.
+- **Master Batch Controls (Lock/Mute/Hide All)** (diretor_criacao + analista_senior):
+  - *Descrição:* Com muitas camadas, isolar o que está sendo visto/escutado exige clicar dezenas de vezes. Inserir controles mestres de Ocultar Tudo e Bloquear Tudo nos cabeçalhos dos grupos de faixas.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 14)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 15)
 
-- [ ] **Collapsible Track Sections:** Adicionar estados `isCompExpanded` e `isAudioExpanded` em `CompositionTimeline.tsx`. Ocultar o map de tracks quando false, liberando altura no painel (Product Designer).
-- [ ] **Canvas Resolution Quick Switcher:** Puxar a lógica do `exportConfig.resolution` para o cabeçalho master da `CompositionTimeline.tsx`, mostrando as opções (1080p, Vertical, Square) (Creative Director).
+- [ ] **Alt+Scroll Timeline Zooming:** Inserir listener `onWheel` na div raiz da Timeline que captura `e.altKey` e incrementa/decrementa o estado `timelineZoom`, mantendo os limites 100~500 (Product Designer).
+- [ ] **Master Batch Controls:** Adicionar botões `Eye` e `Lock` no cabeçalho agrupador de `Camadas Visuais` e botões `Volume2` e `Lock` no agrupador de `Faixas de Áudio` para varrer e mutar/ocultar todas as camadas simultaneamente via Zustand (Creative Director).

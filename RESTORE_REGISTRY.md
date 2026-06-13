@@ -74,3 +74,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T22-00-37-912Z** | `backup-branch-2026-06-13T22-00-37-912Z` | `dca33f1` | 13/06/2026, 19:00:37 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T22-01-59-888Z** | `backup-branch-2026-06-13T22-01-59-888Z` | `0000716` | 13/06/2026, 19:01:59 | Iteration 21: Massive Loop Phase 13 (Keyboard Shortcuts & TimeScale) |
 | **restore-2026-06-13T22-21-00-570Z** | `backup-branch-2026-06-13T22-21-00-570Z` | `614c0f9` | 13/06/2026, 19:21:00 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T22-21-35-472Z** | `backup-branch-2026-06-13T22-21-35-472Z` | `e19b65f` | 13/06/2026, 19:21:35 | Iteration 23: Massive Loop Phase 14 (Collapsible Tracks & Resolution Switcher) |
