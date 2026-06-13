@@ -58,5 +58,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 15)
 
-- [ ] **Alt+Scroll Timeline Zooming:** Inserir listener `onWheel` na div raiz da Timeline que captura `e.altKey` e incrementa/decrementa o estado `timelineZoom`, mantendo os limites 100~500 (Product Designer).
-- [ ] **Master Batch Controls:** Adicionar botões `Eye` e `Lock` no cabeçalho agrupador de `Camadas Visuais` e botões `Volume2` e `Lock` no agrupador de `Faixas de Áudio` para varrer e mutar/ocultar todas as camadas simultaneamente via Zustand (Creative Director).
+- [x] **Alt+Scroll Timeline Zooming:** Inserir listener `onWheel` na div raiz da Timeline que captura `e.altKey` e incrementa/decrementa o estado `timelineZoom`, mantendo os limites 100~500 (Product Designer).
+- [x] **Master Batch Controls:** Adicionar botões `Eye` e `Lock` no cabeçalho agrupador de `Camadas Visuais` e botões `Volume2` e `Lock` no agrupador de `Faixas de Áudio` para varrer e mutar/ocultar todas as camadas simultaneamente via Zustand (Creative Director).

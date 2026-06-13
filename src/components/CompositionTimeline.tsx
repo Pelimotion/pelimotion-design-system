@@ -521,6 +521,13 @@ export function CompositionTimeline() {
           overflowX: 'auto',
           overflowY: 'hidden'
         }}
+        onWheel={(e) => {
+          if (e.altKey || e.metaKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -20 : 20;
+            setTimelineZoom(prev => Math.max(100, Math.min(500, prev + delta)));
+          }
+        }}
       >
         <div ref={containerRef} style={{ width: `${timelineZoom}%`, position: 'relative' }}>
         {/* Timeline Axis Ruler */}
@@ -597,11 +604,37 @@ export function CompositionTimeline() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
             <div 
-              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', userSelect: 'none' }}
+              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
               onClick={() => setIsCompExpanded(!isCompExpanded)}
             >
-              {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-              Camadas Visuais ({compositionLayers.length})
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                Camadas Visuais ({compositionLayers.length})
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const allLocked = compositionLayers.length > 0 && compositionLayers.every(l => l.locked);
+                    useEditorStore.setState(state => ({ compositionLayers: state.compositionLayers.map(l => ({ ...l, locked: !allLocked })) }));
+                  }} 
+                  style={{ background: 'none', border: 'none', color: (compositionLayers.length > 0 && compositionLayers.every(l => l.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
+                  title="Bloquear/Desbloquear Todas"
+                >
+                  <Lock size={12} />
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const allHidden = compositionLayers.length > 0 && compositionLayers.every(l => l.hidden);
+                    useEditorStore.setState(state => ({ compositionLayers: state.compositionLayers.map(l => ({ ...l, hidden: !allHidden })) }));
+                  }} 
+                  style={{ background: 'none', border: 'none', color: (compositionLayers.length > 0 && compositionLayers.every(l => l.hidden)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
+                  title="Mostrar/Ocultar Todas"
+                >
+                  <Eye size={12} />
+                </button>
+              </div>
             </div>
             {isCompExpanded && compositionLayers.map((layer, index) => (
               <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -712,11 +745,37 @@ export function CompositionTimeline() {
         {audioTracks.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 24, borderTop: '1px solid var(--color-surface-border)', paddingTop: 16 }}>
             <div 
-              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', userSelect: 'none' }}
+              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
               onClick={() => setIsAudioExpanded(!isAudioExpanded)}
             >
-              {isAudioExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-              Faixas de Áudio ({audioTracks.length})
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {isAudioExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                Faixas de Áudio ({audioTracks.length})
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const allLocked = audioTracks.length > 0 && audioTracks.every(t => t.locked);
+                    useEditorStore.setState(state => ({ audioTracks: state.audioTracks.map(t => ({ ...t, locked: !allLocked })) }));
+                  }} 
+                  style={{ background: 'none', border: 'none', color: (audioTracks.length > 0 && audioTracks.every(t => t.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
+                  title="Bloquear/Desbloquear Todas"
+                >
+                  <Lock size={12} />
+                </button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const allMuted = audioTracks.length > 0 && audioTracks.every(t => t.muted);
+                    useEditorStore.setState(state => ({ audioTracks: state.audioTracks.map(t => ({ ...t, muted: !allMuted })) }));
+                  }} 
+                  style={{ background: 'none', border: 'none', color: (audioTracks.length > 0 && audioTracks.every(t => t.muted)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
+                  title="Mutar/Desmutar Todas"
+                >
+                  <VolumeX size={12} />
+                </button>
+              </div>
             </div>
             {isAudioExpanded && audioTracks.map((track) => (
               <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
