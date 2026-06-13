@@ -139,38 +139,30 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis)\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 2)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Dev Senior vs Product Designer Conflict
+  // Creative Director vs Dev Senior Conflict
   conflicts.push({
-    title: 'Renderização Multithread vs Complexidade de Sincronização',
-    parties: ['dev_senior', 'product_designer'],
-    description: 'O Product Designer exige preview em tempo real (120fps) para os efeitos visuais pesados (tritone filters, noise). O Dev Sênior alerta para race conditions entre Workers e o state do Zustand.',
-    compromise: 'Arquitetura de Double-Buffering com OffscreenCanvas em Worker isolado. O Main Thread apenas envia os parâmetros (transform, cor, tempo) via postMessage sem esperar retorno sincrono.'
+    title: 'Generative Fluidity vs Compute Cost',
+    parties: ['diretor_criacao', 'dev_senior'],
+    description: 'O Diretor de Criação acha o Simplex Noise 2D muito "rígido" e exige Domain Warping (distorção de domínio) para criar efeitos de líquido e fumaça. Dev Sênior alerta que calcular fbm2D múltiplas vezes por pixel por frame no CPU do Web Worker pode fritar laptops básicos.',
+    compromise: 'Implementar Domain Warping no Worker mas travar as oitavas (octaves) em no máximo 3 quando o usuário estiver interagindo (arrastando sliders), e subir para 6 apenas no render final.'
   });
 
-  // CEO vs Dev Senior Conflict
-  conflicts.push({
-    title: 'Exportação WebCodecs vs Compatibilidade Mobile',
-    parties: ['ceo', 'dev_senior'],
-    description: 'CEO quer focar no motor WebCodecs MP4 nativo pela velocidade e custo zero. Dev Sênior lembra que Safari/iOS limita WebCodecs em backgrounds e não suporta certos codecs HEVC de forma previsível.',
-    compromise: 'Pipeline Híbrida: Tentar WebCodecs primeiro com fallback automático silencioso para FFmpeg.wasm em navegadores não suportados.'
-  });
-
-  // Product Designer vs Analyst Synergy
+  // Product Designer vs SEO Synergy
   synergies.push({
-    title: 'Bento Grid UX + Telemetria de Engajamento',
-    parties: ['product_designer', 'analista_senior'],
-    description: 'O Bento Grid modular permite injetar painéis de "Dicas" e "Presets Patrocinados". A Telemetria mapeia os tempos mortos do usuário para sugerir esses painéis exatamente na hora que ele trava.'
+    title: 'Instant Hover Previews & Caching',
+    parties: ['product_designer', 'seo'],
+    description: 'A Galeria (Library) precisa rodar previews de vídeo em hover instantaneamente (0ms de latência) para o "WOW factor". O SEO sugere usar um Service Worker para pré-fazer fetch agressivo dos vídeos populares do BunnyCDN para o CacheStorage do navegador.'
   });
 
-  // SEO vs CEO Synergy
+  // UX vs Architecture Synergy
   synergies.push({
-    title: 'Indexação Server-Side + Cloud Storage',
-    parties: ['seo', 'ceo'],
-    description: 'Servir os assets diretamente pelo BunnyCDN e usar um renderizador Headless na nuvem apenas para gerar OpenGraph images (SEO) e thumbs de compartilhamento nas redes sociais (Crescimento Viral).'
+    title: 'Typography On-Canvas Gizmo',
+    parties: ['product_designer', 'dev_senior'],
+    description: 'O Bento Grid lateral está muito cheio. Mover os controles de Escala e Rotação da Tipografia para um Bounding Box Gizmo nativo no canvas. O Dev Sênior propõe usar a biblioteca moveable ou reescrever as handles em SVG.'
   });
 
   return { conflicts, synergies };
@@ -208,10 +200,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n`;
-  markdown += `- [ ] **Bento Grid Enhancements:** Adicionar painel adaptativo com micro-animações avançadas para edição de parâmetros de Exportação (Product Designer).\n`;
-  markdown += `- [ ] **WebCodecs Fallback Strategy:** Implementar a lógica de fallback para FFmpeg.wasm quando o browser não suportar WebCodecs. (Dev Sênior).\n`;
-  markdown += `- [ ] **Double-Buffering Worker:** Ajustar o Zustand para disparar mensagens unidirecionais ao invés de forçar re-render React nas camadas de preview (Dev Sênior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 2)\n\n`;
+  markdown += `- [ ] **Generative Domain Warping:** Atualizar o \`fbm2D\` no \`generative.worker.ts\` para realizar Domain Warping cruzado, gerando aparências líquidas orgânicas (Diretor de Criação).\n`;
+  markdown += `- [ ] **Library Service Worker:** Implementar pré-fetch e caching em background dos assets do BunnyCDN para latência zero nos vídeos de preview (Dev Sênior + SEO).\n`;
+  markdown += `- [ ] **Typography CSS Gizmo Engine:** Refatorar as lógicas de arrastar/escalar na tela aplicando um Gizmo responsivo para transformar os nós diretamente no canvas (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

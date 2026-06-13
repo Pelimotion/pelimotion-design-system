@@ -66,9 +66,12 @@ function renderLoop(time: number) {
 
   const { amplitude = 1, frequency = 1, octaves = 1, persistence = 0.5 } = config;
   
-  // Example: Draw something using noise
-  const nx = fbm2D(noise2D, time * 0.001 * frequency, 0, octaves, persistence);
-  const ny = fbm2D(noise2D, 0, time * 0.001 * frequency, octaves, persistence);
+  // Domain Warping for fluid dynamics
+  const qx = fbm2D(noise2D, time * 0.001 * frequency, 0, octaves, persistence);
+  const qy = fbm2D(noise2D, 0, time * 0.001 * frequency, octaves, persistence);
+  
+  const nx = fbm2D(noise2D, (time * 0.001 * frequency) + 4.0 * qx, 1.3 + 4.0 * qy, octaves, persistence);
+  const ny = fbm2D(noise2D, 8.3 + 4.0 * qx, (time * 0.001 * frequency) + 4.0 * qy, octaves, persistence);
 
   // Apply tritonal filters (simulate with globalCompositeOperation and colors)
   ctx.save();

@@ -258,15 +258,19 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
     else workerRef.current.postMessage({ type: 'STOP' });
 
     // Double-Buffering: Listen to Zustand store WITHOUT re-rendering React
+    let prevWiggle = useEditorStore.getState().motionConfig.wiggle;
     const unsubscribe = useEditorStore.subscribe(
-      (state) => state.motionConfig.wiggle,
-      (newWiggle) => {
-        generativeLayers.forEach((layer: any) => {
-          workerRef.current?.postMessage({
-            type: 'UPDATE_CONFIG',
-            payload: { ...newWiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
+      (state) => {
+        const newWiggle = state.motionConfig.wiggle;
+        if (newWiggle !== prevWiggle) {
+          prevWiggle = newWiggle;
+          generativeLayers.forEach((layer: any) => {
+            workerRef.current?.postMessage({
+              type: 'UPDATE_CONFIG',
+              payload: { ...newWiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
+            });
           });
-        });
+        }
       }
     );
 

@@ -143,7 +143,7 @@ export function ExportPanel() {
             marginTop: showAdvanced ? 12 : 0
           }}>
             <Campo label="Resolution">
-              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value })} style={selectStyle} disabled={exportState.isExporting}>
+              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value as any })} style={selectStyle} disabled={exportState.isExporting}>
                 <option value="1920x1080">1080p (FHD)</option>
                 <option value="3840x2160">4K (UHD)</option>
                 <option value="1080x1920">Vertical (Stories/Reels)</option>
