@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
@@ -349,6 +349,19 @@ export function CompositionTimeline() {
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Fundo:</span>
+            <input
+              type="color"
+              value={exportConfig.backgroundColor === 'rgba(0,0,0,0)' ? '#000000' : exportConfig.backgroundColor}
+              onChange={(e) => updateExportConfig({ backgroundColor: e.target.value })}
+              style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}
+              title="Cor de Fundo"
+            />
+          </div>
+
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</span>
             <input
               type="number"
@@ -563,6 +576,16 @@ export function CompositionTimeline() {
                     >
                       {layer.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
                     </button>
+                    <button 
+                      onClick={() => {
+                        const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, exportConfig.duration) };
+                        addCompositionLayer(duplicate);
+                      }} 
+                      style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title="Duplicar"
+                    >
+                      <Copy size={10} />
+                    </button>
                     <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 4 }}>
                       <Trash2 size={10} />
                     </button>
@@ -636,6 +659,16 @@ export function CompositionTimeline() {
                     </button>
                     <button onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}>
                       {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const duplicate = { ...track, id: crypto.randomUUID(), startTime: Math.min(track.startTime + 0.5, exportConfig.duration) };
+                        addAudioTrack(duplicate);
+                      }} 
+                      style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title="Duplicar"
+                    >
+                      <Copy size={10} />
                     </button>
                     <button onClick={() => removeAudioTrack(track.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 8 }}>
                       <Trash2 size={10} />
