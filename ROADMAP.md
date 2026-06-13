@@ -52,7 +52,12 @@
 - [x] **Local Privacy-First Telemetry:** Created a silent logger (`telemetry.ts`) that records export funnel metrics and WebCodecs fallbacks to localStorage.
 - [x] **Automated Lighthouse Validator:** Created a programmatic SEO script (`agent:lighthouse`) to continuously audit layout shifts and Core Web Vitals to maintain a 100/100 score.
 
-## Phase 10: Future Expansion (Backlog)
-- [ ] **Multi-track Audio Mixing:** Add support for importing and syncing audio tracks directly in the timeline, mixing audio buffers before final WebAssembly encoding.
+## Phase 10: Multi-track Audio Mixing & Export Muxing (v2.3)
+- [x] **Multi-track Audio Timeline UI:** Integrated audio tracks into `CompositionTimeline.tsx`, allowing volume adjustments, track trimming, and timeline scheduling.
+- [x] **Dynamic WebAudio Sync:** Built play, pause, and seek synchronization for all active audio tracks in `<CompositionPreview />` using the Web Audio API.
+- [x] **Offline Audio Mixer (`audioMixer.ts`):** Developed an offline audio context mixer that decodes multiple audio streams, aligns sample rates, and compiles them into a clean 16-bit stereo WAV buffer.
+- [x] **Stream Copy Multiplexing (Muxing):** Integrated WAV rendering into the export pipeline (`exportPipeline.ts` & `ffmpegEncoder.ts`), utilizing FFmpeg.wasm to fast-mux the WebCodecs video and mixed audio into a single MP4.
+
+## Phase 11: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.

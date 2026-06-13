@@ -1,10 +1,17 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Analytics, Lighthouse & Motion Dynamics (v2.2)
+## Active Phase: 🟢 Engine de Áudio Multi-track e Muxing de Exportação (v2.3)
 
-## 🏁 Pelimotion Design System v2.2 — Performance & Growth Ready
+## 🏁 Pelimotion Design System v2.3 — Audio Engine & Muxing Complete
 
-All critical bugs involving viewport scaling (cropping/gizmo shift), asset library retention (Session vs. Global Storage), WebCodecs exports, and typography resizing have been resolved. The workspace is fully integrated, responsive, verified, and stable. Additional SEO, Telemetry, and advanced Motion features were shipped in v2.2.
+All core components for multi-track audio management, real-time playback synchronization, in-browser offline mixing, and final export multiplexing have been successfully integrated and verified. The editor now supports professional, layered audio alongside hardware-accelerated video exports.
+
+### Session Achievements (v2.3 - Multi-track Audio, WebAudio Mixing & FFmpeg Muxing)
+- **Multi-track Audio Timeline & UI:** Added support for audio tracks in `CompositionTimeline.tsx`, enabling users to add, visual-trim, adjust volume, and shift starting offsets for multiple concurrent sound assets.
+- **Dynamic WebAudio Playback Sync:** Built a robust synchronization mechanism in `<CompositionPreview />` using the Web Audio API. Playback, pausing, and scrubbing on the GSAP global timeline automatically schedules and shifts active audio source nodes to coordinate frame-perfect audio-to-video alignment.
+- **Offline Audio Mixer (`audioMixer.ts`):** Developed an in-browser audio mixer that decodes multiple audio streams into buffers, resamples them to a unified project sample rate (typically 44100Hz or 48000Hz), maps their corresponding timelines (offsets, durations, loops), applies volume gain nodes, and merges them into a single high-fidelity, uncompressed WAV file.
+- **Hybrid Audio-Video Muxing:** Upgraded `exportPipeline.ts` and `ffmpegEncoder.ts` to multiplex the generated video and mixed audio. When audio tracks are active, the pipeline captures video frames via fast WebCodecs, saves the video container, and then utilizes FFmpeg.wasm to perform a stream copy multiplexing (`-c:v copy -c:a aac`) combining the video and mixed WAV output instantly without re-encoding frames.
+- **Strict Compile-Time Safety:** Resolved complex TypeScript errors related to `noUncheckedIndexedAccess` during audio buffering and Float32Array operations by enforcing index safety guards.
 
 ### Session Achievements (v2.2 - Analytics, Lighthouse & Motion Dynamics)
 - **Motion Easing & Blur Dynamics:** Added new presets `bounceIn`, `elasticWhip`, `bounceOut`, `elasticSnap`. Integrated global toggle for CSS motion blur filtering in `<CompositionPreview />`.
