@@ -1,20 +1,20 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 17:40:39*
-*Current Commit Hash: `5a4ba45`*
+*Generated at: 13/06/2026, 18:00:29*
+*Current Commit Hash: `d5d1e40`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Playhead Realtime Gliding** (diretor_criacao + dev_senior):
-  - *Descrição:* A agulha da Timeline (Playhead) fica estática durante o Play. Precisamos plugar a globalTimeline do GSAP em um Ticker que injeta a posição no React para deslizamento visual super fluido a 60fps.
+- **One-Click Layer Duplication** (product_designer + dev_senior):
+  - *Descrição:* Usuários perdem muito tempo recriando configurações de texto ou re-importando áudios. Precisamos de um botão "Duplicate" (Copiar) nativo nas trilhas da Timeline.
 
-- **Audio Cinematic Fades** (diretor_criacao + product_designer):
-  - *Descrição:* Cortes secos de áudio destroem a qualidade da obra. Precisamos adicionar FadeIn e FadeOut nas trilhas, computados frame-a-frame na AudioEngine para controle suave de decibéis.
+- **Master Canvas Background Color** (ceo + diretor_criacao):
+  - *Descrição:* Falta controle rápido da cor de fundo mestre. Para exportações corporativas, é vital permitir que o usuário altere `exportConfig.backgroundColor` direto do cabeçalho da Timeline.
 
-- **Magnetic Timeline Snapping** (analista_senior + product_designer):
-  - *Descrição:* Sem uma grade magnética, alinhar o áudio com as transições de tipografia é infernal. Adicionar um botão "Ímã" (Magnet) para arredondar o arraste para frações de 0.5s resolve o problema.
+- **Typography to Library Bridge** (analista_senior + product_designer):
+  - *Descrição:* Não há ponte direta entre a aba de Tipografia e a Biblioteca Local. Vamos inserir um botão "Salvar na Biblioteca" no Painel de Tipografia que converte a arte atual em um asset reutilizável.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -59,8 +59,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 9)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 10)
 
-- [x] **Playhead Realtime Sync:** Plugar `gsap.ticker` no `CompositionTimeline.tsx` para atualizar o `currentTime` da store ou re-renderizar a agulha enquanto `isPlaying === true` (Dev Sênior).
-- [x] **Audio Cinematic Fades:** Adicionar `fadeIn` e `fadeOut` no `AudioTrack` e calcular o targetVolume dinamicamente no `AudioEngine.tsx` baseando-se no `localTime` (Diretor de Criação).
-- [x] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, `handlePointerMove` arredonda os segundos (ex: `Math.round(time * 2) / 2`) para encaixes perfeitos em 0.5s (Product Designer).
+- [ ] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone `Copy`) nos cabeçalhos das tracks de `Composition` e `Audio`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).
+- [ ] **Master Canvas Background Color:** Adicionar um input `type="color"` no cabeçalho mestre da Timeline que modifica globalmente a `exportConfig.backgroundColor` do projeto (Diretor de Criação).
+- [ ] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do `TypographyPanel.tsx`, empurrando o estado de `typography` atual para os `localLibraryItems` via `useEditorStore` (Analista).

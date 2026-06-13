@@ -139,29 +139,29 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 9)\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 10)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Creative Director vs Dev Senior Synergy
+  // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'Playhead Realtime Gliding',
-    parties: ['diretor_criacao', 'dev_senior'],
-    description: 'A agulha da Timeline (Playhead) fica estática durante o Play. Precisamos plugar a globalTimeline do GSAP em um Ticker que injeta a posição no React para deslizamento visual super fluido a 60fps.'
+    title: 'One-Click Layer Duplication',
+    parties: ['product_designer', 'dev_senior'],
+    description: 'Usuários perdem muito tempo recriando configurações de texto ou re-importando áudios. Precisamos de um botão "Duplicate" (Copiar) nativo nas trilhas da Timeline.'
   });
 
-  // Creative Director vs Product Designer Synergy
+  // CEO vs Creative Director Synergy
   synergies.push({
-    title: 'Audio Cinematic Fades',
-    parties: ['diretor_criacao', 'product_designer'],
-    description: 'Cortes secos de áudio destroem a qualidade da obra. Precisamos adicionar FadeIn e FadeOut nas trilhas, computados frame-a-frame na AudioEngine para controle suave de decibéis.'
+    title: 'Master Canvas Background Color',
+    parties: ['ceo', 'diretor_criacao'],
+    description: 'Falta controle rápido da cor de fundo mestre. Para exportações corporativas, é vital permitir que o usuário altere `exportConfig.backgroundColor` direto do cabeçalho da Timeline.'
   });
 
   // Analyst vs Product Designer Synergy
   synergies.push({
-    title: 'Magnetic Timeline Snapping',
+    title: 'Typography to Library Bridge',
     parties: ['analista_senior', 'product_designer'],
-    description: 'Sem uma grade magnética, alinhar o áudio com as transições de tipografia é infernal. Adicionar um botão "Ímã" (Magnet) para arredondar o arraste para frações de 0.5s resolve o problema.'
+    description: 'Não há ponte direta entre a aba de Tipografia e a Biblioteca Local. Vamos inserir um botão "Salvar na Biblioteca" no Painel de Tipografia que converte a arte atual em um asset reutilizável.'
   });
 
   return { conflicts, synergies };
@@ -199,10 +199,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 9)\n\n`;
-  markdown += `- [ ] **Playhead Realtime Sync:** Plugar \`gsap.ticker\` no \`CompositionTimeline.tsx\` para atualizar o \`currentTime\` da store ou re-renderizar a agulha enquanto \`isPlaying === true\` (Dev Sênior).\n`;
-  markdown += `- [ ] **Audio Cinematic Fades:** Adicionar \`fadeIn\` e \`fadeOut\` no \`AudioTrack\` e calcular o targetVolume dinamicamente no \`AudioEngine.tsx\` baseando-se no \`localTime\` (Diretor de Criação).\n`;
-  markdown += `- [ ] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, \`handlePointerMove\` arredonda os segundos (ex: \`Math.round(time * 2) / 2\`) para encaixes perfeitos em 0.5s (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 10)\n\n`;
+  markdown += `- [ ] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone \`Copy\`) nos cabeçalhos das tracks de \`Composition\` e \`Audio\`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).\n`;
+  markdown += `- [ ] **Master Canvas Background Color:** Adicionar um input \`type="color"\` no cabeçalho mestre da Timeline que modifica globalmente a \`exportConfig.backgroundColor\` do projeto (Diretor de Criação).\n`;
+  markdown += `- [ ] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do \`TypographyPanel.tsx\`, empurrando o estado de \`typography\` atual para os \`localLibraryItems\` via \`useEditorStore\` (Analista).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
