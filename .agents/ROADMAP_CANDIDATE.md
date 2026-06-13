@@ -61,6 +61,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 10)
 
-- [ ] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone `Copy`) nos cabeçalhos das tracks de `Composition` e `Audio`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).
-- [ ] **Master Canvas Background Color:** Adicionar um input `type="color"` no cabeçalho mestre da Timeline que modifica globalmente a `exportConfig.backgroundColor` do projeto (Diretor de Criação).
-- [ ] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do `TypographyPanel.tsx`, empurrando o estado de `typography` atual para os `localLibraryItems` via `useEditorStore` (Analista).
+- [x] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone `Copy`) nos cabeçalhos das tracks de `Composition` e `Audio`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).
+- [x] **Master Canvas Background Color:** Adicionar um input `type="color"` no cabeçalho mestre da Timeline que modifica globalmente a `exportConfig.backgroundColor` do projeto (Diretor de Criação).
+- [x] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do `TypographyPanel.tsx`, empurrando o estado de `typography` atual para os `localLibraryItems` via `useEditorStore` (Analista).
