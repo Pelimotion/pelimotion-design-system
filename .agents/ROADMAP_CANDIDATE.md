@@ -61,6 +61,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 9)
 
-- [ ] **Playhead Realtime Sync:** Plugar `gsap.ticker` no `CompositionTimeline.tsx` para atualizar o `currentTime` da store ou re-renderizar a agulha enquanto `isPlaying === true` (Dev Sênior).
-- [ ] **Audio Cinematic Fades:** Adicionar `fadeIn` e `fadeOut` no `AudioTrack` e calcular o targetVolume dinamicamente no `AudioEngine.tsx` baseando-se no `localTime` (Diretor de Criação).
-- [ ] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, `handlePointerMove` arredonda os segundos (ex: `Math.round(time * 2) / 2`) para encaixes perfeitos em 0.5s (Product Designer).
+- [x] **Playhead Realtime Sync:** Plugar `gsap.ticker` no `CompositionTimeline.tsx` para atualizar o `currentTime` da store ou re-renderizar a agulha enquanto `isPlaying === true` (Dev Sênior).
+- [x] **Audio Cinematic Fades:** Adicionar `fadeIn` e `fadeOut` no `AudioTrack` e calcular o targetVolume dinamicamente no `AudioEngine.tsx` baseando-se no `localTime` (Diretor de Criação).
+- [x] **Magnetic Timeline Snapping:** Inserir botão Magnet na Timeline. Se ativado, `handlePointerMove` arredonda os segundos (ex: `Math.round(time * 2) / 2`) para encaixes perfeitos em 0.5s (Product Designer).

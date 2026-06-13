@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
+import { gsap } from 'gsap';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
 
 export function CompositionTimeline() {
@@ -27,6 +28,23 @@ export function CompositionTimeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [timelineZoom, setTimelineZoom] = useState(100);
+  const [snapEnabled, setSnapEnabled] = useState(true);
+  const playheadRef = useRef<HTMLDivElement>(null);
+  
+  // Playhead Realtime Sync
+  useEffect(() => {
+    if (!isPlaying) return;
+    const ticker = () => {
+      const time = gsap.globalTimeline.time();
+      if (playheadRef.current) {
+        const pct = (time / exportConfig.duration) * 100;
+        const px = (time / exportConfig.duration) * 24;
+        playheadRef.current.style.left = `calc(12px + ${pct}% - ${px}px)`;
+      }
+    };
+    gsap.ticker.add(ticker);
+    return () => gsap.ticker.remove(ticker);
+  }, [isPlaying, exportConfig.duration]);
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
@@ -106,7 +124,11 @@ export function CompositionTimeline() {
     const mouseX = e.clientX - (rect.left + 12);
     // Add extra width protection to avoid going outside
     const trackWidth = rect.width - 24; 
-    const time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
+    let time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
+
+    if (snapEnabled && dragging.type !== 'playhead') {
+      time = Math.round(time * 2) / 2; // snap to 0.5s
+    }
 
     if (dragging.type === 'playhead') {
       seek(time);
@@ -294,6 +316,25 @@ export function CompositionTimeline() {
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
+          <button
+            onClick={() => setSnapEnabled(!snapEnabled)}
+            style={{
+              background: snapEnabled ? 'var(--color-surface-glass)' : 'transparent',
+              color: snapEnabled ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+              border: '1px solid ' + (snapEnabled ? 'var(--color-surface-border)' : 'transparent'),
+              borderRadius: 4,
+              padding: '4px 8px',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+            title="Snap Magnético (0.5s)"
+          >
+            <Magnet size={12} />
+          </button>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Zoom:</span>
             <input
@@ -424,7 +465,9 @@ export function CompositionTimeline() {
         </div>
 
         {/* Playhead Indicator */}
-        <div style={{
+        <div 
+          ref={playheadRef}
+          style={{
           position: 'absolute',
           top: 12,
           bottom: 24,
@@ -562,6 +605,22 @@ export function CompositionTimeline() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <span>Áudio: {track.name}</span>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-base)', padding: '2px 4px', borderRadius: 4, gap: 4, marginRight: 4 }}>
+                      <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>In</span>
+                      <input 
+                        type="number" min="0" max="5" step="0.1" 
+                        value={track.fadeIn || 0} 
+                        onChange={(e) => updateAudioTrack(track.id, { fadeIn: Number(e.target.value) })} 
+                        style={{ width: 35, fontSize: '0.6rem', textAlign: 'center', background: 'transparent', border: 'none', color: 'white', outline: 'none' }} title="Fade In (s)" 
+                      />
+                      <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 2 }}>Out</span>
+                      <input 
+                        type="number" min="0" max="5" step="0.1" 
+                        value={track.fadeOut || 0} 
+                        onChange={(e) => updateAudioTrack(track.id, { fadeOut: Number(e.target.value) })} 
+                        style={{ width: 35, fontSize: '0.6rem', textAlign: 'center', background: 'transparent', border: 'none', color: 'white', outline: 'none' }} title="Fade Out (s)" 
+                      />
+                    </div>
                     <input 
                       type="range" min="0" max="1" step="0.05" 
                       value={track.volume} 
