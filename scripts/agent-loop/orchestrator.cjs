@@ -139,30 +139,30 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 2)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 3)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Creative Director vs Dev Senior Conflict
+  // Product Designer vs Dev Senior Conflict
   conflicts.push({
-    title: 'Generative Fluidity vs Compute Cost',
-    parties: ['diretor_criacao', 'dev_senior'],
-    description: 'O Diretor de Criação acha o Simplex Noise 2D muito "rígido" e exige Domain Warping (distorção de domínio) para criar efeitos de líquido e fumaça. Dev Sênior alerta que calcular fbm2D múltiplas vezes por pixel por frame no CPU do Web Worker pode fritar laptops básicos.',
-    compromise: 'Implementar Domain Warping no Worker mas travar as oitavas (octaves) em no máximo 3 quando o usuário estiver interagindo (arrastando sliders), e subir para 6 apenas no render final.'
-  });
-
-  // Product Designer vs SEO Synergy
-  synergies.push({
-    title: 'Instant Hover Previews & Caching',
-    parties: ['product_designer', 'seo'],
-    description: 'A Galeria (Library) precisa rodar previews de vídeo em hover instantaneamente (0ms de latência) para o "WOW factor". O SEO sugere usar um Service Worker para pré-fazer fetch agressivo dos vídeos populares do BunnyCDN para o CacheStorage do navegador.'
-  });
-
-  // UX vs Architecture Synergy
-  synergies.push({
-    title: 'Typography On-Canvas Gizmo',
+    title: 'CSS Blur vs GPU Performance',
     parties: ['product_designer', 'dev_senior'],
-    description: 'O Bento Grid lateral está muito cheio. Mover os controles de Escala e Rotação da Tipografia para um Bounding Box Gizmo nativo no canvas. O Dev Sênior propõe usar a biblioteca moveable ou reescrever as handles em SVG.'
+    description: 'O Product Designer adora os rastros (trails) de tipografia com motion blur ativado. O Dev Sênior identificou que `filter: blur()` no CSS sobre dezenas de nós no DOM congela a renderização no Safari.',
+    compromise: 'Substituir o CSS `filter: blur` por uma tag SVG nativa `<feGaussianBlur>` injetada no `<defs>` principal, forçando a GPU a compor o blur de maneira rasterizada sem reflow de DOM.'
+  });
+
+  // CEO vs Motion Lead Synergy
+  synergies.push({
+    title: 'Enterprise Watermarking & Brand Lock-in',
+    parties: ['ceo', 'diretor_criacao'],
+    description: 'O CEO quer monetizar planos Premium removendo a marca d`água nas exportações. O Diretor de Criação concorda em adicionar um render visual de "Made with Pelimotion" de forma sutil e elegante nos frames finais do OffscreenCanvas durante o Export Pipeline.'
+  });
+
+  // Analyst vs Product Designer Synergy
+  synergies.push({
+    title: 'Frictionless Hotkeys',
+    parties: ['analista_senior', 'product_designer'],
+    description: 'A Telemetria indica que usuários de After Effects perdem muito tempo procurando o botão "Delete" na interface. Devemos plugar um Global Hotkey Engine para Play/Pause (Space) e Delete Layer (Backspace).'
   });
 
   return { conflicts, synergies };
@@ -200,10 +200,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 2)\n\n`;
-  markdown += `- [ ] **Generative Domain Warping:** Atualizar o \`fbm2D\` no \`generative.worker.ts\` para realizar Domain Warping cruzado, gerando aparências líquidas orgânicas (Diretor de Criação).\n`;
-  markdown += `- [ ] **Library Service Worker:** Implementar pré-fetch e caching em background dos assets do BunnyCDN para latência zero nos vídeos de preview (Dev Sênior + SEO).\n`;
-  markdown += `- [ ] **Typography CSS Gizmo Engine:** Refatorar as lógicas de arrastar/escalar na tela aplicando um Gizmo responsivo para transformar os nós diretamente no canvas (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 3)\n\n`;
+  markdown += `- [ ] **Typography GPU Blur:** Injetar filtro nativo \`<feGaussianBlur>\` nas definições de Trail em \`TypographyPreview.tsx\` para substituir o CSS filter (Dev Sênior).\n`;
+  markdown += `- [ ] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em \`exportPipeline.ts\` (CEO).\n`;
+  markdown += `- [ ] **Global Hotkeys Engine:** Configurar um \`useEffect\` no \`App.tsx\` para deletar \`activeCompositionLayerId\` via Backspace e Play/Pause via Barra de Espaço (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

@@ -1,21 +1,21 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 15:20:04*
-*Current Commit Hash: `8b1ba90`*
+*Generated at: 13/06/2026, 15:20:40*
+*Current Commit Hash: `a2dff91`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Generative Fluidity vs Compute Cost** (diretor_criacao vs dev_senior):
-  - *Descrição:* O Diretor de Criação acha o Simplex Noise 2D muito "rígido" e exige Domain Warping (distorção de domínio) para criar efeitos de líquido e fumaça. Dev Sênior alerta que calcular fbm2D múltiplas vezes por pixel por frame no CPU do Web Worker pode fritar laptops básicos.
-  - *Compromisso Proposto:* **Implementar Domain Warping no Worker mas travar as oitavas (octaves) em no máximo 3 quando o usuário estiver interagindo (arrastando sliders), e subir para 6 apenas no render final.**
+- **CSS Blur vs GPU Performance** (product_designer vs dev_senior):
+  - *Descrição:* O Product Designer adora os rastros (trails) de tipografia com motion blur ativado. O Dev Sênior identificou que `filter: blur()` no CSS sobre dezenas de nós no DOM congela a renderização no Safari.
+  - *Compromisso Proposto:* **Substituir o CSS `filter: blur` por uma tag SVG nativa `<feGaussianBlur>` injetada no `<defs>` principal, forçando a GPU a compor o blur de maneira rasterizada sem reflow de DOM.**
 
 ### 🤝 Sinergias
-- **Instant Hover Previews & Caching** (product_designer + seo):
-  - *Descrição:* A Galeria (Library) precisa rodar previews de vídeo em hover instantaneamente (0ms de latência) para o "WOW factor". O SEO sugere usar um Service Worker para pré-fazer fetch agressivo dos vídeos populares do BunnyCDN para o CacheStorage do navegador.
+- **Enterprise Watermarking & Brand Lock-in** (ceo + diretor_criacao):
+  - *Descrição:* O CEO quer monetizar planos Premium removendo a marca d`água nas exportações. O Diretor de Criação concorda em adicionar um render visual de "Made with Pelimotion" de forma sutil e elegante nos frames finais do OffscreenCanvas durante o Export Pipeline.
 
-- **Typography On-Canvas Gizmo** (product_designer + dev_senior):
-  - *Descrição:* O Bento Grid lateral está muito cheio. Mover os controles de Escala e Rotação da Tipografia para um Bounding Box Gizmo nativo no canvas. O Dev Sênior propõe usar a biblioteca moveable ou reescrever as handles em SVG.
+- **Frictionless Hotkeys** (analista_senior + product_designer):
+  - *Descrição:* A Telemetria indica que usuários de After Effects perdem muito tempo procurando o botão "Delete" na interface. Devemos plugar um Global Hotkey Engine para Play/Pause (Space) e Delete Layer (Backspace).
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +60,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 2)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 3)
 
-- [ ] **Generative Domain Warping:** Atualizar o `fbm2D` no `generative.worker.ts` para realizar Domain Warping cruzado, gerando aparências líquidas orgânicas (Diretor de Criação).
-- [ ] **Library Service Worker:** Implementar pré-fetch e caching em background dos assets do BunnyCDN para latência zero nos vídeos de preview (Dev Sênior + SEO).
-- [ ] **Typography CSS Gizmo Engine:** Refatorar as lógicas de arrastar/escalar na tela aplicando um Gizmo responsivo para transformar os nós diretamente no canvas (Product Designer).
+- [ ] **Typography GPU Blur:** Injetar filtro nativo `<feGaussianBlur>` nas definições de Trail em `TypographyPreview.tsx` para substituir o CSS filter (Dev Sênior).
+- [ ] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em `exportPipeline.ts` (CEO).
+- [ ] **Global Hotkeys Engine:** Configurar um `useEffect` no `App.tsx` para deletar `activeCompositionLayerId` via Backspace e Play/Pause via Barra de Espaço (Product Designer).
