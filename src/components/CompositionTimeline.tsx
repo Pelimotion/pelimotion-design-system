@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
@@ -578,6 +578,22 @@ export function CompositionTimeline() {
                     </button>
                     <button 
                       onClick={() => {
+                        if (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) {
+                          const splitTime = currentTime;
+                          const newDuration1 = splitTime - layer.startTime;
+                          const newDuration2 = (layer.startTime + layer.duration) - splitTime;
+                          updateCompositionLayer(layer.id, { duration: newDuration1 });
+                          const duplicate = { ...layer, id: crypto.randomUUID(), startTime: splitTime, duration: newDuration2 };
+                          addCompositionLayer(duplicate);
+                        }
+                      }} 
+                      style={{ background: 'none', border: 'none', color: (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', cursor: (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) ? 'pointer' : 'default', padding: 2, marginLeft: 4 }}
+                      title="Cortar na Agulha (Split)"
+                    >
+                      <Scissors size={10} />
+                    </button>
+                    <button 
+                      onClick={() => {
                         const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, exportConfig.duration) };
                         addCompositionLayer(duplicate);
                       }} 
@@ -659,6 +675,22 @@ export function CompositionTimeline() {
                     </button>
                     <button onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}>
                       {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (currentTime > track.startTime && currentTime < track.startTime + track.duration) {
+                          const splitTime = currentTime;
+                          const newDuration1 = splitTime - track.startTime;
+                          const newDuration2 = (track.startTime + track.duration) - splitTime;
+                          updateAudioTrack(track.id, { duration: newDuration1 });
+                          const duplicate = { ...track, id: crypto.randomUUID(), startTime: splitTime, duration: newDuration2 };
+                          addAudioTrack(duplicate);
+                        }
+                      }} 
+                      style={{ background: 'none', border: 'none', color: (currentTime > track.startTime && currentTime < track.startTime + track.duration) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', cursor: (currentTime > track.startTime && currentTime < track.startTime + track.duration) ? 'pointer' : 'default', padding: 2, marginLeft: 4 }}
+                      title="Cortar na Agulha (Split)"
+                    >
+                      <Scissors size={10} />
                     </button>
                     <button 
                       onClick={() => {

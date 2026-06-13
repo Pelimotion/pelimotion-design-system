@@ -1,20 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 18:00:29*
-*Current Commit Hash: `d5d1e40`*
+*Generated at: 13/06/2026, 18:21:02*
+*Current Commit Hash: `9d40f59`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **One-Click Layer Duplication** (product_designer + dev_senior):
-  - *Descrição:* Usuários perdem muito tempo recriando configurações de texto ou re-importando áudios. Precisamos de um botão "Duplicate" (Copiar) nativo nas trilhas da Timeline.
+- **Playhead Split Tool (Scissors)** (product_designer + dev_senior):
+  - *Descrição:* Usuários precisam fatiar um clipe ou áudio ao meio de forma cirúrgica. Vamos adicionar um botão "Split" (Tesoura) nos cabeçalhos das tracks. Ele divide a camada ativa no exato "currentTime" da agulha.
 
-- **Master Canvas Background Color** (ceo + diretor_criacao):
-  - *Descrição:* Falta controle rápido da cor de fundo mestre. Para exportações corporativas, é vital permitir que o usuário altere `exportConfig.backgroundColor` direto do cabeçalho da Timeline.
-
-- **Typography to Library Bridge** (analista_senior + product_designer):
-  - *Descrição:* Não há ponte direta entre a aba de Tipografia e a Biblioteca Local. Vamos inserir um botão "Salvar na Biblioteca" no Painel de Tipografia que converte a arte atual em um asset reutilizável.
+- **Custom Font Uploading** (ceo + diretor_criacao):
+  - *Descrição:* Marcas corporativas têm fontes proprietárias que não estão no Google Fonts. A aba de Tipografia precisa de um botão de upload para injetar `.ttf` ou `.otf` via Web Font API localmente em tempo real.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -59,8 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 10)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 11)
 
-- [x] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone `Copy`) nos cabeçalhos das tracks de `Composition` e `Audio`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).
-- [x] **Master Canvas Background Color:** Adicionar um input `type="color"` no cabeçalho mestre da Timeline que modifica globalmente a `exportConfig.backgroundColor` do projeto (Diretor de Criação).
-- [x] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do `TypographyPanel.tsx`, empurrando o estado de `typography` atual para os `localLibraryItems` via `useEditorStore` (Analista).
+- [x] **Playhead Split Tool:** Inserir botão de Tesoura (`Scissors`) nas tracks de Timeline. A lógica verifica se `currentTime` está dentro do intervalo da layer. Se sim, reduz a `duration` da primeira parte, clona a layer criando a segunda parte com `startTime = currentTime` (Product Designer).
+- [x] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).

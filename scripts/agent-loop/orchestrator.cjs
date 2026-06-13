@@ -139,29 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 10)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 11)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Product Designer vs Dev Senior Synergy
   synergies.push({
-    title: 'One-Click Layer Duplication',
+    title: 'Playhead Split Tool (Scissors)',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Usuários perdem muito tempo recriando configurações de texto ou re-importando áudios. Precisamos de um botão "Duplicate" (Copiar) nativo nas trilhas da Timeline.'
+    description: 'Usuários precisam fatiar um clipe ou áudio ao meio de forma cirúrgica. Vamos adicionar um botão "Split" (Tesoura) nos cabeçalhos das tracks. Ele divide a camada ativa no exato "currentTime" da agulha.'
   });
 
   // CEO vs Creative Director Synergy
   synergies.push({
-    title: 'Master Canvas Background Color',
+    title: 'Custom Font Uploading',
     parties: ['ceo', 'diretor_criacao'],
-    description: 'Falta controle rápido da cor de fundo mestre. Para exportações corporativas, é vital permitir que o usuário altere `exportConfig.backgroundColor` direto do cabeçalho da Timeline.'
-  });
-
-  // Analyst vs Product Designer Synergy
-  synergies.push({
-    title: 'Typography to Library Bridge',
-    parties: ['analista_senior', 'product_designer'],
-    description: 'Não há ponte direta entre a aba de Tipografia e a Biblioteca Local. Vamos inserir um botão "Salvar na Biblioteca" no Painel de Tipografia que converte a arte atual em um asset reutilizável.'
+    description: 'Marcas corporativas têm fontes proprietárias que não estão no Google Fonts. A aba de Tipografia precisa de um botão de upload para injetar `.ttf` ou `.otf` via Web Font API localmente em tempo real.'
   });
 
   return { conflicts, synergies };
@@ -199,10 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 10)\n\n`;
-  markdown += `- [ ] **One-Click Layer Duplication:** Inserir botão de Duplicar (ícone \`Copy\`) nos cabeçalhos das tracks de \`Composition\` e \`Audio\`. Ao clicar, injetar na Store uma nova cópia deslocada +0.5s no tempo (Product Designer).\n`;
-  markdown += `- [ ] **Master Canvas Background Color:** Adicionar um input \`type="color"\` no cabeçalho mestre da Timeline que modifica globalmente a \`exportConfig.backgroundColor\` do projeto (Diretor de Criação).\n`;
-  markdown += `- [ ] **Typography to Library Bridge:** Inserir um botão flotante de "Salvar na Biblioteca" dentro do \`TypographyPanel.tsx\`, empurrando o estado de \`typography\` atual para os \`localLibraryItems\` via \`useEditorStore\` (Analista).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 11)\n\n`;
+  markdown += `- [ ] **Playhead Split Tool:** Inserir botão de Tesoura (\`Scissors\`) nas tracks de Timeline. A lógica verifica se \`currentTime\` está dentro do intervalo da layer. Se sim, reduz a \`duration\` da primeira parte, clona a layer criando a segunda parte com \`startTime = currentTime\` (Product Designer).\n`;
+  markdown += `- [ ] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

@@ -58,6 +58,18 @@
 - [x] **Offline Audio Mixer (`audioMixer.ts`):** Developed an offline audio context mixer that decodes multiple audio streams, aligns sample rates, and compiles them into a clean 16-bit stereo WAV buffer.
 - [x] **Stream Copy Multiplexing (Muxing):** Integrated WAV rendering into the export pipeline (`exportPipeline.ts` & `ffmpegEncoder.ts`), utilizing FFmpeg.wasm to fast-mux the WebCodecs video and mixed audio into a single MP4.
 
-## Phase 11: Future Expansion (Backlog)
+## Phase 11: Advanced Timeline Controls & UI/UX Polish (v2.4)
+- [x] **Timeline Horizontal Scale Zoom:** Refactored the track container with scrolling overflow (`overflowX: auto`) and added a slider control (100% to 500% zoom) for high-precision timeline inspection.
+- [x] **Layer Locking & Opacity Sliders:** Integrated interactive padlocks (`layer.locked`, `track.locked`) to prevent accidental pointer modifications, and inline range controls to adjust layer opacity in real time.
+- [x] **Real-Time Playhead Sync (GSAP Ticker):** Shifted playback tracking to manipulate the DOM directly within `gsap.ticker`, bypassing React rendering paths to guarantee a steady 60fps playhead update.
+- [x] **Magnetic Snapping (0.5s Grid):** Added snap-to-grid capabilities to drag-and-drop or visual-trim offsets.
+- [x] **Dynamic Audio Fades:** Added inputs for Fade-In and Fade-Out seconds, mapping linear scaling curves during WebAudio playback and offline mixer rendering.
+- [x] **Canvas Background Color Selector:** Placed global color input in the timeline toolbar to control background color values.
+- [x] **Aspect Ratio Auto-Resolution Mapper:** Connected aspect ratio triggers ('16:9', '9:16', '1:1', '4:5') directly to resolution presets inside the store.
+- [x] **One-Click Track Duplication:** Added quick-copy buttons on all track timelines.
+- [x] **Playhead Split Tool (Scissors):** Placed split actions on all timeline tracks to slice active segments at the exact playhead position.
+
+## Phase 12: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.
+

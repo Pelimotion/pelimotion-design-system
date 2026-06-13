@@ -51,13 +51,26 @@ Aqui as formas livres tomam vida, flutuando como se estivessem em um ambiente na
 
 ---
 
-## 🎬 4. Configuração de Cena & Exportação
+## 🎛️ 4. Edição Avançada na Linha do Tempo (NLE)
+
+Para criadores que precisam de controle profissional sobre a narrativa visual e sonora, o Pelimotion conta com uma linha do tempo de nível não-linear (NLE) de alta performance:
+- **Snap Magnético (Imã):** No cabeçalho da timeline, clique no botão de **Ícone de Imã** para ativar/desativar o alinhamento automático. Com o Snap ligado, qualquer arraste de bloco ou ajuste de duração na timeline é atraído exatamente para grades de `0.5s` segundos, garantindo sincronia perfeita.
+- **Zoom Horizontal da Linha do Tempo:** Mova o slider deslizante **Zoom** (de 100% a 500%) para alargar as réguas de tempo. Isso é extremamente útil em timelines longas ou cheias de cortes rápidos, permitindo enxergar frames individuais rolando a barra de scroll horizontalmente.
+- **Bloqueio de Camadas (Cadeado):** Cada trilha de composição e áudio possui um ícone de **Cadeado** na lateral de controle. Ao bloquear uma camada, todas as interações físicas de arraste e trim de tempo (ajuste de bordas) são congeladas para aquela trilha, impedindo desalinhamentos acidentais enquanto edita outras camadas.
+- **Controle de Opacidade Individual:** As trilhas de vídeo e elementos contam com um slider visual direto na timeline. Ajuste o seletor de opacidade (de 0.00 a 1.00) para mesclar elementos suavemente ou criar sobreposições complexas de Glassmorphism.
+- **Fade-In & Fade-Out de Áudio (Transições Suaves):** Nas trilhas de áudio, você verá campos numéricos rotulados como `In` e `Out`. Digite um tempo em segundos (ex: `1.5` s) para aplicar um esvanecimento de som linear no início e no fim da trilha, eliminando cortes de áudio abruptos.
+- **Duplicação com Um Clique (Copy):** No controle esquerdo de cada trilha (Vídeo ou Áudio), há um botão de **Duplicar (ícone de cópia)**. Clicar nele gera instantaneamente um clone idêntico com um novo ID único, deslocado automaticamente em `+0.5s` segundos para frente da faixa de origem, facilitando a criação de padrões rítmicos.
+- **Cor de Fundo Mestre:** Ajuste a cor base do preview diretamente na barra de ferramentas superior da timeline usando o seletor **Fundo**.
+
+---
+
+## 🎬 5. Configuração de Cenas & Exportação
 
 Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo final:
 
 ### Passo A: Ajustar a Cena na aba "Composição"
 1. Vá até o painel **Composição** na lateral esquerda.
-2. **Resolução e Aspect Ratio:** Defina as proporções desejadas (como 16:9 widescreen, 9:16 vertical para Instagram/TikTok, ou proporção livre) e selecione o Framerate (FPS) e a Duração total da timeline.
+2. **Resolução e Aspect Ratio:** Defina as proporções desejadas (como 16:9 widescreen, 9:16 vertical para Instagram/TikTok, ou proporção livre) e selecione o Framerate (FPS) e a Duração total da timeline. Ao alterar a proporção (como 4:5), o sistema ajustará de forma automática e precisa os pixels da resolução interna (`1350x1080`) do projeto.
 3. **Definir o Fundo (Background):** Escolha uma cor sólida como fundo ou faça o upload de um arquivo de vídeo (MP4) ou imagem estática. Na opção de enquadramento (Aspect Ratio), escolha **Fit**, **Crop** ou **Manual** (onde você pode ajustar a escala e mover os eixos X e Y).
 
 ### Passo B: Renderizar e Baixar na aba "Exportar"
@@ -66,11 +79,11 @@ Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo fina
    - **Vídeo MP4:** O formato ideal e leve para mídias sociais. *Atenção: requer um vídeo ou imagem de fundo ativo.*
    - **Vídeo MOV (Com Alpha):** A ferramenta favorita dos editores de vídeo, gerando o render com fundo transparente (canal Alpha). Ideal para sobreposições em softwares de edição externos.
    - **Sequência PNG (ZIP):** Exporta todos os frames da timeline como arquivos PNG individuais agrupados em um ZIP de alta qualidade.
-3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística, garantindo fluidez e compatibilidade de codecs, e fará o download automático em sua máquina.
+3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística, misturando todas as camadas de vídeo e faixas de áudio sincronizadas com fades automáticos, aplicando o FFmpeg.wasm em memória para multiplexar e fazer o download automático na sua máquina de forma rápida e 100% local.
 
 ---
 
-## ☁️ 5. A Biblioteca Integrada (Galeria Bento Grid em Tela Cheia)
+## ☁️ 6. A Biblioteca Integrada (Galeria Bento Grid em Tela Cheia)
 
 O Pelimotion conta com um acervo integrado de peças de design em formato de Grid de Galeria expansiva:
 - **Autoplay Inteligente:** Na aba da Biblioteca (Nuvem / Bunny CDN), passe o mouse sobre os cards de vídeo para reproduzir um preview rápido do movimento instantaneamente.
@@ -88,3 +101,4 @@ O Pelimotion conta com um acervo integrado de peças de design em formato de Gri
 - **Mixe Módulos com Fundos:** O fluxo ideal em times criativos é gerar um `.MOV` da sua logomarca animada no *Generativo*, exportar e depois subir esse arquivo como fundo no módulo de *Tipografia* para inserir letreiros complementares na camada de cima.
 
 > *Qualquer erro local? Recarregue a página! O seu navegador carrega a força principal de processamento do Pelimotion. Manter o cache limpo garante exportações sem gargalo no processador.*
+

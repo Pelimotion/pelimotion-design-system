@@ -1,12 +1,23 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Engine de Áudio Multi-track e Muxing de Exportação (v2.3)
+## Active Phase: 🟢 Linha do Tempo Avançada, Sincronização em Tempo Real & Ajustes UX (v2.4)
 
-## 🏁 Pelimotion Design System v2.3 — Audio Engine & Muxing Complete
+## 🏁 Pelimotion Design System v2.4 — Advanced Timeline & Playhead Optimization Complete
 
-All core components for multi-track audio management, real-time playback synchronization, in-browser offline mixing, and final export multiplexing have been successfully integrated and verified. The editor now supports professional, layered audio alongside hardware-accelerated video exports.
+All core components for multi-track audio management, real-time playback synchronization, in-browser offline mixing, and final export multiplexing have been successfully integrated and verified. Additionally, the timeline has been upgraded to a professional non-linear editor (NLE) layout, including magnetic snapping, real-time playhead rendering via GSAP ticker, volume fade-in/fade-out, horizontal scale zooming, track/layer duplication, global canvas background color control, and interactive layer locks and opacity controls.
 
-### Session Achievements (v2.3 - Multi-track Audio, WebAudio Mixing & FFmpeg Muxing)
+### Session Achievements (v2.4 - Advanced Timeline, Playhead Sync & UI/UX Polish)
+- **Real-Time Playhead Sync (GSAP Ticker):** Optimized the timeline's playhead by shifting updates to direct DOM style manipulation within `gsap.ticker`. This eliminates React state rendering overhead during playback, achieving a smooth 60fps tracking.
+- **Playhead Split Tool (Scissors):** Integrated a split/cut action represented by a `Scissors` icon on track blocks. When clicked, it cuts the active video layer or audio track precisely at the current playhead (`currentTime`), scaling down the duration of the first segment and duplicating the rest as a new aligned track block.
+- **Magnetic Snapping (0.5s Grid):** Integrated snapping mechanics on layer dragging and trimming, mapping actions to exact 0.5s increments when the magnet toggle is active.
+- **Timeline Horizontal Zoom:** Designed a track multiplier scale slider (100% to 500%) with `overflowX: auto` support, allowing users to zoom in horizontally for micro-frame editing on long timelines.
+- **Enforced Layer Locking:** Implemented active padlock states (`layer.locked`, `track.locked`) to dynamically restrict pointer gestures (move and trim) for locked composition or audio layers.
+- **Inline Track Opacity Sliders:** Embedded range inputs (0.0 to 1.0) on timeline track items to scale `layer.transform.opacity` in real time.
+- **Dynamic Audio Fading:** Added fade-in and fade-out seconds controls directly onto audio tracks, dynamically rendering volume scaling curves during both playback (`AudioEngine.tsx`) and offline mixing.
+- **Track Duplication Actions:** Placed copy buttons on both composition and audio tracks, cloning settings with a new ID and automatically offsetting the starting time by `+0.5s`.
+- **Global Canvas Background Picker:** Positioned a master background color input within the timeline toolbar, allowing direct color updates to `exportConfig.backgroundColor`.
+- **Cleaned Sidebar & Preset Actions:** Cleaned up the Typography panel by removing manual session/global save buttons, routing asset presets to load directly from the library.
+
 - **Multi-track Audio Timeline & UI:** Added support for audio tracks in `CompositionTimeline.tsx`, enabling users to add, visual-trim, adjust volume, and shift starting offsets for multiple concurrent sound assets.
 - **Dynamic WebAudio Playback Sync:** Built a robust synchronization mechanism in `<CompositionPreview />` using the Web Audio API. Playback, pausing, and scrubbing on the GSAP global timeline automatically schedules and shifts active audio source nodes to coordinate frame-perfect audio-to-video alignment.
 - **Offline Audio Mixer (`audioMixer.ts`):** Developed an in-browser audio mixer that decodes multiple audio streams into buffers, resamples them to a unified project sample rate (typically 44100Hz or 48000Hz), maps their corresponding timelines (offsets, durations, loops), applies volume gain nodes, and merges them into a single high-fidelity, uncompressed WAV file.

@@ -15,7 +15,7 @@ import {
   Sparkles, ChevronDown, ChevronRight,
   Info, Eye, EyeOff, Layout, Link2, Unlink2,
   Heading1, Move,
-  GripVertical, Layers, Play, Wand2, Palette
+  GripVertical, Layers, Play, Wand2, Palette, Upload
 } from 'lucide-react'
 import { SubTabBar } from '@/components/SubTabBar'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
@@ -213,6 +213,26 @@ function LayerSection({
   const todasFontes = [...new Set([...fontesPadrao, ...availableFonts])];
 
   const [localText, setLocalText] = useState(layer.text);
+  const fontInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFontUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const buffer = ev.target?.result as ArrayBuffer;
+      const fontName = file.name.split('.')[0].replace(/[^a-zA-Z0-9 ]/g, ' ').trim();
+      const fontFace = new FontFace(fontName, buffer);
+      
+      fontFace.load().then((loadedFace) => {
+        document.fonts.add(loadedFace);
+        useEditorStore.setState((state) => ({ availableFonts: [...new Set([...state.availableFonts, fontName])] }));
+        updateLayer({ fontFamily: fontName });
+      }).catch(err => console.error("Erro ao carregar fonte:", err));
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   useEffect(() => {
     if (localText !== layer.text) {
@@ -251,11 +271,29 @@ function LayerSection({
       </Campo>
 
       {/* Font */}
-      <Campo label="Fonte" dica="Família tipográfica. Clique '+ Local' para usar fontes do sistema.">
+      <Campo label="Fonte" dica="Família tipográfica. Faça upload ou carregue do sistema.">
         <div style={{ display: 'flex', gap: 6 }}>
           <select value={layer.fontFamily} onChange={(e) => updateLayer({ fontFamily: e.target.value })} style={selectStyle}>
             {todasFontes.map((f) => <option key={f} value={f}>{f}</option>)}
           </select>
+          <button
+            onClick={() => fontInputRef.current?.click()}
+            title="Upload Fonte (.ttf, .otf)"
+            style={{
+              flexShrink: 0, fontSize: '0.65rem',
+              background: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'var(--color-text-primary)', cursor: 'pointer',
+              padding: '0 8px', display: 'flex', alignItems: 'center', gap: 4
+            }}
+          >
+            <Upload size={10} />
+          </button>
+          <input 
+            type="file" ref={fontInputRef} onChange={handleFontUpload} 
+            accept=".ttf,.otf,.woff,.woff2" style={{ display: 'none' }} 
+          />
           <button
             onClick={fetchLocalFonts}
             title="Carregar fontes do sistema"
