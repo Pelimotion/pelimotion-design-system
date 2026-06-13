@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { Download, CheckCircle2, MonitorPlay, Zap } from 'lucide-react'
 
@@ -53,6 +53,33 @@ export function ExportPanel() {
     setExportState({ isExporting: true, stage: 'idle', progress: 0, errorMessage: undefined })
   }
 
+  useEffect(() => {
+    async function detectSupport() {
+      if (typeof VideoEncoder === 'undefined') {
+        setExportState({ exportMode: 'ffmpeg-fallback' })
+        return
+      }
+      
+      const [wStr, hStr] = (exportConfig.resolution || "1920x1080").split('x')
+      const width = parseInt(wStr || "1920", 10)
+      const height = parseInt(hStr || "1080", 10)
+      const safeWidth = width % 2 === 0 ? width : width - 1;
+      const safeHeight = height % 2 === 0 ? height : height - 1;
+
+      try {
+        const result = await VideoEncoder.isConfigSupported({
+          codec: 'avc1.4d0028',
+          width: safeWidth,
+          height: safeHeight,
+        })
+        setExportState({ exportMode: result.supported ? 'webcodecs-hw' : 'ffmpeg-fallback' })
+      } catch (e) {
+        setExportState({ exportMode: 'ffmpeg-fallback' })
+      }
+    }
+    detectSupport()
+  }, [exportConfig.resolution, setExportState])
+
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', gap: 24, height: '100%', overflowY: 'auto', paddingRight: 4, paddingBottom: 32 }}
@@ -66,6 +93,11 @@ export function ExportPanel() {
         <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
           Deliver your composition in broadcast-ready quality.
         </p>
+        {(exportConfig.format === 'mp4' || exportConfig.format === 'mov') && (
+          <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 4, background: exportState.exportMode === 'webcodecs-hw' ? 'rgba(0, 255, 128, 0.1)' : 'rgba(255, 165, 0, 0.1)', border: `1px solid ${exportState.exportMode === 'webcodecs-hw' ? 'rgba(0, 255, 128, 0.3)' : 'rgba(255, 165, 0, 0.3)'}`, color: exportState.exportMode === 'webcodecs-hw' ? '#00ff80' : '#ffa500', fontSize: '0.7rem', fontWeight: 600, width: 'fit-content' }}>
+            {exportState.exportMode === 'webcodecs-hw' ? '⚡ Hardware Accelerated' : '🔄 Software Fallback'}
+          </div>
+        )}
       </div>
 
       <div style={bentoCardStyle}>

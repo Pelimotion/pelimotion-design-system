@@ -73,6 +73,8 @@ interface EditorState {
   // Composition State
   compositionLayers: CompositionLayer[];
   activeCompositionLayerId: string | null;
+  currentTime: number;
+  isPlaying: boolean;
 
   // Local Library State
   localLibraryItems: any[]; // Or LibraryLocalItem[] if imported
@@ -121,6 +123,8 @@ interface EditorState {
     targetMode?: LayerTargetMode;
     opacityMode?: LayerOpacityMode;
   }) => void;
+  updateGenerativeLayerWiggle: (id: string, wiggle: Partial<WiggleConfig>) => void;
+  updateGenerativeLayerAnimation: (id: string, animation: Partial<GenerativeLayer['animation']>) => void;
 
   // Posterize actions
   togglePosterize: () => void;
@@ -137,6 +141,8 @@ interface EditorState {
   updateCompositionLayer: (id: string, patch: Partial<CompositionLayer>) => void;
   setActiveCompositionLayerId: (id: string | null) => void;
   reorderCompositionLayers: (startIndex: number, endIndex: number) => void;
+  seek: (time: number) => void;
+  togglePlayback: () => void;
 
   // Local Font actions
   fetchLocalFonts: () => Promise<void>;
@@ -150,6 +156,7 @@ const initialExportState: ExportState = {
   currentFrame: 0,
   totalFrames: 0,
   stage: 'idle',
+  exportMode: 'ffmpeg-fallback',
 }
 
 // ─── Helper: Sync legacy fields from title layer ─────────────────────────────
@@ -238,6 +245,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   // Composition initial state
   compositionLayers: [],
   activeCompositionLayerId: null,
+  currentTime: 0,
+  isPlaying: false,
 
   // Local Library State
   localLibraryItems: [],
@@ -500,6 +509,16 @@ export const useEditorStore = create<EditorState>((set) => ({
       l.id === id ? { ...l, ...appearance } : l
     )
   })),
+  updateGenerativeLayerWiggle: (id, wiggle) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l =>
+      l.id === id ? { ...l, wiggle: { ...l.wiggle, ...wiggle } } : l
+    )
+  })),
+  updateGenerativeLayerAnimation: (id, animation) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l =>
+      l.id === id ? { ...l, animation: { ...l.animation, ...animation } as any } : l
+    )
+  })),
 
   // ─── Posterize Actions ─────────────────────────────────────────────────
 
@@ -541,7 +560,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       ),
     })),
 
-  setActiveCompositionLayerId: (id) => set({ activeCompositionLayerId: id }),
+  setActiveCompositionLayerId: (id) => set({ activeCompositionLayerId: id, showGizmo: !!id }),
 
   reorderCompositionLayers: (startIndex, endIndex) =>
     set((state) => {
@@ -552,6 +571,10 @@ export const useEditorStore = create<EditorState>((set) => ({
       }
       return { compositionLayers: result };
     }),
+
+  seek: (time) => set({ currentTime: time }),
+  
+  togglePlayback: () => set((state) => ({ isPlaying: !state.isPlaying })),
 
   // ─── Local Font Actions ────────────────────────────────────────────────
 

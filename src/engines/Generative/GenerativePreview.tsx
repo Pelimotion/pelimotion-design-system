@@ -10,7 +10,7 @@
  * The colorization logic always resets previous inline styles before applying
  * new colors, preventing the "ghost color" bug when switching modes.
  */
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { createNoiseDriver, type NoiseDriver } from '../Generative/noiseEngine'
 import { gsap } from 'gsap'
@@ -131,8 +131,9 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
   const driversRef = useRef<Map<string, NoiseDriver>>(new Map())
   // Refs for each layer's container div
   const layerRefsMap = useRef<Map<string, HTMLDivElement>>(new Map())
-  const [isPlaying, setIsPlaying] = useState(true)
-
+  
+  const isPlaying = overrideConfig?.playbackContext ? overrideConfig.playbackContext.isPlaying : store.isPlaying
+  
   // ── Per-Layer Engine Boot ────────────────────────────────────────────────────
   useLayoutEffect(() => {
     // Stop & clear all previous drivers
@@ -168,13 +169,25 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
       }
 
       // 4. For wiggle-paths opacity, we create a separate driver for paths only for opacity channel
-      const layerSeed = seed + i * 137 // unique seed per layer
+      const layerSeed = (layer.wiggle?.seed ?? seed) + i * 137 // unique seed per layer
+
+      // Determine local wiggle parameters
+      const localWiggle = layer.wiggle || {}
+      const lAmplitude = localWiggle.amplitude ?? amplitude
+      const lFrequency = localWiggle.frequency ?? frequency
+      const lOctaves = localWiggle.octaves ?? octaves
+      const lPersistence = localWiggle.persistence ?? persistence
+      const lNoiseType = localWiggle.noiseType ?? noiseType
 
       // Main driver (for motion)
       const motionTargets = groupTargets.length > 0 ? groupTargets : pathTargets
       if (motionTargets.length > 0) {
         const driver = createNoiseDriver(motionTargets, {
-          amplitude, frequency, octaves, persistence, noiseType,
+          amplitude: lAmplitude, 
+          frequency: lFrequency, 
+          octaves: lOctaves, 
+          persistence: lPersistence, 
+          noiseType: lNoiseType,
           seed: layerSeed,
           channels: channels as any,
           propertyFps: propertyFps || {},
@@ -193,7 +206,10 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
       if (layer.opacityMode === 'wiggle-paths' && pathTargets.length > 0) {
         const opacityDriver = createNoiseDriver(pathTargets, {
           amplitude: 20, // normalized for opacity
-          frequency, octaves, persistence, noiseType,
+          frequency: lFrequency, 
+          octaves: lOctaves, 
+          persistence: lPersistence, 
+          noiseType: lNoiseType,
           seed: layerSeed + 500,
           channels: ['opacity'],
           propertyFps: propertyFps || {},
@@ -312,31 +328,58 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
 
       {/* Play / Pause - Hide if in override mode */}
       {!overrideConfig && (
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          style={{
-            position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-            padding: '6px 18px', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700,
-            border: '1px solid var(--color-surface-border)', background: 'var(--color-surface-glass)',
-            color: isPlaying ? 'var(--color-accent)' : 'var(--color-text-muted)',
-            cursor: 'pointer', backdropFilter: 'blur(8px)', letterSpacing: '0.05em',
-            textTransform: 'uppercase', zIndex: 100,
-          }}
-        >
-          {isPlaying ? '⏸ Pausar' : '▶ Animar'}
-        </button>
+        <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 50 }}>
+          <button
+            onClick={() => store.togglePlayback()}
+            style={{
+              background: isPlaying ? 'var(--color-surface-glass)' : 'var(--color-bg-elevated)',
+              color: isPlaying ? 'var(--color-accent)' : 'var(--color-text-muted)',
+              border: '1px solid var(--color-surface-border)',
+              padding: '6px 12px',
+              borderRadius: 4,
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+            }}
+          >
+            {isPlaying ? '⏸ Pausar' : '▶ Animar'}
+          </button>
+        </div>
       )}
 
       {/* Layers Container (Free Canvas) */}
-      <div style={{
-        position: 'absolute', width: '100%', height: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center'
-      }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: overrideConfig ? 'none' : 'auto' }}>
         {generativeLayers.map((layer: any) => {
-          const { transform, type, svgString } = layer
+          const { transform, type, svgString, animation } = layer
           // For built-in shapes, use first layer color for initial render; noise colors applied via applyLayerColors
           const shapeColor = (layer.colors && layer.colors[0]) || '#a78bfa'
           const isActive = layer.id === activeGenerativeLayerId
+
+          // Calculate Layer-specific Transition
+          let layerTransitionStyle: React.CSSProperties = {}
+          if (overrideConfig?.playbackContext) {
+            const { localTime, duration } = overrideConfig.playbackContext
+            const entryDuration = animation?.entryDuration ?? 0.5
+            const exitDuration = animation?.exitDuration ?? 0.5
+            
+            let tScale = 1
+            let tOpacity = 1
+            
+            if (localTime < entryDuration) {
+              const progress = Math.max(0, localTime / (entryDuration || 0.1))
+              tOpacity = progress
+              tScale = 0.8 + 0.2 * progress
+            } else if (localTime > duration - exitDuration) {
+              const progress = Math.max(0, (duration - localTime) / (exitDuration || 0.1))
+              tOpacity = progress
+              tScale = 0.8 + 0.2 * progress
+            }
+            
+            layerTransitionStyle = {
+              opacity: tOpacity,
+              transform: `scale(${tScale})`,
+            }
+          }
 
           return (
             <div
@@ -348,6 +391,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
                 left: '50%',
                 top: '50%',
                 opacity: layer.opacityMode === 'fixed' ? transform.opacity : 1,
+                ...layerTransitionStyle,
                 width: 200, height: 200,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 zIndex: isActive ? 10 : 1
@@ -375,6 +419,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
             </div>
           )
         })}
+      </div>
       </div>
     </div>
   )

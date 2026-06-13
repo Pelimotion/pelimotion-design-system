@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { CompositionLayer } from '@/types/motion.types';
 
@@ -11,14 +11,19 @@ export function CompositionTimeline() {
     addCompositionLayer,
     localLibraryItems,
     exportConfig,
-    updateExportConfig
+    updateExportConfig,
+    currentTime,
+    seek,
+    reorderCompositionLayers,
+    isPlaying,
+    togglePlayback
   } = useEditorStore();
 
   const [showAddMenu, setShowAddMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Interaction State
-  const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right', isBg?: boolean } | null>(null);
+  const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean } | null>(null);
   const [pixelsPerSecond, setPixelsPerSecond] = useState(10); // default
 
   // Update scale based on container width
@@ -57,8 +62,16 @@ export function CompositionTimeline() {
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!dragging || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const time = Math.max(0, Math.min(exportConfig.duration, mouseX / pixelsPerSecond));
+    // Offset by the padding (12px) where the timeline starts
+    const mouseX = e.clientX - (rect.left + 12);
+    // Add extra width protection to avoid going outside
+    const trackWidth = rect.width - 24; 
+    const time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
+
+    if (dragging.type === 'playhead') {
+      seek(time);
+      return;
+    }
 
     if (dragging.isBg) {
        // Background Video Trim
@@ -106,6 +119,17 @@ export function CompositionTimeline() {
     };
   }, [dragging, handlePointerMove, handlePointerUp]);
 
+  const handleTimelinePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - (rect.left + 12);
+    const trackWidth = rect.width - 24;
+    const time = Math.max(0, Math.min(exportConfig.duration, (mouseX / trackWidth) * exportConfig.duration));
+    seek(time);
+    setDragging({ id: 'playhead', type: 'playhead' });
+  };
+
   // Track rendering styles
   const trackStyle: React.CSSProperties = {
     height: 32,
@@ -149,23 +173,62 @@ export function CompositionTimeline() {
         <h3 style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <Layers size={14} color="var(--color-accent)" /> Linha do Tempo
         </h3>
-        <button
-          onClick={() => setShowAddMenu(!showAddMenu)}
-          style={{
-            background: 'var(--color-accent)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 4,
-            padding: '4px 8px',
-            fontSize: '0.7rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4
-          }}
-        >
-          <Plus size={12} /> Adicionar Peça
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => seek(0)}
+            style={{
+              background: 'var(--color-surface-glass)',
+              color: 'var(--color-text-primary)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 4,
+              padding: '4px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            title="Voltar ao Início"
+          >
+            <SkipBack size={12} />
+          </button>
+          <button
+            onClick={togglePlayback}
+            style={{
+              background: isPlaying ? 'var(--color-surface-glass)' : 'var(--color-accent)',
+              color: isPlaying ? 'var(--color-text-primary)' : '#fff',
+              border: '1px solid ' + (isPlaying ? 'var(--color-surface-border)' : 'transparent'),
+              borderRadius: 4,
+              padding: '4px 12px',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            {isPlaying ? <Pause size={12} /> : <Play size={12} />}
+            {isPlaying ? 'Pausar' : 'Play'}
+          </button>
+          
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <button
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            style={{
+              background: 'var(--color-accent)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 4,
+              padding: '4px 8px',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            <Plus size={12} /> Adicionar Peça
+          </button>
+        </div>
       </div>
 
       {showAddMenu && (
@@ -224,9 +287,35 @@ export function CompositionTimeline() {
         }}
       >
         {/* Timeline Axis */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--color-text-ghost)', borderBottom: '1px solid var(--color-surface-border)', paddingBottom: 4 }}>
+        <div 
+          style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--color-text-ghost)', borderBottom: '1px solid var(--color-surface-border)', paddingBottom: 4, cursor: 'pointer', userSelect: 'none' }}
+          onPointerDown={handleTimelinePointerDown}
+        >
           <span>0s</span>
           <span>{exportConfig.duration}s</span>
+        </div>
+
+        {/* Playhead Indicator */}
+        <div style={{
+          position: 'absolute',
+          top: 12,
+          bottom: 24,
+          left: `calc(12px + ${(currentTime / exportConfig.duration) * 100}% - ${(currentTime / exportConfig.duration) * 24}px)`,
+          width: 2,
+          background: 'var(--color-accent, red)',
+          zIndex: 50,
+          pointerEvents: 'none',
+        }}>
+          {/* Playhead Handle */}
+          <div style={{
+            position: 'absolute',
+            top: -6,
+            left: -4,
+            width: 10,
+            height: 10,
+            background: 'var(--color-accent, red)',
+            borderRadius: '50%',
+          }} />
         </div>
 
         {/* Master Background Track (If Video) */}
@@ -259,9 +348,25 @@ export function CompositionTimeline() {
               <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <span>Track {index + 1}: {layer.name}</span>
-                  <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2 }}>
-                    <Trash2 size={10} />
-                  </button>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <button 
+                      onClick={() => index > 0 && reorderCompositionLayers(index, index - 1)} 
+                      disabled={index === 0} 
+                      style={{ background: 'none', border: 'none', color: index === 0 ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: index === 0 ? 'default' : 'pointer', padding: 2 }}
+                    >
+                      <ChevronUp size={12} />
+                    </button>
+                    <button 
+                      onClick={() => index < compositionLayers.length - 1 && reorderCompositionLayers(index, index + 1)} 
+                      disabled={index === compositionLayers.length - 1} 
+                      style={{ background: 'none', border: 'none', color: index === compositionLayers.length - 1 ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: index === compositionLayers.length - 1 ? 'default' : 'pointer', padding: 2 }}
+                    >
+                      <ChevronDown size={12} />
+                    </button>
+                    <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 8 }}>
+                      <Trash2 size={10} />
+                    </button>
+                  </div>
                 </div>
                 <div style={trackStyle}>
                    <div 

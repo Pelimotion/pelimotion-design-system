@@ -300,10 +300,11 @@ export interface LayerTimelineOptions {
   wrapperTarget: gsap.DOMTarget;
   layer: TypographyLayer;
   timeOnScreen: number;
+  totalDuration?: number;
 }
 
 export function createLayerTimeline(opts: LayerTimelineOptions): gsap.core.Timeline {
-  const { splitTargets, wrapperTarget, layer, timeOnScreen } = opts;
+  const { splitTargets, wrapperTarget, layer, timeOnScreen, totalDuration } = opts;
   const { animation } = layer;
   const tl = gsap.timeline();
 
@@ -311,11 +312,19 @@ export function createLayerTimeline(opts: LayerTimelineOptions): gsap.core.Timel
   tl.add(entryTl, animation.entryDelay);
 
   const entryEnd = animation.entryDelay + entryTl.duration();
-  const idleTl = createIdleTimeline(wrapperTarget, animation, entryTl.duration() + timeOnScreen);
+  
+  const exitTl = createExitTimeline(splitTargets, animation);
+  
+  // Dynamic Idle calculation if totalDuration is provided (for Composition Trim)
+  let calculatedTimeOnScreen = timeOnScreen;
+  if (totalDuration !== undefined) {
+    calculatedTimeOnScreen = Math.max(0, totalDuration - entryEnd - animation.exitDelay - exitTl.duration());
+  }
+
+  const idleTl = createIdleTimeline(wrapperTarget, animation, entryTl.duration() + calculatedTimeOnScreen);
   tl.add(idleTl, animation.entryDelay);
 
-  const exitStart = entryEnd + timeOnScreen + animation.exitDelay;
-  const exitTl = createExitTimeline(splitTargets, animation);
+  const exitStart = entryEnd + calculatedTimeOnScreen + animation.exitDelay;
   tl.add(exitTl, exitStart);
 
   return tl;

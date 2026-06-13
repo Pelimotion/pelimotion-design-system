@@ -16,8 +16,10 @@
     "fflate": "^0.8.3",
     "gsap": "^3.15.0",
     "html-to-image": "^1.11.13",
+    "mediabunny": "^1.46.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-resizable-panels": "^4.11.2",
     "simplex-noise": "^4.0.3",
     "zustand": "^5.0.14"
   },

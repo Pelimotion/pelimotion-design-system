@@ -1,7 +1,14 @@
 import React from 'react'
-import { Settings, Frame, Activity } from 'lucide-react'
+import { Settings, Frame, Activity, Clock } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BackgroundUploader } from './BackgroundUploader'
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  const ms = Math.floor((seconds % 1) * 100);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+}
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-base)',
@@ -58,7 +65,7 @@ function Campo({ label, valor, children, icon }: { label: string; valor?: string
 }
 
 export function CompositionPanel() {
-  const { exportConfig, updateExportConfig } = useEditorStore()
+  const { exportConfig, updateExportConfig, currentTime } = useEditorStore()
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, height: '100%', overflowY: 'auto', paddingRight: 4, paddingBottom: 32 }} className="custom-scrollbar">
@@ -68,6 +75,22 @@ export function CompositionPanel() {
         <h3 style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
           <Settings size={14} color="var(--color-accent)" /> Global Scene Settings
         </h3>
+
+        {/* Time Display */}
+        <div style={{
+          background: 'var(--color-surface-glass)',
+          border: '1px solid var(--color-surface-border)',
+          borderRadius: 8,
+          padding: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <span style={labelStyle}><Clock size={12} /> Playhead</span>
+          <span style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+            {formatTime(currentTime)}
+          </span>
+        </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
           <Campo label="Resolution" icon={<Frame size={10} />}>

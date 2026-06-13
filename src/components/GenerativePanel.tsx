@@ -126,7 +126,8 @@ export function GenerativePanel() {
   const {
     motionConfig, generativeLayers, activeGenerativeLayerId,
     addGenerativeLayer, removeGenerativeLayer, setActiveGenerativeLayerId,
-    updateLayerTransform, updateLayerShapeProps, updateLayerAppearance, updateWiggle
+    updateLayerTransform, updateLayerShapeProps, updateLayerAppearance,
+    updateWiggle
   } = useEditorStore()
 
   const {

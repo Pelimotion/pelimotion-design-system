@@ -160,6 +160,16 @@ export interface GenerativeLayer {
   targetMode: LayerTargetMode;
   /** How opacity is animated. Default: 'fixed' */
   opacityMode: LayerOpacityMode;
+  // ── Per-Layer Animation ───────────────────────────────────────────────────
+  /** Individual wiggle/noise configuration for this layer */
+  wiggle?: Partial<WiggleConfig>;
+  /** Entry and Exit animation definitions */
+  animation?: {
+    entryPreset: string;
+    entryDuration: number;
+    exitPreset: string;
+    exitDuration: number;
+  };
 }
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────
@@ -467,6 +477,7 @@ export interface ExportState {
   totalFrames: number;
   stage: 'idle' | 'capturing' | 'encoding' | 'complete' | 'error';
   errorMessage?: string;
+  exportMode?: 'webcodecs-hw' | 'ffmpeg-fallback';
 }
 
 export interface ExportConfig {

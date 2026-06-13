@@ -277,8 +277,10 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
   const splitInstances = useRef<SplitText[]>([]);
 
   const typoConfig = overrideConfig || motionConfig.typography;
-  const { layers, layoutMode, layoutGap, timeOnScreen } = typoConfig;
+  const { layers, layoutMode, layoutGap, timeOnScreen: baseTimeOnScreen } = typoConfig;
   const globalTrail = overrideConfig?.trail || motionConfig.trail;
+  
+  const masterTlRef = useRef<gsap.core.Timeline | null>(null);
 
   // animKey: changing this forces the GSAP timeline to rebuild
   // Includes animForceKey so the "Reiniciar Efeito" button works
@@ -341,7 +343,9 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
       };
     }).filter(Boolean) as any[];
 
-    const masterTl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
+    const isContext = !!overrideConfig?.playbackContext;
+    const masterTl = gsap.timeline({ repeat: isContext ? 0 : -1, repeatDelay: isContext ? 0 : 0.6 });
+    masterTlRef.current = masterTl;
 
     layerOpts.forEach(({ layer, splitTargets, cloneTargets, trailConf, wrapperTarget }) => {
       gsap.set(wrapperTarget, { clearProps: 'all' });
@@ -350,7 +354,8 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
         splitTargets,
         wrapperTarget,
         layer,
-        timeOnScreen,
+        timeOnScreen: baseTimeOnScreen,
+        totalDuration: overrideConfig?.playbackContext?.duration,
       });
 
       if (trailConf.enabled && cloneTargets.length > 0) {
@@ -363,7 +368,8 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
             splitTargets: cTargets,
             wrapperTarget: cTargets[0]?.parentElement || cTargets,
             layer,
-            timeOnScreen,
+            timeOnScreen: baseTimeOnScreen,
+            totalDuration: overrideConfig?.playbackContext?.duration,
           });
           masterTl.add(cloneTl, delayOffset);
         });
@@ -380,10 +386,12 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
         idleSpeed: 1,
         idleIntensity: 1,
       };
-      const maxTotalDuration = Math.max(
-        ...layers.map((l: any) => l.animation.entryDuration + timeOnScreen + l.animation.exitDuration),
-        3
-      );
+      const maxTotalDuration = overrideConfig?.playbackContext 
+        ? overrideConfig.playbackContext.duration
+        : Math.max(
+            ...layers.map((l: any) => l.animation.entryDuration + baseTimeOnScreen + l.animation.exitDuration),
+            3
+          );
       const idleTl = createIdleTimeline(globalWrapperRef.current, globalAnim, maxTotalDuration);
       masterTl.add(idleTl, 0);
     }
@@ -393,8 +401,28 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
       // Revert SplitText on cleanup to keep DOM clean
       splitInstances.current.forEach(s => { try { s.revert(); } catch {} });
       splitInstances.current = [];
+      masterTlRef.current = null;
     };
-  }, { dependencies: [animKey, timeOnScreen, typoConfig.globalIdleMotion], scope: containerRef });
+  }, { dependencies: [animKey, baseTimeOnScreen, typoConfig.globalIdleMotion, overrideConfig?.playbackContext?.duration], scope: containerRef });
+
+  // Sync GSAP with React state (Export / Timeline scrub)
+  useEffect(() => {
+    if (overrideConfig?.playbackContext && masterTlRef.current) {
+      const { localTime, isPlaying } = overrideConfig.playbackContext;
+      
+      if (!isPlaying) {
+        masterTlRef.current.pause();
+        masterTlRef.current.seek(localTime);
+      } else {
+        masterTlRef.current.play();
+        // Sync GSAP absolute time if it drifted (e.g., from unpausing)
+        const expectedTime = gsap.globalTimeline.time() - masterTlRef.current.startTime();
+        if (Math.abs(expectedTime - localTime) > 0.05) {
+          masterTlRef.current.startTime(gsap.globalTimeline.time() - localTime);
+        }
+      }
+    }
+  }, [overrideConfig?.playbackContext?.localTime, overrideConfig?.playbackContext?.isPlaying]);
 
   const handleContainerPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.target === containerRef.current || e.target === globalWrapperRef.current) {

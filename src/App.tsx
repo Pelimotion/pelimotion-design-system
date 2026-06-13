@@ -26,6 +26,8 @@ import { GlobalGizmo } from '@/components/GlobalGizmo'
 import { CompositionTimeline } from '@/components/CompositionTimeline'
 import { CanvasGuides } from '@/components/CanvasGuides'
 import { useState, useRef, useEffect } from 'react'
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels'
+import { COLOR_PALETTES } from '@/config/color-palettes'
 
 // ─── Navigation Items ────────────────────────────────────────────────────────
 
@@ -61,6 +63,14 @@ function App() {
 
   const [sidebarWidth, setSidebarWidth] = useState(320)
   const isResizing = useRef(false)
+  const initialized = useRef(false)
+
+  useEffect(() => {
+    if (!initialized.current) {
+      useEditorStore.getState().applyColorPalette(COLOR_PALETTES.find(p => p.id === 'cyberpunk') || COLOR_PALETTES[0]!)
+      initialized.current = true
+    }
+  }, [])
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -79,6 +89,185 @@ function App() {
       window.removeEventListener('mouseup', handleMouseUp)
     }
   }, [])
+
+  const canvasArea = (
+    <div
+      id="canvas-viewport"
+      className="glass-panel animate-fade-in stagger-2 animate-pulse-glow"
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundColor: exportConfig.backgroundColor,
+        borderRadius: 'var(--radius-lg)',
+      }}
+    >
+      {/* Background Media Layer */}
+      {activePanel !== 'export' && activePanel !== 'library' && exportConfig.backgroundImageUrl && (
+        <>
+          {exportConfig.backgroundType === 'image' ? (
+            <img
+              src={exportConfig.backgroundImageUrl}
+              alt="bg"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                ...(exportConfig.aspectRatioMode === 'manual' ? {
+                  transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
+                } : {
+                  objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
+                })
+              }}
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <video
+              src={exportConfig.backgroundImageUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                ...(exportConfig.aspectRatioMode === 'manual' ? {
+                  transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
+                } : {
+                  objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
+                })
+              }}
+              crossOrigin="anonymous"
+            />
+          )}
+        </>
+      )}
+
+      {/* Grid Background Pattern */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: `
+          linear-gradient(hsla(0,0%,100%,0.02) 1px, transparent 1px),
+          linear-gradient(90deg, hsla(0,0%,100%,0.02) 1px, transparent 1px)
+        `,
+        backgroundSize: '40px 40px',
+        pointerEvents: 'none',
+        zIndex: 1,
+      }} />
+
+      {/* GlobalGizmo — direct child of canvas-viewport so position:absolute anchors to canvas top-left */}
+      <GlobalGizmo />
+
+      {/* CanvasGuides — aspect ratio safe zone overlay */}
+      <CanvasGuides />
+
+      {/* Center Content */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+      }}>
+        {activePanel === 'typography' ? (
+          <TypographyPreview />
+        ) : activePanel === 'generative' ? (
+          <GenerativePreview />
+        ) : activePanel === 'library' ? (
+          <LibraryPreview />
+        ) : activePanel === 'composition' ? (
+          <CompositionPreview />
+        ) : activePanel === 'export' ? (
+          <ExportPreview />
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: 64,
+              height: 64,
+              borderRadius: 16,
+              background: 'linear-gradient(135deg, var(--color-accent), #7c3aed, #ec4899)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 24px',
+              boxShadow: '0 0 40px hsla(191, 100%, 50%, 0.15), 0 0 80px hsla(271, 76%, 53%, 0.1)',
+            }}>
+              <MonitorPlay size={28} color="#fff" />
+            </div>
+
+            <h1 style={{
+              fontSize: '1.5rem',
+              fontWeight: 600,
+              letterSpacing: '-0.03em',
+              color: 'var(--color-text-primary)',
+              marginBottom: 8,
+            }}>
+              Motion Canvas
+            </h1>
+
+            <p style={{
+              fontSize: '0.85rem',
+              color: 'var(--color-text-muted)',
+              maxWidth: 360,
+              lineHeight: 1.6,
+              margin: '0 auto',
+            }}>
+              Environment initialized. Engine ready for integration.
+            </p>
+
+            {/* Config Summary Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 8,
+              marginTop: 32,
+              maxWidth: 480,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}>
+              {[
+                { label: 'Easing Curves', value: Object.keys(motionConfig.easing).length.toString(), unit: 'registered' },
+                { label: 'Trail Instances', value: motionConfig.trail.instances.toString(), unit: 'clones' },
+                { label: 'Posterize Rate', value: motionConfig.posterizeTime.masterFps.toString(), unit: 'fps' },
+              ].map((item, i) => (
+                <div
+                  key={item.label}
+                  className={`config-card animate-fade-in stagger-${i + 4}`}
+                  style={{ textAlign: 'left' }}
+                >
+                  <div className="config-card__label">{item.label}</div>
+                  <div className="config-card__value">
+                    {item.value}
+                    <span style={{
+                      color: 'var(--color-text-ghost)',
+                      fontSize: '0.65rem',
+                      marginLeft: 4,
+                    }}>
+                      {item.unit}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 
   return (
     <div id="app-shell" style={{
@@ -307,187 +496,23 @@ function App() {
         }}
       >
         <TopToolbar />
-        {/* Canvas Area */}
-        <div
-          id="canvas-viewport"
-          className="glass-panel animate-fade-in stagger-2 animate-pulse-glow"
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-            backgroundColor: exportConfig.backgroundColor,
-            borderRadius: 'var(--radius-lg)',
-          }}
-        >
-          {/* Background Media Layer */}
-          {activePanel !== 'export' && activePanel !== 'library' && exportConfig.backgroundImageUrl && (
-            <>
-              {exportConfig.backgroundType === 'image' ? (
-                <img
-                  src={exportConfig.backgroundImageUrl}
-                  alt="bg"
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 0,
-                    pointerEvents: 'none',
-                    ...(exportConfig.aspectRatioMode === 'manual' ? {
-                      transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
-                    } : {
-                      objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
-                    })
-                  }}
-                />
-              ) : (
-                <video
-                  src={exportConfig.backgroundImageUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 0,
-                    pointerEvents: 'none',
-                    ...(exportConfig.aspectRatioMode === 'manual' ? {
-                      transform: `translate(${exportConfig.overlayX}px, ${exportConfig.overlayY}px) scale(${exportConfig.overlayScale})`,
-                    } : {
-                      objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover'
-                    })
-                  }}
-                />
-              )}
-            </>
-          )}
-
-          {/* Grid Background Pattern */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `
-              linear-gradient(hsla(0,0%,100%,0.02) 1px, transparent 1px),
-              linear-gradient(90deg, hsla(0,0%,100%,0.02) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
-            pointerEvents: 'none',
-            zIndex: 1,
-          }} />
-
-          {/* GlobalGizmo — direct child of canvas-viewport so position:absolute anchors to canvas top-left */}
-          <GlobalGizmo />
-
-          {/* CanvasGuides — aspect ratio safe zone overlay */}
-          <CanvasGuides />
-
-          {/* Center Content */}
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1,
-          }}>
-            {activePanel === 'typography' ? (
-              <TypographyPreview />
-            ) : activePanel === 'generative' ? (
-              <GenerativePreview />
-            ) : activePanel === 'library' ? (
-              <LibraryPreview />
-            ) : activePanel === 'composition' ? (
-              <CompositionPreview />
-            ) : activePanel === 'export' ? (
-              <ExportPreview />
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 16,
-                  background: 'linear-gradient(135deg, var(--color-accent), #7c3aed, #ec4899)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 24px',
-                  boxShadow: '0 0 40px hsla(191, 100%, 50%, 0.15), 0 0 80px hsla(271, 76%, 53%, 0.1)',
-                }}>
-                  <MonitorPlay size={28} color="#fff" />
-                </div>
-
-                <h1 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 600,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--color-text-primary)',
-                  marginBottom: 8,
-                }}>
-                  Motion Canvas
-                </h1>
-
-                <p style={{
-                  fontSize: '0.85rem',
-                  color: 'var(--color-text-muted)',
-                  maxWidth: 360,
-                  lineHeight: 1.6,
-                  margin: '0 auto',
-                }}>
-                  Environment initialized. Engine ready for integration.
-                </p>
-
-                {/* Config Summary Grid */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 8,
-                  marginTop: 32,
-                  maxWidth: 480,
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                }}>
-                  {[
-                    { label: 'Easing Curves', value: Object.keys(motionConfig.easing).length.toString(), unit: 'registered' },
-                    { label: 'Trail Instances', value: motionConfig.trail.instances.toString(), unit: 'clones' },
-                    { label: 'Posterize Rate', value: motionConfig.posterizeTime.masterFps.toString(), unit: 'fps' },
-                  ].map((item, i) => (
-                    <div
-                      key={item.label}
-                      className={`config-card animate-fade-in stagger-${i + 4}`}
-                      style={{ textAlign: 'left' }}
-                    >
-                      <div className="config-card__label">{item.label}</div>
-                      <div className="config-card__value">
-                        {item.value}
-                        <span style={{
-                          color: 'var(--color-text-ghost)',
-                          fontSize: '0.65rem',
-                          marginLeft: 4,
-                        }}>
-                          {item.unit}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+        
+        {activePanel === 'composition' ? (
+          <PanelGroup orientation="vertical" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Panel defaultSize={65} minSize={30} style={{ display: 'flex', flexDirection: 'column', paddingBottom: 4 }}>
+              {canvasArea}
+            </Panel>
+            
+            <PanelResizeHandle style={{ height: 8, cursor: 'row-resize', background: 'transparent' }} />
+            
+            <Panel defaultSize={35} minSize={20} style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
+              <div className="glass-panel animate-fade-in custom-scrollbar" style={{ padding: '16px 24px', borderRadius: 'var(--radius-lg)', flex: 1, overflowY: 'auto' }}>
+                <CompositionTimeline />
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Timeline Panel (Full width when in composition) */}
-        {activePanel === 'composition' && (
-          <div className="glass-panel animate-fade-in" style={{ padding: '16px 24px', borderRadius: 'var(--radius-lg)', flexShrink: 0 }}>
-            <CompositionTimeline />
-          </div>
+            </Panel>
+          </PanelGroup>
+        ) : (
+          canvasArea
         )}
 
         {/* Bottom Info Bar */}

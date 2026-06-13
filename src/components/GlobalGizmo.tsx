@@ -17,8 +17,10 @@ export function GlobalGizmo() {
     showGizmo,
     activeTypoLayerId,
     activeGenerativeLayerId,
+    activeCompositionLayerId,
     updateTypoLayerTransform,
     updateLayerTransform,
+    updateCompositionLayer,
     motionConfig,
   } = useEditorStore();
 
@@ -37,7 +39,7 @@ export function GlobalGizmo() {
       targetRef.current = target;
 
       // Compute a key that represents "which thing is selected in which mode"
-      const currentKey = `${activeTypoLayerId || activeGenerativeLayerId || 'none'}::${layoutMode}`;
+      const currentKey = `${activeTypoLayerId || activeGenerativeLayerId || activeCompositionLayerId || 'none'}::${layoutMode}`;
 
       // If target changed (layer switch or layout mode change) → force a fresh mount
       if (currentKey !== lastTargetKeyRef.current) {
@@ -99,18 +101,26 @@ export function GlobalGizmo() {
     gsap.ticker.add(updateGizmo);
     return () => gsap.ticker.remove(updateGizmo);
     // Re-run when showGizmo, active IDs, or layout mode change
-  }, [showGizmo, activeTypoLayerId, activeGenerativeLayerId, layoutMode]);
+  }, [showGizmo, activeTypoLayerId, activeGenerativeLayerId, activeCompositionLayerId, layoutMode]);
 
   if (!showGizmo) return null;
 
   const handleScale = (scale: number) => {
     if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { scale });
     if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { scale });
+    if (activeCompositionLayerId) {
+      const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
+      if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, scale } });
+    }
   };
 
   const handleRotate = (rotation: number) => {
     if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { rotation });
     if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { rotation });
+    if (activeCompositionLayerId) {
+      const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
+      if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, rotation } });
+    }
   };
 
   const handleResizeX = (width: number) => {
