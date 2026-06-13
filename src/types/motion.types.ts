@@ -544,6 +544,10 @@ export interface AudioTrack {
   trimEnd?: number;
   /** Volume 0.0 to 1.0 */
   volume: number;
+  /** Fade In duration in seconds */
+  fadeIn?: number;
+  /** Fade Out duration in seconds */
+  fadeOut?: number;
   /** Muted */
   muted?: boolean;
   /** Locked */

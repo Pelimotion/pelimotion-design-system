@@ -20,7 +20,17 @@ export function AudioEngine() {
           if (Math.abs(audio.currentTime - localTime) > 0.1) {
             audio.currentTime = localTime;
           }
-          audio.volume = track.volume ?? 1;
+          // Calculate volume with fades
+          let targetVolume = track.volume ?? 1;
+          const audioDuration = track.duration || audio.duration;
+          
+          if (track.fadeIn && localTime < track.fadeIn) {
+            targetVolume = (track.volume ?? 1) * (localTime / track.fadeIn);
+          } else if (track.fadeOut && localTime > audioDuration - track.fadeOut) {
+            targetVolume = (track.volume ?? 1) * ((audioDuration - localTime) / track.fadeOut);
+          }
+          
+          audio.volume = Math.max(0, Math.min(1, targetVolume));
           
           if (isPlaying && audio.paused) {
             audio.play().catch(() => {});
