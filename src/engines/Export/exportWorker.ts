@@ -1,4 +1,4 @@
-import { Output, Mp4OutputFormat, WebMOutputFormat, BufferTarget } from 'mediabunny'
+import { Output, Mp4OutputFormat, WebMOutputFormat, BufferTarget, VideoSampleSource, VideoSample } from 'mediabunny'
 
 export type ExportWorkerConfig = {
   width: number;
@@ -22,7 +22,7 @@ export type WorkerOutMessage =
   | { type: 'ERROR'; message: string }
 
 let output: Output | undefined;
-let videoTrack: any;
+let videoSource: VideoSampleSource | undefined;
 let framesEncoded = 0;
 
 self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
@@ -52,33 +52,36 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
         target: new BufferTarget(),
       });
 
-      videoTrack = output.addVideoTrack({
-        // @ts-ignore
-        codec: codecString,
-        width: safeWidth,
-        height: safeHeight,
-        frameRate: fps,
+      videoSource = new VideoSampleSource({
+        codec: codecString as any,
         bitrate: bitrate ?? 8_000_000, // 8 Mbps default
         hardwareAcceleration: support.supported ? 'prefer-hardware' : 'prefer-software',
+        transform: {
+          width: safeWidth,
+          height: safeHeight,
+          frameRate: fps,
+        }
       });
+
+      output.addVideoTrack(videoSource);
 
       await output.start();
       self.postMessage({ type: 'READY' });
     }
 
     if (msg.type === 'ENCODE_FRAME') {
-      if (!videoTrack) throw new Error("Worker not initialized with video track");
+      if (!videoSource) throw new Error("Worker not initialized with video source");
       
-      const { bitmap, timestamp, isKeyFrame, totalFrames } = msg;
+      const { bitmap, timestamp, totalFrames } = msg;
       const frame = new VideoFrame(bitmap, { timestamp });
       
       // Crucial: close the ImageBitmap to release GPU memory
       bitmap.close();
 
-      await videoTrack.addFrame(frame, { keyFrame: isKeyFrame });
+      const sample = new VideoSample(frame);
+      await videoSource.add(sample);
       
-      // Crucial: close the VideoFrame to release GPU memory
-      frame.close();
+      sample.close();
 
       framesEncoded++;
       self.postMessage({ type: 'PROGRESS', framesEncoded, totalFrames });

@@ -243,12 +243,7 @@ function App() {
         touchAction: 'none', // Prevent browser gestures on the canvas
       }}
     >
-      {activePanel !== 'library' && <ViewportControls />}
-      {activePanel === 'library' ? (
-        <div style={{ position: 'absolute', inset: 0, padding: 32, overflowY: 'auto', background: 'var(--color-bg-primary)' }} className="custom-scrollbar">
-          <LibraryPreview />
-        </div>
-      ) : (
+      <ViewportControls />
       <div
         id="canvas-fixed-resolution"
         style={{
@@ -422,7 +417,6 @@ function App() {
         )}
       </div>
       </div>
-      )}
     </div>
   )
 
@@ -613,7 +607,11 @@ function App() {
       >
         <TopToolbar />
         
-        {activePanel === 'composition' ? (
+        {activePanel === 'library' ? (
+          <div className="glass-panel animate-fade-in custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: 32, borderRadius: 'var(--radius-lg)' }}>
+            <LibraryPreview />
+          </div>
+        ) : activePanel === 'composition' ? (
           <PanelGroup orientation="vertical" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <Panel defaultSize={65} minSize={30} style={{ display: 'flex', flexDirection: 'column', paddingBottom: 4 }}>
               {canvasArea}

@@ -25,6 +25,7 @@ export function CompositionTimeline() {
 
   const [showAddMenu, setShowAddMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
@@ -54,6 +55,32 @@ export function CompositionTimeline() {
     };
     addCompositionLayer(newLayer);
     setShowAddMenu(false);
+  };
+
+  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const src = URL.createObjectURL(file);
+    const tempAudio = new Audio(src);
+    
+    tempAudio.onloadedmetadata = () => {
+      const duration = tempAudio.duration;
+      const newAudioTrack: AudioTrack = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        src: src,
+        startTime: 0,
+        duration: Math.min(duration, exportConfig.duration),
+        volume: 0.5,
+      };
+      addAudioTrack(newAudioTrack);
+    };
+    
+    // Reset input
+    if (audioInputRef.current) {
+      audioInputRef.current.value = '';
+    }
   };
 
   // --- Pointer Event Handlers ---
@@ -250,18 +277,18 @@ export function CompositionTimeline() {
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
+          <input
+            type="file"
+            accept="audio/*,video/*"
+            style={{ display: 'none' }}
+            ref={audioInputRef}
+            onChange={handleAudioUpload}
+          />
           <button
             onClick={() => {
-               // Simulate importing an audio track
-               const fakeAudioTrack: AudioTrack = {
-                 id: crypto.randomUUID(),
-                 name: 'Soundtrack (Demo)',
-                 src: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b8173432.mp3?filename=cinematic-time-lapse-115672.mp3',
-                 startTime: 0,
-                 duration: exportConfig.duration,
-                 volume: 0.5,
-               };
-               addAudioTrack(fakeAudioTrack);
+               if (audioInputRef.current) {
+                 audioInputRef.current.click();
+               }
             }}
             style={{
               background: 'var(--color-surface-glass)',

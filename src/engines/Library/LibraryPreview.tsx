@@ -3,13 +3,14 @@ import { useEditorStore } from '@/store/useEditorStore'
 import { fetchBunnyAssets, type BunnyAsset } from '@/lib/bunnyStorage'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
 import { downloadFile } from '@/lib/downloadHandler'
-import { Type, Layers, Film, ImageIcon, Download, Sparkles, Plus, Combine } from 'lucide-react'
+import { Type, Layers, Film, ImageIcon, Download, Sparkles, Plus, Combine, Music } from 'lucide-react'
 
 const TABS = [
   { id: 'Tipografia', label: 'Tipografia', icon: Type },
   { id: 'Generativo', label: 'Generativo', icon: Layers },
   { id: 'Logo', label: 'Logo', icon: ImageIcon },
   { id: 'Transição', label: 'Transição', icon: Combine },
+  { id: 'Audio', label: 'Áudio', icon: Music },
 ]
 
 export function LibraryPreview() {
@@ -206,20 +207,26 @@ export function LibraryPreview() {
                 <div key={cloudId} className="glass-panel" style={{
                   borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer'
                 }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; const v = e.currentTarget.querySelector('video'); if(v) v.play().catch(()=>{}); }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; const v = e.currentTarget.querySelector('video'); if(v) { v.pause(); v.currentTime=0; } }}>
-                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                    {isVideo ? (
-                      <video src={videoSrc} muted playsInline preload="none" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                        <ImageIcon size={32} color="var(--color-text-muted)" />
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8 }}>
-                      <button onClick={(e) => { e.stopPropagation(); handleDownload(asset); }} className="icon-button" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} title="Download Original">
-                        <Download size={14} color="#fff" />
-                      </button>
+                  {activeLibraryTab === 'Audio' ? (
+                    <div style={{ width: '100%', padding: '24px 16px', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-surface-border)' }}>
+                      <audio controls src={videoSrc} style={{ width: '100%' }} preload="none" />
                     </div>
-                  </div>
+                  ) : (
+                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                      {isVideo ? (
+                        <video src={videoSrc} muted playsInline preload="none" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                          <ImageIcon size={32} color="var(--color-text-muted)" />
+                        </div>
+                      )}
+                      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8 }}>
+                        <button onClick={(e) => { e.stopPropagation(); handleDownload(asset); }} className="icon-button" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} title="Download Original">
+                          <Download size={14} color="#fff" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {asset.ObjectName}
@@ -228,9 +235,26 @@ export function LibraryPreview() {
                       <span>{(asset.Length / 1024 / 1024).toFixed(2)} MB</span>
                       <span>{new Date(asset.LastChanged).toLocaleDateString()}</span>
                     </div>
-                    <button onClick={() => handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
-                      <Plus size={14} /> Usar na Composição
-                    </button>
+                    {activeLibraryTab === 'Audio' ? (
+                       <button onClick={() => {
+                          const newAudioTrack = {
+                            id: crypto.randomUUID(),
+                            name: asset.ObjectName,
+                            src: videoSrc,
+                            startTime: 0,
+                            duration: exportConfig.duration,
+                            volume: 1,
+                          };
+                          useEditorStore.getState().addAudioTrack(newAudioTrack);
+                          setActivePanel('composition');
+                       }} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
+                         <Plus size={14} /> Usar como Áudio
+                       </button>
+                    ) : (
+                       <button onClick={() => handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
+                         <Plus size={14} /> Usar na Composição
+                       </button>
+                    )}
                   </div>
                 </div>
               )
