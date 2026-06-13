@@ -126,12 +126,12 @@ function App() {
           
           // Toggle playback
           const store = useEditorStore.getState();
-          store.setMotionConfig({ isPlaying: !store.motionConfig.isPlaying });
+          store.togglePlayback();
         }
       } else if (e.code === 'Backspace' || e.code === 'Delete') {
         const store = useEditorStore.getState();
         if (store.activeCompositionLayerId) {
-          store.deleteLayer(store.activeCompositionLayerId);
+          store.removeCompositionLayer(store.activeCompositionLayerId);
         }
       }
     };

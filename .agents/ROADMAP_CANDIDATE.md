@@ -1,21 +1,21 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 15:20:40*
-*Current Commit Hash: `a2dff91`*
+*Generated at: 13/06/2026, 15:40:29*
+*Current Commit Hash: `521337b`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **CSS Blur vs GPU Performance** (product_designer vs dev_senior):
-  - *Descrição:* O Product Designer adora os rastros (trails) de tipografia com motion blur ativado. O Dev Sênior identificou que `filter: blur()` no CSS sobre dezenas de nós no DOM congela a renderização no Safari.
-  - *Compromisso Proposto:* **Substituir o CSS `filter: blur` por uma tag SVG nativa `<feGaussianBlur>` injetada no `<defs>` principal, forçando a GPU a compor o blur de maneira rasterizada sem reflow de DOM.**
+- **Animated Grid vs Rendering Budget** (diretor_criacao vs dev_senior):
+  - *Descrição:* O Diretor de Criação acha o fundo quadriculado muito estático e quer um WebGL Shader Mesh pulsante. O Dev Sênior alerta que 2 web workers de canvas já rodam. Um terceiro WebGL explodiria GPUs fracas.
+  - *Compromisso Proposto:* **Trocar o Grid por um fundo CSS puro com máscara de gradiente animado infinitamente (Breathing Mesh) usando CSS Keyframes, com zero impacto na thread principal ou GPU rendering.**
 
 ### 🤝 Sinergias
-- **Enterprise Watermarking & Brand Lock-in** (ceo + diretor_criacao):
-  - *Descrição:* O CEO quer monetizar planos Premium removendo a marca d`água nas exportações. O Diretor de Criação concorda em adicionar um render visual de "Made with Pelimotion" de forma sutil e elegante nos frames finais do OffscreenCanvas durante o Export Pipeline.
+- **Intuitive Drag & Drop Pipeline** (product_designer + analista_senior):
+  - *Descrição:* Usuários não estão entendendo como colocar mídias na composição. O Product Designer desenhou um Drag & Drop fluido da Biblioteca (Library) para o Canvas principal, aumentando absurdamente a conversão na telemetria do funil.
 
-- **Frictionless Hotkeys** (analista_senior + product_designer):
-  - *Descrição:* A Telemetria indica que usuários de After Effects perdem muito tempo procurando o botão "Delete" na interface. Devemos plugar um Global Hotkey Engine para Play/Pause (Space) e Delete Layer (Backspace).
+- **Timeline Scrubber Engine** (dev_senior + product_designer):
+  - *Descrição:* O Dev Sênior notou que o GSAP Global Timeline tem métodos de Seek eficientes. O Product Designer quer que o usuário clique na régua (Timeline) e a agulha pule direto para aquele tempo exato com playhead sync.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +60,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 3)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 4)
 
-- [x] **Typography GPU Blur:** Injetar filtro nativo `<feGaussianBlur>` nas definições de Trail em `TypographyPreview.tsx` para substituir o CSS filter (Dev Sênior).
-- [x] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em `exportPipeline.ts` (CEO).
-- [x] **Global Hotkeys Engine:** Configurar um `useEffect` no `App.tsx` para deletar `activeCompositionLayerId` via Backspace e Play/Pause via Barra de Espaço (Product Designer).
+- [ ] **Library Drag & Drop:** Adicionar os atributos `draggable` aos vídeos em `LibraryPreview.tsx` e listeners de `onDrop` no `App.tsx` (Product Designer).
+- [ ] **Timeline GSAP Scrubber:** Fazer a `CompositionTimeline.tsx` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via `gsap.globalTimeline.seek()` (Dev Sênior).
+- [ ] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em `App.tsx` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).

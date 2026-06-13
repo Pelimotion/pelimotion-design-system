@@ -139,30 +139,30 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 3)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 4)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs Dev Senior Conflict
+  // Creative Director vs Dev Senior Conflict
   conflicts.push({
-    title: 'CSS Blur vs GPU Performance',
-    parties: ['product_designer', 'dev_senior'],
-    description: 'O Product Designer adora os rastros (trails) de tipografia com motion blur ativado. O Dev Sênior identificou que `filter: blur()` no CSS sobre dezenas de nós no DOM congela a renderização no Safari.',
-    compromise: 'Substituir o CSS `filter: blur` por uma tag SVG nativa `<feGaussianBlur>` injetada no `<defs>` principal, forçando a GPU a compor o blur de maneira rasterizada sem reflow de DOM.'
+    title: 'Animated Grid vs Rendering Budget',
+    parties: ['diretor_criacao', 'dev_senior'],
+    description: 'O Diretor de Criação acha o fundo quadriculado muito estático e quer um WebGL Shader Mesh pulsante. O Dev Sênior alerta que 2 web workers de canvas já rodam. Um terceiro WebGL explodiria GPUs fracas.',
+    compromise: 'Trocar o Grid por um fundo CSS puro com máscara de gradiente animado infinitamente (Breathing Mesh) usando CSS Keyframes, com zero impacto na thread principal ou GPU rendering.'
   });
 
-  // CEO vs Motion Lead Synergy
+  // Product Designer vs Analyst Synergy
   synergies.push({
-    title: 'Enterprise Watermarking & Brand Lock-in',
-    parties: ['ceo', 'diretor_criacao'],
-    description: 'O CEO quer monetizar planos Premium removendo a marca d`água nas exportações. O Diretor de Criação concorda em adicionar um render visual de "Made with Pelimotion" de forma sutil e elegante nos frames finais do OffscreenCanvas durante o Export Pipeline.'
+    title: 'Intuitive Drag & Drop Pipeline',
+    parties: ['product_designer', 'analista_senior'],
+    description: 'Usuários não estão entendendo como colocar mídias na composição. O Product Designer desenhou um Drag & Drop fluido da Biblioteca (Library) para o Canvas principal, aumentando absurdamente a conversão na telemetria do funil.'
   });
 
-  // Analyst vs Product Designer Synergy
+  // Dev Senior vs Product Designer Synergy
   synergies.push({
-    title: 'Frictionless Hotkeys',
-    parties: ['analista_senior', 'product_designer'],
-    description: 'A Telemetria indica que usuários de After Effects perdem muito tempo procurando o botão "Delete" na interface. Devemos plugar um Global Hotkey Engine para Play/Pause (Space) e Delete Layer (Backspace).'
+    title: 'Timeline Scrubber Engine',
+    parties: ['dev_senior', 'product_designer'],
+    description: 'O Dev Sênior notou que o GSAP Global Timeline tem métodos de Seek eficientes. O Product Designer quer que o usuário clique na régua (Timeline) e a agulha pule direto para aquele tempo exato com playhead sync.'
   });
 
   return { conflicts, synergies };
@@ -200,10 +200,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 3)\n\n`;
-  markdown += `- [ ] **Typography GPU Blur:** Injetar filtro nativo \`<feGaussianBlur>\` nas definições de Trail em \`TypographyPreview.tsx\` para substituir o CSS filter (Dev Sênior).\n`;
-  markdown += `- [ ] **Enterprise Export Watermark:** Adicionar renderização de marca d'água corporativa no contexto do canvas antes de enviar ao codec em \`exportPipeline.ts\` (CEO).\n`;
-  markdown += `- [ ] **Global Hotkeys Engine:** Configurar um \`useEffect\` no \`App.tsx\` para deletar \`activeCompositionLayerId\` via Backspace e Play/Pause via Barra de Espaço (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 4)\n\n`;
+  markdown += `- [ ] **Library Drag & Drop:** Adicionar os atributos \`draggable\` aos vídeos em \`LibraryPreview.tsx\` e listeners de \`onDrop\` no \`App.tsx\` (Product Designer).\n`;
+  markdown += `- [ ] **Timeline GSAP Scrubber:** Fazer a \`CompositionTimeline.tsx\` reagir a cliques e arrastos do ponteiro mapeando para o tempo global via \`gsap.globalTimeline.seek()\` (Dev Sênior).\n`;
+  markdown += `- [ ] **Animated Breathing Mesh:** Substituir a grade estática do Canvas em \`App.tsx\` por um CSS Keyframe background pulsante que usa propriedades compostas aceleradas (Diretor de Criação).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
