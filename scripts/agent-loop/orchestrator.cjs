@@ -139,30 +139,29 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 6)...\\x1b[0m');
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 7)...\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Creative Director vs Product Designer Synergy
+  // Product Designer vs CEO Synergy
   synergies.push({
-    title: 'Layer Visibility Toggles',
-    parties: ['diretor_criacao', 'product_designer'],
-    description: 'Composições complexas ficam impossíveis de enxergar. Precisamos de um botão de "Olho" (Visibility Toggle) no header de cada Track na Timeline para habilitar o modo "Solo" visual.'
+    title: 'Aspect Ratio Live Crop',
+    parties: ['product_designer', 'ceo'],
+    description: 'O CEO quer atrair criadores do TikTok/Reels. O Product Designer notou que mudar o Aspect Ratio no painel não altera visualmente o Canvas. Precisamos forçar o CSS Aspect-Ratio dinamicamente no contêiner principal da Cena.'
   });
 
-  // Analyst vs Dev Senior Conflict
+  // Analyst vs Product Designer Synergy
+  synergies.push({
+    title: 'Master Duration Control',
+    parties: ['analista_senior', 'product_designer'],
+    description: 'Os usuários ficam frustrados ao ver que o vídeo trava em 5 segundos. Precisamos adicionar um `<input type="number">` minimalista no cabeçalho da Timeline para controlar livremente o `exportConfig.duration`.'
+  });
+
+  // Creative Director vs Dev Senior Conflict
   conflicts.push({
-    title: 'Auto-Save Restoration Strategy',
-    parties: ['analista_senior', 'dev_senior'],
-    description: 'O Auto-save está rodando. O Analista quer que o sistema restaure a sessão silenciosamente no boot. O Dev Sênior alerta para Zustand Hydration mismatches.',
-    compromise: 'Criar um hook no `App.tsx` que lê o LocalStorage no `mount` inicial, valida a integridade estrutural, e injeta as camadas de volta silenciosamente via uma nova action `restoreState()` na store.'
-  });
-
-  // Product Designer vs Motion Lead Synergy
-  synergies.push({
-    title: 'Dynamic Tick Ruler',
-    parties: ['product_designer', 'diretor_criacao'],
-    description: 'A régua de tempo está rústica mostrando apenas 0 e o Fim. Vamos criar uma grade matemática gerando traços (Ticks) a cada 1 segundo dinamicamente, permitindo a precisão cirúrgica no arrasto da agulha.'
+    title: 'Audio Waveforms vs Canvas Performance',
+    parties: ['diretor_criacao', 'dev_senior'],
+    description: 'O Diretor de Criação quer Waveforms reais processados por Web Audio API. O Dev Sênior proíbe isso no Main Thread. Acordo: Implementar pseudo-waveforms elegantes usando SVG Patterns/CSS no bloco da Timeline de Áudio.'
   });
 
   return { conflicts, synergies };
@@ -200,10 +199,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 6)\n\n`;
-  markdown += `- [ ] **Auto-Save Restoration:** Criar a action \`restoreState(payload)\` em \`useEditorStore.ts\` e acioná-la no Mount inicial do \`App.tsx\` lendo os bytes persistidos do localStorage (Analista).\n`;
-  markdown += `- [ ] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em \`CompositionTimeline.tsx\` para injetar \`hidden: true/false\` em cada camada (Product Designer).\n`;
-  markdown += `- [ ] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do \`CompositionTimeline.tsx\` gerando um array numérico que renderiza marcas \`|\` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 7)\n\n`;
+  markdown += `- [ ] **Aspect Ratio Live Crop:** Injetar o mapeamento de \`aspectRatio\` via CSS dinâmico no container do Canvas no \`App.tsx\` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).\n`;
+  markdown += `- [ ] **Master Duration Control:** Adicionar um input numérico no cabeçalho do \`CompositionTimeline.tsx\` para modificar dinamicamente o \`exportConfig.duration\` global (Analista).\n`;
+  markdown += `- [ ] **Pseudo-Waveform UI:** Adicionar um \`backgroundImage\` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

@@ -1,21 +1,21 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 16:40:05*
-*Current Commit Hash: `a39e62d`*
+*Generated at: 13/06/2026, 16:40:41*
+*Current Commit Hash: `31a5458`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Auto-Save Restoration Strategy** (analista_senior vs dev_senior):
-  - *Descrição:* O Auto-save está rodando. O Analista quer que o sistema restaure a sessão silenciosamente no boot. O Dev Sênior alerta para Zustand Hydration mismatches.
-  - *Compromisso Proposto:* **Criar um hook no `App.tsx` que lê o LocalStorage no `mount` inicial, valida a integridade estrutural, e injeta as camadas de volta silenciosamente via uma nova action `restoreState()` na store.**
+- **Audio Waveforms vs Canvas Performance** (diretor_criacao vs dev_senior):
+  - *Descrição:* O Diretor de Criação quer Waveforms reais processados por Web Audio API. O Dev Sênior proíbe isso no Main Thread. Acordo: Implementar pseudo-waveforms elegantes usando SVG Patterns/CSS no bloco da Timeline de Áudio.
+  - *Compromisso Proposto:* **undefined**
 
 ### 🤝 Sinergias
-- **Layer Visibility Toggles** (diretor_criacao + product_designer):
-  - *Descrição:* Composições complexas ficam impossíveis de enxergar. Precisamos de um botão de "Olho" (Visibility Toggle) no header de cada Track na Timeline para habilitar o modo "Solo" visual.
+- **Aspect Ratio Live Crop** (product_designer + ceo):
+  - *Descrição:* O CEO quer atrair criadores do TikTok/Reels. O Product Designer notou que mudar o Aspect Ratio no painel não altera visualmente o Canvas. Precisamos forçar o CSS Aspect-Ratio dinamicamente no contêiner principal da Cena.
 
-- **Dynamic Tick Ruler** (product_designer + diretor_criacao):
-  - *Descrição:* A régua de tempo está rústica mostrando apenas 0 e o Fim. Vamos criar uma grade matemática gerando traços (Ticks) a cada 1 segundo dinamicamente, permitindo a precisão cirúrgica no arrasto da agulha.
+- **Master Duration Control** (analista_senior + product_designer):
+  - *Descrição:* Os usuários ficam frustrados ao ver que o vídeo trava em 5 segundos. Precisamos adicionar um `<input type="number">` minimalista no cabeçalho da Timeline para controlar livremente o `exportConfig.duration`.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,8 +60,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 6)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 7)
 
-- [ ] **Auto-Save Restoration:** Criar a action `restoreState(payload)` em `useEditorStore.ts` e acioná-la no Mount inicial do `App.tsx` lendo os bytes persistidos do localStorage (Analista).
-- [ ] **Layer Visibility Toggle:** Adicionar o ícone de Olho (Eye/EyeOff) no track header em `CompositionTimeline.tsx` para injetar `hidden: true/false` em cada camada (Product Designer).
-- [ ] **Dynamic Tick Ruler:** Refatorar a régua (Axis) do `CompositionTimeline.tsx` gerando um array numérico que renderiza marcas `|` a cada segundo exato do vídeo para auxiliar a precisão de edição (Diretor de Criação).
+- [ ] **Aspect Ratio Live Crop:** Injetar o mapeamento de `aspectRatio` via CSS dinâmico no container do Canvas no `App.tsx` para refletir o formato escolhido (Reels, YouTube, etc) (Product Designer + CEO).
+- [ ] **Master Duration Control:** Adicionar um input numérico no cabeçalho do `CompositionTimeline.tsx` para modificar dinamicamente o `exportConfig.duration` global (Analista).
+- [ ] **Pseudo-Waveform UI:** Adicionar um `backgroundImage` estilizado com SVG Data URI nos blocos das faixas de Áudio na Timeline para representar decibéis de forma cosmética (Diretor de Criação).
