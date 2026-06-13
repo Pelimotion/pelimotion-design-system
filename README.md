@@ -60,6 +60,7 @@ Para criadores que precisam de controle profissional sobre a narrativa visual e 
 - **Controle de Opacidade Individual:** As trilhas de vídeo e elementos contam com um slider visual direto na timeline. Ajuste o seletor de opacidade (de 0.00 a 1.00) para mesclar elementos suavemente ou criar sobreposições complexas de Glassmorphism.
 - **Fade-In & Fade-Out de Áudio (Transições Suaves):** Nas trilhas de áudio, você verá campos numéricos rotulados como `In` e `Out`. Digite um tempo em segundos (ex: `1.5` s) para aplicar um esvanecimento de som linear no início e no fim da trilha, eliminando cortes de áudio abruptos.
 - **Duplicação com Um Clique (Copy):** No controle esquerdo de cada trilha (Vídeo ou Áudio), há um botão de **Duplicar (ícone de cópia)**. Clicar nele gera instantaneamente um clone idêntico com um novo ID único, deslocado automaticamente em `+0.5s` segundos para frente da faixa de origem, facilitando a criação de padrões rítmicos.
+- **Fatiar na Agulha (Tesoura):** Clique no botão de **Tesoura** para dividir uma faixa de vídeo ou áudio exatamente no tempo em que a agulha de reprodução se encontra. Isso permite cortar partes indesejadas, criar cortes secos e reorganizar a ordem de exibição de elementos de forma cirúrgica.
 - **Cor de Fundo Mestre:** Ajuste a cor base do preview diretamente na barra de ferramentas superior da timeline usando o seletor **Fundo**.
 
 ---

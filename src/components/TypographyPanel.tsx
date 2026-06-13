@@ -222,7 +222,7 @@ function LayerSection({
     const reader = new FileReader();
     reader.onload = (ev) => {
       const buffer = ev.target?.result as ArrayBuffer;
-      const fontName = file.name.split('.')[0].replace(/[^a-zA-Z0-9 ]/g, ' ').trim();
+      const fontName = (file.name.split('.')[0] || 'CustomFont').replace(/[^a-zA-Z0-9 ]/g, ' ').trim();
       const fontFace = new FontFace(fontName, buffer);
       
       fontFace.load().then((loadedFace) => {
