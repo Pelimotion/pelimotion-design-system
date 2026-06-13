@@ -1,21 +1,25 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 14:20:07*
-*Current Commit Hash: `8a2fd76`*
+*Generated at: 13/06/2026, 14:40:51*
+*Current Commit Hash: `c70d6a6`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
-- **Generative Simplex Performance vs Visual Richness** (dev_senior vs diretor_criacao):
-  - *Descrição:* Creative Director requests tritonal gradient maps and chromatic aberration on Generative SVG edges; Dev Senior warns that calculating Simplex noise and applying heavy CSS/SVG filters simultaneously will drop framerates below 30fps and bloat the DOM.
-  - *Compromisso Proposto:* **Move Simplex noise generation to a Web Worker and render the Generative SVGs directly to an OffscreenCanvas instead of polluting the DOM, then apply filters natively on the canvas.**
+- **Renderização Multithread vs Complexidade de Sincronização** (dev_senior vs product_designer):
+  - *Descrição:* O Product Designer exige preview em tempo real (120fps) para os efeitos visuais pesados (tritone filters, noise). O Dev Sênior alerta para race conditions entre Workers e o state do Zustand.
+  - *Compromisso Proposto:* **Arquitetura de Double-Buffering com OffscreenCanvas em Worker isolado. O Main Thread apenas envia os parâmetros (transform, cor, tempo) via postMessage sem esperar retorno sincrono.**
+
+- **Exportação WebCodecs vs Compatibilidade Mobile** (ceo vs dev_senior):
+  - *Descrição:* CEO quer focar no motor WebCodecs MP4 nativo pela velocidade e custo zero. Dev Sênior lembra que Safari/iOS limita WebCodecs em backgrounds e não suporta certos codecs HEVC de forma previsível.
+  - *Compromisso Proposto:* **Pipeline Híbrida: Tentar WebCodecs primeiro com fallback automático silencioso para FFmpeg.wasm em navegadores não suportados.**
 
 ### 🤝 Sinergias
-- **Server-Side Snapshot Gallery** (seo + product_designer):
-  - *Descrição:* Product Designer's need for auto-playing Library previews aligns with SEO's need for static pre-rendered snapshots. Generating high-quality WebP sequences or static snapshots serves both the visual gallery and Google Image Indexing.
+- **Bento Grid UX + Telemetria de Engajamento** (product_designer + analista_senior):
+  - *Descrição:* O Bento Grid modular permite injetar painéis de "Dicas" e "Presets Patrocinados". A Telemetria mapeia os tempos mortos do usuário para sugerir esses painéis exatamente na hora que ele trava.
 
-- **Telemetry-Driven Typography Premium Packs** (ceo + analista_senior):
-  - *Descrição:* Analyst's tracking of the most used Typography fonts and GSAP curves directly feeds the CEO's monetization strategy to build and sell highly targeted premium typography preset packs.
+- **Indexação Server-Side + Cloud Storage** (seo + ceo):
+  - *Descrição:* Servir os assets diretamente pelo BunnyCDN e usar um renderizador Headless na nuvem apenas para gerar OpenGraph images (SEO) e thumbs de compartilhamento nas redes sociais (Crescimento Viral).
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -60,9 +64,8 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (Foco: Módulos 1, 2 e 3)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP)
 
-- [x] **Typography & Memory:** Implementar debounce rigoroso no input de texto e otimizar limpeza do DOM para os efeitos de Trail (Dev Sênior).
-- [x] **Generative Offscreen Engine:** Migrar os cálculos de Simplex Noise para Web Worker e a renderização para OffscreenCanvas, permitindo os filtros tritonais (Dev Sênior + Diretor de Criação).
-- [x] **Library Virtualization & UX:** Adicionar scroll virtualizado para a Galeria de Assets e implementar drag-and-drop fluído com animações do painel direto para a composição (Product Designer + Dev Sênior).
-- [x] **Typography Dynamics:** Adicionar variáveis de overshoot elástico, fade-outs e mapeamento de opacidade no Timeline Factory do texto (Diretor de Criação).
+- [ ] **Bento Grid Enhancements:** Adicionar painel adaptativo com micro-animações avançadas para edição de parâmetros de Exportação (Product Designer).
+- [ ] **WebCodecs Fallback Strategy:** Implementar a lógica de fallback para FFmpeg.wasm quando o browser não suportar WebCodecs. (Dev Sênior).
+- [ ] **Double-Buffering Worker:** Ajustar o Zustand para disparar mensagens unidirecionais ao invés de forçar re-render React nas camadas de preview (Dev Sênior).

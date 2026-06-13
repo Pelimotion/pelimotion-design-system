@@ -11,14 +11,13 @@ gsap.registerPlugin(useGSAP)
 
 function LazyAssetCard({ 
   asset, 
-  cloudId, 
   videoSrc, 
   isVideo, 
   isAudio, 
   onDownload, 
   onAdd 
 }: { 
-  asset: BunnyAsset; cloudId: string; videoSrc: string; isVideo: boolean; isAudio: boolean;
+  asset: BunnyAsset; videoSrc: string; isVideo: boolean; isAudio: boolean;
   onDownload: () => void; onAdd: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,8 +26,9 @@ function LazyAssetCard({
 
   useEffect(() => {
     if (!containerRef.current) return
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting) {
         setInView(true)
         // Keep it loaded once it enters view
         observer.disconnect()
@@ -318,7 +318,6 @@ export function LibraryPreview() {
                 <LazyAssetCard
                   key={cloudId}
                   asset={asset}
-                  cloudId={cloudId}
                   videoSrc={videoSrc}
                   isVideo={isVideo}
                   isAudio={isAudio}

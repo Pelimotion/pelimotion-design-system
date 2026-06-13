@@ -139,31 +139,38 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[34m[Orchestrator] Crossing Data & Insights...\x1b[0m');
-
+  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis)\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Dev vs Creative Director Conflict (Performance vs WOW Factor)
+  // Dev Senior vs Product Designer Conflict
   conflicts.push({
-    title: 'Generative Simplex Performance vs Visual Richness',
-    parties: ['dev_senior', 'diretor_criacao'],
-    description: 'Creative Director requests tritonal gradient maps and chromatic aberration on Generative SVG edges; Dev Senior warns that calculating Simplex noise and applying heavy CSS/SVG filters simultaneously will drop framerates below 30fps and bloat the DOM.',
-    compromise: 'Move Simplex noise generation to a Web Worker and render the Generative SVGs directly to an OffscreenCanvas instead of polluting the DOM, then apply filters natively on the canvas.'
+    title: 'Renderização Multithread vs Complexidade de Sincronização',
+    parties: ['dev_senior', 'product_designer'],
+    description: 'O Product Designer exige preview em tempo real (120fps) para os efeitos visuais pesados (tritone filters, noise). O Dev Sênior alerta para race conditions entre Workers e o state do Zustand.',
+    compromise: 'Arquitetura de Double-Buffering com OffscreenCanvas em Worker isolado. O Main Thread apenas envia os parâmetros (transform, cor, tempo) via postMessage sem esperar retorno sincrono.'
   });
 
-  // SEO vs Product Designer Synergy
-  synergies.push({
-    title: 'Server-Side Snapshot Gallery',
-    parties: ['seo', 'product_designer'],
-    description: 'Product Designer\'s need for auto-playing Library previews aligns with SEO\'s need for static pre-rendered snapshots. Generating high-quality WebP sequences or static snapshots serves both the visual gallery and Google Image Indexing.'
+  // CEO vs Dev Senior Conflict
+  conflicts.push({
+    title: 'Exportação WebCodecs vs Compatibilidade Mobile',
+    parties: ['ceo', 'dev_senior'],
+    description: 'CEO quer focar no motor WebCodecs MP4 nativo pela velocidade e custo zero. Dev Sênior lembra que Safari/iOS limita WebCodecs em backgrounds e não suporta certos codecs HEVC de forma previsível.',
+    compromise: 'Pipeline Híbrida: Tentar WebCodecs primeiro com fallback automático silencioso para FFmpeg.wasm em navegadores não suportados.'
   });
 
-  // CEO vs Analyst Synergy
+  // Product Designer vs Analyst Synergy
   synergies.push({
-    title: 'Telemetry-Driven Typography Premium Packs',
-    parties: ['ceo', 'analista_senior'],
-    description: 'Analyst\'s tracking of the most used Typography fonts and GSAP curves directly feeds the CEO\'s monetization strategy to build and sell highly targeted premium typography preset packs.'
+    title: 'Bento Grid UX + Telemetria de Engajamento',
+    parties: ['product_designer', 'analista_senior'],
+    description: 'O Bento Grid modular permite injetar painéis de "Dicas" e "Presets Patrocinados". A Telemetria mapeia os tempos mortos do usuário para sugerir esses painéis exatamente na hora que ele trava.'
+  });
+
+  // SEO vs CEO Synergy
+  synergies.push({
+    title: 'Indexação Server-Side + Cloud Storage',
+    parties: ['seo', 'ceo'],
+    description: 'Servir os assets diretamente pelo BunnyCDN e usar um renderizador Headless na nuvem apenas para gerar OpenGraph images (SEO) e thumbs de compartilhamento nas redes sociais (Crescimento Viral).'
   });
 
   return { conflicts, synergies };
@@ -201,11 +208,10 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (Foco: Módulos 1, 2 e 3)\n\n`;
-  markdown += `- [ ] **Typography & Memory:** Implementar debounce rigoroso no input de texto e otimizar limpeza do DOM para os efeitos de Trail (Dev Sênior).\n`;
-  markdown += `- [ ] **Generative Offscreen Engine:** Migrar os cálculos de Simplex Noise para Web Worker e a renderização para OffscreenCanvas, permitindo os filtros tritonais (Dev Sênior + Diretor de Criação).\n`;
-  markdown += `- [ ] **Library Virtualization & UX:** Adicionar scroll virtualizado para a Galeria de Assets e implementar drag-and-drop fluído com animações do painel direto para a composição (Product Designer + Dev Sênior).\n`;
-  markdown += `- [ ] **Typography Dynamics:** Adicionar variáveis de overshoot elástico, fade-outs e mapeamento de opacidade no Timeline Factory do texto (Diretor de Criação).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n`;
+  markdown += `- [ ] **Bento Grid Enhancements:** Adicionar painel adaptativo com micro-animações avançadas para edição de parâmetros de Exportação (Product Designer).\n`;
+  markdown += `- [ ] **WebCodecs Fallback Strategy:** Implementar a lógica de fallback para FFmpeg.wasm quando o browser não suportar WebCodecs. (Dev Sênior).\n`;
+  markdown += `- [ ] **Double-Buffering Worker:** Ajustar o Zustand para disparar mensagens unidirecionais ao invés de forçar re-render React nas camadas de preview (Dev Sênior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

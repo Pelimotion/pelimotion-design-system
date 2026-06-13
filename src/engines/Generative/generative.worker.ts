@@ -1,4 +1,4 @@
-import { createNoise2D, createNoise3D } from 'simplex-noise';
+import { createNoise2D } from 'simplex-noise';
 
 // Seeded PRNG (Alea)
 function mulberry32(seed: number) {
