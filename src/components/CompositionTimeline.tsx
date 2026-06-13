@@ -22,7 +22,11 @@ export function CompositionTimeline() {
     seek,
     reorderCompositionLayers,
     isPlaying,
-    togglePlayback
+    togglePlayback,
+    activeCompositionLayerId,
+    setActiveCompositionLayerId,
+    activeAudioTrackId,
+    setActiveAudioTrackId
   } = useEditorStore();
 
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
@@ -681,7 +685,17 @@ export function CompositionTimeline() {
               </div>
             </div>
             {isCompExpanded && compositionLayers.map((layer, index) => (
-              <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div 
+                key={layer.id} 
+                onClick={() => { setActiveCompositionLayerId(layer.id); setActiveAudioTrackId(null); }}
+                style={{ 
+                  display: 'flex', flexDirection: 'column', gap: 2,
+                  background: activeCompositionLayerId === layer.id ? 'var(--color-surface-glass)' : 'transparent',
+                  padding: '4px 6px', borderRadius: 4, margin: '0 -6px',
+                  border: activeCompositionLayerId === layer.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
+                  cursor: 'pointer'
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span>{index + 1}:</span>
@@ -829,7 +843,17 @@ export function CompositionTimeline() {
               </div>
             </div>
             {isAudioExpanded && audioTracks.map((track) => (
-              <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div 
+                key={track.id} 
+                onClick={() => { setActiveAudioTrackId(track.id); setActiveCompositionLayerId(null); }}
+                style={{ 
+                  display: 'flex', flexDirection: 'column', gap: 2,
+                  background: activeAudioTrackId === track.id ? 'var(--color-surface-glass)' : 'transparent',
+                  padding: '4px 6px', borderRadius: 4, margin: '0 -6px',
+                  border: activeAudioTrackId === track.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
+                  cursor: 'pointer'
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <input
