@@ -1,9 +1,105 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { fetchBunnyAssets, type BunnyAsset } from '@/lib/bunnyStorage'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
 import { downloadFile } from '@/lib/downloadHandler'
 import { Type, Layers, Film, ImageIcon, Download, Sparkles, Plus, Combine, Music } from 'lucide-react'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(useGSAP)
+
+function LazyAssetCard({ 
+  asset, 
+  cloudId, 
+  videoSrc, 
+  isVideo, 
+  isAudio, 
+  onDownload, 
+  onAdd 
+}: { 
+  asset: BunnyAsset; cloudId: string; videoSrc: string; isVideo: boolean; isAudio: boolean;
+  onDownload: () => void; onAdd: () => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true)
+        // Keep it loaded once it enters view
+        observer.disconnect()
+      }
+    }, { rootMargin: '200px' }) // load when 200px near viewport
+    
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div 
+      ref={containerRef}
+      className="glass-panel asset-card" 
+      style={{
+        borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer',
+        opacity: 0, transform: 'translateY(20px)' // Initial state for GSAP
+      }} 
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.transform = 'translateY(-4px)'; 
+        e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; 
+        if(videoRef.current && inView) videoRef.current.play().catch(()=>{}); 
+      }} 
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.transform = 'none'; 
+        e.currentTarget.style.boxShadow = 'none'; 
+        if(videoRef.current) { videoRef.current.pause(); videoRef.current.currentTime=0; } 
+      }}
+    >
+      {isAudio ? (
+        <div style={{ width: '100%', padding: '24px 16px', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-surface-border)' }}>
+          <audio controls src={videoSrc} style={{ width: '100%' }} preload="none" />
+        </div>
+      ) : (
+        <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+          {isVideo ? (
+            inView ? (
+              <video ref={videoRef} src={videoSrc} muted playsInline preload="auto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : null
+          ) : (
+            <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+              <ImageIcon size={32} color="var(--color-text-muted)" />
+            </div>
+          )}
+          <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8 }}>
+            <button onClick={(e) => { e.stopPropagation(); onDownload(); }} className="icon-button" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} title="Download Original">
+              <Download size={14} color="#fff" />
+            </button>
+          </div>
+        </div>
+      )}
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {asset.ObjectName}
+        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+          <span>{(asset.Length / 1024 / 1024).toFixed(2)} MB</span>
+          <span>{new Date(asset.LastChanged).toLocaleDateString()}</span>
+        </div>
+        <button 
+          onClick={onAdd} 
+          style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4, transition: 'all 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-accent)'; e.currentTarget.style.color = '#000'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-hover)'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
+        >
+          <Plus size={14} /> {isAudio ? 'Usar como Áudio' : 'Usar na Composição'}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 const TABS = [
   { id: 'Tipografia', label: 'Tipografia', icon: Type },
@@ -65,6 +161,20 @@ export function LibraryPreview() {
     if (activeLibraryTab === 'Generativo') return item.type === 'generative'
     return false
   })
+
+  // GSAP Entrance Animation
+  useGSAP(() => {
+    if (assets.length > 0) {
+      gsap.to('.asset-card', {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.05,
+        ease: 'power3.out',
+        clearProps: 'transform' // allow hover effects to take over
+      })
+    }
+  }, [assets])
 
   return (
     <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', paddingBottom: 64 }}>
@@ -192,7 +302,7 @@ export function LibraryPreview() {
             Nenhum arquivo encontrado nesta categoria.
           </div>
         ) : (
-          <div style={{
+          <div className="assets-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: 24
@@ -200,63 +310,35 @@ export function LibraryPreview() {
             {assets.map((asset) => {
               const cloudId = `${activeLibraryTab}/${asset.ObjectName}`
               const isVideo = asset.ObjectName.endsWith('.mp4') || asset.ObjectName.endsWith('.mov')
+              const isAudio = activeLibraryTab === 'Audio'
               const pullZone = import.meta.env.VITE_BUNNY_STORAGE_ZONE
               const videoSrc = `https://${pullZone}.b-cdn.net/${cloudId}`
               
               return (
-                <div key={cloudId} className="glass-panel" style={{
-                  borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer'
-                }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; const v = e.currentTarget.querySelector('video'); if(v) v.play().catch(()=>{}); }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; const v = e.currentTarget.querySelector('video'); if(v) { v.pause(); v.currentTime=0; } }}>
-                  {activeLibraryTab === 'Audio' ? (
-                    <div style={{ width: '100%', padding: '24px 16px', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--color-surface-border)' }}>
-                      <audio controls src={videoSrc} style={{ width: '100%' }} preload="none" />
-                    </div>
-                  ) : (
-                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                      {isVideo ? (
-                        <video src={videoSrc} muted playsInline preload="none" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                          <ImageIcon size={32} color="var(--color-text-muted)" />
-                        </div>
-                      )}
-                      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8 }}>
-                        <button onClick={(e) => { e.stopPropagation(); handleDownload(asset); }} className="icon-button" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} title="Download Original">
-                          <Download size={14} color="#fff" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {asset.ObjectName}
-                    </h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                      <span>{(asset.Length / 1024 / 1024).toFixed(2)} MB</span>
-                      <span>{new Date(asset.LastChanged).toLocaleDateString()}</span>
-                    </div>
-                    {activeLibraryTab === 'Audio' ? (
-                       <button onClick={() => {
-                          const newAudioTrack = {
-                            id: crypto.randomUUID(),
-                            name: asset.ObjectName,
-                            src: videoSrc,
-                            startTime: 0,
-                            duration: exportConfig.duration,
-                            volume: 1,
-                          };
-                          useEditorStore.getState().addAudioTrack(newAudioTrack);
-                          setActivePanel('composition');
-                       }} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
-                         <Plus size={14} /> Usar como Áudio
-                       </button>
-                    ) : (
-                       <button onClick={() => handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
-                         <Plus size={14} /> Usar na Composição
-                       </button>
-                    )}
-                  </div>
-                </div>
+                <LazyAssetCard
+                  key={cloudId}
+                  asset={asset}
+                  cloudId={cloudId}
+                  videoSrc={videoSrc}
+                  isVideo={isVideo}
+                  isAudio={isAudio}
+                  onDownload={() => handleDownload(asset)}
+                  onAdd={() => {
+                    if (isAudio) {
+                      useEditorStore.getState().addAudioTrack({
+                        id: crypto.randomUUID(),
+                        name: asset.ObjectName,
+                        src: videoSrc,
+                        startTime: 0,
+                        duration: exportConfig.duration,
+                        volume: 1,
+                      })
+                      setActivePanel('composition')
+                    } else {
+                      handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')
+                    }
+                  }}
+                />
               )
             })}
           </div>
