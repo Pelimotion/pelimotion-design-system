@@ -66,15 +66,10 @@ function runPersonaEvaluations() {
   reports.dev_senior = {
     persona: 'dev_senior',
     timestamp: dateStr,
-    evaluation: `### [DEV SENIOR REPORT] Technical Feasibility & Performance
-*   **WebCodecs Deep Copy Fix:** validated in STATUS.md. Resolves detach issues.
-*   **Canvas Scaling & Camera Pan/Zoom:** Zustand mapping and CSS transform scale fits standard architecture, preventing bounding distortions.
-*   **Performance risks observed:**
-    *   Multi-track audio buffering processing on fallback FFmpeg.wasm can cause heap growth if files are large.
-    *   Zustand state triggers need selector audits to ensure fast timeline drag-and-drop scrubs.
-*   **Proposed optimizations:**
-    *   Implement WebAudio API Offscreen Graph for multi-track audio mixing.
-    *   Introduce strict memoization on canvas layer elements in CompositionPreview.`
+    evaluation: `### [DEV SENIOR REPORT] Technical Feasibility & Performance (Modules 1-3)
+*   **Typography:** GSAP SplitText is functioning, but DOM node cloning for trails can cause severe memory bloat. We need strict cleanup logic on component unmount and debounce on text input.
+*   **Generative SVG:** Custom GSAP ticker with PosterizeTime is efficient, but Simplex noise calculations on the JS thread might block main thread if node count exceeds 500. Consider moving Simplex to a Web Worker.
+*   **Library:** Local persistence mapping via localLibraryItems and globalLibraryItems works, but loading large video blobs into memory without pagination will cause browser crashes. Need virtualized scrolling and objectURL cleanup.`
   };
 
   // CEO Evaluation
@@ -82,14 +77,10 @@ function runPersonaEvaluations() {
   reports.ceo = {
     persona: 'ceo',
     timestamp: dateStr,
-    evaluation: `### [CEO REPORT] Business Strategy & Value Proposition
-*   **Zero-Server Rendering (ZSR):** High-value market differentiator. Competitors like Canva or Runway charge high rendering fees due to server workloads. Pelimotion ZSR costs $0 in rendering servers.
-*   **Enterprise targets:**
-    *   Offer local-only processing mode for corporate compliance.
-    *   White-label templates integration capability for agency accounts.
-*   **Monetization vectors:**
-    *   Sell premium preset packs natively or integrate Edge CDN subscriptions.
-    *   Develop API hooks for automated creative banner generation.`
+    evaluation: `### [CEO REPORT] Business Strategy (Modules 1-3)
+*   **Typography:** The lettering engine is our core appeal for social media marketers. We must ensure robust, glitch-free typography presets that compete with After Effects.
+*   **Generative SVG:** Unique generative patterns (wiggles, noise) provide a "differentiator" against static Canva templates. Emphasize this capability for enterprise branding.
+*   **Library:** The ability to seamlessly mix local and edge-cloud assets keeps users engaged. Ensure the BunnyCDN sync is bulletproof so premium users feel their assets are secure.`
   };
 
   // SEO Evaluation
@@ -97,14 +88,9 @@ function runPersonaEvaluations() {
   reports.seo = {
     persona: 'seo',
     timestamp: dateStr,
-    evaluation: `### [SEO REPORT] Indexability & Core Web Vitals
-*   **Current State:** v2.1 sidebar optimized, debug cards removed (good for initial page load and layout shift prevention).
-*   **On-Page SEO checklist status:**
-    *   Lighthouse score targets 100/100.
-    *   programmatic zipper strategy (Service + City) can drive organic search traffic for terms like "Cinematic Motion Templates Toronto", "Visual Banner Generator São Paulo".
-*   **Action items:**
-    *   Generate programmatic sitemap index listing dynamically created templates.
-    *   Enforce loading="lazy" and fetchpriority="high" for hero layouts.`
+    evaluation: `### [SEO REPORT] Indexability (Modules 1-3)
+*   **Typography & Generative:** Since these are canvas/WebGL heavy, they are invisible to search engines. We must generate static HTML/CSS fallbacks or server-side pre-rendered snapshots of popular generative typography templates for indexation.
+*   **Library:** Public templates in the library need dedicated, canonical URLs (e.g., /templates/generative-neon-text) with descriptive meta tags.`
   };
 
   // Product Designer Evaluation
@@ -112,12 +98,10 @@ function runPersonaEvaluations() {
   reports.product_designer = {
     persona: 'product_designer',
     timestamp: dateStr,
-    evaluation: `### [PRODUCT DESIGNER REPORT] User Experience & UI Aesthetics
-*   **Bento UI & Glassmorphism:** v2.1 details feel premium. Thin lines and HSL controls are extremely polished.
-*   **Navigation Check:** Spatial camera zoom/pan is incredibly interactive. The \`--inverse-scale\` custom variable is a brilliant solution for holding toolbars stable.
-*   **Friction areas identified:**
-    *   Timeline track trim is clean, but needs better visual indicators (glows/stretching handles) when dragged.
-    *   Full-page gallery in LibraryPreview needs clean transition states (fade-in / view transitions) when swapping panels.`
+    evaluation: `### [PRODUCT DESIGNER REPORT] User Experience (Modules 1-3)
+*   **Typography:** Text editing inline needs to feel like Figma. Currently, text property controls (HSL, thin lines) need better alignment in the Bento grid.
+*   **Generative SVG:** Users need a visual, intuitive "Wiggle/Noise Intensity" slider. Math-heavy parameters (Amplitude, Frequency) should be abstracted into friendly names like "Wildness" and "Speed".
+*   **Library:** Full-page gallery preview is good, but needs drag-and-drop support directly from the Library to the Composition canvas with micro-animations.`
   };
 
   // Senior Analyst Evaluation
@@ -125,12 +109,10 @@ function runPersonaEvaluations() {
   reports.analista_senior = {
     persona: 'analista_senior',
     timestamp: dateStr,
-    evaluation: `### [ANALYST REPORT] Telemetry & Flow Performance
-*   **Export Funnel Track:** Need to track drops during export (e.g. user triggers MP4 but closes before completion).
-*   **WebCodecs Fail Rate:** WebCodecs is highly device-dependent. Track and log error counts to trigger WASM fallback automatically.
-*   **Action items:**
-    *   Setup local telemetry interface inside \`src/lib/telemetry.ts\` using a privacy-first collector.
-    *   Correlate export times with canvas layers complexity.`
+    evaluation: `### [ANALYST REPORT] Telemetry (Modules 1-3)
+*   **Typography:** Track which font families and GSAP easing curves are used most frequently to prioritize future premium preset packs.
+*   **Generative SVG:** Log the average number of nodes generated before user framerate drops below 30fps.
+*   **Library:** Track upload failure rates to BunnyCDN and local file loading times to detect UX friction.`
   };
 
   // Creative Director Evaluation
@@ -138,12 +120,10 @@ function runPersonaEvaluations() {
   reports.diretor_criacao = {
     persona: 'diretor_criacao',
     timestamp: dateStr,
-    evaluation: `### [CREATIVE DIRECTOR REPORT] Motion Curves & Visual Feeling
-*   **Kinetic Typography Presets:** Trails and split-text animation feel modern, but need more curve options (elastic easings, bounce effects).
-*   **Generative SVGs:** Simplex noise organic wiggles are beautiful. Add tritonal color gradient maps directly mapping onto active layers.
-*   **WOW Factor enhancement:**
-    *   Integrate a motion blur overlay preset during canvas exports.
-    *   Allow timeline audio cues visualizer to sync wiggles with frequency beats.`
+    evaluation: `### [CREATIVE DIRECTOR REPORT] Visual Feeling (Modules 1-3)
+*   **Typography:** Trails are currently too flat. We need organic fade-outs, variable opacity on trails, and elastic overshoot on letter appearances.
+*   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
+*   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.`
   };
 
   // Save reports
@@ -166,24 +146,24 @@ function crossAnalyzeInsights(reports) {
 
   // Dev vs Creative Director Conflict (Performance vs WOW Factor)
   conflicts.push({
-    title: 'Visual Noise Blur vs Render Speed',
+    title: 'Generative Simplex Performance vs Visual Richness',
     parties: ['dev_senior', 'diretor_criacao'],
-    description: 'Creative Director requests motion blur overlays and audio-synced noise wiggles; Dev Senior notes that canvas filter rendering and real-time audio FFT updates during DOM-to-Canvas capture will increase render time and memory heap, threatening browser stability.',
-    compromise: 'Implement dynamic quality tiers. Allow motion blur to render during final export only (using CPU/GPU acceleration options) while displaying raw tracks during editor playback.'
+    description: 'Creative Director requests tritonal gradient maps and chromatic aberration on Generative SVG edges; Dev Senior warns that calculating Simplex noise and applying heavy CSS/SVG filters simultaneously will drop framerates below 30fps and bloat the DOM.',
+    compromise: 'Move Simplex noise generation to a Web Worker and render the Generative SVGs directly to an OffscreenCanvas instead of polluting the DOM, then apply filters natively on the canvas.'
   });
 
   // SEO vs Product Designer Synergy
   synergies.push({
-    title: 'Lighthouse Page Speed & Minimal Bento UI',
+    title: 'Server-Side Snapshot Gallery',
     parties: ['seo', 'product_designer'],
-    description: 'Product Designer\'s clean, modular Bento UI removes bulky assets and debug scripts, which perfectly aligns with SEO targets of achieving a 100/100 Lighthouse performance rating by dropping unused resources.'
+    description: 'Product Designer\'s need for auto-playing Library previews aligns with SEO\'s need for static pre-rendered snapshots. Generating high-quality WebP sequences or static snapshots serves both the visual gallery and Google Image Indexing.'
   });
 
   // CEO vs Analyst Synergy
   synergies.push({
-    title: 'ZSR Performance Pitch',
+    title: 'Telemetry-Driven Typography Premium Packs',
     parties: ['ceo', 'analista_senior'],
-    description: 'Analyst\'s export metrics and error logging data can be used directly by the CEO to prove Zero-Server Rendering (ZSR) stability and cost-efficiency to enterprise customers.'
+    description: 'Analyst\'s tracking of the most used Typography fonts and GSAP curves directly feeds the CEO\'s monetization strategy to build and sell highly targeted premium typography preset packs.'
   });
 
   return { conflicts, synergies };
@@ -221,11 +201,11 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (Fase 9.0 Recomendada)\n\n`;
-  markdown += `- [ ] **Otimização de Timeline:** Melhorar a precisão física e visual dos trims de track (Product Designer + Dev Sênior).\n`;
-  markdown += `- [ ] **Mapeamento de Easing & Motion Blur:** Adicionar filtros e curvas GSAP elásticas (Creative Director).\n`;
-  markdown += `- [ ] **Interface de Telemetria Local:** Logger silencioso de performance e falhas do WebCodecs (Analista + Dev Sênior).\n`;
-  markdown += `- [ ] **Validador Automático do Lighthouse:** Script de verificação contínua pré-commit (SEO).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (Foco: Módulos 1, 2 e 3)\n\n`;
+  markdown += `- [ ] **Typography & Memory:** Implementar debounce rigoroso no input de texto e otimizar limpeza do DOM para os efeitos de Trail (Dev Sênior).\n`;
+  markdown += `- [ ] **Generative Offscreen Engine:** Migrar os cálculos de Simplex Noise para Web Worker e a renderização para OffscreenCanvas, permitindo os filtros tritonais (Dev Sênior + Diretor de Criação).\n`;
+  markdown += `- [ ] **Library Virtualization & UX:** Adicionar scroll virtualizado para a Galeria de Assets e implementar drag-and-drop fluído com animações do painel direto para a composição (Product Designer + Dev Sênior).\n`;
+  markdown += `- [ ] **Typography Dynamics:** Adicionar variáveis de overshoot elástico, fade-outs e mapeamento de opacidade no Timeline Factory do texto (Diretor de Criação).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

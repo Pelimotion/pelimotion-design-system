@@ -462,10 +462,19 @@ export function TypographyPreview({ overrideConfig }: { overrideConfig?: any }) 
 
           if (!cloneRefs.current[layer.id]) cloneRefs.current[layer.id] = [];
 
+          // Create a layer-specific animKey to avoid rebuilding all layers when only one changes
+          const layerAnimKey = JSON.stringify({
+            forceKey: animForceKey,
+            text: layer.text,
+            font: [layer.fontFamily, layer.fontWeight, layer.fontSize, layer.letterSpacing, layer.lineHeight, layer.fontStyle, layer.textTransform, layer.color, layer.textAlign],
+            anim: layer.animation,
+            trail: trailConf.enabled ? trailConf : null,
+          });
+
           return (
             <LayerNode
               key={layer.id}
-              animKey={animKey}
+              animKey={layerAnimKey}
               layer={layer}
               trailConf={trailConf}
               isSelected={isSelected}

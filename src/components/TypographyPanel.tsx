@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import type {
@@ -212,13 +212,30 @@ function LayerSection({
   const fontesPadrao = ['Inter', 'Space Grotesk', 'Playfair Display', 'Syne', 'JetBrains Mono', 'Bebas Neue'];
   const todasFontes = [...new Set([...fontesPadrao, ...availableFonts])];
 
+  const [localText, setLocalText] = useState(layer.text);
+
+  useEffect(() => {
+    if (localText !== layer.text) {
+      setLocalText(layer.text);
+    }
+  }, [layer.text]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (localText !== layer.text) {
+        updateLayer({ text: localText });
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [localText]);
+
   return (
     <>
       {/* Text input */}
       <Campo label="Texto" dica="O conteúdo de texto desta camada.">
         <textarea
-          value={layer.text}
-          onChange={(e) => updateLayer({ text: e.target.value })}
+          value={localText}
+          onChange={(e) => setLocalText(e.target.value)}
           placeholder="Digite aqui..."
           rows={2}
           style={{
