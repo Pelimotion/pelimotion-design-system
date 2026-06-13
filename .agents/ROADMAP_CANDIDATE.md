@@ -62,6 +62,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 5)
 
-- [ ] **Headless Audio Engine:** Criar um componente silencioso `<AudioEngine />` em `App.tsx` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).
-- [ ] **Z-Index Visual Hierarchy:** Atualizar `CompositionPreview.tsx` para injetar `zIndex: compositionLayers.length - index` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).
-- [ ] **Auto-Save Telemetry:** Adicionar um `useEditorStore.subscribe` passivo dentro de `App.tsx` para realizar um backup debounceado no `localStorage` contra crashes indesejados (Analista + CEO).
+- [x] **Headless Audio Engine:** Criar um componente silencioso `<AudioEngine />` em `App.tsx` que espelha as faixas de áudio e as sincroniza milimetricamente com o tempo global e o status de play/pause (Dev Sênior).
+- [x] **Z-Index Visual Hierarchy:** Atualizar `CompositionPreview.tsx` para injetar `zIndex: compositionLayers.length - index` em cada nó, ativando a reordenação visual da Timeline no canvas (Product Designer).
+- [x] **Auto-Save Telemetry:** Adicionar um `useEditorStore.subscribe` passivo dentro de `App.tsx` para realizar um backup debounceado no `localStorage` contra crashes indesejados (Analista + CEO).

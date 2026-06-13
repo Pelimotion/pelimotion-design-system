@@ -19,6 +19,7 @@ import { GenerativePreview } from '@/engines/Generative/GenerativePreview'
 import { LibraryPreview } from '@/engines/Library/LibraryPreview'
 import { CompositionPreview } from '@/engines/Composition/CompositionPreview'
 import { ExportPreview } from '@/engines/Export/ExportPreview'
+import { AudioEngine } from '@/engines/Audio/AudioEngine'
 import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
 import { ViewportControls } from '@/components/ViewportControls'
@@ -107,6 +108,31 @@ function App() {
 
   const targetW = parseInt(exportConfig.resolution?.split('x')[0] || '1920', 10)
   const targetH = parseInt(exportConfig.resolution?.split('x')[1] || '1080', 10)
+
+  // ─── Auto-Save Persistence (Crash Recovery) ──────────────────────────────
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    const unsubscribe = useEditorStore.subscribe((state) => {
+      // Debounce the save to LocalStorage
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        try {
+          const payload = JSON.stringify({
+            compositionLayers: state.compositionLayers,
+            audioTracks: state.audioTracks,
+            exportConfig: state.exportConfig
+          });
+          localStorage.setItem('pelimotion_autosave', payload);
+        } catch (err) {
+          console.warn('[Auto-Save] Error persisting state', err);
+        }
+      }, 5000);
+    });
+    return () => {
+      unsubscribe();
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   // ─── Spatial Navigation (Pan & Zoom) ───────────────────────────────────────
   const isSpaceDown = useRef(false);
@@ -687,6 +713,9 @@ function App() {
           <span>Apple Silicon Optimized</span>
         </footer>
       </main>
+      
+      {/* Headless Audio Engine - Plays globally regardless of active panel */}
+      <AudioEngine />
     </div>
   )
 }
