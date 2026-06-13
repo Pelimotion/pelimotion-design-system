@@ -528,6 +528,8 @@ export interface CompositionLayer {
   hidden?: boolean;
   /** Whether the layer is locked from editing */
   locked?: boolean;
+  /** Color label for timeline organization */
+  colorTag?: string;
 }
 
 export interface AudioTrack {
@@ -547,10 +549,15 @@ export interface AudioTrack {
   /** Fade In duration in seconds */
   fadeIn?: number;
   /** Fade Out duration in seconds */
+  /** Fade Out duration in seconds */
   fadeOut?: number;
   /** Muted */
   muted?: boolean;
+  /** Soloed (only soloed tracks play if any is true) */
+  solo?: boolean;
   /** Locked */
   locked?: boolean;
+  /** Color label for timeline organization */
+  colorTag?: string;
 }
 
