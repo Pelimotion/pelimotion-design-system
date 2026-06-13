@@ -1,14 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
-import type { CompositionLayer } from '@/types/motion.types';
+import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
 
 export function CompositionTimeline() {
   const { 
     compositionLayers, 
+    audioTracks,
     removeCompositionLayer, 
     updateCompositionLayer,
     addCompositionLayer,
+    addAudioTrack,
+    removeAudioTrack,
+    updateAudioTrack,
     localLibraryItems,
     exportConfig,
     updateExportConfig,
@@ -23,7 +27,7 @@ export function CompositionTimeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Interaction State
-  const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean } | null>(null);
+  const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
   const [pixelsPerSecond, setPixelsPerSecond] = useState(10); // default
 
   // Update scale based on container width
@@ -53,10 +57,10 @@ export function CompositionTimeline() {
   };
 
   // --- Pointer Event Handlers ---
-  const handlePointerDown = (e: React.PointerEvent, id: string, type: 'move' | 'trim-left' | 'trim-right', isBg?: boolean) => {
+  const handlePointerDown = (e: React.PointerEvent, id: string, type: 'move' | 'trim-left' | 'trim-right', isBg?: boolean, isAudio?: boolean) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragging({ id, type, isBg });
+    setDragging({ id, type, isBg, isAudio });
   };
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -83,6 +87,20 @@ export function CompositionTimeline() {
        } else if (dragging.type === 'trim-right') {
          updateExportConfig({ bgTrimEnd: Math.max(time, trimStart + 0.1) });
        }
+    } else if (dragging.isAudio) {
+       const track = audioTracks.find(t => t.id === dragging.id);
+       if (!track) return;
+
+       if (dragging.type === 'move') {
+          updateAudioTrack(dragging.id, { startTime: Math.min(time, exportConfig.duration - track.duration) });
+       } else if (dragging.type === 'trim-left') {
+          const endTime = track.startTime + track.duration;
+          const newStart = Math.min(time, endTime - 0.1);
+          updateAudioTrack(dragging.id, { startTime: newStart, duration: endTime - newStart });
+       } else if (dragging.type === 'trim-right') {
+          const newDur = Math.max(0.1, time - track.startTime);
+          updateAudioTrack(dragging.id, { duration: newDur });
+       }
     } else {
        // Composition Layer
        const layer = compositionLayers.find(l => l.id === dragging.id);
@@ -99,7 +117,7 @@ export function CompositionTimeline() {
           updateCompositionLayer(dragging.id, { duration: newDur });
        }
     }
-  }, [dragging, pixelsPerSecond, exportConfig, compositionLayers, updateExportConfig, updateCompositionLayer]);
+  }, [dragging, pixelsPerSecond, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek]);
 
   const handlePointerUp = useCallback(() => {
     setDragging(null);
@@ -228,6 +246,37 @@ export function CompositionTimeline() {
             }}
           >
             <Plus size={12} /> Adicionar Peça
+          </button>
+          
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <button
+            onClick={() => {
+               // Simulate importing an audio track
+               const fakeAudioTrack: AudioTrack = {
+                 id: crypto.randomUUID(),
+                 name: 'Soundtrack (Demo)',
+                 src: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b8173432.mp3?filename=cinematic-time-lapse-115672.mp3',
+                 startTime: 0,
+                 duration: exportConfig.duration,
+                 volume: 0.5,
+               };
+               addAudioTrack(fakeAudioTrack);
+            }}
+            style={{
+              background: 'var(--color-surface-glass)',
+              color: 'var(--color-text-primary)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 4,
+              padding: '4px 8px',
+              fontSize: '0.7rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            <Music size={12} /> Add Áudio
           </button>
         </div>
       </div>
@@ -395,6 +444,51 @@ export function CompositionTimeline() {
                      <div className={getHandleClass(layer.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-right')}>
                         {dragging?.id === layer.id && dragging?.type === 'trim-right' && (
                           <div style={tooltipStyle}>{(layer.startTime + layer.duration).toFixed(2)}s</div>
+                        )}
+                     </div>
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Audio Tracks */}
+        {audioTracks.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 24, borderTop: '1px solid var(--color-surface-border)', paddingTop: 16 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Music size={10} /> Faixas de Áudio
+            </div>
+            {audioTracks.map((track, index) => (
+              <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
+                  <span>Áudio {index + 1}: {track.name}</span>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <button onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}>
+                      {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+                    </button>
+                    <button onClick={() => removeAudioTrack(track.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 8 }}>
+                      <Trash2 size={10} />
+                    </button>
+                  </div>
+                </div>
+                <div style={trackStyle}>
+                   <div 
+                      className="timeline-track-block"
+                      style={blockStyle(track.startTime, track.duration, 'rgba(0, 255, 100, 0.2)')}
+                      onPointerDown={(e) => handlePointerDown(e, track.id, 'move', false, true)}
+                   >
+                     <div className={getHandleClass(track.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-left', false, true)}>
+                        {dragging?.id === track.id && dragging?.type === 'trim-left' && (
+                          <div style={tooltipStyle}>{track.startTime.toFixed(2)}s</div>
+                        )}
+                     </div>
+                     <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>
+                       {track.startTime.toFixed(1)}s - {(track.startTime + track.duration).toFixed(1)}s
+                     </span>
+                     <div className={getHandleClass(track.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-right', false, true)}>
+                        {dragging?.id === track.id && dragging?.type === 'trim-right' && (
+                          <div style={tooltipStyle}>{(track.startTime + track.duration).toFixed(2)}s</div>
                         )}
                      </div>
                    </div>

@@ -28,6 +28,7 @@ import type {
   LayerTargetMode,
   LayerOpacityMode,
   CompositionLayer,
+  AudioTrack,
 } from '@/types/motion.types'
 import type { ColorPalette } from '@/config/color-palettes'
 
@@ -76,6 +77,10 @@ interface EditorState {
   activeCompositionLayerId: string | null;
   currentTime: number;
   isPlaying: boolean;
+
+  // Audio State
+  audioTracks: AudioTrack[];
+  activeAudioTrackId: string | null;
 
   // Local Library State (Session only)
   localLibraryItems: any[]; // Or LibraryLocalItem[] if imported
@@ -157,6 +162,12 @@ interface EditorState {
   reorderCompositionLayers: (startIndex: number, endIndex: number) => void;
   seek: (time: number) => void;
   togglePlayback: () => void;
+
+  // Audio Actions
+  addAudioTrack: (track: AudioTrack) => void;
+  removeAudioTrack: (id: string) => void;
+  updateAudioTrack: (id: string, patch: Partial<AudioTrack>) => void;
+  setActiveAudioTrackId: (id: string | null) => void;
 
   // Local Font actions
   fetchLocalFonts: () => Promise<void>;
@@ -263,6 +274,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   activeCompositionLayerId: null,
   currentTime: 0,
   isPlaying: false,
+
+  // Audio initial state
+  audioTracks: [],
+  activeAudioTrackId: null,
 
   // Local Library State (Session only)
   localLibraryItems: [],
@@ -640,6 +655,29 @@ export const useEditorStore = create<EditorState>((set) => ({
   seek: (time) => set({ currentTime: time }),
   
   togglePlayback: () => set((state) => ({ isPlaying: !state.isPlaying })),
+
+  // ─── Audio Actions ─────────────────────────────────────────────────────
+
+  addAudioTrack: (track) =>
+    set((state) => ({
+      audioTracks: [...state.audioTracks, track],
+      activeAudioTrackId: track.id,
+    })),
+
+  removeAudioTrack: (id) =>
+    set((state) => ({
+      audioTracks: state.audioTracks.filter((t) => t.id !== id),
+      activeAudioTrackId: state.activeAudioTrackId === id ? null : state.activeAudioTrackId,
+    })),
+
+  updateAudioTrack: (id, patch) =>
+    set((state) => ({
+      audioTracks: state.audioTracks.map((t) =>
+        t.id === id ? { ...t, ...patch } : t
+      ),
+    })),
+
+  setActiveAudioTrackId: (id) => set({ activeAudioTrackId: id }),
 
   // ─── Local Font Actions ────────────────────────────────────────────────
 

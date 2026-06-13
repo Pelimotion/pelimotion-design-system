@@ -529,3 +529,24 @@ export interface CompositionLayer {
   /** Whether the layer is locked from editing */
   locked?: boolean;
 }
+
+export interface AudioTrack {
+  id: string;
+  name: string;
+  src: string;
+  /** Start time in the composition (seconds) */
+  startTime: number;
+  /** Full duration of the audio (seconds) */
+  duration: number;
+  /** Trim start offset (seconds) */
+  trimStart?: number;
+  /** Trim end offset (seconds) */
+  trimEnd?: number;
+  /** Volume 0.0 to 1.0 */
+  volume: number;
+  /** Muted */
+  muted?: boolean;
+  /** Locked */
+  locked?: boolean;
+}
+
