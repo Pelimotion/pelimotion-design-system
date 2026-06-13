@@ -61,6 +61,6 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 8)
 
-- [ ] **Layer Locking Mechanism:** Atualizar `CompositionLayer` e `CompositionTimeline.tsx` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).
-- [ ] **Track Opacity Slider:** Embutir um `<input type="range">` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da `layer.transform.opacity` (Diretor de Criação).
-- [ ] **Timeline Scale Zoom:** Refatorar o container das tracks com `overflowX: auto` e um controle mestre de `zoom` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).
+- [x] **Layer Locking Mechanism:** Atualizar `CompositionLayer` e `CompositionTimeline.tsx` adicionando Ícones de Cadeado para impedir modificações de blocos na track (Analista + Product Designer).
+- [x] **Track Opacity Slider:** Embutir um `<input type="range">` minimalista (0 a 1) por faixa na Timeline para controle rápido de transparência da `layer.transform.opacity` (Diretor de Criação).
+- [x] **Timeline Scale Zoom:** Refatorar o container das tracks com `overflowX: auto` e um controle mestre de `zoom` permitindo alargar as réguas milimetricamente em durações longas (Dev Sênior).

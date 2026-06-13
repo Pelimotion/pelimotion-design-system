@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
 
@@ -26,6 +26,7 @@ export function CompositionTimeline() {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
+  const [timelineZoom, setTimelineZoom] = useState(100);
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
@@ -85,6 +86,14 @@ export function CompositionTimeline() {
 
   // --- Pointer Event Handlers ---
   const handlePointerDown = (e: React.PointerEvent, id: string, type: 'move' | 'trim-left' | 'trim-right', isBg?: boolean, isAudio?: boolean) => {
+    if (isAudio) {
+      const track = audioTracks.find(t => t.id === id);
+      if (track?.locked) return;
+    } else if (!isBg) {
+      const layer = compositionLayers.find(l => l.id === id);
+      if (layer?.locked) return;
+    }
+    
     e.preventDefault();
     e.stopPropagation();
     setDragging({ id, type, isBg, isAudio });
@@ -286,6 +295,19 @@ export function CompositionTimeline() {
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Zoom:</span>
+            <input
+              type="range"
+              min="100" max="500"
+              value={timelineZoom}
+              onChange={(e) => setTimelineZoom(Number(e.target.value))}
+              style={{ width: 50, outline: 'none' }}
+            />
+          </div>
+
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</span>
             <input
               type="number"
@@ -377,15 +399,17 @@ export function CompositionTimeline() {
 
       {/* TIMELINE AREA */}
       <div 
-        ref={containerRef}
         style={{ 
           background: 'var(--color-bg-elevated)', 
           border: '1px solid var(--color-surface-border)', 
           borderRadius: 8, 
           padding: '12px 12px 24px 12px',
-          position: 'relative'
+          position: 'relative',
+          overflowX: 'auto',
+          overflowY: 'hidden'
         }}
       >
+        <div ref={containerRef} style={{ width: `${timelineZoom}%`, position: 'relative' }}>
         {/* Timeline Axis Ruler */}
         <div 
           style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--color-text-ghost)', borderBottom: '1px solid var(--color-surface-border)', paddingBottom: 4, cursor: 'pointer', userSelect: 'none', position: 'relative', height: 20 }}
@@ -462,6 +486,19 @@ export function CompositionTimeline() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
                   <span>Track {index + 1}: {layer.name}</span>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <input 
+                      type="range" min="0" max="1" step="0.05" 
+                      value={layer.transform.opacity} 
+                      onChange={(e) => updateCompositionLayer(layer.id, { transform: { ...layer.transform, opacity: Number(e.target.value) } })} 
+                      style={{ width: 40 }} title="Opacidade" 
+                    />
+                    <button 
+                      onClick={() => updateCompositionLayer(layer.id, { locked: !layer.locked })} 
+                      style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title={layer.locked ? "Desbloquear camada" : "Bloquear camada"}
+                    >
+                      {layer.locked ? <Lock size={12} /> : <Unlock size={12} />}
+                    </button>
                     <button 
                       onClick={() => index > 0 && reorderCompositionLayers(index, index - 1)} 
                       disabled={index === 0} 
@@ -523,8 +560,21 @@ export function CompositionTimeline() {
             {audioTracks.map((track, index) => (
               <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
-                  <span>Áudio {index + 1}: {track.name}</span>
+                  <span>Áudio: {track.name}</span>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <input 
+                      type="range" min="0" max="1" step="0.05" 
+                      value={track.volume} 
+                      onChange={(e) => updateAudioTrack(track.id, { volume: Number(e.target.value) })} 
+                      style={{ width: 40 }} title="Volume" 
+                    />
+                    <button 
+                      onClick={() => updateAudioTrack(track.id, { locked: !track.locked })} 
+                      style={{ background: 'none', border: 'none', color: track.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title={track.locked ? "Desbloquear faixa" : "Bloquear faixa"}
+                    >
+                      {track.locked ? <Lock size={12} /> : <Unlock size={12} />}
+                    </button>
                     <button onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}>
                       {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
                     </button>
@@ -563,6 +613,7 @@ export function CompositionTimeline() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
