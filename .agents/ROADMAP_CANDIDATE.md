@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 18:40:51*
-*Current Commit Hash: `81dc86f`*
+*Generated at: 13/06/2026, 19:00:05*
+*Current Commit Hash: `4c1d1e3`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
@@ -58,5 +58,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 12)
 
-- [x] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das `compositionLayers` e `audioTracks` ao sofrerem duplo clique na `CompositionTimeline.tsx` (Product Designer).
-- [x] **Global Export Framerate (FPS):** Adicionar um `<select>` (24, 30, 60 FPS) no painel de cabeçalho da `CompositionTimeline.tsx`, ligado a `exportConfig.fps` da Store (Dev Senior).
+- [ ] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das `compositionLayers` e `audioTracks` ao sofrerem duplo clique na `CompositionTimeline.tsx` (Product Designer).
+- [ ] **Global Export Framerate (FPS):** Adicionar um `<select>` (24, 30, 60 FPS) no painel de cabeçalho da `CompositionTimeline.tsx`, ligado a `exportConfig.fps` da Store (Dev Senior).
