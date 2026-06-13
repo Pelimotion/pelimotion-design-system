@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 18:21:02*
-*Current Commit Hash: `9d40f59`*
+*Generated at: 13/06/2026, 18:40:06*
+*Current Commit Hash: `2d71aba`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
@@ -58,5 +58,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 11)
 
-- [x] **Playhead Split Tool:** Inserir botão de Tesoura (`Scissors`) nas tracks de Timeline. A lógica verifica se `currentTime` está dentro do intervalo da layer. Se sim, reduz a `duration` da primeira parte, clona a layer criando a segunda parte com `startTime = currentTime` (Product Designer).
-- [x] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).
+- [ ] **Playhead Split Tool:** Inserir botão de Tesoura (`Scissors`) nas tracks de Timeline. A lógica verifica se `currentTime` está dentro do intervalo da layer. Se sim, reduz a `duration` da primeira parte, clona a layer criando a segunda parte com `startTime = currentTime` (Product Designer).
+- [ ] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).
