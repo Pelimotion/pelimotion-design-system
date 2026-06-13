@@ -211,12 +211,12 @@ export interface TypoLayerTransform {
 /** Animation preset names for entry transitions */
 export type EntryPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleIn'
   | 'rotateIn' | 'blurIn' | 'typewriter' | 'elastic' | 'glitch' | 'reveal' | 'splitFlip' | 'custom'
-  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop';
+  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop' | 'bounceIn' | 'elasticWhip';
 
 /** Animation preset names for exit transitions */
 export type ExitPreset = 'fadeUp' | 'fadeDown' | 'slideLeft' | 'slideRight' | 'scaleOut'
   | 'rotateOut' | 'blurOut' | 'dissolve' | 'reveal' | 'custom'
-  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop';
+  | 'brutalSlam' | 'blurStretch' | 'elegantWipe' | 'kineticChop' | 'bounceOut' | 'elasticSnap';
 
 /** Direction from which stagger cascades */
 export type StaggerFrom = 'start' | 'end' | 'center' | 'edges' | 'random';
@@ -497,6 +497,7 @@ export interface ExportConfig {
   overlayY: number;
   bgTrimStart?: number;
   bgTrimEnd?: number;
+  enableMotionBlur?: boolean;
 }
 
 // ─── Composition State ───────────────────────────────────────────────────────

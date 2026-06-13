@@ -11,7 +11,7 @@ import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
 gsap.registerPlugin(useGSAP, Draggable)
 
 export function CompositionPreview() {
-  const { activePanel, compositionLayers, localLibraryItems, currentTime, isPlaying, activeCompositionLayerId, setActiveCompositionLayerId } = useEditorStore()
+  const { activePanel, compositionLayers, localLibraryItems, currentTime, isPlaying, activeCompositionLayerId, setActiveCompositionLayerId, exportConfig } = useEditorStore()
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({})
 
@@ -144,7 +144,7 @@ export function CompositionPreview() {
   }
 
   return (
-    <div ref={containerRef} onClick={handleContainerClick} style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div ref={containerRef} onClick={handleContainerClick} style={{ width: '100%', height: '100%', position: 'relative', filter: (exportConfig.enableMotionBlur && isPlaying) ? 'blur(0.8px) contrast(1.1)' : 'none', transition: 'filter 0.1s ease' }}>
       {compositionLayers.length === 0 ? (
         activePanel !== 'export' && (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

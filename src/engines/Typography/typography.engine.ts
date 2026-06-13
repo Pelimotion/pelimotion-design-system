@@ -49,6 +49,8 @@ const ENTRY_PRESETS: Record<EntryPreset, AnimProps> = {
   blurStretch:{ x: -100, y: 0,    scale: 1.2,  rotation: 0,   blur: 24, opacity: 0, skewX: -15,skewY: 0 },
   elegantWipe:{ x: 0,    y: 15,   scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, clipPath: 'inset(100% 0% 0% 0%)' },
   kineticChop:{ x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, rotateX: 90 },
+  bounceIn:   { x: 0,    y: -100, scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0 },
+  elasticWhip:{ x: -150, y: 0,    scale: 0.5,  rotation: -45, blur: 20, opacity: 0, skewX: -20,skewY: 0 },
 };
 
 const EXIT_PRESETS: Record<ExitPreset, AnimProps> = {
@@ -66,6 +68,8 @@ const EXIT_PRESETS: Record<ExitPreset, AnimProps> = {
   blurStretch:{ x: 100,  y: 0,    scale: 1.2,  rotation: 0,   blur: 24, opacity: 0, skewX: 15, skewY: 0 },
   elegantWipe:{ x: 0,    y: -15,  scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, clipPath: 'inset(0% 0% 100% 0%)' },
   kineticChop:{ x: 0,    y: 0,    scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0, rotateX: -90 },
+  bounceOut:  { x: 0,    y: 100,  scale: 1,    rotation: 0,   blur: 0,  opacity: 0, skewX: 0,  skewY: 0 },
+  elasticSnap:{ x: 150,  y: 0,    scale: 0.5,  rotation: 45,  blur: 20, opacity: 0, skewX: 20, skewY: 0 },
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -178,6 +182,31 @@ export function createEntryTimeline(
     return tl;
   }
 
+  // ── BounceIn: Bouncy Drop ──────────────────────────────────────────────
+  if (anim.entryPreset === 'bounceIn') {
+    gsap.set(targets, { autoAlpha: 0, y: -100 });
+    tl.to(targets, {
+      autoAlpha: 1, y: 0,
+      duration: anim.entryDuration,
+      ease: 'bounce.out',
+      stagger,
+    });
+    return tl;
+  }
+
+  // ── ElasticWhip: Snappy whip from the side ─────────────────────────────
+  if (anim.entryPreset === 'elasticWhip') {
+    gsap.set(targets, { autoAlpha: 0, x: -150, scale: 0.5, rotation: -45, skewX: -20, filter: 'blur(20px)' });
+    tl.to(targets, {
+      autoAlpha: 1, x: 0, scale: 1, rotation: 0, skewX: 0, filter: 'blur(0px)',
+      duration: anim.entryDuration,
+      ease: 'elastic.out(1.2, 0.4)',
+      stagger,
+      clearProps: 'filter',
+    });
+    return tl;
+  }
+
   // ── Standard presets: fromTo with blur as filter ─────────────────────────
   const fromVars: gsap.TweenVars = {
     autoAlpha: props.opacity,
@@ -217,6 +246,28 @@ export function createExitTimeline(
       clipPath: 'inset(0% 0% 110% 0%)',
       duration: anim.exitDuration,
       ease: anim.exitEase,
+      stagger,
+    });
+    return tl;
+  }
+
+  // ── BounceOut: Drop away ───────────────────────────────────────────────
+  if (anim.exitPreset === 'bounceOut') {
+    tl.to(targets, {
+      autoAlpha: 0, y: 100,
+      duration: anim.exitDuration,
+      ease: 'bounce.in',
+      stagger,
+    });
+    return tl;
+  }
+
+  // ── ElasticSnap: Snappy whip out ───────────────────────────────────────
+  if (anim.exitPreset === 'elasticSnap') {
+    tl.to(targets, {
+      autoAlpha: 0, x: 150, scale: 0.5, rotation: 45, skewX: 20, filter: 'blur(20px)',
+      duration: anim.exitDuration,
+      ease: 'elastic.in(1.2, 0.4)',
       stagger,
     });
     return tl;

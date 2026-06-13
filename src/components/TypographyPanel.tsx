@@ -361,13 +361,13 @@ function LayerSection({
 // ─── Animation Section ────────────────────────────────────────────────────────
 
 const ENTRY_PRESET_LABELS: Record<EntryPreset, string> = {
-  fadeUp: 'Sobe Suave',
-  fadeDown: 'Desce Suave',
-  slideLeft: 'Desliza da Direita',
-  slideRight: 'Desliza da Esquerda',
-  scaleIn: 'Zoom Interno',
-  rotateIn: 'Rotaciona Entrando',
-  blurIn: 'Desfoque',
+  fadeUp: 'Surgir Cima',
+  fadeDown: 'Surgir Baixo',
+  slideLeft: 'Deslizar Esq.',
+  slideRight: 'Deslizar Dir.',
+  scaleIn: 'Aumentar',
+  rotateIn: 'Girar',
+  blurIn: 'Focar',
   typewriter: 'Máquina de Escrever',
   elastic: 'Elástico',
   glitch: 'Glitch Digital',
@@ -378,6 +378,8 @@ const ENTRY_PRESET_LABELS: Record<EntryPreset, string> = {
   blurStretch: 'Blur Stretch',
   elegantWipe: 'Elegant Wipe',
   kineticChop: 'Kinetic Chop',
+  bounceIn: 'Quicar Entrada',
+  elasticWhip: 'Chicote Elástico'
 };
 
 const EXIT_PRESET_LABELS: Record<ExitPreset, string> = {
@@ -395,6 +397,8 @@ const EXIT_PRESET_LABELS: Record<ExitPreset, string> = {
   blurStretch: 'Blur Stretch',
   elegantWipe: 'Elegant Wipe',
   kineticChop: 'Kinetic Chop',
+  bounceOut: 'Quicar Saída',
+  elasticSnap: 'Estalo Elástico'
 };
 
 const SPLIT_MODE_LABELS: Record<SplitMode, string> = {

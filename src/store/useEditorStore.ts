@@ -251,6 +251,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     overlayY: 0,
     bgTrimStart: 0,
     bgTrimEnd: 0,
+    enableMotionBlur: false,
   },
   exportState: initialExportState,
 
