@@ -45,3 +45,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T17-01-17-066Z** | `backup-branch-2026-06-13T17-01-17-066Z` | `62378ba` | 13/06/2026, 14:01:17 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T17-18-14-124Z** | `backup-branch-2026-06-13T17-18-14-124Z` | `8a2fd76` | 13/06/2026, 14:18:14 | Typography Memory: Debounce rigoroso no input de texto e otimização de React Keys para SplitText Trails |
 | **restore-2026-06-13T17-20-41-059Z** | `backup-branch-2026-06-13T17-20-41-059Z` | `31cff28` | 13/06/2026, 14:20:41 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T17-21-37-856Z** | `backup-branch-2026-06-13T17-21-37-856Z` | `87023a7` | 13/06/2026, 14:21:37 | Library Virtualization: Lazy-loading com IntersectionObserver e stagger de entrada GSAP |

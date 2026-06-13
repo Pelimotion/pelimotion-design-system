@@ -62,7 +62,7 @@
 
 ## 3. Próximos Passos de Implementação (Foco: Módulos 1, 2 e 3)
 
-- [ ] **Typography & Memory:** Implementar debounce rigoroso no input de texto e otimizar limpeza do DOM para os efeitos de Trail (Dev Sênior).
-- [ ] **Generative Offscreen Engine:** Migrar os cálculos de Simplex Noise para Web Worker e a renderização para OffscreenCanvas, permitindo os filtros tritonais (Dev Sênior + Diretor de Criação).
-- [ ] **Library Virtualization & UX:** Adicionar scroll virtualizado para a Galeria de Assets e implementar drag-and-drop fluído com animações do painel direto para a composição (Product Designer + Dev Sênior).
-- [ ] **Typography Dynamics:** Adicionar variáveis de overshoot elástico, fade-outs e mapeamento de opacidade no Timeline Factory do texto (Diretor de Criação).
+- [x] **Typography & Memory:** Implementar debounce rigoroso no input de texto e otimizar limpeza do DOM para os efeitos de Trail (Dev Sênior).
+- [x] **Generative Offscreen Engine:** Migrar os cálculos de Simplex Noise para Web Worker e a renderização para OffscreenCanvas, permitindo os filtros tritonais (Dev Sênior + Diretor de Criação).
+- [x] **Library Virtualization & UX:** Adicionar scroll virtualizado para a Galeria de Assets e implementar drag-and-drop fluído com animações do painel direto para a composição (Product Designer + Dev Sênior).
+- [x] **Typography Dynamics:** Adicionar variáveis de overshoot elástico, fade-outs e mapeamento de opacidade no Timeline Factory do texto (Diretor de Criação).

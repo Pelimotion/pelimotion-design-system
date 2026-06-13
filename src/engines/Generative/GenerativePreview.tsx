@@ -234,6 +234,39 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
     noiseType, seed, propertyFps, propertyAmplitudes, propertyFrequencies, isPlaying
   ])
 
+  // ── Web Worker OffscreenCanvas Boot ──────────────────────────────────────────
+  const workerRef = useRef<Worker | null>(null)
+  const canvasRefs = useRef<Map<string, HTMLCanvasElement>>(new Map())
+
+  useEffect(() => {
+    if (!window.OffscreenCanvas) return;
+    workerRef.current = new Worker(new URL('./generative.worker.ts', import.meta.url), { type: 'module' });
+
+    generativeLayers.forEach((layer: any) => {
+      const canvas = canvasRefs.current.get(layer.id);
+      if (canvas && !canvas.dataset.workerInit) {
+        const offscreen = canvas.transferControlToOffscreen();
+        workerRef.current?.postMessage({
+          type: 'INIT',
+          payload: { canvas: offscreen, config: { ...motionConfig.wiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' } }
+        }, [offscreen]);
+        canvas.dataset.workerInit = 'true';
+      } else if (canvas) {
+        workerRef.current?.postMessage({
+          type: 'UPDATE_CONFIG',
+          payload: { ...motionConfig.wiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
+        });
+      }
+    });
+
+    if (isPlaying) workerRef.current.postMessage({ type: 'START' });
+    else workerRef.current.postMessage({ type: 'STOP' });
+
+    return () => {
+      if (workerRef.current) workerRef.current.terminate();
+    };
+  }, [generativeLayers, motionConfig.wiggle, isPlaying]);
+
   // ── Play / Pause ──────────────────────────────────────────────────────────────
   useEffect(() => {
     driversRef.current.forEach(d => {
@@ -411,9 +444,20 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
                     dangerouslySetInnerHTML={{ __html: svgString }}
                   />
                 ) : (
-                  <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-                    {renderGenerativeShape(layer, shapeColor)}
-                  </svg>
+                  <>
+                    <canvas
+                      ref={(el) => {
+                        if (el) canvasRefs.current.set(layer.id, el)
+                        else canvasRefs.current.delete(layer.id)
+                      }}
+                      width={200}
+                      height={200}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+                    />
+                    <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" overflow="visible" style={{ opacity: layer.colorMode === 'tritone' ? 0 : 1 }}>
+                      {renderGenerativeShape(layer, shapeColor)}
+                    </svg>
+                  </>
                 )}
               </div>
             </div>

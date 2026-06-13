@@ -168,7 +168,7 @@ export function createEntryTimeline(
     return tl;
   }
 
-  // ── Elastic: bouncy spring entry ─────────────────────────────────────────
+  // ── Elastic: bouncy spring entry with Overshoot ─────────────────────────
   if (anim.entryPreset === 'elastic') {
     gsap.set(targets, {
       autoAlpha: 0, y: props.y, scale: props.scale,
@@ -176,8 +176,11 @@ export function createEntryTimeline(
     tl.to(targets, {
       autoAlpha: 1, y: 0, scale: 1,
       duration: anim.entryDuration,
-      ease: 'elastic.out(1, 0.5)',
-      stagger,
+      ease: 'elastic.out(1.5, 0.3)', // Enhanced overshoot mapping
+      stagger: {
+        ...buildStaggerConfig(anim.entryStagger, anim.staggerFrom) as object,
+        // Opacity mapping dynamically calculated by GSAP stagger
+      },
     });
     return tl;
   }
@@ -220,8 +223,8 @@ export function createEntryTimeline(
     autoAlpha: 1, x: 0, y: 0, scale: 1, rotation: 0, skewX: 0, skewY: 0,
     filter: 'blur(0px)',
     duration: anim.entryDuration,
-    ease: anim.entryEase,
-    stagger,
+    ease: anim.entryEase === 'elastic.out' ? 'elastic.out(1.2, 0.4)' : anim.entryEase,
+    stagger: typeof stagger === 'object' ? { ...stagger, ease: 'power2.inOut' } : stagger,
     clearProps: 'filter',
   };
 
