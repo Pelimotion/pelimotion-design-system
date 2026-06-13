@@ -362,6 +362,21 @@ export function CompositionTimeline() {
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>FPS:</span>
+            <select
+              value={exportConfig.fps}
+              onChange={(e) => updateExportConfig({ fps: Number(e.target.value) })}
+              style={{ background: 'transparent', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.7rem', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value={24} style={{ color: 'black' }}>24</option>
+              <option value={30} style={{ color: 'black' }}>30</option>
+              <option value={60} style={{ color: 'black' }}>60</option>
+            </select>
+          </div>
+
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
             <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</span>
             <input
               type="number"
@@ -540,7 +555,16 @@ export function CompositionTimeline() {
             {compositionLayers.map((layer, index) => (
               <div key={layer.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
-                  <span>Track {index + 1}: {layer.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span>{index + 1}:</span>
+                    <input
+                      value={layer.name}
+                      onChange={(e) => updateCompositionLayer(layer.id, { name: e.target.value })}
+                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120 }}
+                      onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+                      onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
+                    />
+                  </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <input 
                       type="range" min="0" max="1" step="0.05" 
@@ -642,7 +666,15 @@ export function CompositionTimeline() {
             {audioTracks.map((track) => (
               <div key={track.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
-                  <span>Áudio: {track.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <input
+                      value={track.name}
+                      onChange={(e) => updateAudioTrack(track.id, { name: e.target.value })}
+                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120 }}
+                      onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+                      onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
+                    />
+                  </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-base)', padding: '2px 4px', borderRadius: 4, gap: 4, marginRight: 4 }}>
                       <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>In</span>

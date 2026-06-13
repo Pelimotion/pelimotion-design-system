@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\n\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 11)...\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 12)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
-  // Product Designer vs Dev Senior Synergy
+  // Product Designer vs Analyst Synergy
   synergies.push({
-    title: 'Playhead Split Tool (Scissors)',
-    parties: ['product_designer', 'dev_senior'],
-    description: 'Usuários precisam fatiar um clipe ou áudio ao meio de forma cirúrgica. Vamos adicionar um botão "Split" (Tesoura) nos cabeçalhos das tracks. Ele divide a camada ativa no exato "currentTime" da agulha.'
+    title: 'Inline Layer Renaming',
+    parties: ['product_designer', 'analista_senior'],
+    description: 'Usuários perdem a organização quando o projeto escala. Permitir duplo clique no nome da camada na Timeline para renomeá-la via input inline é fundamental.'
   });
 
-  // CEO vs Creative Director Synergy
+  // Dev Senior vs CEO Synergy
   synergies.push({
-    title: 'Custom Font Uploading',
-    parties: ['ceo', 'diretor_criacao'],
-    description: 'Marcas corporativas têm fontes proprietárias que não estão no Google Fonts. A aba de Tipografia precisa de um botão de upload para injetar `.ttf` ou `.otf` via Web Font API localmente em tempo real.'
+    title: 'Global Export Framerate (FPS)',
+    parties: ['dev_senior', 'ceo'],
+    description: 'O projeto suporta taxa de quadros variável por baixo dos panos, mas falta o seletor na interface principal. Adicionar controle de FPS (24, 30, 60) no cabeçalho mestre.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 11)\n\n`;
-  markdown += `- [ ] **Playhead Split Tool:** Inserir botão de Tesoura (\`Scissors\`) nas tracks de Timeline. A lógica verifica se \`currentTime\` está dentro do intervalo da layer. Se sim, reduz a \`duration\` da primeira parte, clona a layer criando a segunda parte com \`startTime = currentTime\` (Product Designer).\n`;
-  markdown += `- [ ] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 12)\n\n`;
+  markdown += `- [ ] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das \`compositionLayers\` e \`audioTracks\` ao sofrerem duplo clique na \`CompositionTimeline.tsx\` (Product Designer).\n`;
+  markdown += `- [ ] **Global Export Framerate (FPS):** Adicionar um \`<select>\` (24, 30, 60 FPS) no painel de cabeçalho da \`CompositionTimeline.tsx\`, ligado a \`exportConfig.fps\` da Store (Dev Senior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

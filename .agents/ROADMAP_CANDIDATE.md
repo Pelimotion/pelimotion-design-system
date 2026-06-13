@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 18:40:06*
-*Current Commit Hash: `2d71aba`*
+*Generated at: 13/06/2026, 18:40:51*
+*Current Commit Hash: `81dc86f`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Playhead Split Tool (Scissors)** (product_designer + dev_senior):
-  - *Descrição:* Usuários precisam fatiar um clipe ou áudio ao meio de forma cirúrgica. Vamos adicionar um botão "Split" (Tesoura) nos cabeçalhos das tracks. Ele divide a camada ativa no exato "currentTime" da agulha.
+- **Inline Layer Renaming** (product_designer + analista_senior):
+  - *Descrição:* Usuários perdem a organização quando o projeto escala. Permitir duplo clique no nome da camada na Timeline para renomeá-la via input inline é fundamental.
 
-- **Custom Font Uploading** (ceo + diretor_criacao):
-  - *Descrição:* Marcas corporativas têm fontes proprietárias que não estão no Google Fonts. A aba de Tipografia precisa de um botão de upload para injetar `.ttf` ou `.otf` via Web Font API localmente em tempo real.
+- **Global Export Framerate (FPS)** (dev_senior + ceo):
+  - *Descrição:* O projeto suporta taxa de quadros variável por baixo dos panos, mas falta o seletor na interface principal. Adicionar controle de FPS (24, 30, 60) no cabeçalho mestre.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 11)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 12)
 
-- [ ] **Playhead Split Tool:** Inserir botão de Tesoura (`Scissors`) nas tracks de Timeline. A lógica verifica se `currentTime` está dentro do intervalo da layer. Se sim, reduz a `duration` da primeira parte, clona a layer criando a segunda parte com `startTime = currentTime` (Product Designer).
-- [ ] **Custom Font Uploading:** Inserir um botão de Upload Font em TypographyPanel. O evento FileReader lê o arquivo, cria um font-face via JS puro no head e adiciona o nome à Store de availableFonts (Diretor de Criação).
+- [x] **Inline Layer Renaming:** Adicionar campo de input no lugar do span de nome das `compositionLayers` e `audioTracks` ao sofrerem duplo clique na `CompositionTimeline.tsx` (Product Designer).
+- [x] **Global Export Framerate (FPS):** Adicionar um `<select>` (24, 30, 60 FPS) no painel de cabeçalho da `CompositionTimeline.tsx`, ligado a `exportConfig.fps` da Store (Dev Senior).
