@@ -8,24 +8,40 @@ Bem-vindo ao **Pelimotion Design System**! Este guia prático foi criado para en
 
 A área de trabalho do Pelimotion é limpa e focada em resultados. Ela é dividida em três setores principais:
 
-1. **Painel Central (Preview em Tempo Real):** É o coração do sistema. Todas as suas mudanças refletem instantaneamente aqui. O que você vê no preview será exatamente o que o sistema vai exportar.
+1. **Painel Central (Preview & Câmera Espacial):** É o coração do sistema. Todas as suas mudanças refletem instantaneamente aqui. Além da visualização em tempo real, este painel abriga os controles de **Câmera Espacial** e uma barra de ferramentas no centro inferior com:
+   - **Feedback de Zoom:** Mostra a porcentagem atual de magnificação do canvas (de 10% a 1000%).
+   - **Botões de Lupa:** Atalhos rápidos para dar Zoom In, Zoom Out e redefinir para 100%.
+   - **Fit to Screen (Enquadrar):** Ajusta automaticamente o zoom para centralizar e encaixar perfeitamente a composição no espaço visível da tela.
+   - **Reset Transform (🔄):** Um botão de ação rápida que aparece ao selecionar uma camada (Tipografia ou Generativa), permitindo zerar sua rotação, escala e translação instantaneamente caso ocorram distorções ou inversões indesejadas.
 2. **Barra Lateral Esquerda (Navegação):** É onde você escolhe a "ferramenta" do momento:
    - *Tipografia:* Para criar e configurar textos animados e títulos de impacto.
    - *Generativo:* Para gerar e customizar formas orgânicas e ícones baseados em SVG e motores de ruído.
-   - *Biblioteca:* O seu acervo de presets locais e arquivos finalizados salvos em nuvem.
+   - *Biblioteca:* Abre a galeria de assets em tela cheia na área central para visualização detalhada.
    - *Composição:* O centro de controle da cena (onde se define resolução, duração, FPS e fundos de vídeo/imagem/cor sólida).
    - *Exportar:* Onde você inicia o pipeline de render do projeto para arquivos MP4, MOV ou PNG.
 3. **Barra Lateral Direita (Controles):** O painel de ajustes finos. Ali ficam todos os botões e controles deslizantes para definir cor, velocidade, efeitos e comportamento das camadas ativas.
 
 ---
 
-## 📝 2. Passo a Passo: Sua Primeira Arte Animada
+## 🕹️ 2. Navegação Inteligente (Câmera Espacial)
+
+Para facilitar a edição de detalhes minuciosos e a organização da cena, você possui controle absoluto sobre a posição e zoom do canvas:
+- **Zoom com Mouse/Trackpad:** Segure a tecla `Ctrl` (Windows) ou `Cmd` (Mac) e gire a rodinha do mouse ou use o gesto de pinça no trackpad.
+- **Arrastar a Tela (Pan):** 
+  - **Método 1:** Mantenha a **Barra de Espaço** pressionada e clique e arraste com o botão esquerdo do mouse.
+  - **Método 2:** Clique e arraste usando o **Botão do Meio do Mouse (Scroll Click)**.
+- **Retornar ao Centro:** Se você navegar para muito longe e perder a composição de vista, basta clicar em **100%** ou no botão de **Fit to Screen (ícone de Maximizar)** na barra inferior para centralizá-la instantaneamente.
+
+---
+
+## 📝 3. Passo a Passo: Sua Primeira Arte Animada
 
 ### 🧩 A. Explorando o Módulo de Tipografia
 O módulo de tipografia é projetado para fazer letras brilharem com efeitos orgânicos.
 - **O Texto Inicial:** Na barra direita, encontre a caixa de texto e digite sua mensagem (Exemplo: "BEM-VINDO").
 - **Tamanho e Peso:** Use os controles de escala (*Scale*) e peso da fonte (*Font Weight*). A fonte fluida reage lindamente a pesos extremados (muito fina ou muito grossa).
 - **O Superpoder do Efeito "Trail":** Ligue a chave **Ativar Rastro (Trail)**. Isso criará "ecos" coloridos que seguem a palavra principal, fundindo cores de fundo (Mix Blend Mode) de um jeito que antes só o After Effects conseguia fazer!
+- **Escala Proporcional Perfeita:** Os textos se redimensionam perfeitamente baseados no tamanho do canvas, garantindo que a exportação final mantenha a proporção idêntica ao preview.
 
 ### 🎨 B. O Módulo Generativo (Formas e Ícones)
 Aqui as formas livres tomam vida, flutuando como se estivessem em um ambiente natural.
@@ -35,7 +51,7 @@ Aqui as formas livres tomam vida, flutuando como se estivessem em um ambiente na
 
 ---
 
-## 🎬 3. Configuração de Cena & Exportação
+## 🎬 4. Configuração de Cena & Exportação
 
 Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo final:
 
@@ -50,16 +66,18 @@ Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo fina
    - **Vídeo MP4:** O formato ideal e leve para mídias sociais. *Atenção: requer um vídeo ou imagem de fundo ativo.*
    - **Vídeo MOV (Com Alpha):** A ferramenta favorita dos editores de vídeo, gerando o render com fundo transparente (canal Alpha). Ideal para sobreposições em softwares de edição externos.
    - **Sequência PNG (ZIP):** Exporta todos os frames da timeline como arquivos PNG individuais agrupados em um ZIP de alta qualidade.
-3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística e fará o download automático em sua máquina.
+3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística, garantindo fluidez e compatibilidade de codecs, e fará o download automático em sua máquina.
 
 ---
 
-## ☁️ 4. A Biblioteca Integrada (Nuvem e Presets)
+## ☁️ 5. A Biblioteca Integrada (Galeria Bento Grid em Tela Cheia)
 
-O Pelimotion conta com um acervo integrado de peças de design:
-- **Assets da Nuvem (BunnyCDN):** Nos catálogos de "Logo" e "Transição", você encontra arquivos de vídeo `.MOV` e `.MP4` hospedados direto na nossa estrutura Bunny Edge Storage, com suporte a pré-visualização no painel e botão de injeção instantânea na timeline da Composição.
-- **Biblioteca de Presets Criados:** Os estilos e configurações criados nos módulos de Tipografia e Generativo podem ser adicionados como camadas independentes na Composição por meio do botão "Add Comp".
-- **Trabalho Sem Sobrecarga:** Desativamos o upload automático de vídeos exportados na nuvem do BunnyCDN a cada exportação. Isso garante downloads locais imediatos e economiza banda de rede durante renderizações experimentais.
+O Pelimotion conta com um acervo integrado de peças de design em formato de Grid de Galeria expansiva:
+- **Autoplay Inteligente:** Na aba da Biblioteca (Nuvem / Bunny CDN), passe o mouse sobre os cards de vídeo para reproduzir um preview rápido do movimento instantaneamente.
+- **Downloads Diretos:** Baixe qualquer asset original da nuvem clicando no ícone de download no topo direito do card.
+- **Inserção Direta na Timeline ("Usar na Composição"):** Clique no botão do asset para injetá-lo na sua timeline como uma nova camada de composição.
+- **Presets Originais e Sessão:** Acesse presets prontos de Tipografia (como Neon Trail, Tech Glitch) na aba *Original Presets*, ou reuse layouts customizados que você salvou durante a navegação na aba *Salvos na Sessão*.
+- **Sem Lentidão na Nuvem:** Desativamos o envio automático obrigatório a cada render local. Você tem controle total de onde e quando salvar seus arquivos.
 
 ---
 

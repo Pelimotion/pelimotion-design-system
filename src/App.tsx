@@ -5,7 +5,6 @@ import {
   Layers,
   Film,
   Download,
-  Settings,
   ChevronLeft,
   ChevronRight,
   Zap,
@@ -13,7 +12,6 @@ import {
 } from 'lucide-react'
 import { TypographyPanel } from '@/components/TypographyPanel'
 import { GenerativePanel } from '@/components/GenerativePanel'
-import { LibraryPanel } from '@/components/LibraryPanel'
 import { CompositionPanel } from '@/components/CompositionPanel'
 import { ExportPanel } from '@/components/ExportPanel'
 import { TypographyPreview } from '@/engines/Typography'
@@ -23,11 +21,16 @@ import { CompositionPreview } from '@/engines/Composition/CompositionPreview'
 import { ExportPreview } from '@/engines/Export/ExportPreview'
 import { TopToolbar } from '@/components/TopToolbar'
 import { GlobalGizmo } from '@/components/GlobalGizmo'
+import { ViewportControls } from '@/components/ViewportControls'
 import { CompositionTimeline } from '@/components/CompositionTimeline'
 import { CanvasGuides } from '@/components/CanvasGuides'
 import React, { useState, useEffect, useRef } from 'react'
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { COLOR_PALETTES } from '@/config/color-palettes'
+import { gsap } from 'gsap'
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(useGSAP)
 
 // ─── Navigation Items ────────────────────────────────────────────────────────
 
@@ -56,9 +59,8 @@ function App() {
     setActivePanel,
     sidebarCollapsed,
     toggleSidebar,
-    posterizeEnabled,
-    posterizeFps,
     exportConfig,
+    camera,
   } = useEditorStore()
 
   const [sidebarWidth, setSidebarWidth] = useState(320)
@@ -90,40 +92,147 @@ function App() {
     }
   }, [])
 
-  const [scaleFactor, setScaleFactor] = useState(1)
+  const [tick, setTick] = useState(0)
   const viewportRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!viewportRef.current) return
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width: cw, height: ch } = entry.contentRect
-        const targetW = parseInt(exportConfig.resolution?.split('x')[0] || '1920', 10)
-        const targetH = parseInt(exportConfig.resolution?.split('x')[1] || '1080', 10)
-        
-        const padding = 64
-        const availableW = cw - padding
-        const availableH = ch - padding
-        
-        const sX = availableW / targetW
-        const sY = availableH / targetH
-        setScaleFactor(Math.min(sX, sY, 1))
-      }
-    })
-    ro.observe(viewportRef.current)
-    return () => ro.disconnect()
-  }, [exportConfig.resolution])
+    const updateSize = () => {
+      setTick(t => t + 1)
+    }
+    window.addEventListener('resize', updateSize)
+    updateSize()
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
 
   const targetW = parseInt(exportConfig.resolution?.split('x')[0] || '1920', 10)
   const targetH = parseInt(exportConfig.resolution?.split('x')[1] || '1080', 10)
+
+  // ─── Spatial Navigation (Pan & Zoom) ───────────────────────────────────────
+  const isSpaceDown = useRef(false);
+  const isPanning = useRef(false);
+  const lastPanPos = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent default space scroll only if not typing in an input
+      if (e.code === 'Space' && (e.target === document.body || (e.target as HTMLElement).tagName !== 'INPUT')) {
+        e.preventDefault();
+        if (!isSpaceDown.current) {
+          isSpaceDown.current = true;
+          if (viewportRef.current) viewportRef.current.style.cursor = 'grab';
+        }
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        isSpaceDown.current = false;
+        isPanning.current = false;
+        if (viewportRef.current) viewportRef.current.style.cursor = 'default';
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault(); // Prevent native zoom/scroll
+      const state = useEditorStore.getState();
+      const currentCamera = state.camera;
+
+      if (e.ctrlKey || e.metaKey) {
+        // Zoom
+        const zoomSensitivity = 0.005;
+        const newZ = Math.max(0.1, Math.min(10, currentCamera.z - e.deltaY * zoomSensitivity));
+        state.setCamera({ z: newZ });
+      } else {
+        // Pan
+        state.setCamera({
+          x: currentCamera.x - e.deltaX * 1.5,
+          y: currentCamera.y - e.deltaY * 1.5
+        });
+      }
+    };
+
+    // Passive false is crucial for e.preventDefault() to work on wheel
+    viewport.addEventListener('wheel', handleWheel, { passive: false });
+    return () => viewport.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isSpaceDown.current || e.button === 1) { // Space + Click or Middle Click
+      isPanning.current = true;
+      lastPanPos.current = { x: e.clientX, y: e.clientY };
+      if (viewportRef.current) viewportRef.current.style.cursor = 'grabbing';
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (isPanning.current) {
+      const dx = e.clientX - lastPanPos.current.x;
+      const dy = e.clientY - lastPanPos.current.y;
+      lastPanPos.current = { x: e.clientX, y: e.clientY };
+      const state = useEditorStore.getState();
+      state.setCamera({
+        x: state.camera.x + dx,
+        y: state.camera.y + dy
+      });
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isPanning.current) {
+      isPanning.current = false;
+      if (viewportRef.current) viewportRef.current.style.cursor = isSpaceDown.current ? 'grab' : 'default';
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  useGSAP(() => {
+    if (activePanel === 'library') return;
+    
+    let fitScale = 1;
+    if (typeof targetW === 'number' && typeof targetH === 'number') {
+      const availableW = window.innerWidth - 320 - 48; // Sidebar + padding
+      const availableH = window.innerHeight - 80 - 48; // Header + padding
+      fitScale = Math.min(availableW / targetW, availableH / targetH);
+    }
+    
+    const finalScale = camera.z * fitScale;
+    document.documentElement.style.setProperty('--inverse-scale', (1 / finalScale).toString());
+    
+    gsap.set('#canvas-fixed-resolution', {
+      x: camera.x,
+      y: camera.y,
+      xPercent: -50,
+      yPercent: -50,
+      scale: finalScale,
+      transformOrigin: '50% 50%'
+    });
+  }, [camera, targetW, targetH, activePanel, tick]);
 
   const canvasArea = (
     <div
       id="canvas-viewport"
       ref={viewportRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       className="glass-panel animate-fade-in stagger-2 animate-pulse-glow"
       style={{
         flex: 1,
+        minWidth: 0,
+        minHeight: 0,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -131,23 +240,31 @@ function App() {
         overflow: 'hidden',
         backgroundColor: 'var(--color-bg-primary)',
         borderRadius: 'var(--radius-lg)',
+        touchAction: 'none', // Prevent browser gestures on the canvas
       }}
     >
+      {activePanel !== 'library' && <ViewportControls />}
+      {activePanel === 'library' ? (
+        <div style={{ position: 'absolute', inset: 0, padding: 32, overflowY: 'auto', background: 'var(--color-bg-primary)' }} className="custom-scrollbar">
+          <LibraryPreview />
+        </div>
+      ) : (
       <div
         id="canvas-fixed-resolution"
         style={{
           width: targetW,
           height: targetH,
-          transform: `scale(${scaleFactor})`,
-          transformOrigin: 'center center',
-          position: 'relative',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
           overflow: 'hidden',
           backgroundColor: exportConfig.backgroundColor,
           boxShadow: '0 0 0 1px rgba(255,255,255,0.05)',
+          containerType: 'inline-size', // Enables cqw for Typography and other layers
         }}
       >
       {/* Background Media Layer */}
-      {activePanel !== 'export' && activePanel !== 'library' && exportConfig.backgroundImageUrl && (
+      {activePanel !== 'export' && exportConfig.backgroundImageUrl && (
         <>
           {exportConfig.backgroundType === 'image' ? (
             <img
@@ -227,8 +344,6 @@ function App() {
           <TypographyPreview />
         ) : activePanel === 'generative' ? (
           <GenerativePreview />
-        ) : activePanel === 'library' ? (
-          <LibraryPreview />
         ) : activePanel === 'composition' ? (
           <CompositionPreview />
         ) : activePanel === 'export' ? (
@@ -307,6 +422,7 @@ function App() {
         )}
       </div>
       </div>
+      )}
     </div>
   )
 
@@ -462,7 +578,6 @@ function App() {
             <div style={{ flex: 1, overflow: 'hidden', padding: 16, display: 'flex', flexDirection: 'column' }}>
               {activePanel === 'typography' && <TypographyPanel />}
               {activePanel === 'generative' && <GenerativePanel />}
-              {activePanel === 'library' && <LibraryPanel />}
               {activePanel === 'composition' && <CompositionPanel />}
               {activePanel === 'export' && <ExportPanel />}
               {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'composition' && activePanel !== 'export' && (
@@ -481,48 +596,6 @@ function App() {
             </div>
           </>
         )}
-
-        {/* Footer: Config Status */}
-        {!sidebarCollapsed && (
-          <div style={{
-            padding: '12px 16px',
-            borderTop: '1px solid var(--color-surface-border)',
-          }}>
-            <div className="config-card animate-fade-in stagger-3" style={{ marginBottom: 8 }}>
-              <div className="config-card__label">Config Loaded</div>
-              <div className="config-card__value" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}>
-                <span style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: 'var(--color-success)',
-                  display: 'inline-block',
-                  boxShadow: '0 0 8px hsla(157, 100%, 40%, 0.4)',
-                }} />
-                global-motion.json
-              </div>
-            </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 0 0',
-            }}>
-              <Settings size={14} color="var(--color-text-ghost)" />
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                color: 'var(--color-text-ghost)',
-              }}>
-                Posterize: {posterizeEnabled ? `${posterizeFps}fps` : 'OFF'}
-              </span>
-            </div>
-          </div>
-        )}
       </aside>
 
       {/* ─── Main Content Area ────────────────────────────────────────────── */}
@@ -530,6 +603,8 @@ function App() {
         id="main-content"
         style={{
           flex: 1,
+          minWidth: 0,
+          minHeight: 0,
           margin: 8,
           display: 'flex',
           flexDirection: 'column',

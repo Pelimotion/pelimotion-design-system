@@ -5,7 +5,7 @@
  * Renders the Background and the Foreground (Typography/Generative)
  * applying the selected aspect ratio and transformations.
  */
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { TypographyPreview } from '@/engines/Typography'
 import { GenerativePreview } from '@/engines/Generative/GenerativePreview'
@@ -19,6 +19,21 @@ export function ExportPreview() {
   const [wStr, hStr] = (exportConfig.resolution || "1920x1080").split('x') as [string, string]
   const width = parseInt(wStr, 10)
   const height = parseInt(hStr, 10)
+
+  // Use state or window size to calculate scale
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const updateScale = () => {
+      // Get the container's actual size (assume parent is the 100% width/height flex container)
+      // Export preview has 20px padding
+      const availableW = window.innerWidth - 340; // Approx sidebar width + padding
+      const availableH = window.innerHeight - 120; // Approx header + padding
+      setScale(Math.min(1, availableW / width, availableH / height));
+    };
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [width, height]);
 
   // Listen for export trigger
   useEffect(() => {
@@ -75,7 +90,7 @@ export function ExportPreview() {
             width, height,
             position: 'absolute',
             background: backgroundImageUrl ? 'transparent' : 'var(--color-bg-primary)',
-            transform: `scale(min(1, min(100% / ${width}, 100% / ${height})))`,
+            transform: `scale(${scale})`,
             transformOrigin: 'center center',
             overflow: 'hidden',
           }}

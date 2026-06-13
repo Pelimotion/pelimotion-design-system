@@ -58,6 +58,7 @@ interface EditorState {
 
   // Library State
   activeLibraryAssetId: string | null;
+  activeLibraryTab: string;
 
   // Export Pipeline State
   exportConfig: ExportConfig;
@@ -82,7 +83,13 @@ interface EditorState {
   // Global Library State (Persistent)
   globalLibraryItems: any[];
 
+  // Spatial Camera State (Pan/Zoom)
+  camera: { x: number; y: number; z: number };
+
   // ─── Actions ─────────────────────────────────────────────────────────────
+
+  setCamera: (camera: Partial<{ x: number; y: number; z: number }>) => void;
+  resetCamera: () => void;
 
   saveToLocalLibrary: (item: any) => void;
   removeFromLocalLibrary: (id: string) => void;
@@ -115,6 +122,7 @@ interface EditorState {
   setAspectRatio: (ratio: 'none' | '16:9' | '9:16' | '1:1' | '4:5') => void;
   incrementAnimKey: () => void;
   setActiveLibraryAssetId: (id: string | null) => void;
+  setActiveLibraryTab: (tab: string) => void;
 
   // Generative actions
   addGenerativeLayer: (layer: GenerativeLayer) => void;
@@ -223,6 +231,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // Library default state
   activeLibraryAssetId: null,
+  activeLibraryTab: 'Tipografia',
 
   // Generative default state
   generativeLayers: [],
@@ -257,17 +266,23 @@ export const useEditorStore = create<EditorState>((set) => ({
   // Local Library State (Session only)
   localLibraryItems: [],
 
-  // Global Library State (Persistent)
+  // Global Library State
   globalLibraryItems: (() => {
     try {
-      const stored = localStorage.getItem('pelimotion_global_library');
-      return stored ? JSON.parse(stored) : [];
+      const saved = localStorage.getItem('pelimotion_global_library');
+      return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
   })(),
 
-  // ─── Config Mutations ──────────────────────────────────────────────────
+  // Spatial Camera
+  camera: { x: 0, y: 0, z: 1 },
+
+  // ─── Actions Implementation ──────────────────────────────────────────────
+
+  setCamera: (camera) => set((state) => ({ camera: { ...state.camera, ...camera } })),
+  resetCamera: () => set({ camera: { x: 0, y: 0, z: 1 } }),
 
   saveToLocalLibrary: (item: any) =>
     set((state) => ({
@@ -516,14 +531,20 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setActiveTypoLayer: (id) => set({ activeTypoLayerId: id }),
 
-  // ─── UI Actions ────────────────────────────────────────────────────────
-
-  setActivePanel: (panel) => set({ activePanel: panel }),
+  // ─── Core UI Actions ───────────────────────────────────────────────────
+  setActivePanel: (panel) => set((state) => {
+    // Reset camera when changing panels to avoid getting lost
+    if (state.activePanel !== panel) {
+      return { activePanel: panel, camera: { x: 0, y: 0, z: 1 } };
+    }
+    return { activePanel: panel };
+  }),
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   toggleGizmo: () => set((state) => ({ showGizmo: !state.showGizmo })),
   setAspectRatio: (ratio) => set({ activeAspectRatio: ratio }),
   incrementAnimKey: () => set((state) => ({ animForceKey: state.animForceKey + 1 })),
   setActiveLibraryAssetId: (id) => set({ activeLibraryAssetId: id }),
+  setActiveLibraryTab: (tab) => set({ activeLibraryTab: tab }),
 
   // ─── Generative Actions ────────────────────────────────────────────────
 

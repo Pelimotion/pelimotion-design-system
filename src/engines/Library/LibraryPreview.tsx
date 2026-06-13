@@ -1,311 +1,243 @@
-/**
- * LibraryPreview — Phase 4
- *
- * Canvas area for the Library phase. Displays the currently selected
- * asset. Handles routing to AlphaVideoPlayer for video formats or
- * rendering SVGs.
- */
+import { useEffect, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { AlphaVideoPlayer } from './AlphaVideoPlayer'
-import { SVG_CATALOG } from '@/engines/Generative/svgInjector'
-import { resolveAssetPath } from '@/lib/utils'
+import { fetchBunnyAssets, type BunnyAsset } from '@/lib/bunnyStorage'
 import { TYPOGRAPHY_PRESETS } from '@/config/typography-presets'
-import { Type, Play, Layers } from 'lucide-react'
+import { downloadFile } from '@/lib/downloadHandler'
+import { Type, Layers, Film, ImageIcon, Download, Sparkles, Plus, Combine } from 'lucide-react'
+
+const TABS = [
+  { id: 'Tipografia', label: 'Tipografia', icon: Type },
+  { id: 'Generativo', label: 'Generativo', icon: Layers },
+  { id: 'Logo', label: 'Logo', icon: ImageIcon },
+  { id: 'Transição', label: 'Transição', icon: Combine },
+]
 
 export function LibraryPreview() {
   const { 
-    libraryConfig, 
-    activeLibraryAssetId,
-    loadTypographyPreset,
-    setActivePanel,
+    activeLibraryTab, 
     localLibraryItems,
+    setActivePanel,
+    loadTypographyPreset,
+    addCompositionLayer,
+    exportConfig
   } = useEditorStore()
 
-  const localPreset = activeLibraryAssetId && activeLibraryAssetId.startsWith('preset-')
-    ? TYPOGRAPHY_PRESETS.find(p => p.id === activeLibraryAssetId)
-    : null
+  const [assets, setAssets] = useState<BunnyAsset[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const localSavedItem = localLibraryItems.find(item => item.id === activeLibraryAssetId)
+  // Fetch Cloud Assets for the active tab
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    fetchBunnyAssets(activeLibraryTab).then(res => {
+      if (active) {
+        const sorted = res.sort((a, b) => new Date(b.LastChanged).getTime() - new Date(a.LastChanged).getTime())
+        setAssets(sorted)
+        setLoading(false)
+      }
+    })
+    return () => { active = false }
+  }, [activeLibraryTab])
 
-  const activeAsset = libraryConfig.assets.find(a => a.id === activeLibraryAssetId)
-  const category = libraryConfig.categories.find(c => c.id === activeAsset?.category)
-
-  // Cloud asset check
-  const isCloudAsset = activeLibraryAssetId && activeLibraryAssetId.includes('/') && !localPreset && !localSavedItem && !activeAsset;
-
-  if (localPreset || localSavedItem) {
-    const isTypo = localPreset || (localSavedItem && localSavedItem.type === 'typography')
-    const name = localPreset ? localPreset.name : localSavedItem.name
-    const description = localPreset ? localPreset.description : `Salvo em ${new Date(localSavedItem.createdAt).toLocaleString()}`
-    
-    // Config based on type
-    let typoConfig = null;
-    let genData = null;
-
-    if (localPreset) typoConfig = localPreset.config;
-    if (localSavedItem && localSavedItem.type === 'typography') typoConfig = localSavedItem.data;
-    if (localSavedItem && localSavedItem.type === 'generative') genData = localSavedItem.data;
-
-    return (
-      <div style={{
-        width: '100%', height: '100%',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: '20px',
-      }}>
-        <div style={{
-          width: '100%',
-          maxWidth: 600,
-          background: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-surface-border)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '32px',
-          boxShadow: 'var(--shadow-lg), 0 0 30px hsla(191, 100%, 50%, 0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 24,
-        }}>
-          {/* Header */}
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 12,
-              background: isTypo 
-                ? 'linear-gradient(135deg, var(--color-accent), #7c3aed)'
-                : 'linear-gradient(135deg, #10b981, #047857)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: 'var(--shadow-glow)'
-            }}>
-              {isTypo ? <Type size={22} color="#fff" /> : <Layers size={22} color="#fff" />}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Preset de {isTypo ? 'Tipografia' : 'Motor Generativo'}
-              </span>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
-                {name}
-              </h2>
-            </div>
-          </div>
-
-          <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.6 }}>
-            {description}
-          </p>
-
-          {/* Details Table */}
-          <div style={{
-            background: 'var(--color-bg-primary)',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-surface-border)',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12
-          }}>
-            {isTypo && typoConfig && (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Modo de Layout</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
-                    {typoConfig.layoutMode === 'sideBySide' ? 'Lado a Lado' : typoConfig.layoutMode === 'freeform' ? 'Livre' : 'Empilhado'}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Espaçamento</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    {typoConfig.layoutGap ? `${typoConfig.layoutGap}px` : 'N/A'}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Tempo em Tela</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    {typoConfig.timeOnScreen}s
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Camadas de Texto</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    {typoConfig.layers?.length || 0}
-                  </span>
-                </div>
-              </>
-            )}
-
-            {!isTypo && genData && (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Camadas Generativas</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    {genData.layers?.length || 0}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>Ruído (Wiggle)</span>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', textTransform: 'capitalize' }}>
-                    {genData.globalWiggle?.noiseType || 'simplex'}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Text preview lines */}
-          {isTypo && typoConfig && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-                Linhas de Texto:
-              </span>
-              <div style={{
-                display: 'flex', flexDirection: 'column', gap: 8,
-                background: 'var(--color-bg-primary)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-surface-border)',
-                padding: '14px 16px',
-              }}>
-                {typoConfig.layers?.map((layer: any, index: number) => (
-                  <div key={layer.id || index} style={{ display: 'flex', gap: 10, fontSize: '0.8rem', alignItems: 'flex-start' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--color-accent)', minWidth: 20, marginTop: 1 }}>
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <span style={{ color: 'var(--color-text-primary)', fontStyle: layer.fontStyle === 'italic' ? 'italic' : 'normal', fontWeight: layer.fontWeight }}>
-                        "{layer.text}"
-                      </span>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        Fonte: {layer.fontFamily} • Peso: {layer.fontWeight} • Tam: {layer.fontSize}vw
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Apply Button */}
-          <button
-            onClick={() => {
-              if (isTypo && typoConfig) {
-                loadTypographyPreset(typoConfig)
-                setActivePanel('typography')
-              } else if (genData) {
-                useEditorStore.setState((state) => ({
-                  generativeLayers: genData.layers || [],
-                  motionConfig: {
-                    ...state.motionConfig,
-                    wiggle: genData.globalWiggle || state.motionConfig.wiggle
-                  }
-                }))
-                setActivePanel('generative')
-              }
-            }}
-            style={{
-              width: '100%',
-              padding: '14px 24px',
-              background: 'linear-gradient(135deg, var(--color-accent) 0%, #00d2ff 100%)',
-              color: '#0a0a0f',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.9rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              boxShadow: 'var(--shadow-glow)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
-          >
-            <Play size={16} />
-            Aplicar este Template no Editor
-          </button>
-        </div>
-      </div>
-    )
+  const handleDownload = (asset: BunnyAsset) => {
+    const pullZone = import.meta.env.VITE_BUNNY_STORAGE_ZONE
+    const url = `https://${pullZone}.b-cdn.net/${activeLibraryTab}/${asset.ObjectName}`
+    downloadFile(url, asset.ObjectName)
   }
 
-  if (!activeAsset && !category && !isCloudAsset) {
-    return (
-      <div style={{
-        width: '100%', height: '100%',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        color: 'var(--color-text-muted)',
-        fontSize: '0.9rem'
-      }}>
-        Selecione um asset na biblioteca para visualizar.
-      </div>
-    )
+  const handleAddToComposition = (id: string, name: string, type: 'localAsset' | 'cloudAsset' = 'localAsset', duration: number = 3) => {
+    addCompositionLayer({
+      id: crypto.randomUUID(),
+      name: name,
+      type: type,
+      assetId: id,
+      startTime: 0,
+      duration: Math.min(duration, exportConfig.duration),
+      transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+    })
+    setActivePanel('composition')
   }
 
-  const isVideo = activeAsset ? (activeAsset.format === 'mov' || activeAsset.format === 'webm' || activeAsset.format === 'mp4') : 
-                  (isCloudAsset && (activeLibraryAssetId.endsWith('.mp4') || activeLibraryAssetId.endsWith('.mov') || activeLibraryAssetId.endsWith('.webm')));
-  const isSvg = activeAsset ? activeAsset.format === 'svg' : false;
-
-  let videoSrc;
-  if (isCloudAsset) {
-    const pullZone = import.meta.env.VITE_BUNNY_STORAGE_ZONE;
-    videoSrc = `https://${pullZone}.b-cdn.net/${activeLibraryAssetId}`;
-  } else if (activeAsset && category) {
-    videoSrc = resolveAssetPath(`${category.basePath}${activeAsset.filename}`);
-  }
-
-  const assetName = isCloudAsset ? activeLibraryAssetId.split('/')[1] : activeAsset?.name;
-  const assetFormat = isCloudAsset ? activeLibraryAssetId.split('.').pop()?.toUpperCase() : activeAsset?.format.toUpperCase();
+  // Filter Local Items based on active tab
+  const localItems = localLibraryItems.filter(item => {
+    if (activeLibraryTab === 'Tipografia') return item.type === 'typography'
+    if (activeLibraryTab === 'Generativo') return item.type === 'generative'
+    return false
+  })
 
   return (
-    <div style={{
-      width: '100%', height: '100%',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      padding: '20px',
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: 800,
-        aspectRatio: '16/9',
-        position: 'relative'
-      }}>
-        {isVideo && (
-          <AlphaVideoPlayer
-            webmSrc={videoSrc?.endsWith('.webm') ? videoSrc : undefined}
-            hevcSrc={(videoSrc?.endsWith('.mov') || videoSrc?.endsWith('.mp4')) ? videoSrc : undefined}
-          />
-        )}
-        
-        {isSvg && (
+    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', paddingBottom: 64 }}>
+      <header style={{ marginBottom: 40, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.03em', marginBottom: 8 }}>
+            Library
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem' }}>
+            Explorar presets, media na nuvem e templates locais.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, background: 'var(--color-bg-elevated)', padding: 6, borderRadius: 'var(--radius-full)', border: '1px solid var(--color-surface-border)' }}>
+          {TABS.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeLibraryTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => useEditorStore.getState().setActiveLibraryTab(tab.id as any)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '8px 16px', borderRadius: 'var(--radius-full)',
+                  background: isActive ? 'var(--color-accent)' : 'transparent',
+                  color: isActive ? '#000' : 'var(--color-text-secondary)',
+                  fontWeight: isActive ? 600 : 500,
+                  border: 'none', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
+      </header>
+
+      {/* NATIVE PRESETS (Tipografia only for now) */}
+      {activeLibraryTab === 'Tipografia' && (
+        <section style={{ marginBottom: 48 }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Type size={18} color="var(--color-accent)" /> Presets Originais
+          </h2>
           <div style={{
-            width: '100%', height: '100%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'var(--color-surface-glass)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-surface-border)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: 24
           }}>
-            {/* Try to load the SVG from Generative Catalog just for preview */}
-            {(() => {
-              const svgData = SVG_CATALOG.find(s => s.path.includes(activeAsset?.filename || ''))
-              if (svgData) {
-                return (
-                  <div style={{ width: '40%', height: '40%' }}>
-                    <img src={resolveAssetPath(svgData.path)} alt={activeAsset?.name || 'svg'} style={{ width: '100%', height: '100%', filter: 'invert(1)' }} />
+            {TYPOGRAPHY_PRESETS.map((preset) => (
+              <div key={preset.id} className="glass-panel" style={{
+                borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, transition: 'all 0.2s', cursor: 'pointer',
+              }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{preset.name}</h3>
+                    <span style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: 4, background: preset.density === 'Alta' ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)', color: preset.density === 'Alta' ? '#f87171' : '#60a5fa' }}>
+                      {preset.density}
+                    </span>
                   </div>
-                )
-              }
-              return <span>SVG File: {activeAsset?.filename}</span>
-            })()}
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{preset.description}</p>
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+                  <button onClick={() => { loadTypographyPreset(preset.config); setActivePanel('typography'); }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                    <Sparkles size={14} /> Editar
+                  </button>
+                  <button onClick={() => handleAddToComposition(preset.id, preset.name, 'localAsset', preset.config.timeOnScreen || 3)} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
+                    <Plus size={14} /> Compor
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* LOCAL ITEMS */}
+      <section style={{ marginBottom: 48 }}>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Layers size={18} color="var(--color-accent)" /> Salvos na Sessão
+        </h2>
+        {localItems.length === 0 ? (
+          <div style={{ padding: 40, background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--color-surface-border)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            Nenhum projeto local salvo nesta sessão para esta categoria.
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: 24
+          }}>
+            {localItems.map((item) => (
+              <div key={item.id} className="glass-panel" style={{
+                borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, transition: 'all 0.2s',
+              }}>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 4 }}>{item.name}</h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Salvo às {new Date(item.createdAt).toLocaleTimeString()}</p>
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+                  <button onClick={() => {
+                    if (item.type === 'typography') { loadTypographyPreset(item.data); setActivePanel('typography'); }
+                    else if (item.type === 'generative') { useEditorStore.setState(s => ({ generativeLayers: item.data.layers || [], motionConfig: { ...s.motionConfig, wiggle: item.data.globalWiggle || s.motionConfig.wiggle } })); setActivePanel('generative'); }
+                  }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                    <Sparkles size={14} /> Editar
+                  </button>
+                  <button onClick={() => handleAddToComposition(item.id, item.name, 'localAsset', item.data.timeOnScreen || 3)} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
+                    <Plus size={14} /> Compor
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-      </div>
+      </section>
 
-      <div style={{ marginTop: 24, textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 4 }}>
-          {assetName}
+      {/* CLOUD ASSETS */}
+      <section>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Film size={18} color="var(--color-accent)" /> Nuvem (Bunny CDN)
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
-          {activeAsset?.resolution || 'Auto'} • {assetFormat} • {activeAsset ? (activeAsset.hasAlpha ? 'Alpha Channel' : 'Solid') : 'Cloud Video'}
-        </p>
-      </div>
+        {loading ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>Sincronizando com a nuvem...</div>
+        ) : assets.length === 0 ? (
+          <div style={{ padding: 40, background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--color-surface-border)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            Nenhum arquivo encontrado nesta categoria.
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 24
+          }}>
+            {assets.map((asset) => {
+              const cloudId = `${activeLibraryTab}/${asset.ObjectName}`
+              const isVideo = asset.ObjectName.endsWith('.mp4') || asset.ObjectName.endsWith('.mov')
+              const pullZone = import.meta.env.VITE_BUNNY_STORAGE_ZONE
+              const videoSrc = `https://${pullZone}.b-cdn.net/${cloudId}`
+              
+              return (
+                <div key={cloudId} className="glass-panel" style={{
+                  borderRadius: 'var(--radius-lg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.2s', cursor: 'pointer'
+                }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; const v = e.currentTarget.querySelector('video'); if(v) v.play().catch(()=>{}); }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; const v = e.currentTarget.querySelector('video'); if(v) { v.pause(); v.currentTime=0; } }}>
+                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                    {isVideo ? (
+                      <video src={videoSrc} muted playsInline preload="none" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                        <ImageIcon size={32} color="var(--color-text-muted)" />
+                      </div>
+                    )}
+                    <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8 }}>
+                      <button onClick={(e) => { e.stopPropagation(); handleDownload(asset); }} className="icon-button" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} title="Download Original">
+                        <Download size={14} color="#fff" />
+                      </button>
+                    </div>
+                  </div>
+                  <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {asset.ObjectName}
+                    </h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                      <span>{(asset.Length / 1024 / 1024).toFixed(2)} MB</span>
+                      <span>{new Date(asset.LastChanged).toLocaleDateString()}</span>
+                    </div>
+                    <button onClick={() => handleAddToComposition(cloudId, asset.ObjectName, 'cloudAsset')} style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4 }}>
+                      <Plus size={14} /> Usar na Composição
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

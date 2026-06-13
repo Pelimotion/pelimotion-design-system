@@ -33,11 +33,21 @@
 - [x] **Native Pointer Events Timeline:** Build a custom React drag-and-drop timeline track for compositional layers and background trimming without using external layout drag-and-drop engines.
 - [x] **Canvas Compositing Pipeline:** Implement dual-pass rendering (capturing transparent DOM overlay while hiding background video, then compositing them via Canvas API).
 - [x] **WebAssembly FFmpeg Optimizations:** Optimize MP4 exports by converting frames to JPEG buffers to avoid browser Out-of-Memory crashes and force even-numbered dimensions for the `libx264` codec.
+
+## Phase 7: Scale Optimization, Dual-Library & WebCodecs (v2.0)
 - [x] **Active Viewport Scaling & Gizmo Alignment:** Solved canvas cropping and alignment issues (left-side shift) by implementing a dual-layer CSS scaling container (`#canvas-viewport` + `#canvas-fixed-resolution` via `ResizeObserver`).
 - [x] **Dynamic Dual-Library System:** Split library storage into `localLibraryItems` (temporary session-only memory) and `globalLibraryItems` (persistent browser cache via `localStorage`), giving users complete control over template storage.
 - [x] **WebCodecs MP4 Export Resolution & Codec Fix:** Fixed MP4 export pipeline failures by forcing even-numbered dimensions (`safeWidth`/`safeHeight` multiples of 2) and configuring precise hardware-accelerated profiles (`avc1.4d0028` and `vp09.00.10.08`).
 
-## Phase 7: Future Expansion (Backlog)
+## Phase 8: Spatial Camera, WebCodecs Hotfix & Layout Polish (v2.1)
+- [x] **Spatial Camera Navigation (Pan & Zoom):** Enabled mousewheel zoom (Ctrl/Cmd + scroll) and pan (drag with Spacebar or Middle Click), allowing users to navigate large canvases without cropping.
+- [x] **Gizmo & Overlay Scale Normalization:** Created a root CSS variable `--inverse-scale` (1 / finalScale) to maintain constant interactive handle sizes on the `InteractiveGizmo` and `FloatingToolbar` during zooming.
+- [x] **Full-Screen Gallery Workspace:** Migrated the asset library from the sidebar to a full-screen grid preview workspace in `LibraryPreview`, rendering high-fidelity cloud videos and local session templates.
+- [x] **Container Query Typography Resizing:** Swapped rem font sizing with container query width (`cqw`) units, ensuring that trails and text scale proportionally with the resolution container.
+- [x] **WebCodecs Deep Copy Fix:** Resolved the WebCodecs encoder crash by utilizing `createImageBitmap()` to copy frames securely without losing context inside strict browser environments.
+- [x] **Sidebar Workspace Optimization:** Removed the "Config Loaded" status card and other debug utilities to maximize vertical editing space.
+
+## Phase 9: Future Expansion (Backlog)
 - [ ] **Multi-track Audio Mixing:** Add support for importing and syncing audio tracks directly in the timeline, mixing audio buffers before final WebAssembly encoding.
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.

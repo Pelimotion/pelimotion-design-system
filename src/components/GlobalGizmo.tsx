@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
+import { FloatingToolbar } from './FloatingToolbar';
 import { InteractiveGizmo } from './InteractiveGizmo';
 
 /**
@@ -153,6 +154,7 @@ export function GlobalGizmo() {
           display: rect ? 'block' : 'none',
         }}
       >
+        <FloatingToolbar />
         <InteractiveGizmo
           active={true}
           elementRef={targetRef as any}

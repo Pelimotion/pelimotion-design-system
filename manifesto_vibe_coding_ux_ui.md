@@ -106,3 +106,14 @@ Para maximizar a eficiência no fluxo de *vibe coding* (onde desenvolvedor e IAs
 - **MOV para Canal Alpha (Transparência):** Para renderizações com canal de transparência (MOV), utilize frames intermediários PNG (`image/png`) e ajuste o pixel format do FFmpeg para `-pix_fmt rgba` com o codec `-c:v png` (ou codecs de compressão RLE nativos do QuickTime).
 - **Descarregamento de Recursos (Memory Leaks):** Libere explicitamente os buffers e revoque URLs de blobs criadas no navegador (`URL.revokeObjectURL`) imediatamente após o uso de cada frame. Certifique-se de chamar a destruição ou limpeza de instâncias do FFmpeg quando necessário para reaver a memória heap do WebAssembly.
 
+### 6.9. Navegação de Câmera Espacial e Zoom/Pan
+- **Navegação Multimodal:** O editor visual deve fornecer navegação espacial de prancheta contínua, permitindo ao usuário aproximar-se para ajustes pixel-perfect ou afastar-se para visualizar a composição macro.
+- **Orquestração de Eventos:**
+  - **Zoom com Zoom-Wheel:** Capturar o evento de `wheel` e verificar se a tecla `Ctrl` ou `Cmd` (`e.ctrlKey || e.metaKey`) está pressionada para manipular o eixo Z.
+  - **Pan com Wheel normal:** Se `Ctrl/Cmd` não estiver ativo, os deltas X e Y da roda (`deltaX`, `deltaY`) devem deslocar os eixos X e Y da câmera para emular movimentação de trackpad nativa.
+  - **Pointer Capture:** Para gestos de arraste dedicados (ex: barra de espaço segurada ou clique do meio), chame `setPointerCapture` no ponteiro ativo para rastrear movimentos mesmo quando o cursor sai do viewport, liberando-o com `releasePointerCapture` ao soltar.
+
+### 6.10. Normalização de Escala de Controles de Canvas (UI Inverse-Scale & Container Queries)
+- **Gizmos e Overlays estáticos no Zoom:** Quando o canvas principal é transformado via CSS `scale()`, todos os filhos herdam o tamanho redimensionado. Para ferramentas de manipulação de vértice (como o `InteractiveGizmo` e barras flutuantes), isso torna as alças difíceis de selecionar ou excessivamente pixeladas.
+- **Aplicação da Escala Inversa:** Calcule a escala final aplicada ao canvas e gere seu inverso no escopo global (`--inverse-scale: 1 / finalScale`). Nos componentes que flutuam sobre a prancheta de edição, aplique a escala inversa via transformações de CSS (`transform: scale(var(--inverse-scale))`). Isto compensa a magnificação do canvas e mantém a escala física das ferramentas constante na tela do usuário.
+- **Uso de Container Queries (`cqw`):** Para evitar que fontes e efeitos de rastro (Trails) se desloquem ou percam fidelidade ao escalar o viewport ou alterar resoluções, declare o wrapper de prancheta de resolução fixa como um container lógico (`containerType: inline-size`). Use fontes dimensionadas com `cqw` para garantir que o texto seja renderizado de forma 100% proporcional ao container interno em vez do viewport global (`vw` ou `rem`).

@@ -194,7 +194,7 @@ async function exportWithWebCodecs(
       ctx.drawImage(img, 0, 0, width, height);
       URL.revokeObjectURL(url);
 
-      const bitmap = offscreenCanvas.transferToImageBitmap();
+      const bitmap = await createImageBitmap(offscreenCanvas);
 
       while (inFlight >= MAX_IN_FLIGHT) {
         await new Promise(r => setTimeout(r, 2));

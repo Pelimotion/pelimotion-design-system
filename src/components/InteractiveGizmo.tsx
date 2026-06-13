@@ -165,13 +165,14 @@ export function InteractiveGizmo({
             className={`gizmo-handle scale-handle scale-handle-${corner}`}
             style={{
               position: 'absolute',
-              width: 8, height: 8, borderRadius: 2,
+              width: 14, height: 14, borderRadius: '50%',
               background: 'var(--color-accent)',
-              border: '1px solid rgba(0,0,0,0.3)',
-              [v as any]: -4, [h as any]: -4,
+              border: '2px solid var(--color-bg-primary)',
+              [v as any]: -7, [h as any]: -7,
               cursor: `${corner.replace('-', '')}-resize` as any,
               pointerEvents: 'auto',
               boxShadow: '0 0 6px hsla(191, 100%, 50%, 0.3)',
+              transform: 'scale(var(--inverse-scale, 1))',
             }}
           />
         );
@@ -188,7 +189,7 @@ export function InteractiveGizmo({
             width: 8, height: 16, borderRadius: 4,
             background: 'var(--color-accent)',
             border: '1px solid rgba(0,0,0,0.3)',
-            top: '50%', transform: 'translateY(-50%)',
+            top: '50%', transform: 'translateY(-50%) scale(var(--inverse-scale, 1))',
             [side as any]: -6, cursor: 'ew-resize',
             pointerEvents: 'auto',
             boxShadow: '0 0 6px hsla(191, 100%, 50%, 0.3)',
@@ -207,7 +208,7 @@ export function InteractiveGizmo({
             width: 16, height: 8, borderRadius: 4,
             background: 'var(--color-accent)',
             border: '1px solid rgba(0,0,0,0.3)',
-            left: '50%', transform: 'translateX(-50%)',
+            left: '50%', transform: 'translateX(-50%) scale(var(--inverse-scale, 1))',
             [side as any]: -6, cursor: 'ns-resize',
             pointerEvents: 'auto',
             boxShadow: '0 0 6px hsla(191, 100%, 50%, 0.3)',
@@ -221,17 +222,18 @@ export function InteractiveGizmo({
         className="gizmo-handle rotate-handle"
         style={{
           position: 'absolute',
-          top: -28,
+          top: -36,
           left: '50%',
-          transform: 'translateX(-50%)',
-          width: 12,
-          height: 12,
+          marginLeft: -7,
+          width: 14,
+          height: 14,
           borderRadius: '50%',
-          background: 'var(--color-accent)',
-          border: '2px solid rgba(0,0,0,0.2)',
-          cursor: 'grab',
+          background: 'var(--color-success)',
+          border: '2px solid var(--color-bg-primary)',
+          cursor: 'crosshair',
           pointerEvents: 'auto',
-          boxShadow: '0 0 8px hsla(191, 100%, 50%, 0.4)',
+          boxShadow: '0 0 6px hsla(157, 100%, 50%, 0.3)',
+          transform: 'scale(var(--inverse-scale, 1))',
         }}
       />
       <div

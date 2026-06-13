@@ -18,7 +18,7 @@ O Pelimotion foi projetado não apenas como uma ferramenta criativa, mas como um
 
 ## 2. Arquitetura Técnica de Alto Nível
 
-O sistema opera sob uma arquitetura de frontend desacoplada e reativa, dividida em quatro pilares tecnológicos:
+O sistema opera sob uma arquitetura de frontend desacoplada e reativa, dividida em cinco pilares tecnológicos:
 
 ### 2.1. O Core de Renderização e Animação
 - **React 19 & Zustand (Atomic & Persistent State Management):** Gerenciamento de estado atômico de alta performance, minimizando re-renderizações desnecessárias. O sistema implementa uma estrutura de persistência híbrida para gerenciar criações e presets do usuário:
@@ -35,9 +35,10 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
   3. O DOM transparente (Tipografia, Generativos e as imagens de substituição dos vídeos de camada) é capturado como uma imagem PNG pura.
   4. O vídeo de fundo é reexibido e o player síncrono é avançado para o tempo correto (`bgVideo.currentTime = videoTime`). O mesmo ocorre para os vídeos de camada originais que são restaurados no DOM (removendo as imagens temporárias).
   5. Um canvas off-screen unifica as camadas, desenhando primeiro o frame de vídeo de fundo ativo (`ctx.drawImage(bgVideo, ...)`) e depois sobrepondo a imagem PNG transparente capturada com o conteúdo restante.
-- **WebCodecs Acceleration (Hardware-Accelerated Encoding):** Em navegadores compatíveis (Chromium), o pipeline delega a codificação de frames em tempo real para a API nativa de `VideoEncoder` rodando em um Web Worker dedicado (`exportWorker.ts`). Para máxima compatibilidade e desempenho:
+- **WebCodecs Acceleration (Hardware-Accelerated Encoding):** Em navegadores compatíveis, o pipeline delega a codificação de frames em tempo real para a API nativa de `VideoEncoder` rodando em um Web Worker dedicado (`exportWorker.ts`). Para máxima compatibilidade e desempenho:
   1. **Safe Dimensions Resolution:** Como os codificadores de vídeo (como H.264/AVC) exigem estritamente resoluções pares, as dimensões da composição são normalizadas via fórmula de paridade (`safeWidth = width % 2 === 0 ? width : width - 1`) antes da inicialização do codificador para evitar falhas silenciosas.
   2. **Detailed Codec Specification:** Evita-se o uso de strings genéricas de codec como `'avc'`, mapeando explicitamente perfis detalhados suportados por hardware, tais como `avc1.4d0028` (H.264 High Profile Level 4.0) para formatos MP4 ou `vp09.00.10.08` (VP9 Profile 0, Level 1.0, 8-bit) para formatos WebM/MOV.
+  3. **Deep Copy Frame Validation (createImageBitmap):** Para evitar erros de render silenciosos como `Error: source must be a VideoSource` no Safari ou ambientes com sandbox estrita, os buffers do canvas de captura são duplicados via `await createImageBitmap(offscreenCanvas)` em vez de desanexados via `transferToImageBitmap()`. Isso garante que o pixel buffer permaneça válido na chamada do construtor de frames da API WebCodecs.
 - **WebAssembly Orchestration Fallback (FFmpeg.wasm):** Caso a API de WebCodecs não esteja disponível ou seja incompatível com as configurações do dispositivo, o sistema realiza um fallback transparente para a codificação via buffers binários no FFmpeg.wasm. Para MP4s, convertemos os quadros em JPEG (com 90% de qualidade) em vez de PNG. Isso economiza até 80% de memória de heap no navegador, evitando erros de estouro de memória (Out-of-Memory) durante renders longos, mantendo fidelidade visual impecável.
 
 ### 2.3. Módulo de Composição & Timeline Bento Grid
@@ -53,7 +54,19 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
   3. **Alinhamento do Gizmo de Transformação:** O `GlobalGizmo` e o `CanvasGuides` foram posicionados como filhos diretos do wrapper interno de resolução fixa. Com isso, eles herdam automaticamente a matriz de transformação 2D calculada pelo navegador, eliminando qualquer desalinhamento de coordenadas físicas (mouse events) ou de proporções visuais durante a interação.
 - **Renderização Real de Camadas:** Em vez de usar placeholders opacos no editor, a área de composição renderiza visualizações reais das camadas de tipografia e arte generativa chamando os componentes `TypographyPreview` e `GenerativePreview` com presets específicos herdados, mantendo compatibilidade de animação e permitindo que vídeos de logo/transição carreguem tags `<video>` nativas sincronizadas em tempo real.
 
-### 2.4. Infraestrutura Cloud Native
+### 2.4. Navegação Espacial de Câmera e Normalização de Escala (v2.1)
+- **Câmera Espacial (Zustand Store):** A navegação espacial do Canvas permite explorar a área de trabalho livremente. Armazenada na store global como `camera: { x: number, y: number, z: number }`, ela controla o posicionamento 2D (pan) e o nível de magnificação (zoom de 10% a 1000%).
+- **Integração de Pointer & Wheel Events:** A câmera espacial é controlada por:
+  - **Scroll com Ctrl/Cmd:** Controla a propriedade `camera.z` de forma contínua para dar zoom na posição do cursor.
+  - **Scroll normal (X/Y):** Controla o arrasto bidimensional (`camera.x` e `camera.y`).
+  - **Botão do Meio (Click + Drag) ou Barra de Espaço + Drag:** Ativa o Pointer Capture do navegador para arrastar e reposicionar o canvas livremente (panning).
+- **Gizmo & Overlay Scale Normalization (`--inverse-scale`):** À medida que a câmera se afasta ou se aproxima, a escala do canvas muda drasticamente. Para evitar que os pontos de arraste (handles) do Gizmo e o menu de ações rápidas (`FloatingToolbar`) fiquem invisíveis ou gigantescos na tela, a aplicação calcula dinamicamente uma variável CSS global no elemento raiz:
+  $$\text{--inverse-scale} = \frac{1}{\text{camera.z} \times \text{fitScale}}$$
+  Os elementos de controle aplicam `transform: scale(var(--inverse-scale))` ou `translateY(-50%) scale(var(--inverse-scale))` para anular a magnificação da câmera sobre eles, garantindo que o diâmetro de toque dos botões e handles permaneça idêntico na tela.
+- **Container Queries na Tipografia (`cqw`):** Para manter a proporção exata da tipografia em relação ao canvas de resolução fixa (evitando que fontes quebrem layout ou fiquem esticadas ao redimensionar a janela do navegador), o container `#canvas-fixed-resolution` foi marcado com `containerType: inline-size`. A propriedade `fontSize` de `TypographyPreview` utiliza a unidade `cqw` (Container Query Width), garantindo consistência matemática absoluta e eliminando distorções de escala no render.
+- **Galeria Integrada de Workspace (Full-Screen Library):** O visualizador de biblioteca foi migrado da estreita barra lateral para o painel de conteúdo central. Isso permite que a galeria renderize assets em um grid bento expansivo com controle de visualização limpo, autoplay de arquivos de mídia na nuvem com hover (passar do mouse), downloads eficientes e atalhos rápidos para compor a timeline.
+
+### 2.5. Infraestrutura Cloud Native
 - **Hospedagem Serverless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.
 - **Micro-Armazenamento:** APIs diretas e contínuas entre Web Workers isolados e o Edge Storage (BunnyCDN), criando workflows automatizados onde peças criadas e validadas são instantaneamente provisionadas em catálogos baseados em nuvem.
 
@@ -64,7 +77,7 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
 ```text
 ├── public/                 # Assets globais estáticos (SVGs injetáveis, vídeos pré-renderizados com Alpha)
 ├── src/
-│   ├── components/         # Módulos de interface encapsulados (Bento Grid, Tailwind CSS v4 + Glassmorphism)
+│   ├── components/         # Módulos de interface encapsulados (Bento Grid, Tailwind CSS v4 + Glassmorphism, Viewport)
 │   ├── config/             # Matrizes de dicionários (Headless Configuration Architecture)
 │   ├── engines/            # Processadores algorítmicos profundos:
 │   │   ├── Generative/     # Parse de SVGs on-the-fly, ruído estocástico, multi-timings dinâmicos
@@ -75,11 +88,14 @@ O processo de empacotamento de vídeo em tempo real rompe as barreiras do ambien
 │   └── lib/                # Adaptadores de rede, drivers Cloud (BunnyCDN regional) e utils de serialização
 ```
 
+---
+
 ## 4. Padrões de Qualidade e Blindagem (Quality Assurance)
+
 1. **Tipagem Estrita (Type Safety):** Uso compulsório das diretrizes de TypeScript estendido (`motion.types.ts`) na camada de dados visando mitigar quebras inesperadas no motor gerativo.
 2. **Resiliência de Memória (Garbage Collection):** Regras extremas para destruição sistêmica e cíclica de nós do DOM flutuantes e revogação imediata de URLs de Blob (`URL.revokeObjectURL`) no loop de exportação. Limpeza rigorosa do buffer de frames na heap antes e depois do processamento FFmpeg.
 3. **Padrão Estético de Interface (Premium Big Tech Standard - Bento UI):** Layouts organizados em Bento Grids limpos, linhas finas de divisão (`1px solid var(--color-surface-border)`), glassmorphism vibrante nos botões e painéis, e micro-animações físicas de hover.
-4. **Isolamento de Erros e Prevenção de Falhas de Tela Preta:** Todas as propriedades complexas de estado (como `exportConfig`) devem ser devidamente desestruturadas e tipadas nas views principais. Componentes secundários (ex: `ColorManager`) devem ser carregados de forma limpa sem imports circulares ou dependências de estilos órfãos para evitar crash do React no Fast Refresh.
-5. **Garantia de Dimensões no Codificador (FFmpeg Alignment):** O codec `libx264` exige dimensões de vídeo pares. O motor de exportação aplica obrigatoriamente a normalização `-vf scale=trunc(iw/2)*2:trunc(ih/2)*2` no FFmpeg para evitar falhas silenciosas ou de runtime em resoluções ímpares personalizadas.
+4. **Isolamento de Erros e Prevenção de Falhas de Tela Preta:** Todas as propriedades complexas de estado (como `exportConfig`) devem ser devidamente desestruturadas e tipadas nas views principais. Componentes secundários devem ser carregados de forma limpa sem imports circulares ou dependências de estilos órfãos para evitar crash do React no Fast Refresh.
+5. **Garantia de Dimensões no Codificador (FFmpeg Alignment):** O codec `libx264` exige dimensões de vídeo pares. O motor de exportação aplica obrigatoriamente a normalização `-vf scale=trunc(iw/2)*2:trunc(ih/2)*2` no FFmpeg ou normalização com `safeWidth` e `safeHeight` em nível de JavaScript na API WebCodecs para evitar falhas silenciosas ou de runtime em resoluções ímpares personalizadas.
 6. **Desempenho de Scrubbing (Zustand Atomic Architecture):** Para manter 60fps durante interações diretas na timeline, o estado de tempo e trim é lido de forma atômica por meio de hooks de leitura fina do Zustand, isolando as atualizações para as tracks e agulhas afetadas sem redisparar a árvore do editor inteiro.
-
+7. **Normalização Flexbox para Alturas de Tela Limitas:** O painel principal (`#main-content`) e o canvas de visualização (`#canvas-viewport`) implementam `min-width: 0` e `min-height: 0` para garantir que layouts baseados em flex ou grids complexos se adaptem de forma graciosa sem quebrar elementos estruturais.

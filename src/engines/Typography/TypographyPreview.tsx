@@ -138,7 +138,7 @@ function LayerNode({
     color: layer.color,
     fontFamily: `'${layer.fontFamily}', sans-serif`,
     fontWeight: layer.fontWeight,
-    fontSize: `${layer.fontSize}rem`,
+    fontSize: `${layer.fontSize}cqw`,
     letterSpacing: `${layer.letterSpacing}em`,
     lineHeight: layer.lineHeight,
     fontStyle: layer.fontStyle,
