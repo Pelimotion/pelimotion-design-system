@@ -20,3 +20,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T11-20-10-466Z** | `backup-branch-2026-06-13T11-20-10-466Z` | `eb34a73` | 13/06/2026, 08:20:10 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T11-40-09-959Z** | `backup-branch-2026-06-13T11-40-09-959Z` | `ee7e7fe` | 13/06/2026, 08:40:09 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T12-00-13-076Z** | `backup-branch-2026-06-13T12-00-13-076Z` | `8be7515` | 13/06/2026, 09:00:13 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T12-08-48-418Z** | `backup-branch-2026-06-13T12-08-48-418Z` | `d26cd1d` | 13/06/2026, 09:08:48 | Backup após implementação da Fase 9.0 (Motion Blur, Telemetria, Lighthouse) |
