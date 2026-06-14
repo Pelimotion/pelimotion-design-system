@@ -74,7 +74,7 @@ test.describe('Pelimotion User Session Simulation', () => {
       }
 
       // 6. Capture Visual Screenshot for Agent Analysis
-      const screenshotPath = path.resolve(__dirname, '../../reports/session-result.png');
+      const screenshotPath = path.resolve(__dirname, '../../../.agents/reports/session-result.png');
       if (!fs.existsSync(path.dirname(screenshotPath))) {
         fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
       }
@@ -91,7 +91,7 @@ test.describe('Pelimotion User Session Simulation', () => {
     }
     
     // Save report for orchestrator
-    const reportPath = path.resolve(__dirname, '../../reports/playwright-results.json');
+    const reportPath = path.resolve(__dirname, '../../../.agents/reports/playwright-results.json');
     if (!fs.existsSync(path.dirname(reportPath))) {
       fs.mkdirSync(path.dirname(reportPath), { recursive: true });
     }
