@@ -13,11 +13,14 @@ test.describe('Pelimotion User Session Simulation', () => {
   test.beforeEach(async ({ page }) => {
     page.on('console', msg => {
       if (msg.type() === 'error') {
-        errors.push({ type: 'console', text: msg.text() });
+        errors.push({ type: 'console', text: `${msg.text()} at ${msg.location().url || 'unknown'}` });
       }
     });
     page.on('pageerror', err => {
       errors.push({ type: 'pageerror', text: err.message });
+    });
+    page.on('requestfailed', request => {
+      errors.push({ type: 'network', text: `Failed to load: ${request.url()} - ${request.failure()?.errorText || 'unknown'}` });
     });
   });
 
@@ -27,6 +30,12 @@ test.describe('Pelimotion User Session Simulation', () => {
       await page.goto('/', { waitUntil: 'networkidle' });
 
       // 2. Add Generative Elements
+      const navGenerative = page.locator('#nav-generative');
+      if (await navGenerative.isVisible()) {
+        await navGenerative.click();
+        await page.waitForTimeout(500);
+      }
+
       const spiroBtn = page.getByRole('button', { name: /Spirograph|Onda|Grade/i }).first();
       if (await spiroBtn.isVisible()) {
         await spiroBtn.click();

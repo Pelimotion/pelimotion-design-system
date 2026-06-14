@@ -17,6 +17,7 @@ import type { ExportConfig, ExportState } from '@/types/motion.types'
 import { useEditorStore } from '@/store/useEditorStore'
 import type { ExportWorkerConfig } from './exportWorker'
 import { Telemetry } from '@/lib/telemetry'
+import ExportWorker from './exportWorker?worker'
 
 function sendAndWait(worker: Worker, message: any, expectedResponseType: string): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -107,7 +108,7 @@ async function exportWithWebCodecs(
     allVideos.forEach(vid => vid.pause());
     const bgVideo = allVideos.find(vid => vid.id === 'export-bg-video');
 
-    worker = new Worker(new URL('./exportWorker.ts', import.meta.url), { type: 'module' });
+    worker = new ExportWorker();
 
     await sendAndWait(worker, {
       type: 'INIT',

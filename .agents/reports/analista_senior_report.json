@@ -1,5 +1,5 @@
 {
   "persona": "analista_senior",
-  "timestamp": "2026-06-14T22:15:14.835Z",
-  "evaluation": "### [ANALYST REPORT] Telemetry\n*   **Test Metrics:** Measured Canvas FPS: N/A.\n*   **Action:** We must log these FPS drops automatically to our backend to detect which devices are suffering with the current noise algorithms."
+  "timestamp": "2026-06-14T22:33:38.266Z",
+  "evaluation": "### [ANALYST REPORT] Telemetry\n*   **Test Metrics:** Measured Canvas FPS: 51.\n*   **Action:** We must log these FPS drops automatically to our backend to detect which devices are suffering with the current noise algorithms."
 }

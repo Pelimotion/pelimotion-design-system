@@ -18,6 +18,7 @@ import { Draggable } from 'gsap/Draggable'
 import { useGSAP } from '@gsap/react'
 import { renderGenerativeShape } from './shapes'
 import type { GenerativeLayer } from '@/types/motion.types'
+import GenerativeWorker from './generative.worker?worker'
 
 gsap.registerPlugin(useGSAP, Draggable)
 
@@ -240,7 +241,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
 
   useEffect(() => {
     if (!window.OffscreenCanvas) return;
-    workerRef.current = new Worker(new URL('./generative.worker.ts', import.meta.url), { type: 'module' });
+    workerRef.current = new GenerativeWorker();
 
     generativeLayers.forEach((layer: any) => {
       const canvas = canvasRefs.current.get(layer.id);
