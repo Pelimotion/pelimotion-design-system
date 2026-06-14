@@ -9,6 +9,7 @@ export type TelemetryEvent =
   | 'EXPORT_STARTED' 
   | 'EXPORT_COMPLETED' 
   | 'EXPORT_CANCELLED' 
+  | 'EXPORT_FAILED'
   | 'WEBCODECS_FALLBACK';
 
 export interface TelemetryData {
