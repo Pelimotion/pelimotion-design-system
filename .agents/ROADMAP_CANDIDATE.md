@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 23:40:05*
-*Current Commit Hash: `112a41f`*
+*Generated at: 13/06/2026, 23:40:48*
+*Current Commit Hash: `1b9543c`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Timeline Context Menu** (diretor_criacao + product_designer):
-  - *Descrição:* Atalhos de teclado (Cmd+C/Cmd+D) são ágeis, mas muitos editores dependem do clique-direito (Context Menu) direto no bloco para descobrir e executar ações (Copiar, Fatiar, Deletar).
+- **Magnetic Edge Snapping** (diretor_criacao + product_designer):
+  - *Descrição:* Atualmente a agulha só "gruda" na grade de segundos. Editores de motion precisam alinhar exatamente o IN point de uma camada com o OUT point de outra para fazer cortes secos.
 
-- **Custom Floating Context Menu** (product_designer + dev_senior):
-  - *Descrição:* O Menu de Contexto nativo do navegador polui a experiência. Devemos interceptar o `onContextMenu` e renderizar um sub-painel React flutuante com suporte ao motor do Zustand.
+- **Dynamic Array Snapping** (product_designer + dev_senior):
+  - *Descrição:* Durante o drag, precisamos compilar um array temporário de `startTime` e `endTime` de todas as camadas, e usar uma tolerância de 0.2s para grudar o bloco sendo arrastado nos blocos adjacentes.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 22)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 23)
 
-- [x] **Context Menu UI:** Adicionar estado `contextMenu` e interceptação global de clique fora (`clickaway`) no `CompositionTimeline.tsx` (Product Designer).
-- [x] **Track Block Binding:** Acoplar o evento `onContextMenu` a todas as tracks de Composição e de Áudio, abrindo o menu flutuante nas coordenadas do mouse (`e.clientX`, `e.clientY`) (Dev Senior).
+- [x] **Magnetic Edge Snapping:** Atualizar o `CompositionTimeline.tsx` no `handlePointerMove` para criar um array de `snapPoints` (bordas de todos os assets) (Dev Senior).
+- [x] **Sub-second Threshold:** Implementar verificação linear de `diff < 0.2` garantindo que o Edge Snapping sempre sobreponha o Grid Snapping quando estiver próximo do limite (Product Designer).
