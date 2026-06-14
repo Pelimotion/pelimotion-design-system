@@ -1,10 +1,15 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 NLE Avançado, Copiar & Colar, Drag & Drop Local e Cancelamento de Exportação (v2.5)
+## Active Phase: 🟢 Estabilidade Arquitetural, Encerramento do Massive Loop e Refinamento do Editor (v2.6)
 
-## 🏁 Pelimotion Design System v2.5 — Advanced NLE Features, Global Shortcuts, Drag & Drop & Export Cancel Complete
+## 🏁 Pelimotion Design System v2.6 — Arquitetura de Ponta Estabilizada
 
-All core components for NLE workflow enhancements, local file ingestion, universal clipboard capabilities, timeline snapping, dynamic scrolling, and render execution cancellation have been successfully integrated and verified.
+O ciclo autônomo (Massive Loop Phase 20-25) foi oficialmente encerrado. O Pelimotion agora opera com paridade de recursos a editores NLE de desktop profissionais, possuindo gestão de memória blindada e física de arraste com 60fps cravados.
+
+### Session Achievements (v2.6 - Massive Loop Conclusion)
+- **Virtual Auto-Scroll (requestAnimationFrame):** Implementado um motor assíncrono para rolagem infinita da régua do tempo. Quando o mouse atinge a zona de "threshold" (40px) das bordas da tela durante um arraste (drag), a timeline rola automaticamente enquanto recalcula tempos magnéticos de forma invisível.
+- **Panic Button & Thread Ejection:** Adicionado cancelamento abrupto de exportação no `ExportPanel.tsx`. Se abortado, o sistema ejetará um erro `EXPORT_CANCELLED` dentro do loop crítico de frames, forçando o término de workers WebCodecs/FFmpeg.wasm para zerar vazamentos de memória (RAM Leaks) e travas no navegador.
+- **Encerramento da Malha Autônoma:** Finalização segura dos scripts cronológicos e orquestradores agenticos, cimentando a *codebase* estável atual.
 
 ### Session Achievements (v2.5 - Professional NLE Workflow & Integration Loop)
 - **Universal Clipboard & Hotkeys (Cmd+C / Cmd+V):** Implemented clipboard state mapping in Zustand. Copy layers or audio tracks with `Cmd+C` and paste them with `Cmd+V` at the current playhead position (`currentTime`).
