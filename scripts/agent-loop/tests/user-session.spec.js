@@ -23,12 +23,8 @@ test.describe('Pelimotion User Session Simulation', () => {
 
   test('Advanced user session: Complex creatives and visual snapshot', async ({ page }) => {
     try {
-      // 1. Navigate to local dev server gracefully
-      try {
-        await page.goto('http://localhost:3000/pelimotion-design-system/', { waitUntil: 'networkidle', timeout: 10000 });
-      } catch (e) {
-        throw new Error('Local dev server is not running at http://localhost:3000/pelimotion-design-system/');
-      }
+      // 1. Navigate to local dev server
+      await page.goto('/', { waitUntil: 'networkidle' });
 
       // 2. Add Generative Elements
       const spiroBtn = page.getByRole('button', { name: /Spirograph|Onda|Grade/i }).first();

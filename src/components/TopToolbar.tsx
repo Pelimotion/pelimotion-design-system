@@ -403,7 +403,7 @@ export function TopToolbar() {
   return (
     <header
       id="top-bar"
-      className="glass-panel animate-fade-in stagger-1"
+      className="glass-panel animate-fade-in stagger-1 custom-scrollbar"
       style={{
         padding: '0 16px',
         height: 48,
@@ -413,6 +413,8 @@ export function TopToolbar() {
         zIndex: 100,
         gap: 8,
         flexShrink: 0,
+        overflowX: 'auto',
+        overflowY: 'hidden',
       }}
     >
       {/* ── Zone 1: Engine Context ─────────────────────────────────────── */}

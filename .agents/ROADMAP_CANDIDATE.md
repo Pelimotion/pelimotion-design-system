@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap (V2)
 
-*Generated at: 14/06/2026, 19:00:18*
-*Current Commit Hash: `afdeea6`*
+*Generated at: 14/06/2026, 19:00:56*
+*Current Commit Hash: `db53ac9`*
 
 ## 1. Falhas Críticas Detectadas (Playwright & Telemetry)
 

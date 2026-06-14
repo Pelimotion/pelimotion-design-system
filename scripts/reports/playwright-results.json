@@ -1,0 +1,15 @@
+{
+  "errors": [
+    {
+      "type": "console",
+      "text": "A bad HTTP response code (404) was received when fetching the script."
+    },
+    {
+      "type": "usability",
+      "text": "Could not find buttons to add Generative shapes."
+    }
+  ],
+  "metrics": {
+    "fps": 53
+  }
+}
