@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 23)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 24)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Magnetic Edge Snapping',
+    title: 'Timeline Auto-Scroll Dragging',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Atualmente a agulha só "gruda" na grade de segundos. Editores de motion precisam alinhar exatamente o IN point de uma camada com o OUT point de outra para fazer cortes secos.'
+    description: 'Quando a timeline está muito "zoomada" (>200%), mover um bloco lá pro final exigia soltar, rolar a barra e puxar de novo. Isso destrói o estado de flow criativo.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Dynamic Array Snapping',
+    title: 'RequestAnimationFrame Virtual Scroll',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Durante o drag, precisamos compilar um array temporário de `startTime` e `endTime` de todas as camadas, e usar uma tolerância de 0.2s para grudar o bloco sendo arrastado nos blocos adjacentes.'
+    description: 'Devemos iniciar um loop recursivo assíncrono durante o `dragging` que verifica se o cursor se aproxima a 40px das bordas, incrementando o `scrollLeft` continuamente.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 23)\n\n`;
-  markdown += `- [x] **Magnetic Edge Snapping:** Atualizar o \`CompositionTimeline.tsx\` no \`handlePointerMove\` para criar um array de \`snapPoints\` (bordas de todos os assets) (Dev Senior).\n`;
-  markdown += `- [x] **Sub-second Threshold:** Implementar verificação linear de \`diff < 0.2\` garantindo que o Edge Snapping sempre sobreponha o Grid Snapping quando estiver próximo do limite (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 24)\n\n`;
+  markdown += `- [x] **Time Update Refactor:** Desacoplar a lógica de cálculo de tempo para uma função autônoma \`applyTimeUpdate()\` dentro de \`CompositionTimeline.tsx\` (Dev Senior).\n`;
+  markdown += `- [x] **Auto-scroll Loop:** Durante o Drag, ativar \`requestAnimationFrame()\` lendo o \`currentMouseX\`. Se estiver na Threshold de 40px, avançar/retroceder a viewport horizontalmente simulando um virtual Drag (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

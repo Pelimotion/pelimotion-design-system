@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 14/06/2026, 00:00:06*
-*Current Commit Hash: `bca777e`*
+*Generated at: 14/06/2026, 00:01:21*
+*Current Commit Hash: `0a5296c`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Magnetic Edge Snapping** (diretor_criacao + product_designer):
-  - *Descrição:* Atualmente a agulha só "gruda" na grade de segundos. Editores de motion precisam alinhar exatamente o IN point de uma camada com o OUT point de outra para fazer cortes secos.
+- **Timeline Auto-Scroll Dragging** (diretor_criacao + product_designer):
+  - *Descrição:* Quando a timeline está muito "zoomada" (>200%), mover um bloco lá pro final exigia soltar, rolar a barra e puxar de novo. Isso destrói o estado de flow criativo.
 
-- **Dynamic Array Snapping** (product_designer + dev_senior):
-  - *Descrição:* Durante o drag, precisamos compilar um array temporário de `startTime` e `endTime` de todas as camadas, e usar uma tolerância de 0.2s para grudar o bloco sendo arrastado nos blocos adjacentes.
+- **RequestAnimationFrame Virtual Scroll** (product_designer + dev_senior):
+  - *Descrição:* Devemos iniciar um loop recursivo assíncrono durante o `dragging` que verifica se o cursor se aproxima a 40px das bordas, incrementando o `scrollLeft` continuamente.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 23)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 24)
 
-- [x] **Magnetic Edge Snapping:** Atualizar o `CompositionTimeline.tsx` no `handlePointerMove` para criar um array de `snapPoints` (bordas de todos os assets) (Dev Senior).
-- [x] **Sub-second Threshold:** Implementar verificação linear de `diff < 0.2` garantindo que o Edge Snapping sempre sobreponha o Grid Snapping quando estiver próximo do limite (Product Designer).
+- [x] **Time Update Refactor:** Desacoplar a lógica de cálculo de tempo para uma função autônoma `applyTimeUpdate()` dentro de `CompositionTimeline.tsx` (Dev Senior).
+- [x] **Auto-scroll Loop:** Durante o Drag, ativar `requestAnimationFrame()` lendo o `currentMouseX`. Se estiver na Threshold de 40px, avançar/retroceder a viewport horizontalmente simulando um virtual Drag (Product Designer).

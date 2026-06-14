@@ -146,6 +146,57 @@ export function CompositionTimeline() {
     setDragging({ id, type, isBg, isAudio });
   };
 
+  const applyTimeUpdate = useCallback((time: number) => {
+    if (!dragging) return;
+
+    if (dragging.type === 'playhead') {
+      seek(time);
+      import('gsap').then(({ gsap }) => {
+        gsap.globalTimeline.pause();
+        gsap.globalTimeline.seek(time);
+      });
+      return;
+    }
+
+    if (dragging.isBg) {
+       const trimStart = exportConfig.bgTrimStart || 0;
+       const trimEnd = exportConfig.bgTrimEnd || exportConfig.duration;
+       if (dragging.type === 'trim-left') {
+         updateExportConfig({ bgTrimStart: Math.min(time, trimEnd - 0.1) });
+       } else if (dragging.type === 'trim-right') {
+         updateExportConfig({ bgTrimEnd: Math.max(time, trimStart + 0.1) });
+       }
+    } else if (dragging.isAudio) {
+       const track = audioTracks.find(t => t.id === dragging.id);
+       if (!track) return;
+
+       if (dragging.type === 'move') {
+          updateAudioTrack(dragging.id, { startTime: Math.min(time, exportConfig.duration - track.duration) });
+       } else if (dragging.type === 'trim-left') {
+          const endTime = track.startTime + track.duration;
+          const newStart = Math.min(time, endTime - 0.1);
+          updateAudioTrack(dragging.id, { startTime: newStart, duration: endTime - newStart });
+       } else if (dragging.type === 'trim-right') {
+          const newDur = Math.max(0.1, time - track.startTime);
+          updateAudioTrack(dragging.id, { duration: newDur });
+       }
+    } else {
+       const layer = compositionLayers.find(l => l.id === dragging.id);
+       if (!layer) return;
+
+       if (dragging.type === 'move') {
+          updateCompositionLayer(dragging.id, { startTime: Math.min(time, exportConfig.duration - layer.duration) });
+       } else if (dragging.type === 'trim-left') {
+          const endTime = layer.startTime + layer.duration;
+          const newStart = Math.min(time, endTime - 0.1);
+          updateCompositionLayer(dragging.id, { startTime: newStart, duration: endTime - newStart });
+       } else if (dragging.type === 'trim-right') {
+          const newDur = Math.max(0.1, time - layer.startTime);
+          updateCompositionLayer(dragging.id, { duration: newDur });
+       }
+    }
+  }, [dragging, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek]);
+
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!dragging || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -191,56 +242,8 @@ export function CompositionTimeline() {
       }
     }
 
-    if (dragging.type === 'playhead') {
-      seek(time);
-      import('gsap').then(({ gsap }) => {
-        gsap.globalTimeline.pause();
-        gsap.globalTimeline.seek(time);
-      });
-      return;
-    }
-
-    if (dragging.isBg) {
-       // Background Video Trim
-       const trimStart = exportConfig.bgTrimStart || 0;
-       const trimEnd = exportConfig.bgTrimEnd || exportConfig.duration; // Fallback
-       
-       if (dragging.type === 'trim-left') {
-         updateExportConfig({ bgTrimStart: Math.min(time, trimEnd - 0.1) });
-       } else if (dragging.type === 'trim-right') {
-         updateExportConfig({ bgTrimEnd: Math.max(time, trimStart + 0.1) });
-       }
-    } else if (dragging.isAudio) {
-       const track = audioTracks.find(t => t.id === dragging.id);
-       if (!track) return;
-
-       if (dragging.type === 'move') {
-          updateAudioTrack(dragging.id, { startTime: Math.min(time, exportConfig.duration - track.duration) });
-       } else if (dragging.type === 'trim-left') {
-          const endTime = track.startTime + track.duration;
-          const newStart = Math.min(time, endTime - 0.1);
-          updateAudioTrack(dragging.id, { startTime: newStart, duration: endTime - newStart });
-       } else if (dragging.type === 'trim-right') {
-          const newDur = Math.max(0.1, time - track.startTime);
-          updateAudioTrack(dragging.id, { duration: newDur });
-       }
-    } else {
-       // Composition Layer
-       const layer = compositionLayers.find(l => l.id === dragging.id);
-       if (!layer) return;
-
-       if (dragging.type === 'move') {
-          updateCompositionLayer(dragging.id, { startTime: Math.min(time, exportConfig.duration - layer.duration) });
-       } else if (dragging.type === 'trim-left') {
-          const endTime = layer.startTime + layer.duration;
-          const newStart = Math.min(time, endTime - 0.1);
-          updateCompositionLayer(dragging.id, { startTime: newStart, duration: endTime - newStart });
-       } else if (dragging.type === 'trim-right') {
-          const newDur = Math.max(0.1, time - layer.startTime);
-          updateCompositionLayer(dragging.id, { duration: newDur });
-       }
-    }
-  }, [dragging, pixelsPerSecond, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek, snapEnabled, snapTolerance]);
+    applyTimeUpdate(time);
+  }, [dragging, exportConfig.duration, snapEnabled, snapTolerance, compositionLayers, audioTracks, applyTimeUpdate]);
 
   const handlePointerUp = useCallback(() => {
     setDragging(null);
@@ -270,8 +273,25 @@ export function CompositionTimeline() {
             const virtualMouseX = currentMouseX - (trackRect.left + 12);
             const trackWidth = trackRect.width - 24; 
             const time = Math.max(0, Math.min(exportConfig.duration, (virtualMouseX / trackWidth) * exportConfig.duration));
-            // Only update time virtually, don't trigger full event
-            handleVirtualTimeMove(time);
+            
+            // Re-apply snapping logic for virtual move
+            let finalTime = time;
+            if (snapEnabled && dragging.type !== 'playhead') {
+               const inv = 1 / snapTolerance;
+               let gridTime = Math.round(time * inv) / inv;
+               const snapPoints: number[] = [];
+               compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
+               audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
+               snapPoints.push(0, exportConfig.duration);
+               let closestEdge = -1;
+               let minDiff = 0.2;
+               for (const pt of snapPoints) {
+                  const diff = Math.abs(time - pt);
+                  if (diff < minDiff) { minDiff = diff; closestEdge = pt; }
+               }
+               finalTime = closestEdge !== -1 ? closestEdge : gridTime;
+            }
+            applyTimeUpdate(finalTime);
           }
         } else if (currentMouseX < rect.left + edgeThreshold) {
           scrollContainer.scrollLeft -= scrollSpeed;
@@ -280,7 +300,24 @@ export function CompositionTimeline() {
             const virtualMouseX = currentMouseX - (trackRect.left + 12);
             const trackWidth = trackRect.width - 24; 
             const time = Math.max(0, Math.min(exportConfig.duration, (virtualMouseX / trackWidth) * exportConfig.duration));
-            handleVirtualTimeMove(time);
+            
+            let finalTime = time;
+            if (snapEnabled && dragging.type !== 'playhead') {
+               const inv = 1 / snapTolerance;
+               let gridTime = Math.round(time * inv) / inv;
+               const snapPoints: number[] = [];
+               compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
+               audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
+               snapPoints.push(0, exportConfig.duration);
+               let closestEdge = -1;
+               let minDiff = 0.2;
+               for (const pt of snapPoints) {
+                  const diff = Math.abs(time - pt);
+                  if (diff < minDiff) { minDiff = diff; closestEdge = pt; }
+               }
+               finalTime = closestEdge !== -1 ? closestEdge : gridTime;
+            }
+            applyTimeUpdate(finalTime);
           }
         }
       }
