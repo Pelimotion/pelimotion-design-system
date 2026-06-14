@@ -4,13 +4,14 @@
  * Provides filtering and categorization for the Fullscreen Library Gallery.
  */
 import { useEditorStore } from '@/store/useEditorStore'
-import { Type, Layers, Combine, Image as ImageIcon } from 'lucide-react'
+import { Type, Layers, Combine, Image as ImageIcon, Music } from 'lucide-react'
 
 const TABS = [
   { id: 'Tipografia', label: 'Tipografia', icon: Type },
   { id: 'Generativo', label: 'Generativo', icon: Layers },
   { id: 'Logo', label: 'Logo', icon: ImageIcon },
   { id: 'Transição', label: 'Transição', icon: Combine },
+  { id: 'Audio', label: 'Áudio', icon: Music },
 ]
 
 export function LibraryPanel() {

@@ -1,11 +1,15 @@
 {
-  "sessionsRun": 2,
+  "sessionsRun": 3,
   "historicalInsights": [
-    "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion."
+    "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
+    "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
     "Corrected static export/loading indicators by introducing keyframes for @keyframes spin.",
-    "Fixed ESLint error on accessing isResizing ref during render by wrapping it in sidebarResizing state."
+    "Fixed ESLint error on accessing isResizing ref during render by wrapping it in sidebarResizing state.",
+    "Resolved empty library sidebar panel by correctly mounting LibraryPanel under the library layout tab.",
+    "Fixed missing NoiseChannel import and type assertions for override configurations in GenerativePreview.",
+    "Configured custom geometry sliders for Squares, Hexagons, Stars, Concentric lines, and Spirographs in GenerativePanel."
   ]
 }

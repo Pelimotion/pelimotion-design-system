@@ -10,14 +10,14 @@
  * The colorization logic always resets previous inline styles before applying
  * new colors, preventing the "ghost color" bug when switching modes.
  */
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { createNoiseDriver, type NoiseDriver } from '../Generative/noiseEngine'
+import { createNoiseDriver, type NoiseDriver, type NoiseChannel } from '../Generative/noiseEngine'
 import { gsap } from 'gsap'
 import { Draggable } from 'gsap/Draggable'
 import { useGSAP } from '@gsap/react'
 import { renderGenerativeShape } from './shapes'
-import type { GenerativeLayer } from '@/types/motion.types'
+import type { GenerativeLayer, GlobalMotionConfig } from '@/types/motion.types'
 import GenerativeWorker from './generative.worker?worker'
 
 gsap.registerPlugin(useGSAP, Draggable)
@@ -115,18 +115,38 @@ function applyLayerColors(container: HTMLElement, layer: GenerativeLayer) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) {
+export interface PlaybackContext {
+  isPlaying: boolean;
+  localTime: number;
+  duration: number;
+}
+
+export interface GenerativeOverrideConfig {
+  motionConfig?: Partial<GlobalMotionConfig>;
+  generativeLayers?: GenerativeLayer[];
+  playbackContext?: PlaybackContext;
+}
+
+export function GenerativePreview({ overrideConfig }: { overrideConfig?: GenerativeOverrideConfig }) {
   const store = useEditorStore()
   
-  const motionConfig = overrideConfig ? overrideConfig.motionConfig : store.motionConfig
-  const generativeLayers = overrideConfig ? overrideConfig.generativeLayers : store.generativeLayers
+  const motionConfig = overrideConfig?.motionConfig ?? store.motionConfig
+  const generativeLayers = overrideConfig?.generativeLayers ?? store.generativeLayers
   const activeGenerativeLayerId = overrideConfig ? null : store.activeGenerativeLayerId
-  const setActiveGenerativeLayerId = overrideConfig ? () => {} : store.setActiveGenerativeLayerId
-  const updateLayerTransform = overrideConfig ? () => {} : store.updateLayerTransform
+  
+  const setActiveGenerativeLayerId = useMemo(() => {
+    return overrideConfig ? () => {} : store.setActiveGenerativeLayerId
+  }, [overrideConfig, store.setActiveGenerativeLayerId])
+
+  const updateLayerTransform = useMemo(() => {
+    return overrideConfig ? () => {} : store.updateLayerTransform
+  }, [overrideConfig, store.updateLayerTransform])
+
+  const wiggleConfig = motionConfig?.wiggle ?? store.motionConfig.wiggle
   const {
     amplitude, frequency, octaves, persistence, noiseType, seed,
     propertyFps, propertyAmplitudes, propertyFrequencies, previewGrid
-  } = motionConfig.wiggle
+  } = wiggleConfig
 
   // Map<layerId, { driver, container }>
   const driversRef = useRef<Map<string, NoiseDriver>>(new Map())
@@ -137,11 +157,12 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
   
   // ── Per-Layer Engine Boot ────────────────────────────────────────────────────
   useLayoutEffect(() => {
+    const currentDrivers = driversRef.current;
     // Stop & clear all previous drivers
-    driversRef.current.forEach(d => d.stop())
-    driversRef.current.clear()
+    currentDrivers.forEach(d => d.stop())
+    currentDrivers.clear()
 
-    generativeLayers.forEach((layer: any, i: number) => {
+    generativeLayers.forEach((layer: GenerativeLayer, i: number) => {
       const container = layerRefsMap.current.get(layer.id)
       if (!container) return
 
@@ -190,7 +211,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
           persistence: lPersistence, 
           noiseType: lNoiseType,
           seed: layerSeed,
-          channels: channels as any,
+          channels: channels as NoiseChannel[],
           propertyFps: propertyFps || {},
           propertyAmplitudes: propertyAmplitudes || {},
           propertyFrequencies: propertyFrequencies || {},
@@ -199,7 +220,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
           colors: [],
           previewGrid: previewGrid || 'none',
         })
-        driversRef.current.set(layer.id + '_motion', driver)
+        currentDrivers.set(layer.id + '_motion', driver)
         if (isPlaying) driver.start()
       }
 
@@ -221,18 +242,18 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
           colors: [],
           previewGrid: 'none',
         })
-        driversRef.current.set(layer.id + '_opacity', opacityDriver)
+        currentDrivers.set(layer.id + '_opacity', opacityDriver)
         if (isPlaying) opacityDriver.start()
       }
     })
 
     return () => {
-      driversRef.current.forEach(d => d.stop())
-      driversRef.current.clear()
+      currentDrivers.forEach(d => d.stop())
+      currentDrivers.clear()
     }
   }, [
     generativeLayers, amplitude, frequency, octaves, persistence,
-    noiseType, seed, propertyFps, propertyAmplitudes, propertyFrequencies, isPlaying
+    noiseType, seed, propertyFps, propertyAmplitudes, propertyFrequencies, isPlaying, previewGrid
   ])
 
   // ── Web Worker OffscreenCanvas Boot ──────────────────────────────────────────
@@ -243,7 +264,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
     if (!window.OffscreenCanvas) return;
     workerRef.current = new GenerativeWorker();
 
-    generativeLayers.forEach((layer: any) => {
+    generativeLayers.forEach((layer: GenerativeLayer) => {
       const canvas = canvasRefs.current.get(layer.id);
       if (canvas && !canvas.dataset.workerInit) {
         const offscreen = canvas.transferControlToOffscreen();
@@ -265,7 +286,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
         const newWiggle = state.motionConfig.wiggle;
         if (newWiggle !== prevWiggle) {
           prevWiggle = newWiggle;
-          generativeLayers.forEach((layer: any) => {
+          generativeLayers.forEach((layer: GenerativeLayer) => {
             workerRef.current?.postMessage({
               type: 'UPDATE_CONFIG',
               payload: { ...newWiggle, colors: layer.colors, tritone: layer.colorMode === 'tritone' }
@@ -297,7 +318,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
 
   useEffect(() => {
     const draggables: Draggable[] = [];
-    generativeLayers.forEach((layer: any) => {
+    generativeLayers.forEach((layer: GenerativeLayer) => {
       const el = layerRefsMap.current.get(layer.id)?.parentElement; // The layer-base div
       if (el) {
         gsap.set(el, {
@@ -334,12 +355,13 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
     return () => {
       draggables.forEach(d => d.kill());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generativeLayers.length]); // Only rebind when layers are added/removed
 
   // Sync state changes to GSAP
   useEffect(() => {
     if (overrideConfig) return; // Don't sync internal transforms if override is provided, or do it statically
-    generativeLayers.forEach((layer: any) => {
+    generativeLayers.forEach((layer: GenerativeLayer) => {
       const el = layerRefsMap.current.get(layer.id)?.parentElement;
       if (el) {
         gsap.set(el, {
@@ -396,7 +418,7 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: any }) 
       {/* Layers Container (Free Canvas) */}
       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
       <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: overrideConfig ? 'none' : 'auto' }}>
-        {generativeLayers.map((layer: any) => {
+        {generativeLayers.map((layer: GenerativeLayer) => {
           const { transform, type, svgString, animation } = layer
           // For built-in shapes, use first layer color for initial render; noise colors applied via applyLayerColors
           const shapeColor = (layer.colors && layer.colors[0]) || '#a78bfa'

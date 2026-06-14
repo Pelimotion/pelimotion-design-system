@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { TypographyPanel } from '@/components/TypographyPanel'
 import { GenerativePanel } from '@/components/GenerativePanel'
+import { LibraryPanel } from '@/components/LibraryPanel'
 import { CompositionPanel } from '@/components/CompositionPanel'
 import { ExportPanel } from '@/components/ExportPanel'
 import { TypographyPreview } from '@/engines/Typography'
@@ -734,6 +735,7 @@ function App() {
             <div style={{ flex: 1, overflow: 'hidden', padding: 16, display: 'flex', flexDirection: 'column' }}>
               {activePanel === 'typography' && <TypographyPanel />}
               {activePanel === 'generative' && <GenerativePanel />}
+              {activePanel === 'library' && <LibraryPanel />}
               {activePanel === 'composition' && <CompositionPanel />}
               {activePanel === 'export' && <ExportPanel />}
               {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'composition' && activePanel !== 'export' && (
