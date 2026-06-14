@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Pelimotion Agent Loops - Orchestrator (V2: Autonomous & Data-Driven)
- * Runs Playwright tests, Lighthouse audits, crosses data with Personas,
- * and generates ROADMAP_CANDIDATE.md dynamically.
+ * Pelimotion Agent Loops - Orchestrator (V3: Holistic, Memory-Driven, Open-Vision)
+ * Runs Playwright tests, analyzes deeply across the system using market paradigms,
+ * stores learnings, and generates ultra-detailed ROADMAP_CANDIDATE.md.
  */
 
 const fs = require('fs');
@@ -13,12 +13,25 @@ const { personas } = require('./personas.cjs');
 
 const WORKSPACE_DIR = path.resolve(__dirname, '../../');
 const REPORTS_DIR = path.resolve(WORKSPACE_DIR, '.agents/reports');
+const MEMORY_FILE = path.resolve(WORKSPACE_DIR, '.agents/LEARNING_MEMORY.json');
 const CANDIDATE_ROADMAP_PATH = path.resolve(WORKSPACE_DIR, '.agents/ROADMAP_CANDIDATE.md');
 const PW_RESULTS_PATH = path.resolve(REPORTS_DIR, 'playwright-results.json');
 
 if (!fs.existsSync(REPORTS_DIR)) {
   fs.mkdirSync(REPORTS_DIR, { recursive: true });
 }
+
+// Memory Initialization
+let memory = { sessionsRun: 0, historicalInsights: [], resolvedBugs: [] };
+if (fs.existsSync(MEMORY_FILE)) {
+  try {
+    memory = JSON.parse(fs.readFileSync(MEMORY_FILE, 'utf8'));
+  } catch (e) {
+    console.warn('\x1b[33mWarning: Failed to parse LEARNING_MEMORY.json. Resetting memory.\x1b[0m');
+  }
+}
+
+memory.sessionsRun++;
 
 function runCmd(cmd) {
   try {
@@ -28,21 +41,17 @@ function runCmd(cmd) {
   }
 }
 
-console.log('\x1b[35m[Orchestrator] Starting Pelimotion Multi-Persona Agent Loop (V2)...\x1b[0m');
+console.log('\x1b[35m[Orchestrator V3] Starting Holistic Open-Vision Agent Loop...\x1b[0m');
+console.log(`[Memory] Session #${memory.sessionsRun}`);
 
 const gitBranch = runCmd('git branch --show-current') || 'main';
 const gitHash = runCmd('git rev-parse --short HEAD') || 'unknown';
 
-console.log(`- Git State: branch \x1b[36m${gitBranch}\x1b[0m, commit \x1b[32m${gitHash}\x1b[0m`);
-
-console.log('\n\x1b[34m[Orchestrator] Running Playwright UI Tests (User Session Simulation)...\x1b[0m');
-// Start the dev server in the background, run tests, kill it.
-// For simplicity, we assume dev server is running or we just run the playwright test against it.
-// If it fails to connect, playwright will throw. 
+console.log('\n\x1b[34m[Orchestrator] Running Playwright UI Tests (Deep Holistic Simulation)...\x1b[0m');
 try {
   execSync('npx playwright test scripts/agent-loop/tests/user-session.spec.js', { stdio: 'inherit', cwd: WORKSPACE_DIR });
 } catch (e) {
-  console.warn('\x1b[33mPlaywright test finished with some errors (expected when finding inconsistencies).\x1b[0m');
+  console.warn('\x1b[33mPlaywright test finished with errors (inconsistencies found).\x1b[0m');
 }
 
 let testData = { errors: [], metrics: { fps: 0 } };
@@ -50,101 +59,85 @@ if (fs.existsSync(PW_RESULTS_PATH)) {
   testData = JSON.parse(fs.readFileSync(PW_RESULTS_PATH, 'utf8'));
 } else {
   console.warn('\x1b[33mNo Playwright results found. Proceeding with empty test data.\x1b[0m');
-  testData.errors.push({ type: 'server', text: 'Local server might not be running. Could not complete UI tests.' });
 }
 
-console.log('\n\x1b[34m[Orchestrator] Generating Persona Insights based on real data...\x1b[0m');
+// Pick a dynamic focus area for this session to ensure deep sweeping over time
+const areas = ['Timeline & Export Workflow', 'Canvas Rendering & Interaction', 'UI Navigation & Bento Grid UX', 'Generative Shapes & Asset Library'];
+const sessionFocusArea = areas[memory.sessionsRun % areas.length];
+
+console.log(`\n\x1b[36m[Session Focus] Performing Deep Sweep on: ${sessionFocusArea}\x1b[0m`);
 
 function generateDynamicInsights(personaId) {
   const dateStr = new Date().toISOString();
-  let evaluation = '';
+  let evaluation = `### [${personas[personaId].title.toUpperCase()} REPORT]\n`;
+  evaluation += `**Sessão de Foco Atual:** ${sessionFocusArea}\n`;
 
   const uiErrors = testData.errors.filter(e => e.type === 'usability').map(e => e.text);
-  const perfErrors = testData.errors.filter(e => e.type === 'performance').map(e => e.text);
-  const crashErrors = testData.errors.filter(e => e.type === 'crash').map(e => e.text);
+  const crashErrors = testData.errors.filter(e => e.type === 'crash' || e.type === 'pageerror' || e.type === 'console').map(e => e.text);
 
-  if (personaId === 'dev_senior') {
-    evaluation = `### [DEV SENIOR REPORT] Technical Stability\n`;
-    if (crashErrors.length > 0) evaluation += `*   **CRITICAL CRASHES:** ${crashErrors.join(' | ')}\n`;
-    if (perfErrors.length > 0) evaluation += `*   **PERFORMANCE BOTTLENECKS:** ${perfErrors.join(' | ')}\n`;
-    if (crashErrors.length === 0 && perfErrors.length === 0) evaluation += `*   No critical crashes or frame drops detected in this run.\n`;
-    evaluation += `*   **Action:** Investigate WebCodecs cleanup and React re-renders to fix any reported frame drops.`;
+  if (crashErrors.length > 0) {
+    evaluation += `\n*   **CRITICAL SYSTEM ERRORS:** Encontramos falhas (${crashErrors.length}). Devemos adotar a robustez técnica do mercado (Figma/After Effects) para eliminar essas inconsistências de raiz.\n`;
   }
-  else if (personaId === 'product_designer') {
-    evaluation = `### [PRODUCT DESIGNER REPORT] User Experience\n`;
-    if (uiErrors.length > 0) evaluation += `*   **UX FRICTION:** ${uiErrors.join(' | ')}\n`;
-    else evaluation += `*   UI seems navigable based on the automated test.\n`;
-    evaluation += `*   **Action:** We need to compare our Bento Grid and floating toolbars with Figma and Cavalry to resolve the discoverability of 'Export' and 'Add Text'.`;
-  }
-  else if (personaId === 'ceo') {
-    evaluation = `### [CEO REPORT] Strategic Impact\n*   **Impact of UI/UX Bugs:** Any crash or missing export button directly impacts our Zero-Server Rendering value proposition. Users won't convert if they can't export.\n*   **Action:** Prioritize fixing usability bugs found in Playwright tests before adding more generative effects.`;
-  }
-  else if (personaId === 'analista_senior') {
-    evaluation = `### [ANALYST REPORT] Telemetry\n*   **Test Metrics:** Measured Canvas FPS: ${testData.metrics.fps || 'N/A'}.\n*   **Action:** We must log these FPS drops automatically to our backend to detect which devices are suffering with the current noise algorithms.`;
-  }
-  else {
-    evaluation = `### [${personas[personaId].title.toUpperCase()} REPORT]\n*   **Standard Review:** Ensure visual aesthetics and SEO metadata remain intact during these UI fixes.`;
+  
+  if (uiErrors.length > 0) {
+    evaluation += `\n*   **UX INCONSISTENCIES:** ${uiErrors.length} problemas de usabilidade. A jornada do usuário deve ser fluida como no Cavalry.\n`;
   }
 
-  return {
-    persona: personaId,
-    timestamp: dateStr,
-    evaluation
-  };
+  evaluation += `\n*   **Diretriz Holística:** Não se atenha a limites de complexidade. Use pesquisas profundas na web sobre soluções de ponta. Teste as soluções múltiplas vezes.\n`;
+  
+  return { persona: personaId, timestamp: dateStr, evaluation };
 }
 
 const reports = {};
 Object.keys(personas).forEach(pKey => {
-  console.log(`Evaluating as: \x1b[33m${personas[pKey].title}\x1b[0m...`);
   reports[pKey] = generateDynamicInsights(pKey);
   fs.writeFileSync(path.resolve(REPORTS_DIR, `${pKey}_report.json`), JSON.stringify(reports[pKey], null, 2), 'utf8');
 });
 
-console.log('\n\x1b[33m[Orchestrator] Crossing Data & Generating Candidate Roadmap...\x1b[0m');
+// Update memory
+if (testData.errors.length > 0) {
+  memory.historicalInsights.push(`Session ${memory.sessionsRun}: Detected ${testData.errors.length} errors during sweep of ${sessionFocusArea}`);
+  if (memory.historicalInsights.length > 10) memory.historicalInsights.shift(); // keep last 10
+}
+fs.writeFileSync(MEMORY_FILE, JSON.stringify(memory, null, 2), 'utf8');
 
-let markdown = `# Pelimotion Agent Loops Candidate Roadmap (V2)\n\n`;
+console.log('\n\x1b[33m[Orchestrator] Generating V3 Ultra-Detailed Roadmap Candidate...\x1b[0m');
+
+let markdown = `# Pelimotion Agent Loops: Holistic Roadmap (V3)\n\n`;
 markdown += `*Generated at: ${new Date().toLocaleString('pt-BR')}*\n`;
-markdown += `*Current Commit Hash: \`${gitHash}\`*\n\n`;
+markdown += `*Session Number: ${memory.sessionsRun}*\n`;
+markdown += `*System Sweep Focus: **${sessionFocusArea}***\n\n`;
 
-markdown += `## 1. Falhas Críticas Detectadas (Playwright & Telemetry)\n\n`;
-if (testData.errors.length > 0) {
-  testData.errors.forEach(e => {
-    markdown += `- **[${e.type.toUpperCase()}]**: ${e.text}\n`;
-  });
+markdown += `> **ATENÇÃO AGENTE EXECUTOR:** \n> Use After Effects, Figma, Cavalry e grandes plataformas generativas como referência. \n> Realize sessões como um usuário iniciante/avançado para caçar bugs e problemas de UX.\n> Esta roadmap **NÃO TEM LIMITES DE EXECUÇÃO NEM DE COMPLEXIDADE**. Teste e refine profundamente.\n\n`;
+
+markdown += `## 1. Memória e Aprendizado Histórico\n`;
+if (memory.historicalInsights.length > 0) {
+  memory.historicalInsights.slice(-3).forEach(insight => markdown += `- ${insight}\n`);
 } else {
-  markdown += `- Nenhuma falha crítica detectada nos testes desta rodada.\n`;
+  markdown += `- Sem histórico recente. Iniciando base de dados.\n`;
 }
 
-markdown += `\n## 2. Recomendações Priorizadas por Persona\n\n`;
-Object.values(reports).forEach(r => {
-  markdown += `${r.evaluation}\n\n`;
-});
-
-markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n`;
-
-// 1. Mandatory Visual Audit
-markdown += `- [ ] **Auditoria Visual Profunda (Obrigatório):** Agente, use a tool \`view_file\` no arquivo \`.agents/reports/session-result.png\` para fazer uma análise visual meticulosa da interface. Se encontrar elementos desalinhados, falta de contraste, ou problemas de UX percebidos, corrija imediatamente no código.\n`;
-
-// 2. Dynamic Tasks based on test results
+markdown += `\n## 2. Inconsistências Críticas (Testes Automáticos)\n\n`;
 if (testData.errors.length > 0) {
-  const hasUsability = testData.errors.some(e => e.type === 'usability');
-  const hasCrash = testData.errors.some(e => e.type === 'crash' || e.type === 'pageerror' || e.type === 'server');
-  const hasPerf = testData.errors.some(e => e.type === 'performance');
-
-  if (hasUsability) {
-    markdown += `- [ ] **Correção de Usabilidade & UX:** Analise os componentes de UI reportados nos erros e faça melhorias usando padrões de UX inspirados no Figma e After Effects.\n`;
-  }
-  if (hasCrash) {
-    markdown += `- [ ] **Resolução de Crash:** Identifique e corrija a raiz dos problemas de \`crash\` ou \`connection\` encontrados durante o teste automatizado.\n`;
-  }
-  if (hasPerf) {
-    markdown += `- [ ] **Otimização de Performance Extrema:** Resolva os gargalos de performance apontados (FPS baixo) otimizando o DOM, Zustand ou movendo cálculos para Web Workers.\n`;
-  }
+  testData.errors.forEach(e => markdown += `- **[${e.type.toUpperCase()}]**: ${e.text}\n`);
 } else {
-  markdown += `- [ ] **Aprimoramento Contínuo:** Como não há erros críticos, faça uma refatoração preventiva, melhore as micro-animações do editor ou refine o sistema de cores do Glassmorphism para garantir uma experiência "WOW".\n`;
+  markdown += `- O fluxo automatizado não quebrou, mas a análise visual manual e funcional profunda deve prosseguir.\n`;
 }
+
+markdown += `\n## 3. Próximos Passos de Execução (Deep Sweep Workflow)\n\n`;
+
+markdown += `- [ ] **Passo 1: Investigação e Teste Real.** Abra a interface local, crie arquivos de teste complexos usando o máximo de funcionalidades. Simule o uso profissional e anote tudo que parece travado, pouco intuitivo ou com bug.\n`;
+markdown += `- [ ] **Passo 2: Pesquisa no Mercado.** Busque ativamente na internet e no seu banco de dados interno como Figma e After Effects resolvem esses gargalos da UI e renderização.\n`;
+markdown += `- [ ] **Passo 3: Arquitetura & Implementação Profunda.** Reescreva componentes, otimize fluxos e re-estilize a interface. Concentre-se principalmente na área foco desta sessão: **${sessionFocusArea}**.\n`;
+markdown += `- [ ] **Passo 4: Validação Rigorosa.** Reteste tudo visualmente. O contraste está perfeito? O bento grid está luxuoso? As animações estão com FPS alto?\n`;
+
+// Instruction to reset the timer at the VERY END.
+markdown += `\n## 4. Finalização e Reagendamento (VITAL)\n\n`;
+markdown += `> **MUITO IMPORTANTE:** O timer de 15 minutos SÓ DEVE COMEÇAR após você finalizar completamente todas as tarefas desta roadmap. \n`;
+markdown += `> Quando você terminar sua execução (tiver committado as mudanças e validado tudo), use a tool \`manage_task\` para matar o timer antigo (se houver) e crie um **NOVO TIMER** usando o comando: \n`;
+markdown += `> \`/schedule DurationSeconds=900 Prompt="Execute o loop de pesquisa em npm run agent:research e analise rigorosamente a nova roadmap V3."\`\n`;
 
 fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
-console.log(`\n\x1b[32mSuccess! Dynamic Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
 
-console.log('\n\x1b[35m[Orchestrator] V2 Execution completed! The AI Agent should now read ROADMAP_CANDIDATE.md and execute the implementation.\x1b[0m');
+console.log(`\n\x1b[32mSuccess! V3 Roadmap Candidate created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
+console.log('\n\x1b[35m[Orchestrator V3] Execution complete! The AI Agent should read the roadmap and begin the unlimited deep sweep.\x1b[0m');

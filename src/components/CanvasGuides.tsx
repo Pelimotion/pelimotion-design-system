@@ -29,12 +29,16 @@ export function CanvasGuides() {
   const { activeAspectRatio } = useEditorStore();
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const lastDimensions = useRef({ w: 0, h: 0 });
+
   const renderGuides = useCallback(() => {
     if (!svgRef.current || activeAspectRatio === 'none') {
       if (svgRef.current) {
         // Clear guides
         while (svgRef.current.firstChild) svgRef.current.removeChild(svgRef.current.firstChild);
       }
+      // Reset dimensions so it renders again when ratio is toggled back on
+      lastDimensions.current = { w: 0, h: 0 };
       return;
     }
 
@@ -44,6 +48,12 @@ export function CanvasGuides() {
 
     const W = parent.clientWidth;
     const H = parent.clientHeight;
+
+    // Performance Optimization: Only update DOM if dimensions changed
+    if (lastDimensions.current.w === W && lastDimensions.current.h === H) {
+      return;
+    }
+    lastDimensions.current = { w: W, h: H };
 
     // Calculate safe zone box that fits the ratio inside the canvas
     const ratioDef = RATIOS[activeAspectRatio as Exclude<AspectRatio, 'none'>];

@@ -1,37 +1,30 @@
-# Pelimotion Agent Loops Candidate Roadmap (V2)
+# Pelimotion Agent Loops: Holistic Roadmap (V3)
 
-*Generated at: 14/06/2026, 19:33:38*
-*Current Commit Hash: `68bf222`*
+*Generated at: 14/06/2026, 19:43:11*
+*Session Number: 1*
+*System Sweep Focus: **Canvas Rendering & Interaction***
 
-## 1. Falhas Críticas Detectadas (Playwright & Telemetry)
+> **ATENÇÃO AGENTE EXECUTOR:** 
+> Use After Effects, Figma, Cavalry e grandes plataformas generativas como referência. 
+> Realize sessões como um usuário iniciante/avançado para caçar bugs e problemas de UX.
+> Esta roadmap **NÃO TEM LIMITES DE EXECUÇÃO NEM DE COMPLEXIDADE**. Teste e refine profundamente.
 
-- Nenhuma falha crítica detectada nos testes desta rodada.
+## 1. Memória e Aprendizado Histórico
+- Sem histórico recente. Iniciando base de dados.
 
-## 2. Recomendações Priorizadas por Persona
+## 2. Inconsistências Críticas (Testes Automáticos)
 
-### [DEV SENIOR REPORT] Technical Stability
-*   No critical crashes or frame drops detected in this run.
-*   **Action:** Investigate WebCodecs cleanup and React re-renders to fix any reported frame drops.
+- O fluxo automatizado não quebrou, mas a análise visual manual e funcional profunda deve prosseguir.
 
-### [CEO REPORT] Strategic Impact
-*   **Impact of UI/UX Bugs:** Any crash or missing export button directly impacts our Zero-Server Rendering value proposition. Users won't convert if they can't export.
-*   **Action:** Prioritize fixing usability bugs found in Playwright tests before adding more generative effects.
+## 3. Próximos Passos de Execução (Deep Sweep Workflow)
 
-### [SEO SPECIALIST & PROGRAMMATIC MARKETING ANALYST REPORT]
-*   **Standard Review:** Ensure visual aesthetics and SEO metadata remain intact during these UI fixes.
+- [ ] **Passo 1: Investigação e Teste Real.** Abra a interface local, crie arquivos de teste complexos usando o máximo de funcionalidades. Simule o uso profissional e anote tudo que parece travado, pouco intuitivo ou com bug.
+- [ ] **Passo 2: Pesquisa no Mercado.** Busque ativamente na internet e no seu banco de dados interno como Figma e After Effects resolvem esses gargalos da UI e renderização.
+- [ ] **Passo 3: Arquitetura & Implementação Profunda.** Reescreva componentes, otimize fluxos e re-estilize a interface. Concentre-se principalmente na área foco desta sessão: **Canvas Rendering & Interaction**.
+- [ ] **Passo 4: Validação Rigorosa.** Reteste tudo visualmente. O contraste está perfeito? O bento grid está luxuoso? As animações estão com FPS alto?
 
-### [PRODUCT DESIGNER REPORT] User Experience
-*   UI seems navigable based on the automated test.
-*   **Action:** We need to compare our Bento Grid and floating toolbars with Figma and Cavalry to resolve the discoverability of 'Export' and 'Add Text'.
+## 4. Finalização e Reagendamento (VITAL)
 
-### [ANALYST REPORT] Telemetry
-*   **Test Metrics:** Measured Canvas FPS: 51.
-*   **Action:** We must log these FPS drops automatically to our backend to detect which devices are suffering with the current noise algorithms.
-
-### [CREATIVE DIRECTOR / MOTION LEAD REPORT]
-*   **Standard Review:** Ensure visual aesthetics and SEO metadata remain intact during these UI fixes.
-
-## 3. Próximos Passos de Implementação (MASSIVE LOOP)
-
-- [ ] **Auditoria Visual Profunda (Obrigatório):** Agente, use a tool `view_file` no arquivo `.agents/reports/session-result.png` para fazer uma análise visual meticulosa da interface. Se encontrar elementos desalinhados, falta de contraste, ou problemas de UX percebidos, corrija imediatamente no código.
-- [ ] **Aprimoramento Contínuo:** Como não há erros críticos, faça uma refatoração preventiva, melhore as micro-animações do editor ou refine o sistema de cores do Glassmorphism para garantir uma experiência "WOW".
+> **MUITO IMPORTANTE:** O timer de 15 minutos SÓ DEVE COMEÇAR após você finalizar completamente todas as tarefas desta roadmap. 
+> Quando você terminar sua execução (tiver committado as mudanças e validado tudo), use a tool `manage_task` para matar o timer antigo (se houver) e crie um **NOVO TIMER** usando o comando: 
+> `/schedule DurationSeconds=900 Prompt="Execute o loop de pesquisa em npm run agent:research e analise rigorosamente a nova roadmap V3."`

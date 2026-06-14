@@ -167,6 +167,7 @@ function App() {
   // ─── Spatial Navigation (Pan & Zoom) ───────────────────────────────────────
   const isSpaceDown = useRef(false);
   const isPanning = useRef(false);
+  const hasDraggedWithSpace = useRef(false);
   const lastPanPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -178,11 +179,8 @@ function App() {
         e.preventDefault();
         if (!isSpaceDown.current) {
           isSpaceDown.current = true;
+          hasDraggedWithSpace.current = false;
           if (viewportRef.current) viewportRef.current.style.cursor = 'grab';
-          
-          // Toggle playback
-          const store = useEditorStore.getState();
-          store.togglePlayback();
         }
       } else if (e.code === 'Backspace' || e.code === 'Delete') {
         const store = useEditorStore.getState();
@@ -196,6 +194,12 @@ function App() {
         isSpaceDown.current = false;
         isPanning.current = false;
         if (viewportRef.current) viewportRef.current.style.cursor = 'default';
+        
+        // Se não arrastou o canvas durante o space, foi só um clique (tap) para Play/Pause
+        if (!hasDraggedWithSpace.current) {
+          const store = useEditorStore.getState();
+          store.togglePlayback();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -223,8 +227,8 @@ function App() {
       } else {
         // Pan
         state.setCamera({
-          x: currentCamera.x - e.deltaX * 1.5,
-          y: currentCamera.y - e.deltaY * 1.5
+          x: currentCamera.x - e.deltaX * 1.0,
+          y: currentCamera.y - e.deltaY * 1.0
         });
       }
     };
@@ -245,6 +249,9 @@ function App() {
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (isPanning.current) {
+      if (isSpaceDown.current) {
+        hasDraggedWithSpace.current = true;
+      }
       const dx = e.clientX - lastPanPos.current.x;
       const dy = e.clientY - lastPanPos.current.y;
       lastPanPos.current = { x: e.clientX, y: e.clientY };
