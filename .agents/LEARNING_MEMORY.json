@@ -1,5 +1,11 @@
 {
   "sessionsRun": 2,
-  "historicalInsights": [],
-  "resolvedBugs": []
+  "historicalInsights": [
+    "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion."
+  ],
+  "resolvedBugs": [
+    "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
+    "Corrected static export/loading indicators by introducing keyframes for @keyframes spin.",
+    "Fixed ESLint error on accessing isResizing ref during render by wrapping it in sidebarResizing state."
+  ]
 }
