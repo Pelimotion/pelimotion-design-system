@@ -68,6 +68,7 @@ function App() {
   } = useEditorStore()
 
   const [sidebarWidth, setSidebarWidth] = useState(320)
+  const [sidebarResizing, setSidebarResizing] = useState(false)
   const isResizing = useRef(false)
   const initialized = useRef(false)
 
@@ -98,6 +99,7 @@ function App() {
     }
     const handleMouseUp = () => {
       isResizing.current = false
+      setSidebarResizing(false)
       document.body.style.cursor = 'default'
     }
     window.addEventListener('mousemove', handleMouseMove)
@@ -141,7 +143,7 @@ function App() {
     }
 
     // 2. Continuous Auto-Save
-    let timeoutId: any;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const unsubscribe = useEditorStore.subscribe((state) => {
       // Debounce the save to LocalStorage
       clearTimeout(timeoutId);
@@ -592,7 +594,7 @@ function App() {
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          transition: isResizing.current ? 'none' : 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: sidebarResizing ? 'none' : 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
           overflow: 'hidden',
         }}
       >
@@ -600,8 +602,10 @@ function App() {
           <div
             onMouseDown={() => {
               isResizing.current = true
+              setSidebarResizing(true)
               document.body.style.cursor = 'col-resize'
             }}
+            className="sidebar-resize-handle"
             style={{
               position: 'absolute',
               top: 0,
@@ -697,7 +701,13 @@ function App() {
               key={item.id}
               id={`nav-${item.id}`}
               className={`nav-item ${activePanel === item.id ? 'nav-item--active' : ''}`}
-              onClick={() => setActivePanel(item.id)}
+              title={item.label}
+              onClick={() => {
+                setActivePanel(item.id)
+                if (sidebarCollapsed) {
+                  toggleSidebar()
+                }
+              }}
               style={{
                 marginBottom: 2,
                 justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
@@ -769,7 +779,18 @@ function App() {
               {canvasArea}
             </Panel>
             
-            <PanelResizeHandle style={{ height: 8, cursor: 'row-resize', background: 'transparent' }} />
+            <PanelResizeHandle
+              className="timeline-resize-handle"
+              style={{
+                height: 10,
+                cursor: 'row-resize',
+                position: 'relative',
+                zIndex: 50,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            />
             
             <Panel defaultSize={35} minSize={20} style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
               <div className="glass-panel animate-fade-in custom-scrollbar" style={{ padding: '16px 24px', borderRadius: 'var(--radius-lg)', flex: 1, overflowY: 'auto' }}>

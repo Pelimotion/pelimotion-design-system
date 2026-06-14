@@ -35,8 +35,8 @@ export function ViewportControls() {
       alignItems: 'center',
       gap: 8,
       padding: '8px 12px',
-      background: 'var(--color-bg-tertiary)',
-      border: '1px solid var(--color-border)',
+      background: 'var(--color-bg-elevated)',
+      border: '1px solid var(--color-surface-border)',
       borderRadius: 'var(--radius-full)',
       boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
       zIndex: 50,
@@ -58,7 +58,7 @@ export function ViewportControls() {
         <ZoomIn size={16} />
       </button>
 
-      <div style={{ width: 1, height: 16, background: 'var(--color-border)', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
       <button onClick={handleFit} className="icon-btn-small" title="Fit to Screen">
         <Maximize size={16} />
@@ -66,7 +66,7 @@ export function ViewportControls() {
 
       {(activeTypoLayerId || activeCompositionLayerId) && (
         <>
-          <div style={{ width: 1, height: 16, background: 'var(--color-border)', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
           <button onClick={handleResetTransforms} className="icon-btn-small" title="Reset Transform (Fix Inversions)" style={{ color: 'var(--color-warning)' }}>
             <RotateCcw size={16} />
           </button>

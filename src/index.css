@@ -10,6 +10,7 @@
   --color-bg-secondary: #111111;
   --color-bg-elevated: #1a1a1a;
   --color-bg-hover: #1f1f1f;
+  --color-bg-base: #111111;
 
   /* Glass Surfaces */
   --color-surface-glass: hsla(0, 0%, 100%, 0.05);
@@ -48,6 +49,7 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
+  --radius-full: 9999px;
 
   /* Shadows */
   --shadow-glow: 0 0 20px hsla(191, 100%, 50%, 0.08);
@@ -229,6 +231,11 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .animate-fade-in {
   animation: fade-in 0.5s var(--ease-smooth) both;
 }
@@ -281,6 +288,88 @@ body {
 .icon-button.active {
   color: var(--color-accent);
   background: var(--color-accent-muted);
+}
+
+/* ─── Icon Button Small (viewport controls) ──────────────────────────────── */
+
+.icon-btn-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  background: transparent;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.icon-btn-small:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-glass-hover);
+}
+
+.icon-btn-small:active {
+  background: var(--color-surface-glass-active);
+}
+
+.icon-btn-small.text-btn {
+  width: auto;
+  padding: 0 8px;
+  font-family: var(--font-mono);
+}
+
+/* ─── Resizing Visual Feedback ────────────────────────────────────────────── */
+
+.sidebar-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 100;
+  transition: background-color var(--duration-fast) var(--ease-smooth);
+}
+
+.sidebar-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 1px;
+  width: 1px;
+  background: transparent;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.sidebar-resize-handle:hover::after {
+  background: var(--color-accent);
+  width: 2px;
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.timeline-resize-handle {
+  transition: all var(--duration-fast) var(--ease-smooth);
+  background: transparent;
+}
+
+.timeline-resize-handle::after {
+  content: '';
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-text-ghost);
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.timeline-resize-handle:hover::after,
+.timeline-resize-handle[data-active]::after {
+  background: var(--color-accent);
+  width: 56px;
+  box-shadow: 0 0 8px var(--color-accent-glow);
 }
 
 /* ─── Number Input (inline controls) ─────────────────────────────────────── */
