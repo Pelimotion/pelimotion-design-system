@@ -95,3 +95,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-14T02-40-49-322Z** | `backup-branch-2026-06-14T02-40-49-322Z` | `722cf2d` | 13/06/2026, 23:40:49 | Iteration 41/42: Massive Loop Phase 23 (Magnetic Edge Snapping) |
 | **restore-2026-06-14T03-00-44-282Z** | `backup-branch-2026-06-14T03-00-44-282Z` | `53375a1` | 14/06/2026, 00:00:44 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-14T03-01-21-730Z** | `backup-branch-2026-06-14T03-01-21-730Z` | `b2a0114` | 14/06/2026, 00:01:21 | Iteration 43/44: Massive Loop Phase 24 (Timeline Auto-Scroll Dragging) |
+| **restore-2026-06-14T03-22-24-866Z** | `backup-branch-2026-06-14T03-22-24-866Z` | `50ffdf8` | 14/06/2026, 00:22:25 | Iteration 45/46: Massive Loop Phase 25 (Export Pipeline Cancellation) |
