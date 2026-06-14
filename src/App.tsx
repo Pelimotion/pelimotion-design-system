@@ -299,17 +299,67 @@ function App() {
       onDrop={(e) => {
         e.preventDefault();
         try {
-          const data = JSON.parse(e.dataTransfer.getData('application/json'));
-          if (data && data.id) {
-            useEditorStore.getState().addCompositionLayer({
-              id: crypto.randomUUID(),
-              name: data.name,
-              type: data.type || 'cloudAsset',
-              assetId: data.id,
-              startTime: 0,
-              duration: 3,
-              transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            Array.from(e.dataTransfer.files).forEach(file => {
+              const url = URL.createObjectURL(file);
+              const isVideo = file.type.startsWith('video/');
+              const isImage = file.type.startsWith('image/');
+              const isAudio = file.type.startsWith('audio/');
+              const assetId = crypto.randomUUID();
+              const state = useEditorStore.getState();
+
+              if (isVideo || isImage) {
+                state.saveToLocalLibrary({
+                  id: assetId,
+                  name: file.name,
+                  type: isVideo ? 'video' : 'image',
+                  createdAt: Date.now(),
+                  data: url
+                });
+                state.addCompositionLayer({
+                  id: crypto.randomUUID(),
+                  name: file.name,
+                  type: 'localAsset',
+                  assetId: assetId,
+                  startTime: state.currentTime,
+                  duration: 5,
+                  transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+                });
+              } else if (isAudio) {
+                state.saveToLocalLibrary({
+                  id: assetId,
+                  name: file.name,
+                  type: 'audio',
+                  createdAt: Date.now(),
+                  data: url
+                });
+                state.addAudioTrack({
+                  id: crypto.randomUUID(),
+                  name: file.name,
+                  src: url,
+                  startTime: state.currentTime,
+                  duration: 10,
+                  volume: 1,
+                });
+              }
             });
+            return;
+          }
+
+          const dataStr = e.dataTransfer.getData('application/json');
+          if (dataStr) {
+            const data = JSON.parse(dataStr);
+            if (data && data.id) {
+              useEditorStore.getState().addCompositionLayer({
+                id: crypto.randomUUID(),
+                name: data.name,
+                type: data.type || 'cloudAsset',
+                assetId: data.id,
+                startTime: useEditorStore.getState().currentTime,
+                duration: 3,
+                transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+              });
+            }
           }
         } catch(err) {
           console.error('Drop error', err);

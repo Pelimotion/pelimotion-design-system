@@ -465,9 +465,9 @@ export type EditorPanel = 'typography' | 'generative' | 'library' | 'composition
 export interface LibraryLocalItem {
   id: string;
   name: string;
-  type: 'typography' | 'generative';
+  type: 'typography' | 'generative' | 'image' | 'video' | 'audio';
   createdAt: number;
-  data: any; // A payload containing the layers and config
+  data: any; // A payload containing the layers and config, or URL for media
 }
 
 export interface ExportState {

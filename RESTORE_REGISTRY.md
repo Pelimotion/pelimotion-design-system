@@ -82,3 +82,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-13T23-20-47-331Z** | `backup-branch-2026-06-13T23-20-47-331Z` | `7148878` | 13/06/2026, 20:20:47 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-13T23-22-16-038Z** | `backup-branch-2026-06-13T23-22-16-038Z` | `a385784` | 13/06/2026, 20:22:16 | Iteration 27-28: Massive Loop Phase 17 (Color Tags & Audio Solo) |
 | **restore-2026-06-13T23-40-52-939Z** | `backup-branch-2026-06-13T23-40-52-939Z` | `ff3b0d2` | 13/06/2026, 20:40:52 | Auto-backup após análise de pesquisa |
+| **restore-2026-06-13T23-41-25-163Z** | `backup-branch-2026-06-13T23-41-25-163Z` | `36e20b5` | 13/06/2026, 20:41:25 | Iteration 29-30: Massive Loop Phase 18 (Timeline Selection & Shortcuts) |
