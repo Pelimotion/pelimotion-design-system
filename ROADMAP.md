@@ -69,7 +69,18 @@
 - [x] **One-Click Track Duplication:** Added quick-copy buttons on all track timelines.
 - [x] **Playhead Split Tool (Scissors):** Placed split actions on all timeline tracks to slice active segments at the exact playhead position.
 
-## Phase 12: Future Expansion (Backlog)
+## Phase 12: Professional NLE Workflow & Integration Loop (v2.5)
+- [x] **Universal Clipboard & Copy-Paste Shortcuts:** Standardized cloning of visual layers, audio tracks, typography layers, and generative elements using `Cmd+C` and `Cmd+V`, pasting them at the current playhead position.
+- [x] **Global Keyboard Shortcuts & Focus Handling:** Enabled play/pause via Space, navigation via Arrow Left/Right, delete/backspace deletion, and `Cmd+D`/`Cmd+Shift+D` duplication and splitting.
+- [x] **Drag & Drop Local Assets Ingestion:** Supported drag-and-drop file ingestion of images, video, and audio from the local system to generate reactive timeline layers instantly via Object URLs.
+- [x] **Timeline Track Color Tags:** Added visual color tags in track controllers to easily categorize media families.
+- [x] **Audio Track Solo Control:** Integrated solo state toggles on audio tracks to mutely isolate sound paths in the WebAudio context.
+- [x] **Interactive Right-Click Context Menu:** Embedded a custom context-sensitive dropdown menu exposing duplicate, copy, paste, delete, split, lock, and color settings directly on timeline tracks.
+- [x] **Magnetic Edge Snapping:** Aligned dragged track start/end offsets to adjacent track borders and the playhead position for frame-precise synchrony.
+- [x] **Timeline Viewport Auto-Scrolling:** Built horizontal auto-scroll panning when blocks are dragged/trimmed near viewport edges.
+- [x] **Export Pipeline Cancellation:** Programmed periodic check loops checking `isExporting` to abort rendering, throwing `EXPORT_CANCELLED` and cleaning up Web Workers/memory on demand.
+
+## Phase 13: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.
 

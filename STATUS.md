@@ -1,10 +1,22 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Linha do Tempo Avançada, Sincronização em Tempo Real & Ajustes UX (v2.4)
+## Active Phase: 🟢 NLE Avançado, Copiar & Colar, Drag & Drop Local e Cancelamento de Exportação (v2.5)
 
-## 🏁 Pelimotion Design System v2.4 — Advanced Timeline & Playhead Optimization Complete
+## 🏁 Pelimotion Design System v2.5 — Advanced NLE Features, Global Shortcuts, Drag & Drop & Export Cancel Complete
 
-All core components for multi-track audio management, real-time playback synchronization, in-browser offline mixing, and final export multiplexing have been successfully integrated and verified. Additionally, the timeline has been upgraded to a professional non-linear editor (NLE) layout, including magnetic snapping, real-time playhead rendering via GSAP ticker, volume fade-in/fade-out, horizontal scale zooming, track/layer duplication, global canvas background color control, and interactive layer locks and opacity controls.
+All core components for NLE workflow enhancements, local file ingestion, universal clipboard capabilities, timeline snapping, dynamic scrolling, and render execution cancellation have been successfully integrated and verified.
+
+### Session Achievements (v2.5 - Professional NLE Workflow & Integration Loop)
+- **Universal Clipboard & Hotkeys (Cmd+C / Cmd+V):** Implemented clipboard state mapping in Zustand. Copy layers or audio tracks with `Cmd+C` and paste them with `Cmd+V` at the current playhead position (`currentTime`).
+- **Global Keyboard Shortcuts (`useKeyboardShortcuts.ts`):** Unified keyboard listener handling Space (play/pause), Left/Right Arrows (0.1s playhead seeks), Backspace/Delete (remove active visual layer or audio track), and `Cmd+D`/`Cmd+Shift+D` for duplication and splitting.
+- **Drag & Drop Local Assets Ingestion:** Enabled drag-and-drop of local media (images, video, audio) directly onto the editor viewport or library gallery, creating fast local blob object URLs and registering them as active timeline assets without server roundtrips.
+- **Timeline Track Color Tags:** Embedded interactive track color tags in `CompositionTimeline.tsx` to visually categorize different layers (e.g. green for audio, purple for typography, blue for generic layers).
+- **Audio Track Solo Control:** Integrated solo button toggles on individual audio tracks, muting all other audio layers to isolate audio during playback preview.
+- **Right-Click Context Menu:** Built a floating, context-sensitive right-click menu in `CompositionTimeline.tsx` offering easy access to common track commands (Copy, Paste, Cut/Split, Duplicate, Lock, Delete, Color Tag selection).
+- **Magnetic Edge Snapping:** Integrated magnetic snapping mechanics, aligning dragged or trimmed block edges (start/end) perfectly to adjacent track boundaries and the active playhead position.
+- **Timeline Auto-Scroll on Drag/Trim:** Enhanced track dragging to automatically scroll the timeline view left or right when layers are moved near the left or right screen borders of the timeline viewport.
+- **Render Execution Cancellation:** Added continuous cancel polling inside the frame capture loop of `exportPipeline.ts`. The updated `ExportPanel.tsx` replaces the render button with a "Cancel" action during export, allowing immediate termination, throwing `EXPORT_CANCELLED` and safely flushing workers and memory heap to avoid leaks.
+- **Robust Telemetry Logging:** Patched type compile errors in `telemetry.ts` and `exportPipeline.ts` by registering new lifecycle event states such as `EXPORT_CANCELLED` and `EXPORT_FAILED`.
 
 ### Session Achievements (v2.4 - Advanced Timeline, Playhead Sync & UI/UX Polish)
 - **Real-Time Playhead Sync (GSAP Ticker):** Optimized the timeline's playhead by shifting updates to direct DOM style manipulation within `gsap.ticker`. This eliminates React state rendering overhead during playback, achieving a smooth 60fps tracking.
@@ -17,7 +29,6 @@ All core components for multi-track audio management, real-time playback synchro
 - **Track Duplication Actions:** Placed copy buttons on both composition and audio tracks, cloning settings with a new ID and automatically offsetting the starting time by `+0.5s`.
 - **Global Canvas Background Picker:** Positioned a master background color input within the timeline toolbar, allowing direct color updates to `exportConfig.backgroundColor`.
 - **Cleaned Sidebar & Preset Actions:** Cleaned up the Typography panel by removing manual session/global save buttons, routing asset presets to load directly from the library.
-
 - **Multi-track Audio Timeline & UI:** Added support for audio tracks in `CompositionTimeline.tsx`, enabling users to add, visual-trim, adjust volume, and shift starting offsets for multiple concurrent sound assets.
 - **Dynamic WebAudio Playback Sync:** Built a robust synchronization mechanism in `<CompositionPreview />` using the Web Audio API. Playback, pausing, and scrubbing on the GSAP global timeline automatically schedules and shifts active audio source nodes to coordinate frame-perfect audio-to-video alignment.
 - **Offline Audio Mixer (`audioMixer.ts`):** Developed an in-browser audio mixer that decodes multiple audio streams into buffers, resamples them to a unified project sample rate (typically 44100Hz or 48000Hz), maps their corresponding timelines (offsets, durations, loops), applies volume gain nodes, and merges them into a single high-fidelity, uncompressed WAV file.

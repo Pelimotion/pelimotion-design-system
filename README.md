@@ -54,14 +54,24 @@ Aqui as formas livres tomam vida, flutuando como se estivessem em um ambiente na
 ## 🎛️ 4. Edição Avançada na Linha do Tempo (NLE)
 
 Para criadores que precisam de controle profissional sobre a narrativa visual e sonora, o Pelimotion conta com uma linha do tempo de nível não-linear (NLE) de alta performance:
-- **Snap Magnético (Imã):** No cabeçalho da timeline, clique no botão de **Ícone de Imã** para ativar/desativar o alinhamento automático. Com o Snap ligado, qualquer arraste de bloco ou ajuste de duração na timeline é atraído exatamente para grades de `0.5s` segundos, garantindo sincronia perfeita.
+- **Snap Magnético Estendido:** No cabeçalho da timeline, clique no botão de **Ícone de Imã** para ativar/desativar o alinhamento automático. Com o Snap ligado, qualquer arraste de bloco ou ajuste de duração na timeline é atraído exatamente para grades de `0.5s` segundos ou para as bordas de início e fim dos blocos adjacentes e da agulha de reprodução, garantindo sincronia impecável.
 - **Zoom Horizontal da Linha do Tempo:** Mova o slider deslizante **Zoom** (de 100% a 500%) para alargar as réguas de tempo. Isso é extremamente útil em timelines longas ou cheias de cortes rápidos, permitindo enxergar frames individuais rolando a barra de scroll horizontalmente.
+- **Scroll Automático (Auto-Scroll) no Arraste:** Ao arrastar ou redimensionar um bloco próximo às bordas visíveis esquerda ou direita da timeline, a tela se moverá automaticamente para que você possa posicionar elementos em timelines longas sem soltar o clique.
 - **Bloqueio de Camadas (Cadeado):** Cada trilha de composição e áudio possui um ícone de **Cadeado** na lateral de controle. Ao bloquear uma camada, todas as interações físicas de arraste e trim de tempo (ajuste de bordas) são congeladas para aquela trilha, impedindo desalinhamentos acidentais enquanto edita outras camadas.
 - **Controle de Opacidade Individual:** As trilhas de vídeo e elementos contam com um slider visual direto na timeline. Ajuste o seletor de opacidade (de 0.00 a 1.00) para mesclar elementos suavemente ou criar sobreposições complexas de Glassmorphism.
-- **Fade-In & Fade-Out de Áudio (Transições Suaves):** Nas trilhas de áudio, você verá campos numéricos rotulados como `In` e `Out`. Digite um tempo em segundos (ex: `1.5` s) para aplicar um esvanecimento de som linear no início e no fim da trilha, eliminando cortes de áudio abruptos.
+- **Fade-In & Fade-Out de Áudio (Transições Suaves):** Nas trilhas de áudio, você verá campos num registrados como `In` e `Out`. Digite um tempo em segundos (ex: `1.5` s) para aplicar um esvanecimento de som linear no início e no fim da trilha, eliminando cortes de áudio abruptos.
 - **Duplicação com Um Clique (Copy):** No controle esquerdo de cada trilha (Vídeo ou Áudio), há um botão de **Duplicar (ícone de cópia)**. Clicar nele gera instantaneamente um clone idêntico com um novo ID único, deslocado automaticamente em `+0.5s` segundos para frente da faixa de origem, facilitando a criação de padrões rítmicos.
-- **Fatiar na Agulha (Tesoura):** Clique no botão de **Tesoura** para dividir uma faixa de vídeo ou áudio exatamente no tempo em que a agulha de reprodução se encontra. Isso permite cortar partes indesejadas, criar cortes secos e reorganizar a ordem de exibição de elementos de forma cirúrgica.
+- **Fatiar na Agulha (Tesoura):** Clique no botão de **Tesoura** ou use o atalho **Cmd+Shift+D** (Mac) / **Ctrl+Shift+D** (Windows) para dividir uma faixa de vídeo ou áudio exatamente no tempo em que a agulha de reprodução se encontra. Isso permite cortar partes indesejadas, criar cortes secos e reorganizar a ordem de exibição de elementos de forma cirúrgica.
+- **Área de Trabalho (Clipboard) e Atalhos de Teclado Globais:** O Pelimotion suporta operações de teclado rápidas no editor:
+  - **Espaço:** Inicia ou pausa a reprodução.
+  - **Setas Direita/Esquerda:** Avança ou retrocede a agulha temporal em `0.1` segundos.
+  - **Cmd/Ctrl + C & Cmd/Ctrl + V:** Copia o elemento selecionado (seja camada visual, tipografia, gerativo ou faixa de áudio) e cola-o precisamente no tempo atual da agulha de reprodução.
+  - **Cmd/Ctrl + D:** Duplica o elemento selecionado com `+0.5s` de atraso.
+  - **Backspace / Delete:** Exclui o elemento selecionado da timeline.
+- **Menu de Contexto do Botão Direito (Right-Click):** Clique com o botão direito sobre qualquer bloco de track na timeline para abrir um menu de contexto flutuante com ações rápidas para copiar, colar, duplicar, deletar, fatiar (scissors), bloquear/desbloquear e alterar as **Tags de Cores** da track para melhor organização.
+- **Drag & Drop Local de Mídia (Arrastar e Soltar):** Importe imagens, vídeos e arquivos de áudio locais simplesmente arrastando-os de sua pasta no computador e soltando-os diretamente sobre a tela de preview ou sobre o painel da Biblioteca. O sistema cria Object URLs locais na hora, adicionando-os como assets prontos para uso sem necessidade de uploads lentos para servidores.
 - **Cor de Fundo Mestre:** Ajuste a cor base do preview diretamente na barra de ferramentas superior da timeline usando o seletor **Fundo**.
+
 
 ---
 
@@ -81,6 +91,7 @@ Terminou os ajustes nas camadas e a animação está no ponto? Siga o fluxo fina
    - **Vídeo MOV (Com Alpha):** A ferramenta favorita dos editores de vídeo, gerando o render com fundo transparente (canal Alpha). Ideal para sobreposições em softwares de edição externos.
    - **Sequência PNG (ZIP):** Exporta todos os frames da timeline como arquivos PNG individuais agrupados em um ZIP de alta qualidade.
 3. Clique em **Exportar Vídeo**. O sistema capturará cada frame da timeline de forma determinística, misturando todas as camadas de vídeo e faixas de áudio sincronizadas com fades automáticos, aplicando o FFmpeg.wasm em memória para multiplexar e fazer o download automático na sua máquina de forma rápida e 100% local.
+4. **Cancelamento a Qualquer Momento:** Caso precise abortar a exportação antes de finalizar, clique no botão vermelho **Cancel** que aparecerá na barra de progresso do exportador. A operação será finalizada imediatamente e os recursos de memória e processamento serão liberados.
 
 ---
 
