@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 22)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 23)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Timeline Context Menu',
+    title: 'Magnetic Edge Snapping',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Atalhos de teclado (Cmd+C/Cmd+D) são ágeis, mas muitos editores dependem do clique-direito (Context Menu) direto no bloco para descobrir e executar ações (Copiar, Fatiar, Deletar).'
+    description: 'Atualmente a agulha só "gruda" na grade de segundos. Editores de motion precisam alinhar exatamente o IN point de uma camada com o OUT point de outra para fazer cortes secos.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Custom Floating Context Menu',
+    title: 'Dynamic Array Snapping',
     parties: ['product_designer', 'dev_senior'],
-    description: 'O Menu de Contexto nativo do navegador polui a experiência. Devemos interceptar o `onContextMenu` e renderizar um sub-painel React flutuante com suporte ao motor do Zustand.'
+    description: 'Durante o drag, precisamos compilar um array temporário de `startTime` e `endTime` de todas as camadas, e usar uma tolerância de 0.2s para grudar o bloco sendo arrastado nos blocos adjacentes.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 22)\n\n`;
-  markdown += `- [x] **Context Menu UI:** Adicionar estado \`contextMenu\` e interceptação global de clique fora (\`clickaway\`) no \`CompositionTimeline.tsx\` (Product Designer).\n`;
-  markdown += `- [x] **Track Block Binding:** Acoplar o evento \`onContextMenu\` a todas as tracks de Composição e de Áudio, abrindo o menu flutuante nas coordenadas do mouse (\`e.clientX\`, \`e.clientY\`) (Dev Senior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 23)\n\n`;
+  markdown += `- [x] **Magnetic Edge Snapping:** Atualizar o \`CompositionTimeline.tsx\` no \`handlePointerMove\` para criar um array de \`snapPoints\` (bordas de todos os assets) (Dev Senior).\n`;
+  markdown += `- [x] **Sub-second Threshold:** Implementar verificação linear de \`diff < 0.2\` garantindo que o Edge Snapping sempre sobreponha o Grid Snapping quando estiver próximo do limite (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

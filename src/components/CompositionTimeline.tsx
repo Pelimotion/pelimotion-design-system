@@ -157,7 +157,38 @@ export function CompositionTimeline() {
 
     if (snapEnabled && dragging.type !== 'playhead') {
       const inv = 1 / snapTolerance;
-      time = Math.round(time * inv) / inv;
+      let gridTime = Math.round(time * inv) / inv;
+
+      // Magnetic Edge Snapping
+      const snapPoints: number[] = [];
+      compositionLayers.forEach(l => {
+         if (l.id !== dragging.id) {
+           snapPoints.push(l.startTime, l.startTime + l.duration);
+         }
+      });
+      audioTracks.forEach(t => {
+         if (t.id !== dragging.id) {
+           snapPoints.push(t.startTime, t.startTime + t.duration);
+         }
+      });
+      // Include 0 and duration edges
+      snapPoints.push(0, exportConfig.duration);
+      
+      let closestEdge = -1;
+      let minDiff = 0.2; // 0.2s magnetic threshold
+      for (const pt of snapPoints) {
+         const diff = Math.abs(time - pt);
+         if (diff < minDiff) {
+            minDiff = diff;
+            closestEdge = pt;
+         }
+      }
+
+      if (closestEdge !== -1) {
+         time = closestEdge;
+      } else {
+         time = gridTime;
+      }
     }
 
     if (dragging.type === 'playhead') {
