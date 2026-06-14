@@ -1,12 +1,13 @@
 /**
- * Noise Engine — Phase 3 (Updated for Per-Property Posterize)
+ * Noise Engine — Phase 4 (Web Worker Optimization)
  *
- * Maps Simplex Noise 2D/3D to GSAP transform variables, driving organic
- * motion on SVG paths. Uses the `simplex-noise` v4 API.
+ * Simplex Noise generation is now offloaded to a Web Worker to ensure the
+ * main thread remains free for UI rendering, preventing dropped frames
+ * during complex generative sequences.
  */
 import { gsap } from 'gsap'
-import { createNoise2D, createNoise3D } from 'simplex-noise'
 import type { WiggleConfig, NoiseChannel } from '@/types/motion.types'
+import NoiseWorker from './noiseWorker?worker'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,158 +30,48 @@ export interface NoiseDriver {
   tick: (time: number) => void
 }
 
-// ─── Seeded PRNG (Alea) ───────────────────────────────────────────────────────
-
-function mulberry32(seed: number) {
-  return function () {
-    seed |= 0
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-// ─── Fractal Brownian Motion helper ──────────────────────────────────────────
-
-function fbm2D(
-  noise2D: (x: number, y: number) => number,
-  x: number,
-  y: number,
-  octaves: number,
-  persistence: number
-): number {
-  let value = 0
-  let amplitude = 1
-  let frequency = 1
-  let maxAmplitude = 0
-
-  for (let o = 0; o < octaves; o++) {
-    value += noise2D(x * frequency, y * frequency) * amplitude
-    maxAmplitude += amplitude
-    amplitude *= persistence
-    frequency *= 2
-  }
-
-  return value / maxAmplitude
-}
-
-function getPosterizedTime(elapsed: number, fps: number | undefined): number {
-  if (!fps) return elapsed;
-  return Math.floor(elapsed * fps) / fps;
-}
-
 // ─── Driver Factory ───────────────────────────────────────────────────────────
 
 export function createNoiseDriver(
   targets: Element[],
   config: NoiseDriverConfig
 ): NoiseDriver {
-  const {
-    amplitude,
-    frequency,
-    octaves,
-    persistence,
-    noiseType,
-    seed,
-    channels,
-    propertyFps,
-    propertyAmplitudes = {},
-    propertyFrequencies = {},
-  } = config
-
-  const prng = mulberry32(seed)
-  const noise2D = createNoise2D(prng)
-  const prng3D = mulberry32(seed + 999)
-  const noise3D = createNoise3D(prng3D)
-
   let running = false
   let startTime = 0
   let ownTickerActive = false
+
+  // Web Worker Instance
+  const worker = new NoiseWorker()
+  let latestValues: gsap.TweenVars[] = []
+
+  worker.onmessage = (e) => {
+    if (e.data.type === 'RESULT') {
+      latestValues = e.data.values
+    }
+  }
 
   function tick(time: number) {
     if (!running) return
 
     const elapsed = time - startTime
 
-    targets.forEach((target, i) => {
-      const offsetX = i * 3.7
-      const offsetY = i * 2.3
-
-      const props: gsap.TweenVars = {}
-
-      if (channels.includes('x')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.x);
-        const f = frequency * (propertyFrequencies.x ?? 1);
-        const a = amplitude * (propertyAmplitudes.x ?? 1);
-        const nx = noiseType === 'simplex2D'
-          ? fbm2D(noise2D, t * f + offsetX, 0, octaves, persistence)
-          : fbm2D((x, y) => noise3D(x, y, offsetY), t * f + offsetX, 0, octaves, persistence)
-        props.x = nx * a
+    // Dispatch heavy calculations to the Web Worker
+    worker.postMessage({
+      type: 'CALCULATE',
+      payload: {
+        elapsed,
+        targetsCount: targets.length,
+        config
       }
-
-      if (channels.includes('y')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.y);
-        const f = frequency * (propertyFrequencies.y ?? 1);
-        const a = amplitude * (propertyAmplitudes.y ?? 1);
-        const ny = noiseType === 'simplex2D'
-          ? fbm2D(noise2D, 0, t * f + offsetY, octaves, persistence)
-          : fbm2D((x, y) => noise3D(x, offsetX, y), 0, t * f + offsetY, octaves, persistence)
-        props.y = ny * a * 0.6
-      }
-
-      if (channels.includes('rotation')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.rotation);
-        const f = frequency * (propertyFrequencies.rotation ?? 1);
-        const a = amplitude * (propertyAmplitudes.rotation ?? 1);
-        const nr = fbm2D(noise2D, t * f * 0.5 + offsetX + 10, offsetY + 5, octaves, persistence)
-        props.rotation = nr * a * 0.8
-      }
-
-      if (channels.includes('scale')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.scale);
-        const f = frequency * (propertyFrequencies.scale ?? 1);
-        const a = amplitude * (propertyAmplitudes.scale ?? 1);
-        const ns = fbm2D(noise2D, offsetX + 20, t * f * 0.3 + offsetY + 7, octaves, persistence)
-        props.scale = 1 + ns * 0.12 * (a / 20)
-      }
-      
-      if (channels.includes('scaleX')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.scaleX);
-        const f = frequency * (propertyFrequencies.scaleX ?? 1);
-        const a = amplitude * (propertyAmplitudes.scaleX ?? 1);
-        const nsX = fbm2D(noise2D, offsetX + 25, t * f * 0.3 + offsetY + 11, octaves, persistence)
-        props.scaleX = 1 + nsX * 0.12 * (a / 20)
-      }
-      
-      if (channels.includes('scaleY')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.scaleY);
-        const f = frequency * (propertyFrequencies.scaleY ?? 1);
-        const a = amplitude * (propertyAmplitudes.scaleY ?? 1);
-        const nsY = fbm2D(noise2D, offsetX + 30, t * f * 0.3 + offsetY + 14, octaves, persistence)
-        props.scaleY = 1 + nsY * 0.12 * (a / 20)
-      }
-      
-      if (channels.includes('skew')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.skew);
-        const f = frequency * (propertyFrequencies.skew ?? 1);
-        const a = amplitude * (propertyAmplitudes.skew ?? 1);
-        const nSk = fbm2D(noise2D, offsetX + 35, t * f * 0.4 + offsetY + 18, octaves, persistence)
-        props.skewX = nSk * a * 0.5
-        props.skewY = nSk * a * 0.2
-      }
-
-      if (channels.includes('opacity')) {
-        const t = getPosterizedTime(elapsed, propertyFps?.opacity);
-        const f = frequency * (propertyFrequencies.opacity ?? 1);
-        // opacity amplitude is basically multiplier on the noise range
-        const a = propertyAmplitudes.opacity ?? 1;
-        const no = fbm2D(noise2D, t * f * 0.2 + offsetX + 50, offsetY + 30, octaves, persistence)
-        props.opacity = 0.5 + no * 0.5 * 0.8 * a
-      }
-
-      gsap.set(target, props)
     })
+
+    // Apply the latest available pre-calculated values
+    // (This introduces a max 1-frame latency, which is imperceptible for procedural noise)
+    if (latestValues.length === targets.length) {
+      targets.forEach((target, i) => {
+        if (latestValues[i]) gsap.set(target, latestValues[i]);
+      })
+    }
   }
 
   return {
@@ -204,6 +95,7 @@ export function createNoiseDriver(
         ownTickerActive = false
         gsap.ticker.remove(tick)
       }
+      worker.terminate()
       if (targets.length) {
         gsap.set(targets, { x: 0, y: 0, rotation: 0, scale: 1, scaleX: 1, scaleY: 1, skewX: 0, skewY: 0, opacity: 1, clearProps: 'x,y,rotation,scale,scaleX,scaleY,skewX,skewY,opacity,transform' })
       }

@@ -17,29 +17,41 @@ test.describe('Pelimotion User Session Simulation', () => {
     });
   });
 
-  test('Layman user trying to create and export a generative text', async ({ page }) => {
-    // Navigate to local dev server
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
-
-    // Try to find the Generative Panel
+  test('Advanced user session: Complex creatives and visual snapshot', async ({ page }) => {
     try {
-      // Simulate layman clicking around to find "Add Text" or similar
-      const addTextBtn = page.getByText(/Add Text|New Generative Layer/i);
+      // 1. Navigate to local dev server gracefully
+      try {
+        await page.goto('http://localhost:5173', { waitUntil: 'networkidle', timeout: 10000 });
+      } catch (e) {
+        throw new Error('Local dev server is not running at http://localhost:5173');
+      }
+
+      // 2. Add Generative Elements
+      const spiroBtn = page.getByRole('button', { name: /Spirograph|Onda|Grade/i }).first();
+      if (await spiroBtn.isVisible()) {
+        await spiroBtn.click();
+        await page.waitForTimeout(500); // let animations play
+      } else {
+        errors.push({ type: 'usability', text: 'Could not find buttons to add Generative shapes.' });
+      }
+
+      // 3. Add Typography Elements
+      const addTextBtn = page.getByRole('button', { name: /Adicionar Texto/i }).first();
       if (await addTextBtn.isVisible()) {
         await addTextBtn.click();
+        await page.waitForTimeout(500);
       } else {
-        errors.push({ type: 'usability', text: 'Could not find an obvious "Add Text" button for beginners.' });
+        errors.push({ type: 'usability', text: 'Could not find the "Adicionar Texto" button in the TopToolbar.' });
       }
 
-      // Look for the Export button
-      const exportBtn = page.getByRole('button', { name: /Export|Render/i });
-      if (await exportBtn.isVisible()) {
-        await exportBtn.click();
-      } else {
-        errors.push({ type: 'usability', text: 'Export button is missing or not easily discoverable.' });
+      // 4. Click a few random panels to simulate user exploration
+      const colorsTab = page.getByText(/Cores/i).first();
+      if (await colorsTab.isVisible()) {
+        await colorsTab.click();
+        await page.waitForTimeout(300);
       }
 
-      // Test canvas performance (rough estimate of FPS or lag by evaluating a small script)
+      // 5. Measure Canvas FPS
       const fps = await page.evaluate(() => {
         return new Promise(resolve => {
           let frames = 0;
@@ -61,8 +73,21 @@ test.describe('Pelimotion User Session Simulation', () => {
         errors.push({ type: 'performance', text: `Canvas FPS is too low: ${fps}` });
       }
 
+      // 6. Capture Visual Screenshot for Agent Analysis
+      const screenshotPath = path.resolve(__dirname, '../../reports/session-result.png');
+      if (!fs.existsSync(path.dirname(screenshotPath))) {
+        fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+      }
+      await page.screenshot({ path: screenshotPath, fullPage: false });
+
+      // 7. Verify Export Button visibility
+      const exportBtn = page.getByRole('button', { name: /Export/i }).first();
+      if (!(await exportBtn.isVisible())) {
+        errors.push({ type: 'usability', text: 'Export button is missing or not visible at the end of the session.' });
+      }
+
     } catch (e) {
-      errors.push({ type: 'crash', text: `Test crashed during interaction: ${e.message}` });
+      errors.push({ type: 'crash', text: `Test aborted: ${e.message}` });
     }
     
     // Save report for orchestrator

@@ -121,9 +121,28 @@ Object.values(reports).forEach(r => {
 });
 
 markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n`;
-markdown += `- [ ] **Pesquisa Profunda (Figma/AE):** Agente, pesquise na web como plataformas concorrentes organizam seus painéis de propriedades e resolva a falta de visibilidade do botão de Exportação ou Add Text.\n`;
-markdown += `- [ ] **Correção de UI:** Atualize os componentes React do Bento Grid para consertar os problemas de Usabilidade reportados.\n`;
-markdown += `- [ ] **Otimização de Performance:** Se houver avisos de FPS baixo, mova cálculos pesados (Simplex Noise) para Web Workers.\n`;
+
+// 1. Mandatory Visual Audit
+markdown += `- [ ] **Auditoria Visual Profunda (Obrigatório):** Agente, use a tool \`view_file\` no arquivo \`.agents/reports/session-result.png\` para fazer uma análise visual meticulosa da interface. Se encontrar elementos desalinhados, falta de contraste, ou problemas de UX percebidos, corrija imediatamente no código.\n`;
+
+// 2. Dynamic Tasks based on test results
+if (testData.errors.length > 0) {
+  const hasUsability = testData.errors.some(e => e.type === 'usability');
+  const hasCrash = testData.errors.some(e => e.type === 'crash' || e.type === 'pageerror' || e.type === 'server');
+  const hasPerf = testData.errors.some(e => e.type === 'performance');
+
+  if (hasUsability) {
+    markdown += `- [ ] **Correção de Usabilidade & UX:** Analise os componentes de UI reportados nos erros e faça melhorias usando padrões de UX inspirados no Figma e After Effects.\n`;
+  }
+  if (hasCrash) {
+    markdown += `- [ ] **Resolução de Crash:** Identifique e corrija a raiz dos problemas de \`crash\` ou \`connection\` encontrados durante o teste automatizado.\n`;
+  }
+  if (hasPerf) {
+    markdown += `- [ ] **Otimização de Performance Extrema:** Resolva os gargalos de performance apontados (FPS baixo) otimizando o DOM, Zustand ou movendo cálculos para Web Workers.\n`;
+  }
+} else {
+  markdown += `- [ ] **Aprimoramento Contínuo:** Como não há erros críticos, faça uma refatoração preventiva, melhore as micro-animações do editor ou refine o sistema de cores do Glassmorphism para garantir uma experiência "WOW".\n`;
+}
 
 fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
 console.log(`\n\x1b[32mSuccess! Dynamic Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
