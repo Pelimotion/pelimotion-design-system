@@ -1,62 +1,38 @@
-# Pelimotion Agent Loops Candidate Roadmap
+# Pelimotion Agent Loops Candidate Roadmap (V2)
 
-*Generated at: 14/06/2026, 01:40:04*
-*Current Commit Hash: `319cf8f`*
+*Generated at: 14/06/2026, 18:20:49*
+*Current Commit Hash: `a5528f3`*
 
-## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
+## 1. Falhas Críticas Detectadas (Playwright & Telemetry)
 
-### ⚠️ Conflitos & Soluções (Compromissos)
-### 🤝 Sinergias
-- **Export Cancellation UI** (diretor_criacao + product_designer):
-  - *Descrição:* Quando o usuário erra alguma config e dá "Start Render", o app travava a UI e ficava renderizando um MP4 de 1 minuto à força. Uma opção de Cancelamento é obrigatória.
-
-- **Pipeline Interrupt Exception** (product_designer + dev_senior):
-  - *Descrição:* Para não introduzir vazamentos de memória (memory leaks) na Engine WebCodecs, precisamos matar o worker instanciado e retornar a GlobalTimeline para o estado normal caso `isExporting` caia pra falso.
+- **[SERVER]**: Local server might not be running. Could not complete UI tests.
 
 ## 2. Recomendações Priorizadas por Persona
 
-### 👤 Senior Software Engineer / Architect
-- **Foco:** Performance, Memory Leaks, WebCodecs, WebAssembly, Code Quality, Type Safety, Rendering Pipeline, Fallbacks
-### [DEV SENIOR REPORT] Technical Feasibility & Performance (Modules 1-3)
-*   **Typography:** GSAP SplitText is functioning, but DOM node cloning for trails can cause severe memory bloat. We need strict cleanup logic on component unmount and debounce on text input.
-*   **Generative SVG:** Custom GSAP ticker with PosterizeTime is efficient, but Simplex noise calculations on the JS thread might block main thread if node count exceeds 500. Consider moving Simplex to a Web Worker.
-*   **Library:** Local persistence mapping via localLibraryItems and globalLibraryItems works, but loading large video blobs into memory without pagination will cause browser crashes. Need virtualized scrolling and objectURL cleanup.
+### [DEV SENIOR REPORT] Technical Stability
+*   No critical crashes or frame drops detected in this run.
+*   **Action:** Investigate WebCodecs cleanup and React re-renders to fix any reported frame drops.
 
-### 👤 Chief Executive Officer (CEO)
-- **Foco:** Business Model, Enterprise Value, Cost Reduction, Zero-Server Rendering, Competitive Landscape, Long-term Scalability
-### [CEO REPORT] Business Strategy (Modules 1-3)
-*   **Typography:** The lettering engine is our core appeal for social media marketers. We must ensure robust, glitch-free typography presets that compete with After Effects.
-*   **Generative SVG:** Unique generative patterns (wiggles, noise) provide a "differentiator" against static Canva templates. Emphasize this capability for enterprise branding.
-*   **Library:** The ability to seamlessly mix local and edge-cloud assets keeps users engaged. Ensure the BunnyCDN sync is bulletproof so premium users feel their assets are secure.
+### [CEO REPORT] Strategic Impact
+*   **Impact of UI/UX Bugs:** Any crash or missing export button directly impacts our Zero-Server Rendering value proposition. Users won't convert if they can't export.
+*   **Action:** Prioritize fixing usability bugs found in Playwright tests before adding more generative effects.
 
-### 👤 SEO Specialist & Programmatic Marketing Analyst
-- **Foco:** Google Lighthouse, Core Web Vitals, Indexability, Programmatic Landing Pages, Metadata, Site Load Speed, Schema.org
-### [SEO REPORT] Indexability (Modules 1-3)
-*   **Typography & Generative:** Since these are canvas/WebGL heavy, they are invisible to search engines. We must generate static HTML/CSS fallbacks or server-side pre-rendered snapshots of popular generative typography templates for indexation.
-*   **Library:** Public templates in the library need dedicated, canonical URLs (e.g., /templates/generative-neon-text) with descriptive meta tags.
+### [SEO SPECIALIST & PROGRAMMATIC MARKETING ANALYST REPORT]
+*   **Standard Review:** Ensure visual aesthetics and SEO metadata remain intact during these UI fixes.
 
-### 👤 Senior Product Designer (UX/UI)
-- **Foco:** Bento Grid Layout, Glassmorphism, Micro-animations, Spatial Camera UX, Transform Gizmos, Canvas Guides, Fluidity, Consistency
-### [PRODUCT DESIGNER REPORT] User Experience (Modules 1-3)
-*   **Typography:** Text editing inline needs to feel like Figma. Currently, text property controls (HSL, thin lines) need better alignment in the Bento grid.
-*   **Generative SVG:** Users need a visual, intuitive "Wiggle/Noise Intensity" slider. Math-heavy parameters (Amplitude, Frequency) should be abstracted into friendly names like "Wildness" and "Speed".
-*   **Library:** Full-page gallery preview is good, but needs drag-and-drop support directly from the Library to the Composition canvas with micro-animations.
+### [PRODUCT DESIGNER REPORT] User Experience
+*   UI seems navigable based on the automated test.
+*   **Action:** We need to compare our Bento Grid and floating toolbars with Figma and Cavalry to resolve the discoverability of 'Export' and 'Add Text'.
 
-### 👤 Senior Product & Data Analyst
-- **Foco:** Metrics tracking, User Flows, Conversion Funnels, Telemetry, Error Monitoring, User Action Logging
-### [ANALYST REPORT] Telemetry (Modules 1-3)
-*   **Typography:** Track which font families and GSAP easing curves are used most frequently to prioritize future premium preset packs.
-*   **Generative SVG:** Log the average number of nodes generated before user framerate drops below 30fps.
-*   **Library:** Track upload failure rates to BunnyCDN and local file loading times to detect UX friction.
+### [ANALYST REPORT] Telemetry
+*   **Test Metrics:** Measured Canvas FPS: N/A.
+*   **Action:** We must log these FPS drops automatically to our backend to detect which devices are suffering with the current noise algorithms.
 
-### 👤 Creative Director / Motion Lead
-- **Foco:** Aesthetics, Typography Presets, Kinetic Curves, Generative Visual Noise, Sensory WOW factor, Asset Quality
-### [CREATIVE DIRECTOR REPORT] Visual Feeling (Modules 1-3)
-*   **Typography:** Trails are currently too flat. We need organic fade-outs, variable opacity on trails, and elastic overshoot on letter appearances.
-*   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
-*   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
+### [CREATIVE DIRECTOR / MOTION LEAD REPORT]
+*   **Standard Review:** Ensure visual aesthetics and SEO metadata remain intact during these UI fixes.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 25)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP)
 
-- [x] **Export Pipeline Interrupts:** Injetar validação continua no `for` loop do `exportPipeline.ts`. Se o estado do Zustand não estiver mais exportando, atirar uma exceção `EXPORT_CANCELLED` para forçar a limpeza dos workers (Dev Senior).
-- [x] **Cancel Action in Panel:** Substituir dinamicamente o botão de Export pelo botão de "Cancel" no `ExportPanel.tsx` durante o carregamento de progresso (Product Designer).
+- [ ] **Pesquisa Profunda (Figma/AE):** Agente, pesquise na web como plataformas concorrentes organizam seus painéis de propriedades e resolva a falta de visibilidade do botão de Exportação ou Add Text.
+- [ ] **Correção de UI:** Atualize os componentes React do Bento Grid para consertar os problemas de Usabilidade reportados.
+- [ ] **Otimização de Performance:** Se houver avisos de FPS baixo, mova cálculos pesados (Simplex Noise) para Web Workers.

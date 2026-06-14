@@ -97,35 +97,35 @@ const reports = {};
 Object.keys(personas).forEach(pKey => {
   console.log(`Evaluating as: \x1b[33m${personas[pKey].title}\x1b[0m...`);
   reports[pKey] = generateDynamicInsights(pKey);
-  fs.writeFileSync(path.resolve(REPORTS_DIR, \`\${pKey}_report.json\`), JSON.stringify(reports[pKey], null, 2), 'utf8');
+  fs.writeFileSync(path.resolve(REPORTS_DIR, `${pKey}_report.json`), JSON.stringify(reports[pKey], null, 2), 'utf8');
 });
 
-console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Generating Candidate Roadmap...\\x1b[0m');
+console.log('\n\x1b[33m[Orchestrator] Crossing Data & Generating Candidate Roadmap...\x1b[0m');
 
-let markdown = \`# Pelimotion Agent Loops Candidate Roadmap (V2)\n\n\`;
-markdown += \`*Generated at: \${new Date().toLocaleString('pt-BR')}*\n\`;
-markdown += \`*Current Commit Hash: \`\${gitHash}\`*\n\n\`;
+let markdown = `# Pelimotion Agent Loops Candidate Roadmap (V2)\n\n`;
+markdown += `*Generated at: ${new Date().toLocaleString('pt-BR')}*\n`;
+markdown += `*Current Commit Hash: \`${gitHash}\`*\n\n`;
 
-markdown += \`## 1. Falhas Críticas Detectadas (Playwright & Telemetry)\n\n\`;
+markdown += `## 1. Falhas Críticas Detectadas (Playwright & Telemetry)\n\n`;
 if (testData.errors.length > 0) {
   testData.errors.forEach(e => {
-    markdown += \`- **[\${e.type.toUpperCase()}]**: \${e.text}\n\`;
+    markdown += `- **[${e.type.toUpperCase()}]**: ${e.text}\n`;
   });
 } else {
-  markdown += \`- Nenhuma falha crítica detectada nos testes desta rodada.\n\`;
+  markdown += `- Nenhuma falha crítica detectada nos testes desta rodada.\n`;
 }
 
-markdown += \`\n## 2. Recomendações Priorizadas por Persona\n\n\`;
+markdown += `\n## 2. Recomendações Priorizadas por Persona\n\n`;
 Object.values(reports).forEach(r => {
-  markdown += \`\${r.evaluation}\n\n\`;
+  markdown += `${r.evaluation}\n\n`;
 });
 
-markdown += \`## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n\`;
-markdown += \`- [ ] **Pesquisa Profunda (Figma/AE):** Agente, pesquise na web como plataformas concorrentes organizam seus painéis de propriedades e resolva a falta de visibilidade do botão de Exportação ou Add Text.\n\`;
-markdown += \`- [ ] **Correção de UI:** Atualize os componentes React do Bento Grid para consertar os problemas de Usabilidade reportados.\n\`;
-markdown += \`- [ ] **Otimização de Performance:** Se houver avisos de FPS baixo, mova cálculos pesados (Simplex Noise) para Web Workers.\n\`;
+markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP)\n\n`;
+markdown += `- [ ] **Pesquisa Profunda (Figma/AE):** Agente, pesquise na web como plataformas concorrentes organizam seus painéis de propriedades e resolva a falta de visibilidade do botão de Exportação ou Add Text.\n`;
+markdown += `- [ ] **Correção de UI:** Atualize os componentes React do Bento Grid para consertar os problemas de Usabilidade reportados.\n`;
+markdown += `- [ ] **Otimização de Performance:** Se houver avisos de FPS baixo, mova cálculos pesados (Simplex Noise) para Web Workers.\n`;
 
 fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
-console.log(\`\\n\\x1b[32mSuccess! Dynamic Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\\x1b[0m\`);
+console.log(`\n\x1b[32mSuccess! Dynamic Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);
 
-console.log('\\n\\x1b[35m[Orchestrator] V2 Execution completed! The AI Agent should now read ROADMAP_CANDIDATE.md and execute the implementation.\\x1b[0m');
+console.log('\n\x1b[35m[Orchestrator] V2 Execution completed! The AI Agent should now read ROADMAP_CANDIDATE.md and execute the implementation.\x1b[0m');

@@ -482,6 +482,30 @@ export function TopToolbar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <GizmoToggle />
 
+        {/* --- ADD TEXT BUTTON --- */}
+        <ToolButton
+          onClick={() => {
+            useEditorStore.getState().setActivePanel('typography');
+            // If the store exposes an addText function, you could call it here.
+          }}
+          title="Adicionar Texto (Atalho: T)"
+          label="Adicionar Texto"
+          accentColor="var(--color-text-primary)"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+        </ToolButton>
+
+        {/* --- EXPORT BUTTON --- */}
+        <ToolButton
+          active={activePanel === 'export'}
+          onClick={() => useEditorStore.getState().setActivePanel('export')}
+          title="Exportar Composição (Atalho: Cmd+E)"
+          label="Exportar"
+          accentColor="hsla(157, 100%, 40%, 1)"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        </ToolButton>
+
         {activePanel === 'typography' && (
           <ToolButton
             onClick={incrementAnimKey}
