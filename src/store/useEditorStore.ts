@@ -603,6 +603,11 @@ export const useEditorStore = create<EditorState>((set) => ({
       l.id === id ? { ...l, transform: { ...l.transform, ...transform } } : l
     )
   })),
+  updateLayerOpacityMode: (id, mode) => set((state) => ({
+    generativeLayers: state.generativeLayers.map(l => 
+      l.id === id ? { ...l, opacityMode: mode } : l
+    )
+  })),
   updateLayerShapeProps: (id, props) => set((state) => ({
     generativeLayers: state.generativeLayers.map(l => 
       l.id === id ? { ...l, shapeProps: { ...l.shapeProps, ...props } } : l

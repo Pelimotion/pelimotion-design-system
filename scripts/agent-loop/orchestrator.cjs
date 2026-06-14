@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 21)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 22)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Universal Clipboard (Cmd+C / Cmd+V)',
+    title: 'Timeline Context Menu',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Usuários precisam poder copiar camadas e colar exatamente na posição temporal da agulha (playhead). O "Duplicate" tradicional limitava o fluxo orgânico.'
+    description: 'Atalhos de teclado (Cmd+C/Cmd+D) são ágeis, mas muitos editores dependem do clique-direito (Context Menu) direto no bloco para descobrir e executar ações (Copiar, Fatiar, Deletar).'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Cross-Engine Clipboard State',
+    title: 'Custom Floating Context Menu',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Armazenar o clipboard num nó persistente do Zustand permite que um usuário copie uma camada de Composição, mude de painel e volte sem perder o dado em RAM.'
+    description: 'O Menu de Contexto nativo do navegador polui a experiência. Devemos interceptar o `onContextMenu` e renderizar um sub-painel React flutuante com suporte ao motor do Zustand.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 21)\n\n`;
-  markdown += `- [x] **Store Universal Clipboard:** Construir objeto genérico \`clipboard\` (type/data) dentro da raiz do EditorStore (Dev Senior).\n`;
-  markdown += `- [x] **Playhead Paste Injection:** O \`useKeyboardShortcuts.ts\` deve interceptar Cmd+C (Copy) e Cmd+V (Paste), clonando o UUID e herdando o tempo atual do \`currentTime\` global na cola (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 22)\n\n`;
+  markdown += `- [x] **Context Menu UI:** Adicionar estado \`contextMenu\` e interceptação global de clique fora (\`clickaway\`) no \`CompositionTimeline.tsx\` (Product Designer).\n`;
+  markdown += `- [x] **Track Block Binding:** Acoplar o evento \`onContextMenu\` a todas as tracks de Composição e de Áudio, abrindo o menu flutuante nas coordenadas do mouse (\`e.clientX\`, \`e.clientY\`) (Dev Senior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

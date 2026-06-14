@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 23:01:23*
-*Current Commit Hash: `ac67245`*
+*Generated at: 13/06/2026, 23:21:41*
+*Current Commit Hash: `c48b837`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Universal Clipboard (Cmd+C / Cmd+V)** (diretor_criacao + product_designer):
-  - *Descrição:* Usuários precisam poder copiar camadas e colar exatamente na posição temporal da agulha (playhead). O "Duplicate" tradicional limitava o fluxo orgânico.
+- **Timeline Context Menu** (diretor_criacao + product_designer):
+  - *Descrição:* Atalhos de teclado (Cmd+C/Cmd+D) são ágeis, mas muitos editores dependem do clique-direito (Context Menu) direto no bloco para descobrir e executar ações (Copiar, Fatiar, Deletar).
 
-- **Cross-Engine Clipboard State** (product_designer + dev_senior):
-  - *Descrição:* Armazenar o clipboard num nó persistente do Zustand permite que um usuário copie uma camada de Composição, mude de painel e volte sem perder o dado em RAM.
+- **Custom Floating Context Menu** (product_designer + dev_senior):
+  - *Descrição:* O Menu de Contexto nativo do navegador polui a experiência. Devemos interceptar o `onContextMenu` e renderizar um sub-painel React flutuante com suporte ao motor do Zustand.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 21)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 22)
 
-- [x] **Store Universal Clipboard:** Construir objeto genérico `clipboard` (type/data) dentro da raiz do EditorStore (Dev Senior).
-- [x] **Playhead Paste Injection:** O `useKeyboardShortcuts.ts` deve interceptar Cmd+C (Copy) e Cmd+V (Paste), clonando o UUID e herdando o tempo atual do `currentTime` global na cola (Product Designer).
+- [x] **Context Menu UI:** Adicionar estado `contextMenu` e interceptação global de clique fora (`clickaway`) no `CompositionTimeline.tsx` (Product Designer).
+- [x] **Track Block Binding:** Acoplar o evento `onContextMenu` a todas as tracks de Composição e de Áudio, abrindo o menu flutuante nas coordenadas do mouse (`e.clientX`, `e.clientY`) (Dev Senior).

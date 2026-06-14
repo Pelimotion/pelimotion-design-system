@@ -103,7 +103,7 @@ export function useKeyboardShortcuts() {
               const track = state.audioTracks.find(t => t.id === state.activeAudioTrackId);
               if (track) state.setClipboard({ type: 'audio', data: track });
             } else if (state.activeTypoLayerId) {
-              const layer = state.typographyConfig.layers.find(l => l.id === state.activeTypoLayerId);
+              const layer = state.motionConfig.typography.layers.find(l => l.id === state.activeTypoLayerId);
               if (layer) state.setClipboard({ type: 'typography', data: layer });
             } else if (state.activeGenerativeLayerId) {
               const layer = state.generativeLayers.find(l => l.id === state.activeGenerativeLayerId);

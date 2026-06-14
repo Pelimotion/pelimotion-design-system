@@ -58,6 +58,15 @@ export function CompositionTimeline() {
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
   const [pixelsPerSecond, setPixelsPerSecond] = useState(10); // default
+  
+  // Context Menu State
+  const [contextMenu, setContextMenu] = useState<{ x: number, y: number, layerId: string, isAudio?: boolean } | null>(null);
+
+  useEffect(() => {
+    const closeContextMenu = () => setContextMenu(null);
+    window.addEventListener('click', closeContextMenu);
+    return () => window.removeEventListener('click', closeContextMenu);
+  }, []);
 
   // Update scale based on container width
   useEffect(() => {
@@ -785,6 +794,11 @@ export function CompositionTimeline() {
                       className="timeline-track-block"
                       style={blockStyle(layer.startTime, layer.duration, layer.colorTag ? layer.colorTag + '33' : 'rgba(0, 150, 255, 0.2)')}
                       onPointerDown={(e) => !layer.locked && handlePointerDown(e, layer.id, 'move')}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setActiveCompositionLayerId(layer.id);
+                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id, isAudio: false });
+                      }}
                    >
                      <div className={getHandleClass(layer.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')}>
                         {dragging?.id === layer.id && dragging?.type === 'trim-left' && (
@@ -984,6 +998,72 @@ export function CompositionTimeline() {
         )}
         </div>
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div 
+          style={{ 
+            position: 'fixed', left: contextMenu.x, top: contextMenu.y, zIndex: 9999,
+            background: 'var(--color-bg-elevated)', border: '1px solid var(--color-surface-border)',
+            borderRadius: 8, padding: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            display: 'flex', flexDirection: 'column', gap: 2, minWidth: 150
+          }}
+          onContextMenu={e => e.preventDefault()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button onClick={() => {
+             const state = useEditorStore.getState();
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
+             if (layer) state.setClipboard({ type: contextMenu.isAudio ? 'audio' : 'composition', data: layer });
+             setContextMenu(null);
+          }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+            <Copy size={12} /> Copiar (Cmd+C)
+          </button>
+          
+          <button onClick={() => {
+             const state = useEditorStore.getState();
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
+             if (layer) {
+               const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, exportConfig.duration) };
+               if (contextMenu.isAudio) state.addAudioTrack(duplicate as any);
+               else state.addCompositionLayer(duplicate as any);
+             }
+             setContextMenu(null);
+          }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+            <Copy size={12} /> Duplicar (Cmd+D)
+          </button>
+
+          <button onClick={() => {
+             const state = useEditorStore.getState();
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
+             if (layer && currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) {
+               const newDuration1 = currentTime - layer.startTime;
+               const newDuration2 = (layer.startTime + layer.duration) - currentTime;
+               if (contextMenu.isAudio) {
+                 state.updateAudioTrack(layer.id, { duration: newDuration1 });
+                 state.addAudioTrack({ ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 } as any);
+               } else {
+                 state.updateCompositionLayer(layer.id, { duration: newDuration1 });
+                 state.addCompositionLayer({ ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 } as any);
+               }
+             }
+             setContextMenu(null);
+          }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+            <Scissors size={12} /> Fatiar (Cmd+Shift+D)
+          </button>
+
+          <div style={{ height: 1, background: 'var(--color-surface-border)', margin: '4px 0' }} />
+
+          <button onClick={() => {
+             const state = useEditorStore.getState();
+             if (contextMenu.isAudio) state.removeAudioTrack(contextMenu.layerId);
+             else state.removeCompositionLayer(contextMenu.layerId);
+             setContextMenu(null);
+          }} style={{ background: 'none', border: 'none', color: 'var(--color-error)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,0,0,0.1)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+            <Trash2 size={12} /> Deletar (Del)
+          </button>
+        </div>
+      )}
     </div>
   );
 }
