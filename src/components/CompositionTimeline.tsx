@@ -57,7 +57,6 @@ export function CompositionTimeline() {
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
-  const [pixelsPerSecond, setPixelsPerSecond] = useState(10); // default
   
   // Context Menu State
   const [contextMenu, setContextMenu] = useState<{ x: number, y: number, layerId: string, isAudio?: boolean } | null>(null);
@@ -68,17 +67,6 @@ export function CompositionTimeline() {
     return () => window.removeEventListener('click', closeContextMenu);
   }, []);
 
-  // Update scale based on container width
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        setPixelsPerSecond(entry.contentRect.width / exportConfig.duration);
-      }
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, [exportConfig.duration]);
 
   const handleAddLocalItem = (item: any) => {
     const newLayer: CompositionLayer = {

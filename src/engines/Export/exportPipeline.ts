@@ -139,6 +139,10 @@ async function exportWithWebCodecs(
     const ctx = offscreenCanvas.getContext('2d')!;
 
     for (let frame = 0; frame < totalFrames; frame++) {
+      if (!useEditorStore.getState().exportState.isExporting) {
+        throw new Error('EXPORT_CANCELLED');
+      }
+
       const time = frame * frameInterval;
       const timestamp = Math.round(time * 1_000_000); // in microseconds
 
@@ -259,6 +263,17 @@ async function exportWithWebCodecs(
     onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined });
 
   } catch (error: any) {
+    if (error.message === 'EXPORT_CANCELLED') {
+      console.log('WebCodecs Export was cancelled.');
+      if (worker) {
+        worker.postMessage({ type: 'ABORT' });
+        worker.terminate();
+      }
+      gsap.globalTimeline.play();
+      onProgress({ stage: 'idle', isExporting: false, progress: 0 });
+      return;
+    }
+
     console.error('WebCodecs Export failed:', error);
     Telemetry.logEvent('EXPORT_CANCELLED', { engine: 'webcodecs', error: error.message });
     if (worker) {
@@ -315,6 +330,10 @@ async function exportWithFFmpeg(
     const bgVideo = allVideos.find(vid => vid.id === 'export-bg-video')
 
     for (let frame = 0; frame < totalFrames; frame++) {
+      if (!useEditorStore.getState().exportState.isExporting) {
+        throw new Error('EXPORT_CANCELLED');
+      }
+
       // If png-still, we use the selected stillFrame time, else sequential
       const frameIndex = format === 'png-still' ? stillFrame : frame
       const time = frameIndex * frameInterval
@@ -455,8 +474,15 @@ async function exportWithFFmpeg(
     Telemetry.logEvent('EXPORT_COMPLETED', { engine: 'ffmpeg' });
     onProgress({ stage: 'complete', progress: 100, isExporting: false, errorMessage: undefined })
   } catch (error: any) {
+    if (error.message === 'EXPORT_CANCELLED') {
+      console.log('FFmpeg Export was cancelled.');
+      gsap.globalTimeline.play();
+      onProgress({ stage: 'idle', isExporting: false, progress: 0 });
+      return;
+    }
+
     console.error('Export failed:', error)
-    Telemetry.logEvent('EXPORT_CANCELLED', { engine: 'ffmpeg', error: error.message });
+    Telemetry.logEvent('EXPORT_FAILED', { engine: 'ffmpeg', error: error.message });
     gsap.globalTimeline.play()
     onProgress({ 
       stage: 'error', 

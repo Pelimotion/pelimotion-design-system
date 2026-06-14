@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 24)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 25)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Timeline Auto-Scroll Dragging',
+    title: 'Export Cancellation UI',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Quando a timeline está muito "zoomada" (>200%), mover um bloco lá pro final exigia soltar, rolar a barra e puxar de novo. Isso destrói o estado de flow criativo.'
+    description: 'Quando o usuário erra alguma config e dá "Start Render", o app travava a UI e ficava renderizando um MP4 de 1 minuto à força. Uma opção de Cancelamento é obrigatória.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'RequestAnimationFrame Virtual Scroll',
+    title: 'Pipeline Interrupt Exception',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Devemos iniciar um loop recursivo assíncrono durante o `dragging` que verifica se o cursor se aproxima a 40px das bordas, incrementando o `scrollLeft` continuamente.'
+    description: 'Para não introduzir vazamentos de memória (memory leaks) na Engine WebCodecs, precisamos matar o worker instanciado e retornar a GlobalTimeline para o estado normal caso `isExporting` caia pra falso.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 24)\n\n`;
-  markdown += `- [x] **Time Update Refactor:** Desacoplar a lógica de cálculo de tempo para uma função autônoma \`applyTimeUpdate()\` dentro de \`CompositionTimeline.tsx\` (Dev Senior).\n`;
-  markdown += `- [x] **Auto-scroll Loop:** Durante o Drag, ativar \`requestAnimationFrame()\` lendo o \`currentMouseX\`. Se estiver na Threshold de 40px, avançar/retroceder a viewport horizontalmente simulando um virtual Drag (Product Designer).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 25)\n\n`;
+  markdown += `- [x] **Export Pipeline Interrupts:** Injetar validação continua no \`for\` loop do \`exportPipeline.ts\`. Se o estado do Zustand não estiver mais exportando, atirar uma exceção \`EXPORT_CANCELLED\` para forçar a limpeza dos workers (Dev Senior).\n`;
+  markdown += `- [x] **Cancel Action in Panel:** Substituir dinamicamente o botão de Export pelo botão de "Cancel" no \`ExportPanel.tsx\` durante o carregamento de progresso (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

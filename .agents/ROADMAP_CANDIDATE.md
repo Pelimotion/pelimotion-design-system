@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 14/06/2026, 00:01:21*
-*Current Commit Hash: `0a5296c`*
+*Generated at: 14/06/2026, 00:22:20*
+*Current Commit Hash: `b2a0114`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Timeline Auto-Scroll Dragging** (diretor_criacao + product_designer):
-  - *Descrição:* Quando a timeline está muito "zoomada" (>200%), mover um bloco lá pro final exigia soltar, rolar a barra e puxar de novo. Isso destrói o estado de flow criativo.
+- **Export Cancellation UI** (diretor_criacao + product_designer):
+  - *Descrição:* Quando o usuário erra alguma config e dá "Start Render", o app travava a UI e ficava renderizando um MP4 de 1 minuto à força. Uma opção de Cancelamento é obrigatória.
 
-- **RequestAnimationFrame Virtual Scroll** (product_designer + dev_senior):
-  - *Descrição:* Devemos iniciar um loop recursivo assíncrono durante o `dragging` que verifica se o cursor se aproxima a 40px das bordas, incrementando o `scrollLeft` continuamente.
+- **Pipeline Interrupt Exception** (product_designer + dev_senior):
+  - *Descrição:* Para não introduzir vazamentos de memória (memory leaks) na Engine WebCodecs, precisamos matar o worker instanciado e retornar a GlobalTimeline para o estado normal caso `isExporting` caia pra falso.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 24)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 25)
 
-- [x] **Time Update Refactor:** Desacoplar a lógica de cálculo de tempo para uma função autônoma `applyTimeUpdate()` dentro de `CompositionTimeline.tsx` (Dev Senior).
-- [x] **Auto-scroll Loop:** Durante o Drag, ativar `requestAnimationFrame()` lendo o `currentMouseX`. Se estiver na Threshold de 40px, avançar/retroceder a viewport horizontalmente simulando um virtual Drag (Product Designer).
+- [x] **Export Pipeline Interrupts:** Injetar validação continua no `for` loop do `exportPipeline.ts`. Se o estado do Zustand não estiver mais exportando, atirar uma exceção `EXPORT_CANCELLED` para forçar a limpeza dos workers (Dev Senior).
+- [x] **Cancel Action in Panel:** Substituir dinamicamente o botão de Export pelo botão de "Cancel" no `ExportPanel.tsx` durante o carregamento de progresso (Product Designer).

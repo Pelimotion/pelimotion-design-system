@@ -177,9 +177,8 @@ export function ExportPanel() {
         </div>
       )}
 
-      <button
-        onClick={handleExport}
-        disabled={exportState.isExporting || exportState.stage === 'complete'}
+      <div
+        onClick={exportState.isExporting || exportState.stage === 'complete' ? undefined : handleExport}
         style={{
           marginTop: 'auto',
           padding: '16px',
@@ -189,7 +188,7 @@ export function ExportPanel() {
           borderRadius: '12px',
           fontSize: '0.9rem',
           fontWeight: 700,
-          cursor: exportState.isExporting ? 'not-allowed' : 'pointer',
+          cursor: (exportState.isExporting || exportState.stage === 'complete') ? 'default' : 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -208,17 +207,38 @@ export function ExportPanel() {
         }}
       >
         {exportState.isExporting ? (
-          <>
-            <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid currentColor', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
-            Rendering... ({Math.round(exportState.progress)}%)
-          </>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+              <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid currentColor', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
+              Rendering... ({Math.round(exportState.progress)}%)
+            </div>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setExportState({ isExporting: false, stage: 'idle', progress: 0 });
+              }}
+              style={{
+                background: 'var(--color-error)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 6,
+                padding: '6px 12px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                pointerEvents: 'auto'
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         ) : (
           <>
             <Zap size={18} fill="currentColor" />
             Start Render
           </>
         )}
-      </button>
+      </div>
 
       <div style={{ padding: 16, background: 'var(--color-bg-elevated)', border: '1px solid var(--color-surface-border)', borderRadius: '12px' }}>
         <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', marginBottom: 8 }}>Workflow Tip</span>
