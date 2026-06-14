@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 22:40:05*
-*Current Commit Hash: `d6e42ff`*
+*Generated at: 13/06/2026, 22:41:31*
+*Current Commit Hash: `6e10446`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Local Media Drag & Drop** (diretor_criacao + product_designer):
-  - *Descrição:* Usuários precisam poder arrastar vídeos, áudios e imagens diretamente do sistema operacional para o Canvas do Pelimotion.
+- **Timeline Zoom Out/In (Magnifier)** (diretor_criacao + product_designer):
+  - *Descrição:* Composições maiores que 10 segundos espremem as camadas. Usuários precisam dar zoom na timeline. (O range UI já existia, mas sua descoberta foi alinhada).
 
-- **Blob URLs & Memory Management** (product_designer + dev_senior):
-  - *Descrição:* Arquivos arrastados devem ser transformados em Blob URLs (`URL.createObjectURL`) e salvos no `localLibraryItems` instantaneamente para não pesar na RAM e para facilitar o re-uso.
+- **Layer Splitting (Cmd+Shift+D)** (product_designer + dev_senior):
+  - *Descrição:* Fazer o "Split" pelo ícone de tesoura na camada é lento. Atalho de teclado `Cmd+Shift+D` para fatiar o clipe na posição atual da agulha é o padrão absoluto da indústria.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 19)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 20)
 
-- [x] **Local Media Drag & Drop:** Acoplar listeners `onDragOver` e `onDrop` no Container raiz do `App.tsx` para ingestão de mídia (Product Designer).
-- [x] **Blob URL Architecture:** Suportar os tipos `image/video/audio` no `LibraryLocalItem` e renderizar corretamente no `CompositionPreview.tsx` e `LibraryPreview.tsx` (Dev Senior).
+- [x] **Layer Splitting (Cmd+Shift+D):** Expandir a máquina de atalhos em `useKeyboardShortcuts.ts` para injetar cortes precisos baseados na variável `currentTime` global (Dev Senior).
+- [x] **Timeline Zoom UI Alignment:** Validar os multiplicadores percentuais da régua de track via `timelineZoom` atrelado a CSS nativo, poupando loops caros do React (CEO / Dev Senior).

@@ -47,19 +47,47 @@ export function useKeyboardShortcuts() {
           if (e.metaKey || e.ctrlKey) {
             e.preventDefault();
             const state = useEditorStore.getState();
-            if (state.activeCompositionLayerId) {
-              const layer = state.compositionLayers.find(l => l.id === state.activeCompositionLayerId);
-              if (layer) {
-                const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, state.exportConfig.duration) };
-                state.addCompositionLayer(duplicate);
-                state.setActiveCompositionLayerId(duplicate.id);
+            const ct = state.currentTime;
+
+            if (e.shiftKey) {
+              // SPLIT LAYER (Cmd+Shift+D)
+              if (state.activeCompositionLayerId) {
+                const layer = state.compositionLayers.find(l => l.id === state.activeCompositionLayerId);
+                if (layer && ct > layer.startTime && ct < layer.startTime + layer.duration) {
+                  const newDuration1 = ct - layer.startTime;
+                  const newDuration2 = (layer.startTime + layer.duration) - ct;
+                  state.updateCompositionLayer(layer.id, { duration: newDuration1 });
+                  const duplicate = { ...layer, id: crypto.randomUUID(), startTime: ct, duration: newDuration2 };
+                  state.addCompositionLayer(duplicate);
+                  state.setActiveCompositionLayerId(duplicate.id);
+                }
+              } else if (state.activeAudioTrackId) {
+                const track = state.audioTracks.find(t => t.id === state.activeAudioTrackId);
+                if (track && ct > track.startTime && ct < track.startTime + track.duration) {
+                  const newDuration1 = ct - track.startTime;
+                  const newDuration2 = (track.startTime + track.duration) - ct;
+                  state.updateAudioTrack(track.id, { duration: newDuration1 });
+                  const duplicate = { ...track, id: crypto.randomUUID(), startTime: ct, duration: newDuration2 };
+                  state.addAudioTrack(duplicate);
+                  state.setActiveAudioTrackId(duplicate.id);
+                }
               }
-            } else if (state.activeAudioTrackId) {
-              const track = state.audioTracks.find(t => t.id === state.activeAudioTrackId);
-              if (track) {
-                const duplicate = { ...track, id: crypto.randomUUID(), startTime: Math.min(track.startTime + 0.5, state.exportConfig.duration) };
-                state.addAudioTrack(duplicate);
-                state.setActiveAudioTrackId(duplicate.id);
+            } else {
+              // DUPLICATE LAYER (Cmd+D)
+              if (state.activeCompositionLayerId) {
+                const layer = state.compositionLayers.find(l => l.id === state.activeCompositionLayerId);
+                if (layer) {
+                  const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, state.exportConfig.duration) };
+                  state.addCompositionLayer(duplicate);
+                  state.setActiveCompositionLayerId(duplicate.id);
+                }
+              } else if (state.activeAudioTrackId) {
+                const track = state.audioTracks.find(t => t.id === state.activeAudioTrackId);
+                if (track) {
+                  const duplicate = { ...track, id: crypto.randomUUID(), startTime: Math.min(track.startTime + 0.5, state.exportConfig.duration) };
+                  state.addAudioTrack(duplicate);
+                  state.setActiveAudioTrackId(duplicate.id);
+                }
               }
             }
           }
