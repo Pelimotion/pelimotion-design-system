@@ -247,18 +247,60 @@ export function CompositionTimeline() {
   }, []);
 
   useEffect(() => {
+    let scrollAnimationFrame: number;
+    let currentMouseX = 0;
+
+    const handleWindowPointerMove = (e: PointerEvent) => {
+      currentMouseX = e.clientX;
+      handlePointerMove(e);
+    };
+
+    const autoScrollLoop = () => {
+      const scrollContainer = document.getElementById('timeline-scroll-container');
+      if (scrollContainer && dragging) {
+        const rect = scrollContainer.getBoundingClientRect();
+        const edgeThreshold = 40; // 40px from edge
+        const scrollSpeed = 10;
+
+        if (currentMouseX > rect.right - edgeThreshold) {
+          scrollContainer.scrollLeft += scrollSpeed;
+          // Re-trigger calculation with updated scroll
+          if (containerRef.current) {
+            const trackRect = containerRef.current.getBoundingClientRect();
+            const virtualMouseX = currentMouseX - (trackRect.left + 12);
+            const trackWidth = trackRect.width - 24; 
+            const time = Math.max(0, Math.min(exportConfig.duration, (virtualMouseX / trackWidth) * exportConfig.duration));
+            // Only update time virtually, don't trigger full event
+            handleVirtualTimeMove(time);
+          }
+        } else if (currentMouseX < rect.left + edgeThreshold) {
+          scrollContainer.scrollLeft -= scrollSpeed;
+          if (containerRef.current) {
+            const trackRect = containerRef.current.getBoundingClientRect();
+            const virtualMouseX = currentMouseX - (trackRect.left + 12);
+            const trackWidth = trackRect.width - 24; 
+            const time = Math.max(0, Math.min(exportConfig.duration, (virtualMouseX / trackWidth) * exportConfig.duration));
+            handleVirtualTimeMove(time);
+          }
+        }
+      }
+      scrollAnimationFrame = requestAnimationFrame(autoScrollLoop);
+    };
+
     if (dragging) {
-      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointermove', handleWindowPointerMove);
       window.addEventListener('pointerup', handlePointerUp);
+      scrollAnimationFrame = requestAnimationFrame(autoScrollLoop);
     } else {
-      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointermove', handleWindowPointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     }
     return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointermove', handleWindowPointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
+      cancelAnimationFrame(scrollAnimationFrame);
     };
-  }, [dragging, handlePointerMove, handlePointerUp]);
+  }, [dragging, handlePointerMove, handlePointerUp, exportConfig.duration]);
 
   const handleTimelinePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -600,6 +642,7 @@ export function CompositionTimeline() {
 
       {/* TIMELINE AREA */}
       <div 
+        id="timeline-scroll-container"
         style={{ 
           background: 'var(--color-bg-elevated)', 
           border: '1px solid var(--color-surface-border)', 
