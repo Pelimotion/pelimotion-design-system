@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test.describe('Pelimotion User Session Simulation', () => {
   const errors = [];
@@ -21,9 +25,9 @@ test.describe('Pelimotion User Session Simulation', () => {
     try {
       // 1. Navigate to local dev server gracefully
       try {
-        await page.goto('http://localhost:5173', { waitUntil: 'networkidle', timeout: 10000 });
+        await page.goto('http://localhost:3000/pelimotion-design-system/', { waitUntil: 'networkidle', timeout: 10000 });
       } catch (e) {
-        throw new Error('Local dev server is not running at http://localhost:5173');
+        throw new Error('Local dev server is not running at http://localhost:3000/pelimotion-design-system/');
       }
 
       // 2. Add Generative Elements

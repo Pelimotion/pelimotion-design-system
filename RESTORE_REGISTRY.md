@@ -103,3 +103,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-14T04-40-25-553Z** | `backup-branch-2026-06-14T04-40-25-553Z` | `10ec5b8` | 14/06/2026, 01:40:25 | Auto-backup após análise de pesquisa |
 | **restore-2026-06-14T21-20-06-863Z** | `backup-branch-2026-06-14T21-20-06-863Z` | `a5528f3` | 14/06/2026, 18:20:06 | Cron loop auto backup |
 | **restore-2026-06-14T21-40-09-922Z** | `backup-branch-2026-06-14T21-40-09-922Z` | `111be60` | 14/06/2026, 18:40:09 | Cron iteration 3 backup |
+| **restore-2026-06-14T22-00-15-178Z** | `backup-branch-2026-06-14T22-00-15-178Z` | `afdeea6` | 14/06/2026, 19:00:15 | Cron 15m Iteration 1 |

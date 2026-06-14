@@ -1,7 +1,7 @@
 # Pelimotion Agent Loops Candidate Roadmap (V2)
 
-*Generated at: 14/06/2026, 18:40:13*
-*Current Commit Hash: `111be60`*
+*Generated at: 14/06/2026, 19:00:18*
+*Current Commit Hash: `afdeea6`*
 
 ## 1. Falhas Críticas Detectadas (Playwright & Telemetry)
 
@@ -33,6 +33,5 @@
 
 ## 3. Próximos Passos de Implementação (MASSIVE LOOP)
 
-- [ ] **Pesquisa Profunda (Figma/AE):** Agente, pesquise na web como plataformas concorrentes organizam seus painéis de propriedades e resolva a falta de visibilidade do botão de Exportação ou Add Text.
-- [ ] **Correção de UI:** Atualize os componentes React do Bento Grid para consertar os problemas de Usabilidade reportados.
-- [ ] **Otimização de Performance:** Se houver avisos de FPS baixo, mova cálculos pesados (Simplex Noise) para Web Workers.
+- [ ] **Auditoria Visual Profunda (Obrigatório):** Agente, use a tool `view_file` no arquivo `.agents/reports/session-result.png` para fazer uma análise visual meticulosa da interface. Se encontrar elementos desalinhados, falta de contraste, ou problemas de UX percebidos, corrija imediatamente no código.
+- [ ] **Resolução de Crash:** Identifique e corrija a raiz dos problemas de `crash` ou `connection` encontrados durante o teste automatizado.
