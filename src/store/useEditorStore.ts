@@ -77,6 +77,7 @@ interface EditorState {
   activeCompositionLayerId: string | null;
   currentTime: number;
   isPlaying: boolean;
+  isScrubbing: boolean;
 
   // Audio State
   audioTracks: AudioTrack[];
@@ -169,6 +170,7 @@ interface EditorState {
   reorderCompositionLayers: (startIndex: number, endIndex: number) => void;
   seek: (time: number) => void;
   togglePlayback: () => void;
+  setScrubbing: (scrubbing: boolean) => void;
 
   // Audio Actions
   addAudioTrack: (track: AudioTrack) => void;
@@ -283,6 +285,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   activeCompositionLayerId: null,
   currentTime: 0,
   isPlaying: false,
+  isScrubbing: false,
 
   // Audio initial state
   audioTracks: [],
@@ -684,6 +687,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   seek: (time) => set({ currentTime: time }),
   
   togglePlayback: () => set((state) => ({ isPlaying: !state.isPlaying })),
+
+  setScrubbing: (scrubbing) => set({ isScrubbing: scrubbing }),
 
   // ─── Audio Actions ─────────────────────────────────────────────────────
 

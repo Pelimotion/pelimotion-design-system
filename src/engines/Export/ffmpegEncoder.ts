@@ -67,3 +67,48 @@ export async function encodeVideoWithFFmpeg(
   const data = await ffmpeg.readFile(outName)
   return data as Uint8Array
 }
+
+export async function muxVideoAndAudioWithFFmpeg(
+  videoData: Uint8Array,
+  audioWav: Uint8Array,
+  format: 'mp4' | 'mov',
+  onProgress?: (prog: number) => void
+): Promise<Uint8Array> {
+  const ffmpeg = new FFmpeg()
+
+  if (onProgress) {
+    ffmpeg.on('progress', ({ progress }) => {
+      onProgress(Math.min(100, Math.max(0, progress * 100)))
+    })
+  }
+
+  await ffmpeg.load({
+    coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+    wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm',
+  })
+
+  const videoName = `input_video.${format}`
+  const audioName = 'input_audio.wav'
+  const outName = `output.${format}`
+
+  await ffmpeg.writeFile(videoName, videoData as any)
+  await ffmpeg.writeFile(audioName, audioWav as any)
+
+  // -c:v copy tells FFmpeg to just copy the video stream, preventing any re-encoding.
+  // -c:a aac compresses the WAV audio into AAC format.
+  // -shortest ensures the output is clipped to the shortest input stream.
+  const args = [
+    '-i', videoName,
+    '-i', audioName,
+    '-c:v', 'copy',
+    '-c:a', 'aac',
+    '-b:a', '192k',
+    '-shortest',
+    outName
+  ]
+
+  await ffmpeg.exec(args)
+
+  const data = await ffmpeg.readFile(outName)
+  return data as Uint8Array
+}

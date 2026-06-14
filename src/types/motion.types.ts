@@ -498,6 +498,7 @@ export interface ExportConfig {
   bgTrimStart?: number;
   bgTrimEnd?: number;
   enableMotionBlur?: boolean;
+  includeWatermark?: boolean;
 }
 
 // ─── Composition State ───────────────────────────────────────────────────────

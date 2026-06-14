@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { Download, CheckCircle2, MonitorPlay, Zap, Settings2 } from 'lucide-react'
+import type { ExportConfig } from '@/types/motion.types'
 
 const selectStyle: React.CSSProperties = {
   background: 'var(--color-bg-base)',
@@ -74,7 +75,7 @@ export function ExportPanel() {
           height: safeHeight,
         })
         setExportState({ exportMode: result.supported ? 'webcodecs-hw' : 'ffmpeg-fallback' })
-      } catch (e) {
+      } catch {
         setExportState({ exportMode: 'ffmpeg-fallback' })
       }
     }
@@ -105,7 +106,7 @@ export function ExportPanel() {
         <Campo label="Output Format" icon={<Download size={10} />}>
           <select 
             value={exportConfig.format} 
-            onChange={e => updateExportConfig({ format: e.target.value as any })} 
+            onChange={e => updateExportConfig({ format: e.target.value as ExportConfig['format'] })} 
             style={selectStyle}
             disabled={exportState.isExporting}
           >
@@ -136,14 +137,14 @@ export function ExportPanel() {
 
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 12,
-            maxHeight: showAdvanced ? 200 : 0,
+            maxHeight: showAdvanced ? 260 : 0,
             opacity: showAdvanced ? 1 : 0,
             overflow: 'hidden',
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             marginTop: showAdvanced ? 12 : 0
           }}>
             <Campo label="Resolution">
-              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value as any })} style={selectStyle} disabled={exportState.isExporting}>
+              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value as ExportConfig['resolution'] })} style={selectStyle} disabled={exportState.isExporting}>
                 <option value="1920x1080">1080p (FHD)</option>
                 <option value="3840x2160">4K (UHD)</option>
                 <option value="1080x1920">Vertical (Stories/Reels)</option>
@@ -158,6 +159,20 @@ export function ExportPanel() {
                 <option value={60}>60 FPS (Smooth)</option>
               </select>
             </Campo>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <input
+                id="watermark-toggle"
+                type="checkbox"
+                checked={exportConfig.includeWatermark !== false}
+                onChange={e => updateExportConfig({ includeWatermark: e.target.checked })}
+                disabled={exportState.isExporting}
+                style={{ width: 14, height: 14, accentColor: 'var(--color-accent)', cursor: 'pointer' }}
+              />
+              <label htmlFor="watermark-toggle" style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
+                Include Pelimotion Watermark
+              </label>
+            </div>
           </div>
         </div>
       </div>

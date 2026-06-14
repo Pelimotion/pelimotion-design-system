@@ -1,8 +1,8 @@
 # Pelimotion Agent Loops: Holistic Roadmap (V3)
 
-*Generated at: 14/06/2026, 20:34:35*
-*Session Number: 3*
-*System Sweep Focus: **Generative Shapes & Asset Library***
+*Generated at: 14/06/2026, 20:53:33*
+*Session Number: 4*
+*System Sweep Focus: **Timeline & Export Workflow***
 
 > **ATENÇÃO AGENTE EXECUTOR:** 
 > Use After Effects, Figma, Cavalry e grandes plataformas generativas como referência. 
@@ -11,6 +11,7 @@
 
 ## 1. Memória e Aprendizado Histórico
 - Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.
+- Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.
 
 ## 2. Inconsistências Críticas (Testes Automáticos)
 
@@ -20,7 +21,7 @@
 
 - [ ] **Passo 1: Investigação e Teste Real.** Abra a interface local, crie arquivos de teste complexos usando o máximo de funcionalidades. Simule o uso profissional e anote tudo que parece travado, pouco intuitivo ou com bug.
 - [ ] **Passo 2: Pesquisa no Mercado.** Busque ativamente na internet e no seu banco de dados interno como Figma e After Effects resolvem esses gargalos da UI e renderização.
-- [ ] **Passo 3: Arquitetura & Implementação Profunda.** Reescreva componentes, otimize fluxos e re-estilize a interface. Concentre-se principalmente na área foco desta sessão: **Generative Shapes & Asset Library**.
+- [ ] **Passo 3: Arquitetura & Implementação Profunda.** Reescreva componentes, otimize fluxos e re-estilize a interface. Concentre-se principalmente na área foco desta sessão: **Timeline & Export Workflow**.
 - [ ] **Passo 4: Validação Rigorosa.** Reteste tudo visualmente. O contraste está perfeito? O bento grid está luxuoso? As animações estão com FPS alto?
 
 ## 4. Finalização e Reagendamento (VITAL)

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 
 export function AudioEngine() {
-  const { audioTracks, currentTime, isPlaying } = useEditorStore();
+  const { audioTracks, currentTime, isPlaying, isScrubbing } = useEditorStore();
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export function AudioEngine() {
     audioTracks.forEach(track => {
       const audio = audioRefs.current[track.id];
       if (audio) {
-        const isMuted = track.muted || (hasSolo && !track.solo);
+        const isMuted = track.muted || (hasSolo && !track.solo) || isScrubbing;
         if (isMuted) {
            if (!audio.paused) audio.pause();
            return;
@@ -45,7 +45,7 @@ export function AudioEngine() {
         }
       }
     });
-  }, [currentTime, isPlaying, audioTracks]);
+  }, [currentTime, isPlaying, audioTracks, isScrubbing]);
 
   return (
     <>

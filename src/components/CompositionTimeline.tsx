@@ -26,7 +26,8 @@ export function CompositionTimeline() {
     activeCompositionLayerId,
     setActiveCompositionLayerId,
     activeAudioTrackId,
-    setActiveAudioTrackId
+    setActiveAudioTrackId,
+    setScrubbing
   } = useEditorStore();
 
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
@@ -196,7 +197,7 @@ export function CompositionTimeline() {
 
     if (snapEnabled && dragging.type !== 'playhead') {
       const inv = 1 / snapTolerance;
-      let gridTime = Math.round(time * inv) / inv;
+      const gridTime = Math.round(time * inv) / inv;
 
       // Magnetic Edge Snapping
       const snapPoints: number[] = [];
@@ -235,7 +236,8 @@ export function CompositionTimeline() {
 
   const handlePointerUp = useCallback(() => {
     setDragging(null);
-  }, []);
+    setScrubbing(false);
+  }, [setScrubbing]);
 
   useEffect(() => {
     let scrollAnimationFrame: number;
@@ -266,7 +268,7 @@ export function CompositionTimeline() {
             let finalTime = time;
             if (snapEnabled && dragging.type !== 'playhead') {
                const inv = 1 / snapTolerance;
-               let gridTime = Math.round(time * inv) / inv;
+               const gridTime = Math.round(time * inv) / inv;
                const snapPoints: number[] = [];
                compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
                audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
@@ -292,7 +294,7 @@ export function CompositionTimeline() {
             let finalTime = time;
             if (snapEnabled && dragging.type !== 'playhead') {
                const inv = 1 / snapTolerance;
-               let gridTime = Math.round(time * inv) / inv;
+               const gridTime = Math.round(time * inv) / inv;
                const snapPoints: number[] = [];
                compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
                audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
@@ -325,7 +327,7 @@ export function CompositionTimeline() {
       window.removeEventListener('pointerup', handlePointerUp);
       cancelAnimationFrame(scrollAnimationFrame);
     };
-  }, [dragging, handlePointerMove, handlePointerUp, exportConfig.duration]);
+  }, [dragging, handlePointerMove, handlePointerUp, exportConfig.duration, setScrubbing, applyTimeUpdate, audioTracks, compositionLayers, snapEnabled, snapTolerance]);
 
   const handleTimelinePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -339,6 +341,7 @@ export function CompositionTimeline() {
       gsap.globalTimeline.pause();
       gsap.globalTimeline.seek(time);
     });
+    setScrubbing(true);
     setDragging({ id: 'playhead', type: 'playhead' });
   };
 

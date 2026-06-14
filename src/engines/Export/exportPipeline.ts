@@ -11,7 +11,7 @@ import { gsap } from 'gsap'
 import { zip } from 'fflate'
 import { captureFrame } from './frameCapture'
 import { downloadFile } from '@/lib/downloadHandler'
-import { encodeVideoWithFFmpeg } from './ffmpegEncoder'
+import { encodeVideoWithFFmpeg, muxVideoAndAudioWithFFmpeg } from './ffmpegEncoder'
 import { mixAudioTracksToWav } from '@/lib/audioMixer'
 import type { ExportConfig, ExportState } from '@/types/motion.types'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -42,13 +42,12 @@ export async function runExportPipeline(
 ) {
   Telemetry.logEvent('EXPORT_STARTED', { format: config.format, resolution: config.resolution });
 
-  const audioTracks = useEditorStore.getState().audioTracks;
-  const hasAudio = audioTracks && audioTracks.some(t => !t.muted);
+
 
   // Check if we can use WebCodecs (Hardware Acceleration)
   // WebCodecs standalone lacks an audio multiplexer in our current architecture.
   const isVideo = config.format === 'mp4' || config.format === 'mov';
-  if (isVideo && typeof VideoEncoder !== 'undefined' && !hasAudio) {
+  if (isVideo && typeof VideoEncoder !== 'undefined') {
     const isWebm = config.format === 'mov';
     const codecString = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028';
     
@@ -209,10 +208,12 @@ async function exportWithWebCodecs(
       URL.revokeObjectURL(url);
 
       // Enterprise Watermark
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
-      ctx.textAlign = 'right';
-      ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
+      if (config.includeWatermark !== false) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
+        ctx.textAlign = 'right';
+        ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
+      }
 
       const bitmap = await createImageBitmap(offscreenCanvas);
 
@@ -252,7 +253,26 @@ async function exportWithWebCodecs(
     const finalName = `pelimotion_export_${config.resolution}_${fileNameTimestamp}.${format}`;
     const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime';
     
-    const finalBlob = new Blob([buffer], { type: mime });
+    const audioTracks = useEditorStore.getState().audioTracks;
+    const hasAudio = audioTracks && audioTracks.some(t => !t.muted);
+    
+    let finalBlob: Blob;
+    if (hasAudio) {
+      onProgress({ stage: 'encoding', errorMessage: 'Multiplexando Áudio (Mux)...', progress: 95 });
+      const audioWav = await mixAudioTracksToWav(audioTracks, duration);
+      if (audioWav) {
+        const videoData = new Uint8Array(buffer as ArrayBuffer);
+        const muxedData = await muxVideoAndAudioWithFFmpeg(videoData, audioWav, format as 'mp4' | 'mov', (prog) => {
+          onProgress({ progress: 95 + (prog * 0.05) });
+        });
+        finalBlob = new Blob([muxedData.buffer as ArrayBuffer], { type: mime });
+      } else {
+        finalBlob = new Blob([buffer as ArrayBuffer], { type: mime });
+      }
+    } else {
+      finalBlob = new Blob([buffer as ArrayBuffer], { type: mime });
+    }
+    
     const url = URL.createObjectURL(finalBlob);
     downloadFile(url, finalName);
     URL.revokeObjectURL(url);
@@ -408,10 +428,12 @@ async function exportWithFFmpeg(
       URL.revokeObjectURL(url)
 
       // Enterprise Watermark
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
-      ctx.textAlign = 'right';
-      ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
+      if (config.includeWatermark !== false) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.font = '500 16px var(--font-sans, Inter, sans-serif)';
+        ctx.textAlign = 'right';
+        ctx.fillText('Made with Pelimotion Pro', width - 20, height - 20);
+      }
       
       const isJpeg = format === 'mp4'
       const mime = isJpeg ? 'image/jpeg' : 'image/png'
