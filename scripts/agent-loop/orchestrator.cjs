@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 18)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 19)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Timeline Selection State',
+    title: 'Local Media Drag & Drop',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Os blocos da timeline não possuíam estado "active", impedindo atalhos de teclado contextuais e a exibição do Transform Gizmo.'
+    description: 'Usuários precisam poder arrastar vídeos, áudios e imagens diretamente do sistema operacional para o Canvas do Pelimotion.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Delete/Duplicate Keyboard Shortcuts',
+    title: 'Blob URLs & Memory Management',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Para agilizar o fluxo, usuários precisam conseguir deletar ou duplicar as camadas ativas diretamente pelas teclas Delete, Backspace e Cmd+D.'
+    description: 'Arquivos arrastados devem ser transformados em Blob URLs (`URL.createObjectURL`) e salvos no `localLibraryItems` instantaneamente para não pesar na RAM e para facilitar o re-uso.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 18)\n\n`;
-  markdown += `- [x] **Timeline Selection State:** Acoplar o clique no bloco da timeline às flags \`activeCompositionLayerId\` e \`activeAudioTrackId\` do store (Product Designer).\n`;
-  markdown += `- [x] **Delete/Duplicate Shortcuts:** Escutar \`Backspace/Delete\` e \`Cmd+D\` no \`useKeyboardShortcuts.ts\` para manipular a camada ativa no momento (Dev Senior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 19)\n\n`;
+  markdown += `- [x] **Local Media Drag & Drop:** Acoplar listeners \`onDragOver\` e \`onDrop\` no Container raiz do \`App.tsx\` para ingestão de mídia (Product Designer).\n`;
+  markdown += `- [x] **Blob URL Architecture:** Suportar os tipos \`image/video/audio\` no \`LibraryLocalItem\` e renderizar corretamente no \`CompositionPreview.tsx\` e \`LibraryPreview.tsx\` (Dev Senior).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

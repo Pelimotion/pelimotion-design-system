@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 21:00:05*
-*Current Commit Hash: `36e20b5`*
+*Generated at: 13/06/2026, 22:21:46*
+*Current Commit Hash: `9624916`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Timeline Selection State** (diretor_criacao + product_designer):
-  - *Descrição:* Os blocos da timeline não possuíam estado "active", impedindo atalhos de teclado contextuais e a exibição do Transform Gizmo.
+- **Local Media Drag & Drop** (diretor_criacao + product_designer):
+  - *Descrição:* Usuários precisam poder arrastar vídeos, áudios e imagens diretamente do sistema operacional para o Canvas do Pelimotion.
 
-- **Delete/Duplicate Keyboard Shortcuts** (product_designer + dev_senior):
-  - *Descrição:* Para agilizar o fluxo, usuários precisam conseguir deletar ou duplicar as camadas ativas diretamente pelas teclas Delete, Backspace e Cmd+D.
+- **Blob URLs & Memory Management** (product_designer + dev_senior):
+  - *Descrição:* Arquivos arrastados devem ser transformados em Blob URLs (`URL.createObjectURL`) e salvos no `localLibraryItems` instantaneamente para não pesar na RAM e para facilitar o re-uso.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 18)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 19)
 
-- [x] **Timeline Selection State:** Acoplar o clique no bloco da timeline às flags `activeCompositionLayerId` e `activeAudioTrackId` do store (Product Designer).
-- [x] **Delete/Duplicate Shortcuts:** Escutar `Backspace/Delete` e `Cmd+D` no `useKeyboardShortcuts.ts` para manipular a camada ativa no momento (Dev Senior).
+- [x] **Local Media Drag & Drop:** Acoplar listeners `onDragOver` e `onDrop` no Container raiz do `App.tsx` para ingestão de mídia (Product Designer).
+- [x] **Blob URL Architecture:** Suportar os tipos `image/video/audio` no `LibraryLocalItem` e renderizar corretamente no `CompositionPreview.tsx` e `LibraryPreview.tsx` (Dev Senior).

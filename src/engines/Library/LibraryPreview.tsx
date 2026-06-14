@@ -282,13 +282,33 @@ export function LibraryPreview() {
                   <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Salvo às {new Date(item.createdAt).toLocaleTimeString()}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+                  {item.type === 'typography' || item.type === 'generative' ? (
+                    <button onClick={() => {
+                      if (item.type === 'typography') { loadTypographyPreset(item.data); setActivePanel('typography'); }
+                      else if (item.type === 'generative') { useEditorStore.setState(s => ({ generativeLayers: item.data.layers || [], motionConfig: { ...s.motionConfig, wiggle: item.data.globalWiggle || s.motionConfig.wiggle } })); setActivePanel('generative'); }
+                    }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                      <Sparkles size={14} /> Editar
+                    </button>
+                  ) : (
+                    <div style={{ flex: 1, padding: '10px 0', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                      <Combine size={14} /> Mídia ({item.type})
+                    </div>
+                  )}
                   <button onClick={() => {
-                    if (item.type === 'typography') { loadTypographyPreset(item.data); setActivePanel('typography'); }
-                    else if (item.type === 'generative') { useEditorStore.setState(s => ({ generativeLayers: item.data.layers || [], motionConfig: { ...s.motionConfig, wiggle: item.data.globalWiggle || s.motionConfig.wiggle } })); setActivePanel('generative'); }
-                  }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
-                    <Sparkles size={14} /> Editar
-                  </button>
-                  <button onClick={() => handleAddToComposition(item.id, item.name, 'localAsset', item.data.timeOnScreen || 3)} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
+                    if (item.type === 'audio') {
+                      useEditorStore.getState().addAudioTrack({
+                        id: crypto.randomUUID(),
+                        name: item.name,
+                        src: item.data,
+                        startTime: 0,
+                        duration: exportConfig.duration,
+                        volume: 1,
+                      });
+                      setActivePanel('composition');
+                    } else {
+                      handleAddToComposition(item.id, item.name, 'localAsset', item.data.timeOnScreen || 5)
+                    }
+                  }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
                     <Plus size={14} /> Compor
                   </button>
                 </div>

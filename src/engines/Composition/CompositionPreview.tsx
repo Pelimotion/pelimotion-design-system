@@ -19,7 +19,7 @@ export function CompositionPreview() {
   useEffect(() => {
     compositionLayers.forEach(layer => {
       const isVisible = currentTime >= layer.startTime && currentTime <= layer.startTime + layer.duration;
-      if (layer.type === 'cloudAsset') {
+      if (layer.type === 'cloudAsset' || layer.type === 'localAsset') {
         const video = videoRefs.current[layer.id];
         if (video) {
           if (isVisible) {
@@ -189,6 +189,32 @@ export function CompositionPreview() {
                   style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                 />
               )
+            }
+          } else if (layer.type === 'localAsset') {
+            let libraryItem = localLibraryItems.find(i => i.id === layer.assetId);
+            if (libraryItem) {
+              if (libraryItem.type === 'video') {
+                content = (
+                  <video 
+                    ref={el => { videoRefs.current[layer.id] = el; }}
+                    className="composition-video-layer"
+                    data-start-time={layer.startTime}
+                    src={libraryItem.data} 
+                    muted 
+                    playsInline
+                    crossOrigin="anonymous"
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                  />
+                )
+              } else if (libraryItem.type === 'image') {
+                content = (
+                  <img 
+                    src={libraryItem.data} 
+                    crossOrigin="anonymous"
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                  />
+                )
+              }
             }
           } else {
             let libraryItem = localLibraryItems.find(i => i.id === layer.assetId);
