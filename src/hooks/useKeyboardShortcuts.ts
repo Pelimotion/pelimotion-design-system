@@ -93,6 +93,53 @@ export function useKeyboardShortcuts() {
           }
           break;
         }
+        case 'KeyC': {
+          if (e.metaKey || e.ctrlKey) {
+            const state = useEditorStore.getState();
+            if (state.activeCompositionLayerId) {
+              const layer = state.compositionLayers.find(l => l.id === state.activeCompositionLayerId);
+              if (layer) state.setClipboard({ type: 'composition', data: layer });
+            } else if (state.activeAudioTrackId) {
+              const track = state.audioTracks.find(t => t.id === state.activeAudioTrackId);
+              if (track) state.setClipboard({ type: 'audio', data: track });
+            } else if (state.activeTypoLayerId) {
+              const layer = state.typographyConfig.layers.find(l => l.id === state.activeTypoLayerId);
+              if (layer) state.setClipboard({ type: 'typography', data: layer });
+            } else if (state.activeGenerativeLayerId) {
+              const layer = state.generativeLayers.find(l => l.id === state.activeGenerativeLayerId);
+              if (layer) state.setClipboard({ type: 'generative', data: layer });
+            }
+          }
+          break;
+        }
+        case 'KeyV': {
+          if (e.metaKey || e.ctrlKey) {
+            const state = useEditorStore.getState();
+            if (!state.clipboard) return;
+
+            const ct = state.currentTime;
+            const cb = state.clipboard;
+
+            if (cb.type === 'composition') {
+              const duplicate = { ...cb.data, id: crypto.randomUUID(), startTime: ct };
+              state.addCompositionLayer(duplicate);
+              state.setActiveCompositionLayerId(duplicate.id);
+            } else if (cb.type === 'audio') {
+              const duplicate = { ...cb.data, id: crypto.randomUUID(), startTime: ct };
+              state.addAudioTrack(duplicate);
+              state.setActiveAudioTrackId(duplicate.id);
+            } else if (cb.type === 'typography') {
+              const duplicate = { ...cb.data, id: crypto.randomUUID() };
+              state.addTypoLayer(duplicate);
+              state.setActiveTypoLayer(duplicate.id);
+            } else if (cb.type === 'generative') {
+              const duplicate = { ...cb.data, id: crypto.randomUUID() };
+              state.addGenerativeLayer(duplicate);
+              state.setActiveGenerativeLayerId(duplicate.id);
+            }
+          }
+          break;
+        }
       }
     };
 

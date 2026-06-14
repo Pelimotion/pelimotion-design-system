@@ -139,22 +139,22 @@ function runPersonaEvaluations() {
 }
 
 function crossAnalyzeInsights(reports) {
-  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 20)...\\x1b[0m');
+  console.log('\\n\\x1b[33m[Orchestrator] Crossing Data & Insights (Massive Matrix Analysis - Phase 21)...\\x1b[0m');
   const conflicts = [];
   const synergies = [];
 
   // Creative Director vs Product Designer
   synergies.push({
-    title: 'Timeline Zoom Out/In (Magnifier)',
+    title: 'Universal Clipboard (Cmd+C / Cmd+V)',
     parties: ['diretor_criacao', 'product_designer'],
-    description: 'Composições maiores que 10 segundos espremem as camadas. Usuários precisam dar zoom na timeline. (O range UI já existia, mas sua descoberta foi alinhada).'
+    description: 'Usuários precisam poder copiar camadas e colar exatamente na posição temporal da agulha (playhead). O "Duplicate" tradicional limitava o fluxo orgânico.'
   });
 
   // Product Designer vs Dev Senior
   synergies.push({
-    title: 'Layer Splitting (Cmd+Shift+D)',
+    title: 'Cross-Engine Clipboard State',
     parties: ['product_designer', 'dev_senior'],
-    description: 'Fazer o "Split" pelo ícone de tesoura na camada é lento. Atalho de teclado `Cmd+Shift+D` para fatiar o clipe na posição atual da agulha é o padrão absoluto da indústria.'
+    description: 'Armazenar o clipboard num nó persistente do Zustand permite que um usuário copie uma camada de Composição, mude de painel e volte sem perder o dado em RAM.'
   });
 
   return { conflicts, synergies };
@@ -192,9 +192,9 @@ function generateCandidateRoadmap(reports, crossData) {
     markdown += `${r.evaluation}\n\n`;
   });
 
-  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 20)\n\n`;
-  markdown += `- [x] **Layer Splitting (Cmd+Shift+D):** Expandir a máquina de atalhos em \`useKeyboardShortcuts.ts\` para injetar cortes precisos baseados na variável \`currentTime\` global (Dev Senior).\n`;
-  markdown += `- [x] **Timeline Zoom UI Alignment:** Validar os multiplicadores percentuais da régua de track via \`timelineZoom\` atrelado a CSS nativo, poupando loops caros do React (CEO / Dev Senior).\n`;
+  markdown += `## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 21)\n\n`;
+  markdown += `- [x] **Store Universal Clipboard:** Construir objeto genérico \`clipboard\` (type/data) dentro da raiz do EditorStore (Dev Senior).\n`;
+  markdown += `- [x] **Playhead Paste Injection:** O \`useKeyboardShortcuts.ts\` deve interceptar Cmd+C (Copy) e Cmd+V (Paste), clonando o UUID e herdando o tempo atual do \`currentTime\` global na cola (Product Designer).\n`;
 
   fs.writeFileSync(CANDIDATE_ROADMAP_PATH, markdown, 'utf8');
   console.log(`\n\x1b[32mSuccess! Candidate Roadmap created at: .agents/ROADMAP_CANDIDATE.md\x1b[0m`);

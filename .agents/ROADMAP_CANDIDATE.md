@@ -1,17 +1,17 @@
 # Pelimotion Agent Loops Candidate Roadmap
 
-*Generated at: 13/06/2026, 23:00:05*
-*Current Commit Hash: `2128ccc`*
+*Generated at: 13/06/2026, 23:01:23*
+*Current Commit Hash: `ac67245`*
 
 ## 1. Conflitos & Sinergias Identificados (Cross-Analysis)
 
 ### ⚠️ Conflitos & Soluções (Compromissos)
 ### 🤝 Sinergias
-- **Timeline Zoom Out/In (Magnifier)** (diretor_criacao + product_designer):
-  - *Descrição:* Composições maiores que 10 segundos espremem as camadas. Usuários precisam dar zoom na timeline. (O range UI já existia, mas sua descoberta foi alinhada).
+- **Universal Clipboard (Cmd+C / Cmd+V)** (diretor_criacao + product_designer):
+  - *Descrição:* Usuários precisam poder copiar camadas e colar exatamente na posição temporal da agulha (playhead). O "Duplicate" tradicional limitava o fluxo orgânico.
 
-- **Layer Splitting (Cmd+Shift+D)** (product_designer + dev_senior):
-  - *Descrição:* Fazer o "Split" pelo ícone de tesoura na camada é lento. Atalho de teclado `Cmd+Shift+D` para fatiar o clipe na posição atual da agulha é o padrão absoluto da indústria.
+- **Cross-Engine Clipboard State** (product_designer + dev_senior):
+  - *Descrição:* Armazenar o clipboard num nó persistente do Zustand permite que um usuário copie uma camada de Composição, mude de painel e volte sem perder o dado em RAM.
 
 ## 2. Recomendações Priorizadas por Persona
 
@@ -56,7 +56,7 @@
 *   **Generative SVG:** The wiggles are a bit sterile. Add tritonal gradient maps, blend modes (Overlay/Screen), and subtle chromatic aberration on the generative SVG edges.
 *   **Library:** Ensure library previews auto-play with smooth hover states and a polished "WOW" factor. No generic loading spinners.
 
-## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 20)
+## 3. Próximos Passos de Implementação (MASSIVE LOOP PHASE 21)
 
-- [x] **Layer Splitting (Cmd+Shift+D):** Expandir a máquina de atalhos em `useKeyboardShortcuts.ts` para injetar cortes precisos baseados na variável `currentTime` global (Dev Senior).
-- [x] **Timeline Zoom UI Alignment:** Validar os multiplicadores percentuais da régua de track via `timelineZoom` atrelado a CSS nativo, poupando loops caros do React (CEO / Dev Senior).
+- [x] **Store Universal Clipboard:** Construir objeto genérico `clipboard` (type/data) dentro da raiz do EditorStore (Dev Senior).
+- [x] **Playhead Paste Injection:** O `useKeyboardShortcuts.ts` deve interceptar Cmd+C (Copy) e Cmd+V (Paste), clonando o UUID e herdando o tempo atual do `currentTime` global na cola (Product Designer).

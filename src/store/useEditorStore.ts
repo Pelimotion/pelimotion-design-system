@@ -91,6 +91,9 @@ interface EditorState {
   // Spatial Camera State (Pan/Zoom)
   camera: { x: number; y: number; z: number };
 
+  // Clipboard State (for Copy/Paste)
+  clipboard: { type: 'composition' | 'audio' | 'typography' | 'generative'; data: any } | null;
+
   // ─── Actions ─────────────────────────────────────────────────────────────
 
   setCamera: (camera: Partial<{ x: number; y: number; z: number }>) => void;
@@ -135,6 +138,7 @@ interface EditorState {
   clearGenerativeLayers: () => void;
   setActiveGenerativeLayerId: (id: string | null) => void;
   updateLayerTransform: (id: string, transform: Partial<LayerTransform>) => void;
+  updateLayerOpacityMode: (id: string, mode: LayerOpacityMode) => void;
   updateLayerShapeProps: (id: string, props: any) => void;
   updateLayerAppearance: (id: string, appearance: {
     colorMode?: LayerColorMode;
@@ -144,6 +148,9 @@ interface EditorState {
   }) => void;
   updateGenerativeLayerWiggle: (id: string, wiggle: Partial<WiggleConfig>) => void;
   updateGenerativeLayerAnimation: (id: string, animation: Partial<GenerativeLayer['animation']>) => void;
+
+  // Clipboard Actions
+  setClipboard: (item: { type: 'composition' | 'audio' | 'typography' | 'generative'; data: any } | null) => void;
 
   // Posterize actions
   togglePosterize: () => void;
@@ -297,10 +304,15 @@ export const useEditorStore = create<EditorState>((set) => ({
   // Spatial Camera
   camera: { x: 0, y: 0, z: 1 },
 
+  // Clipboard
+  clipboard: null,
+
   // ─── Actions Implementation ──────────────────────────────────────────────
 
   setCamera: (camera) => set((state) => ({ camera: { ...state.camera, ...camera } })),
   resetCamera: () => set({ camera: { x: 0, y: 0, z: 1 } }),
+
+  setClipboard: (item) => set({ clipboard: item }),
 
   saveToLocalLibrary: (item: any) =>
     set((state) => ({
