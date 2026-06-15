@@ -23,6 +23,8 @@ export function GlobalGizmo() {
     updateLayerTransform,
     updateCompositionLayer,
     motionConfig,
+    generativeLayers,
+    compositionLayers,
   } = useEditorStore();
 
   const layoutMode = motionConfig.typography.layoutMode;
@@ -46,7 +48,7 @@ export function GlobalGizmo() {
       if (currentKey !== lastTargetKeyRef.current) {
         lastTargetKeyRef.current = currentKey;
         if (visibleRef.current) {
-          containerRef.current && (containerRef.current.style.display = 'none');
+          if (containerRef.current) containerRef.current.style.display = 'none';
           visibleRef.current = false;
           setRect(null);
         }
@@ -54,7 +56,7 @@ export function GlobalGizmo() {
 
       if (!target || !showGizmo || !containerRef.current) {
         if (visibleRef.current) {
-          containerRef.current && (containerRef.current.style.display = 'none');
+          if (containerRef.current) containerRef.current.style.display = 'none';
           visibleRef.current = false;
           setRect(null);
         }
@@ -110,6 +112,29 @@ export function GlobalGizmo() {
 
   if (!showGizmo) return null;
 
+  let currentLayerScale = 1;
+  let currentLayerRotation = 0;
+
+  if (activeTypoLayerId) {
+    const layer = motionConfig.typography.layers.find(l => l.id === activeTypoLayerId);
+    if (layer) {
+      currentLayerScale = layer.transform.scale;
+      currentLayerRotation = layer.transform.rotation;
+    }
+  } else if (activeGenerativeLayerId) {
+    const layer = generativeLayers.find(l => l.id === activeGenerativeLayerId);
+    if (layer) {
+      currentLayerScale = layer.transform.scale;
+      currentLayerRotation = layer.transform.rotation;
+    }
+  } else if (activeCompositionLayerId) {
+    const layer = compositionLayers.find(l => l.id === activeCompositionLayerId);
+    if (layer) {
+      currentLayerScale = layer.transform.scale;
+      currentLayerRotation = layer.transform.rotation;
+    }
+  }
+
   const handleScale = (scale: number) => {
     if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { scale });
     if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { scale });
@@ -157,9 +182,9 @@ export function GlobalGizmo() {
         <FloatingToolbar />
         <InteractiveGizmo
           active={true}
-          elementRef={targetRef as any}
-          currentScale={1}
-          currentRotation={0}
+          elementRef={targetRef}
+          currentScale={currentLayerScale}
+          currentRotation={currentLayerRotation}
           currentWidth={rect?.width}
           currentHeight={rect?.height}
           onScale={handleScale}

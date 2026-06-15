@@ -110,3 +110,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-14T22-33-46-678Z** | `backup-branch-2026-06-14T22-33-46-678Z` | `5aa820b` | 14/06/2026, 19:33:46 | Web worker loading and service worker path fixed, tests passing with zero errors |
 | **restore-2026-06-14T23-18-59-689Z** | `backup-branch-2026-06-14T23-18-59-689Z` | `ffeadb8` | 14/06/2026, 20:18:59 | Session 2: Otimizacao de UI Navigation e Bento Grid UX |
 | **restore-2026-06-14T23-38-20-211Z** | `backup-branch-2026-06-14T23-38-20-211Z` | `e4a9466` | 14/06/2026, 20:38:20 | Session 3: Otimizacao de Generative Shapes e Asset Library |
+| **restore-2026-06-14T23-58-14-122Z** | `backup-branch-2026-06-14T23-58-14-122Z` | `fdb358a` | 14/06/2026, 20:58:14 | Session 4: Timeline e Export Workflow Muxing e Scrub Muting |

@@ -223,10 +223,37 @@ function App() {
       const currentCamera = state.camera;
 
       if (e.ctrlKey || e.metaKey) {
-        // Zoom
+        // Zoom-to-Mouse-Position (Figma & After Effects style)
         const zoomSensitivity = 0.005;
         const newZ = Math.max(0.1, Math.min(10, currentCamera.z - e.deltaY * zoomSensitivity));
-        state.setCamera({ z: newZ });
+        
+        const { resolution } = state.exportConfig;
+        const [wStr, hStr] = (resolution || "1920x1080").split('x');
+        const targetW = parseInt(wStr || "1920", 10);
+        const targetH = parseInt(hStr || "1080", 10);
+        
+        const availableW = window.innerWidth - 320 - 48;
+        const availableH = window.innerHeight - 80 - 48;
+        const fitScale = Math.min(availableW / targetW, availableH / targetH);
+        
+        const rect = viewport.getBoundingClientRect();
+        // Mouse coordinate relative to the viewport center
+        const mouseX = e.clientX - rect.left - rect.width / 2;
+        const mouseY = e.clientY - rect.top - rect.height / 2;
+        
+        // Target canvas point coordinate under the mouse before zoom
+        const mx_canvas = (mouseX - currentCamera.x) / (currentCamera.z * fitScale);
+        const my_canvas = (mouseY - currentCamera.y) / (currentCamera.z * fitScale);
+        
+        // Offset camera position to keep the canvas coordinate static under the mouse cursor after new zoom
+        const newX = currentCamera.x - mx_canvas * (newZ * fitScale - currentCamera.z * fitScale);
+        const newY = currentCamera.y - my_canvas * (newZ * fitScale - currentCamera.z * fitScale);
+        
+        state.setCamera({
+          x: newX,
+          y: newY,
+          z: newZ
+        });
       } else {
         // Pan
         state.setCamera({

@@ -1,5 +1,5 @@
 {
-  "sessionsRun": 4,
+  "sessionsRun": 5,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
     "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks."
