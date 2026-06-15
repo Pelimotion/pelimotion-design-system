@@ -6,6 +6,15 @@
 
 O ciclo autônomo (Massive Loop Phase 20-25) foi oficialmente encerrado. O Pelimotion agora opera com paridade de recursos a editores NLE de desktop profissionais, possuindo gestão de memória blindada e física de arraste com 60fps cravados.
 
+### Session Achievements (v2.6 - Session 12: Bugs, Direct Composition & Layer Controls)
+- **BUG 1 — Gizmo Shape Blinking Solved:** Conditional canvas display in `GenerativePreview.tsx` prevents OffscreenCanvas from rendering background circles when colorMode is not tritone.
+- **BUG 2 — Timeline Toolbar Width Optimization:** Restructured secondary controls (Resolution, FPS, Background, Duration) in `CompositionTimeline.tsx` to live inside a Settings popover, freeing up ~400px of space to prevent truncation on 1280px screen widths.
+- **FEAT 3 — Direct Composition Injection:** Added "Usar na Composição" buttons in both `TypographyPanel.tsx` and `GenerativePanel.tsx` to instantly add created items to the timeline without requiring permanent library storage.
+- **FEAT 4 — Contextual Topbar Export:** Embedded a dynamic export CTA button in `TopToolbar.tsx` which changes from "Exportar Frame" (png-still) to "Exportar Vídeo" (mp4) contextually based on the active panel.
+- **FEAT 5 — Layer List Interactive Controls:** Added eye (hidden), lock (locked), and track colorTag selectors inside `CompositionPanel.tsx` list items, mirroring properties perfectly to the timeline tracks.
+- **GSAP Ticker Playhead Sync:** Playhead now queries Zustand state directly inside high-frequency requestAnimationFrame, eliminating delays.
+- **Clean Transitions:** sidebar panels now feature smooth slide-in transitions on tab switches via key-based DOM updates in `App.tsx`.
+
 ### Session Achievements (v2.6 - Massive Loop Conclusion)
 - **Virtual Auto-Scroll (requestAnimationFrame):** Implementado um motor assíncrono para rolagem infinita da régua do tempo. Quando o mouse atinge a zona de "threshold" (40px) das bordas da tela durante um arraste (drag), a timeline rola automaticamente enquanto recalcula tempos magnéticos de forma invisível.
 - **Panic Button & Thread Ejection:** Adicionado cancelamento abrupto de exportação no `ExportPanel.tsx`. Se abortado, o sistema ejetará um erro `EXPORT_CANCELLED` dentro do loop crítico de frames, forçando o término de workers WebCodecs/FFmpeg.wasm para zerar vazamentos de memória (RAM Leaks) e travas no navegador.
