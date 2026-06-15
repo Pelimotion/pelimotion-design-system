@@ -1,87 +1,82 @@
-# 🎬 Pelimotion — Roadmap de Melhoria (Orquestrador V4)
+# ROADMAP CANDIDATE — Sessão 12
+**Gerado em:** 2026-06-15T02:17:00Z  
+**Sessão anterior:** 11 — Interface Restructure & UX Overhaul  
+**Commit:** `814b14c`
 
-*Gerado em: 14/06/2026, 22:11:46 | Sessão #10 | Commit: `d108e22`*
-*Branch: `main` | Arquivos TypeScript/TSX: 51*
+---
 
-> **FOCO DESTA SESSÃO:** **Library Panel & Asset Management**
-> **ATENÇÃO AGENTE EXECUTOR:** Esta roadmap NÃO TEM LIMITE DE COMPLEXIDADE.
-> Use After Effects, Figma, Cavalry, Canva, CapCut, Jitter.video como referências.
-> O Browser DOM está pré-autorizado para todos os testes Playwright desta sessão.
+## Resumo Executivo
 
-## 1. 🧠 Memória & Aprendizado Histórico
+A Sessão 11 removeu as 10 principais duplicações e inconsistências de UX identificadas na varredura de código. O sistema está agora mais limpo e alinhado com os padrões Figma/After Effects. A Sessão 12 deve focar em:
 
-- Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.
-- Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken.
-- Session 8 [Typography Engine & Text Layer UX]: 0 erros, 4 achados UX, FPS=74. TOP: Composition timeline not found or not visible — main workflow broken.
-- Session 9 [Generative Shapes & Canvas Interaction]: 0 erros, 1 achados UX, FPS=57. Sem achados críticos novos.
-- Session 10 [Library Panel & Asset Management]: 0 erros, 0 achados UX, FPS=56. Sem achados críticos novos.
+1. **Verificação visual pós-reestruturação** — garantir que as mudanças renderizam corretamente
+2. **TypographyPanel e GenerativePanel** — os maiores e mais complexos componentes, ainda não auditados em detalhe quanto a duplicações internas
+3. **Interatividade da timeline** — pending issue de sincronia play/pause  
+4. **Refinamentos de micro-interação** — hover states, transições entre painéis
 
-## 2. 🔍 Achados dos Testes Automatizados (Playwright Deep Audit)
+---
 
-**📸 Screenshots capturados:** 00_initial_load.png, 01_typography_panel.png, 01b_typography_add_text.png, 02_generative_panel.png, 02b_generative_shape_active.png, 03_library_panel.png, 04_composition_panel.png, 05_export_panel.png, 06_sidebar_collapsed.png, 07_sidebar_auto_expanded.png, session-result.png
-**⚡ FPS medido:** 56 fps
-**📊 Painéis auditados:** typography, generative, library, composition, export
+## Prioridades Identificadas (por agente)
 
-*Sem achados UX críticos registrados. A análise visual manual profunda deve prosseguir.*
+### 🏗️ Dev Senior — Qualidade Técnica
+- [ ] **Cleanup de inline onMouseEnter desnecessários** no `CompositionPanel.tsx` — o botão delete agora usa CSS group hover, os handlers React são redundantes
+- [ ] **Verificar sincronismo isPlaying ↔ GSAP ticker** — garantir que o botão Play/Pause no CompositionPanel está sincronizado com o estado real de playback
+- [ ] **Auditoria de imports não usados** em `TypographyPanel.tsx` e `GenerativePanel.tsx` — estes são os maiores arquivos (54k e 44k respectivamente)
 
-## 3. ⏳ Issues Carregados de Sessões Anteriores
+### 🎨 Product Designer — UX/UI
+- [ ] **Transição suave entre painéis** — ao clicar em outro item do sidebar nav, o conteúdo do painel deveria fazer um fade/slide in, não apenas aparecer abruptamente
+- [ ] **Tooltip de atalhos no sidebar** — ao colapsar o sidebar, o ícone deve mostrar um tooltip com o nome do painel
+- [ ] **TypographyPanel**: verificar se o fluxo "Adicionar Texto → configurar → ver preview" é fluido e sem etapas ocultas
+- [ ] **GenerativePanel**: verificar se os controles de ruído (Simplex/Perlin) têm feedback visual adequado durante a edição
 
-- 🟠 **[S7][composition]** Composition timeline not found or not visible — main workflow broken.
-- 🟠 **[S8][composition]** Composition timeline not found or not visible — main workflow broken.
+### 🎬 Diretor de Criação — Motion Quality
+- [ ] **CompositionTimeline**: verificar UX de drag-drop de camadas na timeline — é o fluxo mais complexo do sistema
+- [ ] **Play/Pause visual feedback** — o botão no CompositionPanel deve ter uma animação de transição entre os dois estados (não só troca de ícone)
+- [ ] **Export progress**: barra de progresso do render é muito simples — adicionar ETA e nome do frame atual sendo processado
 
-## 4. 🚀 Plano de Execução Profunda (Deep Sweep)
+### 📊 Analista — Dados e Fluxo
+- [ ] **Empty states acionáveis**: medir quantas vezes o usuário chega a um painel vazio e não encontra o CTA — LibraryPanel agora tem botão de import mas os outros painéis precisam verificação
+- [ ] **Onboarding flow**: a tela de boas-vindas (Home) ainda usa 3 cards de quick-start com descrição genérica — refinar para ser mais específico sobre o workflow (Typography → Generative → Composition → Export)
 
-### Passo 1: Investigação Visual Real (Obrigatório)
-- [ ] Abrir `http://localhost:3000/pelimotion-design-system/` no browser integrado (já pré-autorizado)
-- [ ] Percorrer TODOS os 5 painéis como um usuário iniciante sem conhecimento prévio
-- [ ] Documentar cada momento de confusão, clic em área errada ou fluxo não intuitivo
-- [ ] Verificar se **tooltips de atalho de teclado** aparecem em hover nos botões
-- [ ] Checar se **estados vazios** de cada painel têm call-to-action claro
-- [ ] Testar drag & drop de assets na timeline e canvas
-- [ ] Verificar comportamento ao redimensionar a janela do browser
+---
 
-### Passo 2: Pesquisa de Mercado Fundamentada
-- [ ] Estudar como **Figma** resolve empty states e onboarding sem tutoriais externos
-- [ ] Estudar como **After Effects** organiza painéis e ferramentas em 48px de altura
-- [ ] Estudar como **Cavalry** simplifica nós complexos em UI linear para o usuário final
-- [ ] Estudar como **Jitter.video** (web-based) faz transições de aba instantâneas sem re-render
-- [ ] Pesquisar: `best practices sidebar navigation creative tools 2024`
-- [ ] Pesquisar: `empty state design patterns professional software`
+## Plano de Execução Sugerido (Sessão 12)
 
-### Passo 3: Implementações Prioritárias (Library Panel & Asset Management)
-- [ ] **UX: Tooltip de atalhos** — adicionar `title="...  Atalho: Cmd+X"` em TODOS os botões do TopToolbar
-- [ ] **UX: Empty States** — cada painel sem conteúdo deve ter ícone + texto explicativo + botão de ação primário
-- [ ] **UX: Sidebar auto-scroll** — quando o usuário seleciona um item, o painel lateral deve fazer scroll para mostrar os controles relevantes
-- [ ] **UX: Feedback visual** — adicionar animação de `scale(0.97)` no click de todos os botões de ação primários
-- [ ] **UX: Hierarquia de Bento** — os bento cards nos painéis de Composição e Exportar devem ter gradiente de borda sutil para distinguir seções
-- [ ] **UX: Zoom display** — o número de % no ViewportControls deve ter transição smooth ao mudar
-- [ ] **ACESS: Focus ring** — verificar se Tab navigation tem focus ring visível em alto contraste
-- [ ] **PERF: Verificar FPS** — com 3+ camadas ativas, FPS deve manter-se acima de 30fps
+### Fase 1 — Verificação Visual (15min)
+1. Abrir browser em `http://localhost:5174`
+2. Navegar por todos os 5 painéis e documentar se as mudanças da Sessão 11 estão renderizando corretamente
+3. Testar: import de arquivo na LibraryPanel, delete de camada, Play/Pause no CompositionPanel
 
-### Passo 4: Validação Rigorosa
-- [ ] Rodar novamente `npm run agent:research` após as implementações para comparar achados
-- [ ] Verificar que todos os erros de console foram eliminados
-- [ ] Verificar visualmente que os empty states aparecem corretamente
-- [ ] Verificar que tooltips aparecem em todos os botões relevantes
-- [ ] Rodar `npm run build` — zero erros de compilação
-- [ ] Commitar com mensagem descritiva e criar restore point
+### Fase 2 — Cleanup Técnico (15min)
+4. Remover handlers inline redundantes no CompositionPanel (o CSS group hover é suficiente)
+5. Auditar e limpar imports não usados em TypographyPanel e GenerativePanel
 
-## 5. 📈 Histórico de Sessões
+### Fase 3 — Transições de Painel (20min)
+6. Implementar transição suave entre painéis no sidebar usando CSS animation `panel-slide-in` (já definida no index.css)
+7. Adicionar tooltip no sidebar colapsado (usando o atributo `title` já existente — verificar se está funcionando)
 
-| Sessão | Foco | Erros | UX Findings | FPS |
-|--------|------|-------|-------------|-----|
-| S7 | Keyboard Shortcuts & Accessibility | 0 | 4 | 47 |
-| S8 | Typography Engine & Text Layer UX | 0 | 4 | 74 |
-| S9 | Generative Shapes & Canvas Interact | 0 | 1 | 57 |
-| S10 | Library Panel & Asset Management | 0 | 0 | 56 |
+### Fase 4 — Play/Pause Sync e Timeline (20min)
+8. Verificar e corrigir sincronismo do botão Play/Pause com GSAP ticker
+9. Auditar fluxo de drag-drop na CompositionTimeline
 
-## 6. ⏱️ Finalização e Reagendamento (VITAL)
+### Fase 5 — Home Screen & Onboarding (10min)
+10. Refinar os 3 cards de quick-start com descrições mais acionáveis e indicador de workflow sequencial
 
-> **IMPORTANTE:** O timer de 15 minutos SÓ COMEÇA após completar TODOS os passos acima.
-> Quando terminar, crie o commit, registre o backup e inicie novo timer:
->
-> ```bash
-> npm run agent:backup -- --desc "Após Session 10: [descreva o que foi feito]"
-> ```
->
-> Depois use a tool: `/schedule DurationSeconds=900 Prompt="Execute npm run agent:research e analise a nova roadmap V4."`
+---
+
+## Métricas de Sucesso
+
+- `npm run build` → zero erros TypeScript ✅
+- Todos os 5 painéis navegáveis sem duplicações visíveis
+- Botão Play/Pause em CompositionPanel visualmente sincronizado com playback
+- Import de arquivo via LibraryPanel adiciona camada à composição corretamente
+- Transição suave (200ms) ao trocar de painel no sidebar
+
+---
+
+## Notas Técnicas
+
+- **Commit atual:** `814b14c` (main)
+- **Dev server:** Rodando em background (task-1020) em `localhost:5174`
+- **GSAP ticker:** Gerenciado em `CompositionPreview.tsx` e `CompositionTimeline.tsx`
+- **Store principal:** `useEditorStore.ts` — `isPlaying` e `togglePlayback` já existem
