@@ -112,3 +112,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-14T23-38-20-211Z** | `backup-branch-2026-06-14T23-38-20-211Z` | `e4a9466` | 14/06/2026, 20:38:20 | Session 3: Otimizacao de Generative Shapes e Asset Library |
 | **restore-2026-06-14T23-58-14-122Z** | `backup-branch-2026-06-14T23-58-14-122Z` | `fdb358a` | 14/06/2026, 20:58:14 | Session 4: Timeline e Export Workflow Muxing e Scrub Muting |
 | **restore-2026-06-15T00-16-04-698Z** | `backup-branch-2026-06-15T00-16-04-698Z` | `d6efd0b` | 14/06/2026, 21:16:04 | Session 5: Camera Zoom-to-Mouse e Gizmo Scale fix |
+| **restore-2026-06-15T00-42-52-243Z** | `backup-branch-2026-06-15T00-42-52-243Z` | `e0125cd` | 14/06/2026, 21:42:52 | Antes da Session 6: UI Navigation & Bento Grid UX — melhoria de agentes, UX e orquestrador V4 |

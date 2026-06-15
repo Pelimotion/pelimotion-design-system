@@ -526,76 +526,135 @@ function App() {
         ) : activePanel === 'export' ? (
           <ExportPreview />
         ) : (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', maxWidth: 520 }}>
+            {/* Logo mark */}
             <div style={{
-              width: 64,
-              height: 64,
+              width: 56,
+              height: 56,
               borderRadius: 16,
               background: 'linear-gradient(135deg, var(--color-accent), #7c3aed, #ec4899)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 24px',
-              boxShadow: '0 0 40px hsla(191, 100%, 50%, 0.15), 0 0 80px hsla(271, 76%, 53%, 0.1)',
+              margin: '0 auto 20px',
+              boxShadow: '0 0 40px hsla(191, 100%, 50%, 0.2), 0 0 80px hsla(271, 76%, 53%, 0.1)',
             }}>
-              <MonitorPlay size={28} color="#fff" />
+              <MonitorPlay size={26} color="#fff" />
             </div>
 
             <h1 style={{
-              fontSize: '1.5rem',
-              fontWeight: 600,
+              fontSize: '1.4rem',
+              fontWeight: 700,
               letterSpacing: '-0.03em',
               color: 'var(--color-text-primary)',
-              marginBottom: 8,
+              marginBottom: 6,
             }}>
-              Motion Canvas
+              Pelimotion
             </h1>
-
             <p style={{
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
               color: 'var(--color-text-muted)',
-              maxWidth: 360,
               lineHeight: 1.6,
-              margin: '0 auto',
+              marginBottom: 28,
             }}>
-              Environment initialized. Engine ready for integration.
+              Editor de motion design generativo, direto no browser.
             </p>
 
-            {/* Config Summary Grid */}
+            {/* Quick-start cards */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: 8,
-              marginTop: 32,
-              maxWidth: 480,
-              marginLeft: 'auto',
-              marginRight: 'auto',
+              marginBottom: 20,
             }}>
               {[
-                { label: 'Easing Curves', value: Object.keys(motionConfig.easing).length.toString(), unit: 'registered' },
-                { label: 'Trail Instances', value: motionConfig.trail.instances.toString(), unit: 'clones' },
-                { label: 'Posterize Rate', value: motionConfig.posterizeTime.masterFps.toString(), unit: 'fps' },
-              ].map((item, i) => (
+                {
+                  panel: 'typography' as const,
+                  label: 'Tipografia',
+                  icon: <Type size={18} />,
+                  desc: 'Crie textos animados com efeitos de entrada e saída',
+                  color: 'hsla(191,100%,50%,0.12)',
+                  border: 'hsla(191,100%,50%,0.2)',
+                  accent: 'var(--color-accent)',
+                },
+                {
+                  panel: 'generative' as const,
+                  label: 'Generativo',
+                  icon: <Layers size={18} />,
+                  desc: 'Gere formas, grades e padrões animados',
+                  color: 'hsla(271,76%,53%,0.12)',
+                  border: 'hsla(271,76%,53%,0.2)',
+                  accent: '#7c3aed',
+                },
+                {
+                  panel: 'composition' as const,
+                  label: 'Composição',
+                  icon: <MonitorPlay size={18} />,
+                  desc: 'Monte cenas com vídeos, imagens e áudio',
+                  color: 'hsla(330,80%,60%,0.1)',
+                  border: 'hsla(330,80%,60%,0.18)',
+                  accent: '#ec4899',
+                },
+              ].map((item) => (
                 <div
-                  key={item.label}
-                  className={`config-card animate-fade-in stagger-${i + 4}`}
-                  style={{ textAlign: 'left' }}
+                  key={item.panel}
+                  onClick={() => setActivePanel(item.panel)}
+                  style={{
+                    background: item.color,
+                    border: `1px solid ${item.border}`,
+                    borderRadius: 12,
+                    padding: '14px 12px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.18s var(--ease-smooth)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.3)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform = 'none';
+                    (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                  }}
                 >
-                  <div className="config-card__label">{item.label}</div>
-                  <div className="config-card__value">
-                    {item.value}
-                    <span style={{
-                      color: 'var(--color-text-ghost)',
-                      fontSize: '0.65rem',
-                      marginLeft: 4,
-                    }}>
-                      {item.unit}
-                    </span>
+                  <div style={{ color: item.accent }}>{item.icon}</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--color-text-primary)' }}>
+                    {item.label}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-text-ghost)', lineHeight: 1.4 }}>
+                    {item.desc}
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Keyboard hints */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 16,
+              flexWrap: 'wrap',
+              fontSize: '0.68rem',
+              color: 'var(--color-text-ghost)',
+            }}>
+              {[
+                { key: 'Espaço', desc: 'Play/Pause' },
+                { key: 'Ctrl+Scroll', desc: 'Zoom' },
+                { key: 'Espaço+Drag', desc: 'Pan' },
+                { key: 'Del', desc: 'Deletar camada' },
+              ].map(({ key, desc }) => (
+                <span key={key} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <kbd className="kbd-badge">{key}</kbd>
+                  <span>{desc}</span>
+                </span>
+              ))}
+            </div>
           </div>
+
         )}
       </div>
       </div>

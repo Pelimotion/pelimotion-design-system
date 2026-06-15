@@ -1,9 +1,10 @@
 {
-  "sessionsRun": 6,
+  "sessionsRun": 7,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
     "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
-    "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift."
+    "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.",
+    "Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -16,5 +17,24 @@
     "Implemented premium watermark toggle checkbox and config filters in ExportPanel and exportPipeline.",
     "Created scrub muting state on timeline playhead movements in CompositionTimeline and AudioEngine.",
     "Resolved scaling jump bugs in InteractiveGizmo by linking handles to the active layer's actual scale and rotation values."
+  ],
+  "pendingIssues": [
+    {
+      "session": 7,
+      "panel": "composition",
+      "issue": "HIGH",
+      "text": "Composition timeline not found or not visible — main workflow broken.",
+      "resolved": false
+    }
+  ],
+  "sessionLogs": [
+    {
+      "session": 7,
+      "focus": "Keyboard Shortcuts & Accessibility",
+      "errors": 0,
+      "uxFindings": 4,
+      "fps": 47,
+      "timestamp": "2026-06-15T00:49:22.001Z"
+    }
   ]
 }

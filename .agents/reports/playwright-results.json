@@ -1,6 +1,38 @@
 {
   "errors": [],
+  "uxFindings": [
+    {
+      "panel": "library",
+      "issue": "MEDIUM",
+      "text": "Library panel shows no items and no empty state — user is confused about what to do here."
+    },
+    {
+      "panel": "composition",
+      "issue": "HIGH",
+      "text": "Composition timeline not found or not visible — main workflow broken."
+    },
+    {
+      "panel": "composition",
+      "issue": "LOW",
+      "text": "Only 1 bento card(s) found in composition sidebar — layout may feel sparse."
+    },
+    {
+      "panel": "viewport",
+      "issue": "MEDIUM",
+      "text": "Viewport controls (zoom/fit) not visible — user has no camera control affordance."
+    }
+  ],
   "metrics": {
-    "fps": 52
-  }
+    "fps": 47,
+    "panels": {
+      "typography": "audited",
+      "generative": "5 shapes found",
+      "library": "audited",
+      "composition": "1 bento cards",
+      "export": "audited"
+    },
+    "accessibilityFocused": "BUTTON "
+  },
+  "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
+  "timestamp": "2026-06-15T00:49:21.838Z"
 }
