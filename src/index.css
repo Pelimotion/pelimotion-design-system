@@ -644,4 +644,56 @@ body {
   margin-bottom: 12px;
 }
 
+/* ─── Composition Layer List (group hover reveals delete button) ───────────── */
 
+.layer-row {
+  position: relative;
+}
+
+.layer-row .layer-delete-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.layer-row:hover .layer-delete-btn {
+  opacity: 1;
+}
+
+/* ─── Sidebar Panel Content Transitions ────────────────────────────────────── */
+
+@keyframes panel-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.panel-content-enter {
+  animation: panel-slide-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Status Bar ──────────────────────────────────────────────────────────── */
+
+#status-bar {
+  border-top: 1px solid var(--color-surface-border);
+  background: linear-gradient(
+    to right,
+    hsla(191, 100%, 50%, 0.02) 0%,
+    transparent 100%
+  );
+}
+
+/* ─── Render Button ──────────────────────────────────────────────────────── */
+
+#render-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -5px var(--color-accent);
+}
+
+#render-btn:not(:disabled):active {
+  transform: translateY(0px);
+}

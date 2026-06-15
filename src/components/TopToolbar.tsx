@@ -381,6 +381,14 @@ function GizmoToggle() {
 
 // ─── Main Toolbar ─────────────────────────────────────────────────────────────
 
+const PANEL_LABELS: Record<string, { label: string; sub: string }> = {
+  typography: { label: 'Tipografia', sub: 'Textos Animados' },
+  generative: { label: 'Generativo', sub: 'Formas & Padrões' },
+  library: { label: 'Biblioteca', sub: 'Assets & Templates' },
+  composition: { label: 'Composição', sub: 'Timeline & Cenas' },
+  export: { label: 'Exportar', sub: 'Render & Download' },
+};
+
 export function TopToolbar() {
   const {
     motionConfig,
@@ -390,6 +398,7 @@ export function TopToolbar() {
   } = useEditorStore();
 
   const layoutMode = motionConfig.typography.layoutMode || 'freeform';
+  const panelInfo = PANEL_LABELS[activePanel] || { label: activePanel, sub: '' };
 
   const handleLayoutMode = (mode: TypographyLayoutMode) => {
     // When switching to a structured mode, also set sensible alignment defaults
@@ -418,36 +427,40 @@ export function TopToolbar() {
         overflowY: 'hidden',
       }}
     >
-      {/* ── Zone 1: Engine Context ─────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-          <Activity size={14} color="var(--color-accent)" />
+      {/* ── Zone 1: Breadcrumb Context ──────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Activity size={13} color="var(--color-accent)" style={{ opacity: 0.7 }} />
+          <span style={{
+            fontSize: '0.72rem',
+            fontWeight: 400,
+            color: 'var(--color-text-ghost)',
+            letterSpacing: '0.01em',
+          }}>
+            Pelimotion
+          </span>
+          <span style={{ color: 'var(--color-surface-border)', fontSize: '0.8rem', lineHeight: 1 }}>/</span>
           <span style={{
             fontSize: '0.8rem',
-            fontWeight: 600,
+            fontWeight: 700,
             color: 'var(--color-text-primary)',
-            letterSpacing: '-0.01em',
+            letterSpacing: '-0.02em',
           }}>
-            {activePanel === 'typography' ? 'Tipografia'
-              : activePanel === 'generative' ? 'Generativo'
-              : activePanel === 'library' ? 'Biblioteca'
-              : activePanel === 'composition' ? 'Composição'
-              : 'Exportar'}
+            {panelInfo.label}
           </span>
         </div>
-        <div style={{
+        <span style={{
           fontSize: '0.68rem',
           color: 'var(--color-text-ghost)',
           fontFamily: 'var(--font-mono)',
           background: 'var(--color-surface-hover)',
-          padding: '2px 8px',
-          borderRadius: 5,
+          padding: '2px 7px',
+          borderRadius: 4,
           border: '1px solid var(--color-surface-border)',
+          letterSpacing: '0.02em',
         }}>
-          {motionConfig.canvas.captureResolution.width}×{motionConfig.canvas.captureResolution.height}
-          <span style={{ opacity: 0.5, margin: '0 3px' }}>@</span>
-          {motionConfig.canvas.captureFps}fps
-        </div>
+          {panelInfo.sub}
+        </span>
       </div>
 
       <Divider />
@@ -482,37 +495,13 @@ export function TopToolbar() {
       <Divider />
 
       {/* ── Zone 5: Controls + Status ────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
         <GizmoToggle />
-
-        {/* --- ADD TEXT BUTTON --- */}
-        <ToolButton
-          onClick={() => {
-            useEditorStore.getState().setActivePanel('typography');
-            // If the store exposes an addText function, you could call it here.
-          }}
-          title="Adicionar Texto (Atalho: T)"
-          label="Adicionar Texto"
-          accentColor="var(--color-text-primary)"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
-        </ToolButton>
-
-        {/* --- EXPORT BUTTON --- */}
-        <ToolButton
-          active={activePanel === 'export'}
-          onClick={() => useEditorStore.getState().setActivePanel('export')}
-          title="Exportar Composição (Atalho: Cmd+E)"
-          label="Exportar"
-          accentColor="hsla(157, 100%, 40%, 1)"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-        </ToolButton>
 
         {activePanel === 'typography' && (
           <ToolButton
             onClick={incrementAnimKey}
-            title="Reiniciar efeito — reconstrói a timeline GSAP do zero (use após editar texto ou trail)"
+            title="Reiniciar Animação — reconstrói a timeline GSAP do zero (Atalho: R)"
             label="Reiniciar"
           >
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -522,26 +511,28 @@ export function TopToolbar() {
           </ToolButton>
         )}
 
+        {/* Live status indicator */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: 5,
-          padding: '3px 10px 3px 7px',
+          padding: '3px 9px 3px 6px',
           borderRadius: 20,
-          background: 'hsla(157, 100%, 40%, 0.1)',
-          border: '1px solid hsla(157, 100%, 40%, 0.2)',
-          fontSize: '0.72rem',
+          background: 'hsla(157, 100%, 40%, 0.08)',
+          border: '1px solid hsla(157, 100%, 40%, 0.15)',
+          fontSize: '0.68rem',
           fontWeight: 500,
           color: 'var(--color-success)',
           flexShrink: 0,
+          opacity: 0.8,
         }}>
           <div style={{
-            width: 6, height: 6, borderRadius: '50%',
+            width: 5, height: 5, borderRadius: '50%',
             background: 'var(--color-success)',
-            boxShadow: '0 0 8px hsla(157, 100%, 40%, 0.6)',
+            boxShadow: '0 0 6px hsla(157, 100%, 40%, 0.5)',
             animation: 'pulse 2s ease-in-out infinite',
           }} />
-          Pronto
+          Ativo
         </div>
       </div>
     </header>

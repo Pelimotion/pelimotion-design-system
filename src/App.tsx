@@ -70,6 +70,7 @@ function App() {
 
   const [sidebarWidth, setSidebarWidth] = useState(320)
   const [sidebarResizing, setSidebarResizing] = useState(false)
+  const [lastSavedLabel, setLastSavedLabel] = useState('Auto-salvo — agora')
   const isResizing = useRef(false)
   const initialized = useRef(false)
 
@@ -156,6 +157,7 @@ function App() {
             exportConfig: state.exportConfig
           });
           localStorage.setItem('pelimotion_autosave', payload);
+          setLastSavedLabel('Auto-salvo — agora');
         } catch (err) {
           console.warn('[Auto-Save] Error persisting state', err);
         }
@@ -802,12 +804,7 @@ function App() {
             >
               {item.icon}
               {!sidebarCollapsed && (
-                <>
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  <span className={`status-badge status-badge--${item.status}`}>
-                    {item.status === 'ready' ? 'Ready' : `P${item.phase}`}
-                  </span>
-                </>
+                <span style={{ flex: 1 }}>{item.label}</span>
               )}
             </div>
           ))}
@@ -899,14 +896,26 @@ function App() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.7rem',
+            fontSize: '0.68rem',
             fontFamily: 'var(--font-mono)',
             color: 'var(--color-text-ghost)',
+            gap: 12,
           }}
         >
-          <span>crossOriginIsolated: {typeof crossOriginIsolated !== 'undefined' ? String(crossOriginIsolated) : 'N/A'}</span>
-          <span>GSAP + Zustand + Simplex Noise</span>
-          <span>Apple Silicon Optimized</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              width: 5, height: 5, borderRadius: '50%',
+              background: 'var(--color-success)',
+              boxShadow: '0 0 5px hsla(157,100%,40%,0.5)',
+              display: 'inline-block',
+              flexShrink: 0,
+            }} />
+            {lastSavedLabel}
+          </span>
+          <span style={{ color: 'var(--color-surface-border)' }}>|</span>
+          <span>{exportConfig.resolution?.replace('x', '×')} @ {exportConfig.fps}fps</span>
+          <span style={{ color: 'var(--color-surface-border)' }}>|</span>
+          <span style={{ opacity: 0.6 }}>Sem Título</span>
         </footer>
       </main>
       

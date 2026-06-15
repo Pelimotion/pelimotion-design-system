@@ -1,27 +1,55 @@
 /**
- * LibraryPanel — Sidebar panel with category filters + informative empty state
+ * LibraryPanel — Sidebar panel with category chips + import action
  * Benchmarked against: Figma Assets panel, After Effects Project panel
  */
+import React, { useRef } from 'react'
 import { useEditorStore } from '@/store/useEditorStore'
-import { Type, Layers, Combine, Image as ImageIcon, Music, FolderOpen } from 'lucide-react'
+import { Type, Layers, Combine, Image as ImageIcon, Music, FolderOpen, Upload } from 'lucide-react'
 
 const TABS = [
-  { id: 'Tipografia', label: 'Tipografia',  icon: Type,    desc: 'Layers de texto animados' },
-  { id: 'Generativo', label: 'Generativo',  icon: Layers,  desc: 'Formas e padrões gerativos' },
-  { id: 'Logo',       label: 'Logo',        icon: ImageIcon,desc: 'Logos e identidades visuais' },
-  { id: 'Transição',  label: 'Transição',   icon: Combine, desc: 'Transições entre cenas' },
-  { id: 'Audio',      label: 'Áudio',       icon: Music,   desc: 'Trilhas e efeitos sonoros' },
+  { id: 'Tipografia', label: 'Tipografia', icon: Type },
+  { id: 'Generativo', label: 'Generativo', icon: Layers },
+  { id: 'Logo', label: 'Logo', icon: ImageIcon },
+  { id: 'Transição', label: 'Transição', icon: Combine },
+  { id: 'Audio', label: 'Áudio', icon: Music },
 ]
 
 export function LibraryPanel() {
-  const { activeLibraryTab, setActiveLibraryTab } = useEditorStore()
+  const { activeLibraryTab, setActiveLibraryTab, saveToLocalLibrary, addCompositionLayer } = useEditorStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    files.forEach(file => {
+      const url = URL.createObjectURL(file)
+      const isVideo = file.type.startsWith('video/')
+      const isAudio = file.type.startsWith('audio/')
+      const assetId = crypto.randomUUID()
+      const type = isVideo ? 'video' : isAudio ? 'audio' : 'image'
+
+      saveToLocalLibrary({ id: assetId, name: file.name, type, createdAt: Date.now(), data: url })
+
+      if (!isAudio) {
+        addCompositionLayer({
+          id: crypto.randomUUID(),
+          name: file.name,
+          type: 'localAsset',
+          assetId,
+          startTime: 0,
+          duration: 5,
+          transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+        })
+      }
+    })
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 16,
+        gap: 14,
         height: '100%',
         overflowY: 'auto',
         paddingRight: 4,
@@ -29,103 +57,105 @@ export function LibraryPanel() {
       }}
       className="custom-scrollbar"
     >
-      {/* Header hint */}
-      <div
+      {/* Import Button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*,audio/*"
+        multiple
+        style={{ display: 'none' }}
+        onChange={handleImport}
+      />
+      <button
+        className="btn-pressable"
+        onClick={() => fileInputRef.current?.click()}
         style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          width: '100%',
+          padding: '10px 16px',
           background: 'var(--color-accent-muted)',
-          border: '1px solid hsla(191,100%,50%,0.2)',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 12px',
-          fontSize: '0.75rem',
+          border: '1px dashed hsla(191,100%,50%,0.3)',
+          borderRadius: 10,
           color: 'var(--color-accent)',
-          lineHeight: 1.5,
+          fontSize: '0.8rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+          transition: 'all 0.15s var(--ease-smooth)',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.background = 'hsla(191,100%,50%,0.12)'
+          ;(e.currentTarget as HTMLElement).style.borderColor = 'hsla(191,100%,50%,0.5)'
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.background = 'var(--color-accent-muted)'
+          ;(e.currentTarget as HTMLElement).style.borderColor = 'hsla(191,100%,50%,0.3)'
         }}
       >
-        Selecione uma categoria e arraste itens para o canvas para compor sua cena.
-      </div>
+        <Upload size={14} />
+        Importar Asset
+      </button>
 
-      {/* Category list */}
-      <div className="glass-panel" style={{ padding: 12, borderRadius: 'var(--radius-lg)' }}>
-        <div className="section-header">
-          <FolderOpen size={11} /> Categorias
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {/* Category chips */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{
+          fontSize: '0.62rem',
+          fontWeight: 600,
+          color: 'var(--color-text-ghost)',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+        }}>
+          <FolderOpen size={10} /> Categorias
+        </span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
           {TABS.map((tab) => {
-            const Icon    = tab.icon
+            const Icon = tab.icon
             const isActive = activeLibraryTab === tab.id
-
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveLibraryTab(tab.id)}
                 className="btn-pressable"
-                title={tab.desc}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 10,
-                  padding: '10px 12px',
-                  background: isActive ? 'var(--color-accent-muted)' : 'transparent',
+                  gap: 5,
+                  padding: '5px 10px',
+                  background: isActive ? 'var(--color-accent-muted)' : 'var(--color-surface-glass)',
                   border: isActive
-                    ? '1px solid hsla(191,100%,50%,0.25)'
-                    : '1px solid transparent',
-                  borderRadius: 'var(--radius-sm)',
+                    ? '1px solid hsla(191,100%,50%,0.3)'
+                    : '1px solid var(--color-surface-border)',
+                  borderRadius: 6,
                   color: isActive ? 'var(--color-accent)' : 'var(--color-text-secondary)',
                   cursor: 'pointer',
                   transition: 'all 0.15s var(--ease-smooth)',
-                  textAlign: 'left',
-                  fontSize: '0.85rem',
-                  fontWeight: isActive ? 600 : 500,
-                  width: '100%',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'var(--color-surface-glass-hover)';
-                    e.currentTarget.style.color = 'var(--color-text-primary)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = 'var(--color-text-secondary)';
-                  }
+                  fontSize: '0.75rem',
+                  fontWeight: isActive ? 600 : 400,
+                  whiteSpace: 'nowrap',
                 }}
               >
-                <Icon size={16} style={{ flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div>{tab.label}</div>
-                  <div style={{ fontSize: '0.65rem', color: isActive ? 'hsla(191,100%,70%,0.7)' : 'var(--color-text-ghost)', marginTop: 1 }}>
-                    {tab.desc}
-                  </div>
-                </div>
-                {isActive && (
-                  <div
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      background: 'var(--color-accent)',
-                      boxShadow: '0 0 8px var(--color-accent)',
-                      flexShrink: 0,
-                    }}
-                  />
-                )}
+                <Icon size={12} style={{ flexShrink: 0 }} />
+                {tab.label}
               </button>
             )
           })}
         </div>
       </div>
 
-      {/* Empty state for gallery area */}
+      {/* Empty state */}
       <div className="empty-state">
         <div className="empty-state__icon">
           <FolderOpen size={22} />
         </div>
         <div className="empty-state__title">Galeria em construção</div>
         <div className="empty-state__desc">
-          A galeria de templates para <strong>{activeLibraryTab}</strong> estará disponível em breve.
-          Por ora, use os painéis de Tipografia e Generativo para criar do zero.
+          Templates de <strong>{activeLibraryTab}</strong> em breve.
+          Importe seus próprios assets acima ou crie direto nos painéis.
         </div>
       </div>
     </div>

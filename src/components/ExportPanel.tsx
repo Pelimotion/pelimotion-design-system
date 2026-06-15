@@ -79,37 +79,37 @@ export function ExportPanel() {
       className="custom-scrollbar"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
-          <MonitorPlay size={18} color="var(--color-accent)" />
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+          <MonitorPlay size={17} color="var(--color-accent)" />
           Render & Export
         </h2>
-        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
-          Deliver your composition in broadcast-ready quality.
+        <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+          Exporte sua composição com qualidade profissional.
         </p>
         {(exportConfig.format === 'mp4' || exportConfig.format === 'mov') && (
           <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 4, background: exportState.exportMode === 'webcodecs-hw' ? 'rgba(0, 255, 128, 0.1)' : 'rgba(255, 165, 0, 0.1)', border: `1px solid ${exportState.exportMode === 'webcodecs-hw' ? 'rgba(0, 255, 128, 0.3)' : 'rgba(255, 165, 0, 0.3)'}`, color: exportState.exportMode === 'webcodecs-hw' ? '#00ff80' : '#ffa500', fontSize: '0.7rem', fontWeight: 600, width: 'fit-content' }}>
-            {exportState.exportMode === 'webcodecs-hw' ? '⚡ Hardware Accelerated' : '🔄 Software Fallback'}
+            {exportState.exportMode === 'webcodecs-hw' ? '⚡ Acelerado por Hardware' : '🔄 Modo Software'}
           </div>
         )}
       </div>
 
       <div className="bento-card-premium" style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: '12px' }}>
-        <Campo label="Output Format" icon={<Download size={10} />}>
+        <Campo label="Formato de Saída" icon={<Download size={10} />}>
           <select 
             value={exportConfig.format} 
             onChange={e => updateExportConfig({ format: e.target.value as ExportConfig['format'] })} 
             style={selectStyle}
             disabled={exportState.isExporting}
           >
-            <option value="png-sequence">PNG Sequence (Native Alpha, ZIP)</option>
-            <option value="png-still">Static PNG (1 Frame, Transparent/Bg)</option>
-            <option value="mp4">MP4 Video (H.264, Requires Opaque Bg)</option>
-            <option value="mov">MOV Video (VP9 w/ Alpha or Bg)</option>
+            <option value="png-sequence">Sequência PNG (Alpha Nativo, ZIP)</option>
+            <option value="png-still">PNG Estático (1 Frame, Transparente/Bg)</option>
+            <option value="mp4">Vídeo MP4 (H.264, Requer Fundo Opaco)</option>
+            <option value="mov">Vídeo MOV (VP9 c/ Alpha ou Bg)</option>
           </select>
         </Campo>
 
         {exportConfig.format === 'png-still' && (
-          <Campo label="Target Frame">
+          <Campo label="Frame Alvo">
              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                <input type="range" min={0} max={exportConfig.duration * exportConfig.fps} step={1} value={exportConfig.stillFrame} onChange={e => updateExportConfig({ stillFrame: parseInt(e.target.value) })} style={{ width: '100%', accentColor: 'var(--color-accent)' }} disabled={exportState.isExporting} />
                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--color-accent)', minWidth: 40 }}>{exportConfig.stillFrame}f</span>
@@ -117,41 +117,45 @@ export function ExportPanel() {
           </Campo>
         )}
 
+        {/* Resolução e FPS — controles principais de render */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Campo label="Resolução" icon={<Zap size={10} />}>
+            <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value as ExportConfig['resolution'] })} style={selectStyle} disabled={exportState.isExporting}>
+              <option value="1920x1080">1080p (Full HD)</option>
+              <option value="3840x2160">4K (Ultra HD)</option>
+              <option value="1080x1920">Vertical (Stories)</option>
+              <option value="1080x1080">Quadrado (Instagram)</option>
+            </select>
+          </Campo>
+
+          <Campo label="Framerate">
+            <select value={exportConfig.fps} onChange={e => updateExportConfig({ fps: parseInt(e.target.value) })} style={selectStyle} disabled={exportState.isExporting}>
+              <option value={24}>24 FPS — Cinema</option>
+              <option value={30}>30 FPS — Web</option>
+              <option value={60}>60 FPS — Fluido</option>
+            </select>
+          </Campo>
+        </div>
+
+        {/* Opções Avançadas */}
         <div style={{ borderTop: '1px solid var(--color-surface-border)', paddingTop: 12, marginTop: 4 }}>
           <button 
             onClick={() => setShowAdvanced(!showAdvanced)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', fontSize: '0.75rem', cursor: 'pointer', padding: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', fontSize: '0.72rem', cursor: 'pointer', padding: 0 }}
           >
             <Settings2 size={12} style={{ transform: showAdvanced ? 'rotate(90deg)' : 'none', transition: 'transform 0.3s ease' }} />
-            {showAdvanced ? 'Hide Advanced Options' : 'Show Advanced Options'}
+            {showAdvanced ? 'Ocultar Opções Avançadas' : 'Opções Avançadas'}
           </button>
 
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 12,
-            maxHeight: showAdvanced ? 260 : 0,
+            maxHeight: showAdvanced ? 120 : 0,
             opacity: showAdvanced ? 1 : 0,
             overflow: 'hidden',
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             marginTop: showAdvanced ? 12 : 0
           }}>
-            <Campo label="Resolution">
-              <select value={exportConfig.resolution} onChange={e => updateExportConfig({ resolution: e.target.value as ExportConfig['resolution'] })} style={selectStyle} disabled={exportState.isExporting}>
-                <option value="1920x1080">1080p (FHD)</option>
-                <option value="3840x2160">4K (UHD)</option>
-                <option value="1080x1920">Vertical (Stories/Reels)</option>
-                <option value="1080x1080">Square (Instagram)</option>
-              </select>
-            </Campo>
-
-            <Campo label="Framerate">
-              <select value={exportConfig.fps} onChange={e => updateExportConfig({ fps: parseInt(e.target.value) })} style={selectStyle} disabled={exportState.isExporting}>
-                <option value={24}>24 FPS (Cinematic)</option>
-                <option value={30}>30 FPS (Standard)</option>
-                <option value={60}>60 FPS (Smooth)</option>
-              </select>
-            </Campo>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
                 id="watermark-toggle"
                 type="checkbox"
@@ -161,7 +165,7 @@ export function ExportPanel() {
                 style={{ width: 14, height: 14, accentColor: 'var(--color-accent)', cursor: 'pointer' }}
               />
               <label htmlFor="watermark-toggle" style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
-                Include Pelimotion Watermark
+                Incluir marca d’água Pelimotion
               </label>
             </div>
           </div>
@@ -183,8 +187,11 @@ export function ExportPanel() {
         </div>
       )}
 
-      <div
+      <button
+        id="render-btn"
         onClick={exportState.isExporting || exportState.stage === 'complete' ? undefined : handleExport}
+        disabled={exportState.isExporting || exportState.stage === 'complete'}
+        className="btn-pressable"
         style={{
           marginTop: 'auto',
           padding: '16px',
@@ -202,21 +209,14 @@ export function ExportPanel() {
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           boxShadow: exportState.isExporting ? 'none' : '0 10px 25px -5px var(--color-accent)',
           opacity: exportState.isExporting || exportState.stage === 'complete' ? 0.7 : 1,
-        }}
-        onMouseOver={e => {
-          if (!exportState.isExporting && exportState.stage !== 'complete') {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-          }
-        }}
-        onMouseOut={e => {
-          e.currentTarget.style.transform = 'translateY(0)'
+          width: '100%',
         }}
       >
         {exportState.isExporting ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
               <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid currentColor', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
-              Rendering... ({Math.round(exportState.progress)}%)
+              Renderizando... ({Math.round(exportState.progress)}%)
             </div>
             <button 
               onClick={(e) => {
@@ -235,25 +235,25 @@ export function ExportPanel() {
                 pointerEvents: 'auto'
               }}
             >
-              Cancel
+              Cancelar
             </button>
           </div>
         ) : (
           <>
             <Zap size={18} fill="currentColor" />
-            Start Render
+            Iniciar Render
           </>
         )}
-      </div>
+      </button>
 
       <div className="bento-card-premium" style={{ padding: 16, borderRadius: '12px' }}>
-        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', marginBottom: 8 }}>Workflow Tip</span>
-        <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
-          When using PNG Sequence in <strong>Premiere Pro</strong> or <strong>After Effects</strong>:<br/><br/>
-          1. Extract the ZIP archive.<br/>
-          2. Import and select only `frame_0000.png`.<br/>
-          3. Check the <strong>"Image Sequence"</strong> box.<br/>
-          4. It will import perfectly with native alpha channel.
+        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', marginBottom: 8 }}>Dica de Workflow</span>
+        <p style={{ fontSize: '0.73rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+          Usando <strong>PNG Sequence</strong> no <strong>Premiere Pro</strong> ou <strong>After Effects</strong>:<br/><br/>
+          1. Extraia o arquivo ZIP.<br/>
+          2. Importe e selecione apenas <code>frame_0000.png</code>.<br/>
+          3. Marque a caixa <strong>"Image Sequence"</strong>.<br/>
+          4. O canal alpha nativo será preservado.
         </p>
       </div>
 
