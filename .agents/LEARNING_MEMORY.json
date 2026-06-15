@@ -1,5 +1,5 @@
 {
-  "sessionsRun": 12,
+  "sessionsRun": 13,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
     "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
@@ -13,7 +13,8 @@
     "Group hover via CSS .parent:hover .child-btn { opacity: 1 } is cleaner and more performant than React state for transient UI reveals like delete buttons.",
     "Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.",
     "When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools.",
-    "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage."
+    "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage.",
+    "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay"
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -39,25 +40,11 @@
   ],
   "pendingIssues": [
     {
-      "session": 7,
-      "panel": "composition",
-      "issue": "MEDIUM",
-      "text": "Composition timeline data-testid previously missing (now fixed with id=composition-timeline). Recheck if Playwright finds it.",
-      "resolved": true
-    },
-    {
-      "session": 11,
-      "panel": "all",
-      "issue": "LOW",
-      "text": "Layer delete button uses both CSS group-hover (.layer-row:hover .layer-delete-btn) AND inline onMouseEnter. CSS approach should take precedence — inline handler can be removed in cleanup session.",
-      "resolved": true
-    },
-    {
-      "session": 11,
-      "panel": "composition",
-      "issue": "LOW",
-      "text": "CompositionPanel play/pause button calls togglePlayback. GSAP ticker drives the actual playback. Need to confirm that the play button state (isPlaying) visually syncs with timeline playhead movement.",
-      "resolved": true
+      "session": 13,
+      "panel": "typography",
+      "issue": "HIGH",
+      "text": "\"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text layers.",
+      "resolved": false
     }
   ],
   "sessionLogs": [
@@ -99,7 +86,14 @@
       "errors": 0,
       "uxFindings": 10,
       "fps": null,
-      "filesChanged": ["TopToolbar.tsx", "CompositionPanel.tsx", "ExportPanel.tsx", "LibraryPanel.tsx", "App.tsx", "index.css"],
+      "filesChanged": [
+        "TopToolbar.tsx",
+        "CompositionPanel.tsx",
+        "ExportPanel.tsx",
+        "LibraryPanel.tsx",
+        "App.tsx",
+        "index.css"
+      ],
       "timestamp": "2026-06-15T02:16:47.000Z",
       "commit": "814b14c"
     },
@@ -109,9 +103,25 @@
       "errors": 0,
       "uxFindings": 5,
       "fps": null,
-      "filesChanged": ["GenerativePreview.tsx", "CompositionTimeline.tsx", "TypographyPanel.tsx", "GenerativePanel.tsx", "TopToolbar.tsx", "CompositionPanel.tsx", "App.tsx"],
+      "filesChanged": [
+        "GenerativePreview.tsx",
+        "CompositionTimeline.tsx",
+        "TypographyPanel.tsx",
+        "GenerativePanel.tsx",
+        "TopToolbar.tsx",
+        "CompositionPanel.tsx",
+        "App.tsx"
+      ],
       "timestamp": "2026-06-15T02:57:00.000Z",
       "commit": "709286a"
+    },
+    {
+      "session": 13,
+      "focus": "Global Navigation, Sidebar & Bento UX",
+      "errors": 1,
+      "uxFindings": 1,
+      "fps": 15,
+      "timestamp": "2026-06-15T02:58:12.073Z"
     }
   ]
 }

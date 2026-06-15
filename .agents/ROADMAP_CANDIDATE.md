@@ -1,124 +1,88 @@
-# ROADMAP CANDIDATE — Sessão 12
-**Gerado em:** 2026-06-15T02:28:00Z  
-**Sessão anterior:** 11 — Interface Restructure & UX Overhaul  
-**Commit:** `814b14c`
+# 🎬 Pelimotion — Roadmap de Melhoria (Orquestrador V4)
 
----
+*Gerado em: 14/06/2026, 23:58:12 | Sessão #13 | Commit: `d23b656`*
+*Branch: `main` | Arquivos TypeScript/TSX: 51*
 
-## 🚨 Bugs & Problemas Reportados pelo Usuário (PRIORIDADE MÁXIMA)
+> **FOCO DESTA SESSÃO:** **Global Navigation, Sidebar & Bento UX**
+> **ATENÇÃO AGENTE EXECUTOR:** Esta roadmap NÃO TEM LIMITE DE COMPLEXIDADE.
+> Use After Effects, Figma, Cavalry, Canva, CapCut, Jitter.video como referências.
+> O Browser DOM está pré-autorizado para todos os testes Playwright desta sessão.
 
-> Estes foram observados diretamente pelo usuário durante uso real do app.  
-> Devem ser tratados ANTES de qualquer outra melhoria da sessão.
+## 1. 🧠 Memória & Aprendizado Histórico
 
----
+- Group hover via CSS .parent:hover .child-btn { opacity: 1 } is cleaner and more performant than React state for transient UI reveals like delete buttons.
+- Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.
+- When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools.
+- Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage.
+- Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: "Adicionar Texto" button NOT found in toolbar — user cannot quickly add text lay
 
-### BUG 1 — Elemento piscando no Generativo (Gizmo)
-**Reprodução:** Adicionar uma "Estrela" no módulo Generativo → um elemento extra (parece um círculo) fica piscando dentro da área do Gizmo.  
-**Causa provável:** O `GlobalGizmo` ou `InteractiveGizmo` está renderizando um elemento residual ou o layer anterior não está sendo limpo ao trocar de shape. Pode ser um `useEffect` com dependência incorreta no `GenerativePreview.tsx`.  
-**Ação:** Ler `GlobalGizmo.tsx`, `InteractiveGizmo.tsx`, e `GenerativePreview.tsx`. Identificar qual elemento extra está sendo renderizado e corrigir o ciclo de vida.
+## 2. 🔍 Achados dos Testes Automatizados (Playwright Deep Audit)
 
----
+**📸 Screenshots capturados:** 00_initial_load.png, 01_typography_panel.png, 01b_typography_add_text.png, 02_generative_panel.png, 02b_generative_shape_active.png, 03_library_panel.png, 04_composition_panel.png, 05_export_panel.png, 06_sidebar_collapsed.png, 07_sidebar_auto_expanded.png, session-result.png
+**⚡ FPS medido:** 15 fps
+**📊 Painéis auditados:** typography, generative, library, composition, export
 
-### BUG 2 — Menu da Timeline cortado (TopToolbar muito largo)
-**Reprodução:** Módulo Composição → a barra de controles/menu acima da timeline não aparece inteiro em browser com viewport padrão (~1280px).  
-**Causa provável:** A `CompositionTimeline.tsx` tem controles de playback, zoom, e layer controls inline sem overflow handling. Em 1280px de largura total menos a sidebar (320px), restam ~950px — provavelmente insuficiente para todos os controles em linha.  
-**Ação:** Ler `CompositionTimeline.tsx` (60KB — arquivo complexo). Implementar:
-- Controles essenciais (play/pause/stop + tempo) sempre visíveis
-- Controles secundários (zoom, snap, etc.) em overflow ou dropdown
-- Usar `flex-wrap` ou `overflow: hidden` com scroll horizontal suave
+### 🎯 UX Findings por Prioridade
 
----
+**🟠 HIGH (1)**
+- [typography] "Adicionar Texto" button NOT found in toolbar — user cannot quickly add text layers.
 
-### FEATURE 3 — Adicionar Tipografia/Generativo direto à Composição sem salvar na Biblioteca
-**Problema:** Atualmente não é possível adicionar um elemento criado em Tipografia ou Generativo diretamente na Composição sem passar pela Biblioteca permanente. O workflow esperado (como no After Effects/Figma) é:
-- Criar um elemento em qualquer módulo
-- Clicar "Adicionar à Composição" → vai como uma camada temporária (não salva na biblioteca)
-- OU clicar "Salvar na Biblioteca" → salva permanentemente para reutilização
-**Ação:**
-1. Ler `useEditorStore.ts` para entender `addCompositionLayer` e `saveToLocalLibrary`
-2. Adicionar botão **"Usar na Composição"** no `TypographyPanel.tsx` e `GenerativePanel.tsx` que chama `addCompositionLayer` diretamente com os dados atuais do módulo
-3. Manter o botão **"Salvar na Biblioteca"** separado para persistência
-4. Distinguir visualmente os dois fluxos (camada temporária vs. asset salvo)
+## 3. 🚀 Plano de Execução Profunda (Deep Sweep)
 
----
+### Passo 1: Investigação Visual Real (Obrigatório)
+- [ ] Abrir `http://localhost:3000/pelimotion-design-system/` no browser integrado (já pré-autorizado)
+- [ ] Percorrer TODOS os 5 painéis como um usuário iniciante sem conhecimento prévio
+- [ ] Documentar cada momento de confusão, clic em área errada ou fluxo não intuitivo
+- [ ] Verificar se **tooltips de atalho de teclado** aparecem em hover nos botões
+- [ ] Checar se **estados vazios** de cada painel têm call-to-action claro
+- [ ] Testar drag & drop de assets na timeline e canvas
+- [ ] Verificar comportamento ao redimensionar a janela do browser
 
-### FEATURE 4 — Sistema de Camadas: Gestão e Visualização Melhorada
-**Problema:** A gestão de assets/peças/elementos como camadas está fragmentada:
-- O painel lateral de Composição mostra uma lista simples de camadas
-- A timeline mostra as camadas em track lanes
-- Não há uma visão unificada de "o que existe na minha composição"
-**Ação:**
-1. Melhorar o `CompositionPanel.tsx` (já revisado na S11) para mostrar:
-   - Ícone de tipo de layer (Tipografia, Generativo, Asset, Áudio)
-   - Indicador de visibilidade (olho toggle)
-   - Lock/unlock de layer
-   - Cor de identificação da track na timeline
-2. Sincronizar seleção: clicar na camada do painel lateral → highlight na timeline, e vice-versa
-3. Adicionar reordenação de camadas por drag-and-drop no painel lateral
+### Passo 2: Pesquisa de Mercado Fundamentada
+- [ ] Estudar como **Figma** resolve empty states e onboarding sem tutoriais externos
+- [ ] Estudar como **After Effects** organiza painéis e ferramentas em 48px de altura
+- [ ] Estudar como **Cavalry** simplifica nós complexos em UI linear para o usuário final
+- [ ] Estudar como **Jitter.video** (web-based) faz transições de aba instantâneas sem re-render
+- [ ] Pesquisar: `best practices sidebar navigation creative tools 2024`
+- [ ] Pesquisar: `empty state design patterns professional software`
 
----
+### Passo 3: Implementações Prioritárias (Global Navigation, Sidebar & Bento UX)
+- [ ] **UX: Tooltip de atalhos** — adicionar `title="...  Atalho: Cmd+X"` em TODOS os botões do TopToolbar
+- [ ] **UX: Empty States** — cada painel sem conteúdo deve ter ícone + texto explicativo + botão de ação primário
+- [ ] **UX: Sidebar auto-scroll** — quando o usuário seleciona um item, o painel lateral deve fazer scroll para mostrar os controles relevantes
+- [ ] **UX: Feedback visual** — adicionar animação de `scale(0.97)` no click de todos os botões de ação primários
+- [ ] **UX: Hierarquia de Bento** — os bento cards nos painéis de Composição e Exportar devem ter gradiente de borda sutil para distinguir seções
+- [ ] **UX: Zoom display** — o número de % no ViewportControls deve ter transição smooth ao mudar
+- [ ] **ACESS: Focus ring** — verificar se Tab navigation tem focus ring visível em alto contraste
+- [ ] **PERF: Verificar FPS** — com 3+ camadas ativas, FPS deve manter-se acima de 30fps
 
-### FEATURE 5 — Fluxo de Export sem obrigatoriedade de Composição
-**Problema:** Para exportar, o usuário precisa sempre ir até o módulo de Composição primeiro. Em softwares como Canva e Figma, o export é contextual:
-- Se está em Tipografia → "Exportar este frame"
-- Se está em Composição → "Exportar toda a timeline"
-- Botão de export sempre disponível na TopToolbar (com contexto inteligente)
-**Ação:**
-1. Repensar o botão de Export na TopToolbar (que foi removido na S11 por ser duplicado) → recolocar como um botão **contextual** que muda comportamento por painel:
-   - Em Tipografia/Generativo: "Exportar Frame Atual" → vai para ExportPanel com `png-still` pré-selecionado
-   - Em Composição: "Exportar Vídeo" → vai para ExportPanel com `mp4` pré-selecionado
-   - Em Exportar: já está no painel correto
-2. Adicionar CTA de export nos painéis de Tipografia e Generativo (ao lado do preview ou no rodapé do painel)
-3. Unificar a experiência: o usuário **nunca deve sentir que está "preso"** em um módulo para realizar uma ação de outro
+### Passo 4: Validação Rigorosa
+- [ ] Rodar novamente `npm run agent:research` após as implementações para comparar achados
+- [ ] Verificar que todos os erros de console foram eliminados
+- [ ] Verificar visualmente que os empty states aparecem corretamente
+- [ ] Verificar que tooltips aparecem em todos os botões relevantes
+- [ ] Rodar `npm run build` — zero erros de compilação
+- [ ] Commitar com mensagem descritiva e criar restore point
 
----
+## 5. 📈 Histórico de Sessões
 
-## Prioridades Herdadas da Sessão 11
+| Sessão | Foco | Erros | UX Findings | FPS |
+|--------|------|-------|-------------|-----|
+| S7 | Keyboard Shortcuts & Accessibility | 0 | 4 | 47 |
+| S8 | Typography Engine & Text Layer UX | 0 | 4 | 74 |
+| S9 | Generative Shapes & Canvas Interact | 0 | 1 | 57 |
+| S10 | Library Panel & Asset Management | 0 | 0 | 56 |
+| S11 | Interface Restructure & UX Overhaul | 0 | 10 | null |
+| S12 | Bugs, Direct Composition & Layer Co | 0 | 5 | null |
+| S13 | Global Navigation, Sidebar & Bento  | 1 | 1 | 15 |
 
-### 🏗️ Dev Senior — Cleanup Técnico
-- [ ] Remover handlers inline redundantes no CompositionPanel (CSS group hover já cobre o delete)
-- [ ] Verificar sincronismo `isPlaying` ↔ GSAP ticker no novo botão Play/Pause do CompositionPanel
+## 6. ⏱️ Finalização e Reagendamento (VITAL)
 
-### 🎨 Product Designer — UX
-- [ ] Transição suave entre painéis no sidebar (usar `key={activePanel}` + `panel-slide-in` animation já definida no CSS)
-- [ ] Tooltip no sidebar colapsado
-
----
-
-## Ordem de Execução Recomendada
-
-| # | Tarefa | Prioridade | Tipo |
-|---|--------|-----------|------|
-| 1 | BUG: Elemento piscando no Gizmo (Generativo/Estrela) | 🔴 Crítico | Bug |
-| 2 | BUG: Timeline menu cortado em 1280px | 🔴 Crítico | Bug |
-| 3 | FEAT: "Usar na Composição" em Tipografia + Generativo | 🔴 Alta | Feature |
-| 4 | FEAT: Export contextual por painel na TopToolbar | 🟡 Alta | Feature |
-| 5 | FEAT: Gestão de camadas melhorada (visibilidade, lock, cor) | 🟡 Média | Feature |
-| 6 | Transição suave entre painéis | 🟢 Baixa | Polish |
-| 7 | Cleanup técnico (handlers inline, isPlaying sync) | 🟢 Baixa | Cleanup |
-
----
-
-## Métricas de Sucesso da Sessão 12
-
-- [ ] Elemento piscando no Gizmo resolvido
-- [ ] Timeline toolbar visível em 1280px sem cortes
-- [ ] Botão "Usar na Composição" funcional em Tipografia e Generativo
-- [ ] Export contextual implementado na TopToolbar
-- [ ] `npm run build` → zero erros TypeScript
-- [ ] Commit da sessão feito
-
----
-
-## Notas Técnicas
-
-- **Commit atual:** `b1d6058` (main)
-- **Dev server:** Rodando em background (task-1020) em `localhost:5174`
-- **Arquivos-chave para esta sessão:**
-  - `src/components/CompositionTimeline.tsx` (60KB — principal para BUG 2)
-  - `src/components/GlobalGizmo.tsx` + `InteractiveGizmo.tsx` (para BUG 1)
-  - `src/engines/Generative/GenerativePreview.tsx` (para BUG 1)
-  - `src/components/TypographyPanel.tsx` (para FEAT 3)
-  - `src/components/GenerativePanel.tsx` (para FEAT 3)
-  - `src/components/TopToolbar.tsx` (para FEAT 4)
-  - `src/store/useEditorStore.ts` (para verificar APIs disponíveis)
+> **IMPORTANTE:** O timer de 15 minutos SÓ COMEÇA após completar TODOS os passos acima.
+> Quando terminar, crie o commit, registre o backup e inicie novo timer:
+>
+> ```bash
+> npm run agent:backup -- --desc "Após Session 13: [descreva o que foi feito]"
+> ```
+>
+> Depois use a tool: `/schedule DurationSeconds=900 Prompt="Execute npm run agent:research e analise a nova roadmap V4."`
