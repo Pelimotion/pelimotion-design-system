@@ -10,7 +10,7 @@ import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import {
   Activity, ChevronDown, ChevronRight, Info, Upload, Trash2,
-  Settings2, Palette, Plus, MousePointer2, Layers as LayersIcon, Sparkles
+  Settings2, Palette, Plus, MousePointer2, Layers as LayersIcon, Sparkles, Play
 } from 'lucide-react'
 import { SubTabBar } from '@/components/SubTabBar'
 import { ColorManager } from '@/components/ColorManager'
@@ -213,12 +213,13 @@ export function GenerativePanel() {
         onChange={setActiveTab}
       />
 
-      <div style={{ padding: '0 4px', marginBottom: 8, display: 'flex', gap: 6 }}>
+      <div style={{ padding: '0 4px', marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
         <button
           onClick={() => {
+            const assetId = `gen-temp-${Date.now()}`;
             const item = {
-              id: `gen-${Date.now()}`,
-              name: `Sessão: Generativo ${Date.now().toString().slice(-4)}`,
+              id: assetId,
+              name: `Generativo: ${generativeLayers[0]?.name || 'Sem título'}`,
               type: 'generative',
               createdAt: Date.now(),
               data: {
@@ -226,14 +227,26 @@ export function GenerativePanel() {
                 globalWiggle: motionConfig.wiggle
               }
             };
+            // 1. Salva na biblioteca local temporária da sessão
             useEditorStore.getState().saveToLocalLibrary(item);
+            // 2. Adiciona como camada de composição
+            useEditorStore.getState().addCompositionLayer({
+              id: crypto.randomUUID(),
+              name: item.name,
+              type: 'localAsset',
+              assetId,
+              startTime: 0,
+              duration: 5,
+              transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+            });
+            // 3. Muda para o painel de composição
+            useEditorStore.getState().setActivePanel('composition');
           }}
           style={{
-            flex: 1,
             padding: '8px',
-            background: 'var(--color-surface-glass)',
-            color: 'var(--color-text-primary)',
-            border: '1px solid var(--color-surface-border)',
+            background: 'var(--color-accent)',
+            color: '#0a0a0f',
+            border: 'none',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.7rem',
             fontWeight: 700,
@@ -244,49 +257,88 @@ export function GenerativePanel() {
             gap: 6,
             transition: 'all 0.2s',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
         >
-          <LayersIcon size={14} />
-          Salvar (Sessão)
+          <Play size={14} style={{ color: '#0a0a0f' }} />
+          Usar na Composição
         </button>
 
-        <button
-          onClick={() => {
-            const item = {
-              id: `gen-global-${Date.now()}`,
-              name: `Global: Generativo ${Date.now().toString().slice(-4)}`,
-              type: 'generative',
-              createdAt: Date.now(),
-              data: {
-                layers: generativeLayers,
-                globalWiggle: motionConfig.wiggle
-              }
-            };
-            useEditorStore.getState().saveToGlobalLibrary(item);
-          }}
-          style={{
-            flex: 1,
-            padding: '8px',
-            background: 'var(--color-surface-glass)',
-            color: 'var(--color-accent)',
-            border: '1px solid var(--color-surface-border)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass-hover)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass)'; }}
-        >
-          <Sparkles size={14} />
-          Salvar (Global)
-        </button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            onClick={() => {
+              const item = {
+                id: `gen-${Date.now()}`,
+                name: `Sessão: Generativo ${Date.now().toString().slice(-4)}`,
+                type: 'generative',
+                createdAt: Date.now(),
+                data: {
+                  layers: generativeLayers,
+                  globalWiggle: motionConfig.wiggle
+                }
+              };
+              useEditorStore.getState().saveToLocalLibrary(item);
+            }}
+            style={{
+              flex: 1,
+              padding: '8px',
+              background: 'var(--color-surface-glass)',
+              color: 'var(--color-text-primary)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
+          >
+            <LayersIcon size={14} />
+            Salvar (Sessão)
+          </button>
+
+          <button
+            onClick={() => {
+              const item = {
+                id: `gen-global-${Date.now()}`,
+                name: `Global: Generativo ${Date.now().toString().slice(-4)}`,
+                type: 'generative',
+                createdAt: Date.now(),
+                data: {
+                  layers: generativeLayers,
+                  globalWiggle: motionConfig.wiggle
+                }
+              };
+              useEditorStore.getState().saveToGlobalLibrary(item);
+            }}
+            style={{
+              flex: 1,
+              padding: '8px',
+              background: 'var(--color-surface-glass)',
+              color: 'var(--color-accent)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-surface-glass)'; }}
+          >
+            <Sparkles size={14} />
+            Salvar (Global)
+          </button>
+        </div>
       </div>
 
       {activeTab === 'cores' && <ColorManager />}

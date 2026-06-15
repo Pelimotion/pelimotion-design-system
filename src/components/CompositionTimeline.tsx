@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle, Settings } from 'lucide-react';
 import { formatTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
@@ -34,6 +34,7 @@ export function CompositionTimeline() {
   const [isCompExpanded, setIsCompExpanded] = useState(true);
   const [isAudioExpanded, setIsAudioExpanded] = useState(true);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [snapTolerance, setSnapTolerance] = useState<number>(0.5);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +46,7 @@ export function CompositionTimeline() {
   useEffect(() => {
     if (!isPlaying) return;
     const ticker = () => {
-      const time = gsap.globalTimeline.time();
+      const time = useEditorStore.getState().currentTime;
       if (playheadRef.current) {
         const pct = (time / exportConfig.duration) * 100;
         const px = (time / exportConfig.duration) * 24;
@@ -535,60 +536,99 @@ export function CompositionTimeline() {
 
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
-            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Res:</span>
-            <select
-              value={exportConfig.resolution}
-              onChange={(e) => updateExportConfig({ resolution: e.target.value as any })}
-              style={{ background: 'transparent', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.7rem', outline: 'none', cursor: 'pointer' }}
-            >
-              <option value="1920x1080" style={{ color: 'black' }}>16:9 (1080p)</option>
-              <option value="1080x1920" style={{ color: 'black' }}>9:16 (Vertical)</option>
-              <option value="1080x1080" style={{ color: 'black' }}>1:1 (Square)</option>
-            </select>
-          </div>
-
-          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
-            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Fundo:</span>
-            <input
-              type="color"
-              value={exportConfig.backgroundColor === 'rgba(0,0,0,0)' ? '#000000' : exportConfig.backgroundColor}
-              onChange={(e) => updateExportConfig({ backgroundColor: e.target.value })}
-              style={{ width: 20, height: 20, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}
-              title="Cor de Fundo"
-            />
-          </div>
-
-          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
-            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>FPS:</span>
-            <select
-              value={exportConfig.fps}
-              onChange={(e) => updateExportConfig({ fps: Number(e.target.value) })}
-              style={{ background: 'transparent', border: 'none', color: 'var(--color-text-primary)', fontSize: '0.7rem', outline: 'none', cursor: 'pointer' }}
-            >
-              <option value={24} style={{ color: 'black' }}>24</option>
-              <option value={30} style={{ color: 'black' }}>30</option>
-              <option value={60} style={{ color: 'black' }}>60</option>
-            </select>
-          </div>
-
-          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-surface-glass)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)' }}>
-            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</span>
-            <input
-              type="number"
-              min="1" max="120"
-              value={exportConfig.duration}
-              onChange={(e) => updateExportConfig({ duration: Number(e.target.value) || 5 })}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
               style={{
-                background: 'transparent', border: 'none', color: 'var(--color-text-primary)', width: 30, fontSize: '0.7rem', outline: 'none', textAlign: 'center'
+                background: showSettingsMenu ? 'var(--color-accent)' : 'var(--color-surface-glass)',
+                color: showSettingsMenu ? '#fff' : 'var(--color-text-primary)',
+                border: '1px solid var(--color-surface-border)',
+                borderRadius: 4,
+                padding: '4px 8px',
+                fontSize: '0.7rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
               }}
-            />
+              title="Configurações de Composição"
+            >
+              <Settings size={12} style={{ color: showSettingsMenu ? '#0a0a0f' : 'inherit' }} /> Configurações
+            </button>
+
+            {showSettingsMenu && (
+              <div style={{
+                position: 'absolute',
+                bottom: '100%',
+                right: 0,
+                marginBottom: 8,
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-surface-border)',
+                borderRadius: 6,
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                width: 220,
+                zIndex: 999,
+                boxShadow: 'var(--shadow-glow)'
+              }}>
+                <h4 style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>Configurações de Composição</h4>
+                
+                {/* Resolução */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Resolução:</label>
+                  <select
+                    value={exportConfig.resolution}
+                    onChange={(e) => updateExportConfig({ resolution: e.target.value as any })}
+                    style={{ background: 'var(--color-bg-primary)', border: '1px solid var(--color-surface-border)', borderRadius: 4, color: 'var(--color-text-primary)', fontSize: '0.7rem', padding: '4px', outline: 'none', cursor: 'pointer' }}
+                  >
+                    <option value="1920x1080" style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>16:9 (1080p)</option>
+                    <option value="1080x1920" style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>9:16 (Vertical)</option>
+                    <option value="1080x1080" style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>1:1 (Square)</option>
+                  </select>
+                </div>
+
+                {/* FPS */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>FPS:</label>
+                  <select
+                    value={exportConfig.fps}
+                    onChange={(e) => updateExportConfig({ fps: Number(e.target.value) })}
+                    style={{ background: 'var(--color-bg-primary)', border: '1px solid var(--color-surface-border)', borderRadius: 4, color: 'var(--color-text-primary)', fontSize: '0.7rem', padding: '4px', outline: 'none', cursor: 'pointer' }}
+                  >
+                    <option value={24} style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>24 FPS</option>
+                    <option value={30} style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>30 FPS</option>
+                    <option value={60} style={{ color: 'white', background: 'var(--color-bg-elevated)' }}>60 FPS</option>
+                  </select>
+                </div>
+
+                {/* Fundo */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Cor de Fundo:</label>
+                  <input
+                    type="color"
+                    value={exportConfig.backgroundColor === 'rgba(0,0,0,0)' ? '#000000' : exportConfig.backgroundColor}
+                    onChange={(e) => updateExportConfig({ backgroundColor: e.target.value })}
+                    style={{ width: 30, height: 20, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}
+                  />
+                </div>
+
+                {/* Duração */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <label style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>Duração (s):</label>
+                  <input
+                    type="number"
+                    min="1" max="120"
+                    value={exportConfig.duration}
+                    onChange={(e) => updateExportConfig({ duration: Number(e.target.value) || 5 })}
+                    style={{
+                      background: 'var(--color-bg-primary)', border: '1px solid var(--color-surface-border)', borderRadius: 4, color: 'var(--color-text-primary)', fontSize: '0.7rem', padding: '4px', outline: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />

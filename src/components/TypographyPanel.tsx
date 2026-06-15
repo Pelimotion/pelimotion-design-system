@@ -820,7 +820,104 @@ export function TypographyPanel() {
         onChange={setActiveTab}
       />
 
-      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, marginTop: 8, flexShrink: 0 }} className="custom-scrollbar">
+      {/* Ações Rápidas de Workflow */}
+      <div style={{ padding: '0 4px', marginBottom: 8, marginTop: 8, display: 'flex', gap: 6, flexShrink: 0 }}>
+        <button
+          onClick={() => {
+            const assetId = `typo-temp-${Date.now()}`;
+            const item = {
+              id: assetId,
+              name: `Texto: ${layers.map(l => l.text).join(' ').slice(0, 15) || 'Sem título'}`,
+              type: 'typography',
+              createdAt: Date.now(),
+              data: {
+                layers,
+                layoutGap,
+                timeOnScreen,
+                linkAnimation,
+                trail: globalTrail
+              }
+            };
+            // 1. Salva na biblioteca local temporária da sessão
+            useEditorStore.getState().saveToLocalLibrary(item);
+            // 2. Adiciona como camada de composição
+            useEditorStore.getState().addCompositionLayer({
+              id: crypto.randomUUID(),
+              name: item.name,
+              type: 'localAsset',
+              assetId,
+              startTime: 0,
+              duration: timeOnScreen || 5,
+              transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
+            });
+            // 3. Muda para o painel de composição
+            useEditorStore.getState().setActivePanel('composition');
+          }}
+          style={{
+            flex: 1,
+            padding: '8px',
+            background: 'var(--color-accent)',
+            color: '#0a0a0f',
+            border: 'none',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+        >
+          <Play size={14} style={{ color: '#0a0a0f' }} />
+          Usar na Composição
+        </button>
+
+        <button
+          onClick={() => {
+            const item = {
+              id: `typo-${Date.now()}`,
+              name: `Design: Texto ${Date.now().toString().slice(-4)}`,
+              type: 'typography',
+              createdAt: Date.now(),
+              data: {
+                layers,
+                layoutGap,
+                timeOnScreen,
+                linkAnimation,
+                trail: globalTrail
+              }
+            };
+            useEditorStore.getState().saveToLocalLibrary(item);
+          }}
+          style={{
+            flex: 1,
+            padding: '8px',
+            background: 'var(--color-surface-glass)',
+            color: 'var(--color-text-primary)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-surface-border)'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
+        >
+          <Layers size={14} />
+          Salvar Biblioteca
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4, marginTop: 4, flexShrink: 0 }} className="custom-scrollbar">
         {layers.map(layer => (
           <button
             key={layer.id}

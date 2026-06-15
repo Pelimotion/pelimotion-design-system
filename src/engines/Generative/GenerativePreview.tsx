@@ -488,7 +488,15 @@ export function GenerativePreview({ overrideConfig }: { overrideConfig?: Generat
                       }}
                       width={200}
                       height={200}
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none',
+                        display: layer.colorMode === 'tritone' ? 'block' : 'none'
+                      }}
                     />
                     <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" overflow="visible" style={{ opacity: layer.colorMode === 'tritone' ? 0 : 1 }}>
                       {renderGenerativeShape(layer, shapeColor)}

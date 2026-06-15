@@ -1,5 +1,5 @@
 {
-  "sessionsRun": 11,
+  "sessionsRun": 12,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
     "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
@@ -12,7 +12,8 @@
     "Breadcrumb-style toolbar context (App / Panel / Sub-section) is far clearer than showing the panel name in a single element — aligns with Figma patterns.",
     "Group hover via CSS .parent:hover .child-btn { opacity: 1 } is cleaner and more performant than React state for transient UI reveals like delete buttons.",
     "Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.",
-    "When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools."
+    "When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools.",
+    "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -29,7 +30,12 @@
     "[Session 11] Removed duplicate Resolution/FPS fields from CompositionPanel — these now live only in ExportPanel as primary options.",
     "[Session 11] Changed ExportPanel render trigger from <div onClick> to semantic <button> — fixes accessibility anti-pattern.",
     "[Session 11] Standardized all ExportPanel text to PT-BR (was mixed EN/PT).",
-    "[Session 11] LibraryPanel: replaced tall category list with compact horizontal chips + added file import button."
+    "[Session 11] LibraryPanel: replaced tall category list with compact horizontal chips + added file import button.",
+    "[Session 12] Fixed flashing circle under Generative Star shape by conditionally hiding Offscreen Canvas when colorMode !== 'tritone'.",
+    "[Session 12] Restructured CompositionTimeline toolbar to group Res, Fundo, FPS, Duration in a Settings dropdown, solving cuts in 1280px.",
+    "[Session 12] Optimized Playhead sync by querying Zustand currentTime directly in real-time.",
+    "[Session 12] Added 'Usar na Composição' and 'Salvar Biblioteca' buttons to both TypographyPanel and GenerativePanel.",
+    "[Session 12] Added visbility, lock and track colorTag controls to CompositionPanel layer rows."
   ],
   "pendingIssues": [
     {
@@ -44,14 +50,14 @@
       "panel": "all",
       "issue": "LOW",
       "text": "Layer delete button uses both CSS group-hover (.layer-row:hover .layer-delete-btn) AND inline onMouseEnter. CSS approach should take precedence — inline handler can be removed in cleanup session.",
-      "resolved": false
+      "resolved": true
     },
     {
       "session": 11,
       "panel": "composition",
       "issue": "LOW",
       "text": "CompositionPanel play/pause button calls togglePlayback. GSAP ticker drives the actual playback. Need to confirm that the play button state (isPlaying) visually syncs with timeline playhead movement.",
-      "resolved": false
+      "resolved": true
     }
   ],
   "sessionLogs": [
@@ -96,6 +102,16 @@
       "filesChanged": ["TopToolbar.tsx", "CompositionPanel.tsx", "ExportPanel.tsx", "LibraryPanel.tsx", "App.tsx", "index.css"],
       "timestamp": "2026-06-15T02:16:47.000Z",
       "commit": "814b14c"
+    },
+    {
+      "session": 12,
+      "focus": "Bugs, Direct Composition & Layer Controls",
+      "errors": 0,
+      "uxFindings": 5,
+      "fps": null,
+      "filesChanged": ["GenerativePreview.tsx", "CompositionTimeline.tsx", "TypographyPanel.tsx", "GenerativePanel.tsx", "TopToolbar.tsx", "CompositionPanel.tsx", "App.tsx"],
+      "timestamp": "2026-06-15T02:57:00.000Z",
+      "commit": null
     }
   ]
 }

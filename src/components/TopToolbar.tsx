@@ -25,6 +25,7 @@ import {
   AlignRight,
   AlignJustify,
   AlignVerticalJustifyCenter,
+  Download,
 } from 'lucide-react';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -395,6 +396,8 @@ export function TopToolbar() {
     activePanel,
     updateTypography,
     incrementAnimKey,
+    updateExportConfig,
+    setActivePanel,
   } = useEditorStore();
 
   const layoutMode = motionConfig.typography.layoutMode || 'freeform';
@@ -408,6 +411,19 @@ export function TopToolbar() {
       if (!motionConfig.typography.layoutJustifyContent) defaults.layoutJustifyContent = 'center';
     }
     updateTypography(defaults);
+  };
+
+  const showExportBtn = activePanel !== 'export';
+  const exportBtnLabel = (activePanel === 'typography' || activePanel === 'generative') 
+    ? 'Exportar Frame' 
+    : 'Exportar Vídeo';
+  const handleExportClick = () => {
+    if (activePanel === 'typography' || activePanel === 'generative') {
+      updateExportConfig({ format: 'png-still' });
+    } else {
+      updateExportConfig({ format: 'mp4' });
+    }
+    setActivePanel('export');
   };
 
   return (
@@ -534,6 +550,35 @@ export function TopToolbar() {
           }} />
           Ativo
         </div>
+
+        {/* Botão de Exportação Contextual Inteligente */}
+        {showExportBtn && (
+          <button
+            onClick={handleExportClick}
+            className="btn-pressable"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 12px',
+              borderRadius: 6,
+              background: 'var(--color-accent)',
+              color: '#0a0a0f',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.15s var(--ease-smooth)',
+              marginLeft: 4,
+              boxShadow: '0 2px 8px hsla(191,100%,50%,0.25)',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+          >
+            <Download size={12} style={{ color: '#0a0a0f' }} />
+            {exportBtnLabel}
+          </button>
+        )}
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Settings, Frame, Film, Play, Pause, Trash2, Image, Video, Layers, Music, Clock } from 'lucide-react'
+import { Settings, Frame, Film, Play, Pause, Trash2, Image, Video, Layers, Music, Clock, Eye, EyeOff, Lock, Unlock, Circle } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BackgroundUploader } from './BackgroundUploader'
 
@@ -40,6 +40,7 @@ export function CompositionPanel() {
     removeCompositionLayer,
     activeCompositionLayerId,
     setActiveCompositionLayerId,
+    updateCompositionLayer,
   } = useEditorStore()
 
   const hasLayers = compositionLayers.length > 0
@@ -156,18 +157,18 @@ export function CompositionPanel() {
             </button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {compositionLayers.map((layer) => {
               const isActive = activeCompositionLayerId === layer.id
               return (
                 <div
                   key={layer.id}
-                  className="layer-row"
+                  className="layer-row group"
                   onClick={() => setActiveCompositionLayerId(layer.id)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
+                    gap: 6,
                     padding: '7px 10px',
                     borderRadius: 8,
                     background: isActive ? 'var(--color-accent-muted)' : 'var(--color-surface-glass)',
@@ -182,12 +183,36 @@ export function CompositionPanel() {
                     if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--color-surface-glass)'
                   }}
                 >
+                  {/* Color tag indicator */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const COLORS = ['#ff4b4b', '#fca130', '#f9ed32', '#21ce99', '#14a9ff', '#b146c2', 'transparent'];
+                      const idx = layer.colorTag ? COLORS.indexOf(layer.colorTag) : -1;
+                      const nextColor = COLORS[(idx + 1) % COLORS.length];
+                      updateCompositionLayer(layer.id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 2,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                    }}
+                    title="Mudar cor da track"
+                  >
+                    <Circle size={8} fill={layer.colorTag || 'transparent'} color={layer.colorTag || 'var(--color-text-ghost)'} />
+                  </button>
+
                   <div style={{ color: isActive ? 'var(--color-accent)' : 'var(--color-text-muted)', flexShrink: 0 }}>
                     <LayerTypeIcon type={layer.type} />
                   </div>
+
                   <span style={{
                     flex: 1,
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'var(--color-accent)' : 'var(--color-text-secondary)',
                     overflow: 'hidden',
@@ -196,34 +221,74 @@ export function CompositionPanel() {
                   }}>
                     {layer.name}
                   </span>
-                  <button
-                    className="btn-pressable layer-delete-btn"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      removeCompositionLayer(layer.id)
-                    }}
-                    title="Remover camada"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--color-text-ghost)',
-                      cursor: 'pointer',
-                      padding: 3,
-                      borderRadius: 4,
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexShrink: 0,
-                      transition: 'color 0.15s, opacity 0.15s',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = 'var(--color-error)'
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = 'var(--color-text-ghost)'
-                    }}
-                  >
-                    <Trash2 size={11} />
-                  </button>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                    {/* Visibility Toggle */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateCompositionLayer(layer.id, { hidden: !layer.hidden });
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: layer.hidden ? 'var(--color-text-ghost)' : 'var(--color-text-secondary)',
+                        cursor: 'pointer',
+                        padding: 3,
+                        borderRadius: 4,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                      title={layer.hidden ? "Mostrar camada" : "Ocultar camada"}
+                    >
+                      {layer.hidden ? <EyeOff size={11} /> : <Eye size={11} />}
+                    </button>
+
+                    {/* Lock Toggle */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateCompositionLayer(layer.id, { locked: !layer.locked });
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: layer.locked ? 'var(--color-error)' : 'var(--color-text-secondary)',
+                        cursor: 'pointer',
+                        padding: 3,
+                        borderRadius: 4,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                      title={layer.locked ? "Desbloquear camada" : "Bloquear camada"}
+                    >
+                      {layer.locked ? <Lock size={11} style={{ color: 'var(--color-error)' }} /> : <Unlock size={11} />}
+                    </button>
+
+                    {/* Delete button */}
+                    <button
+                      className="btn-pressable layer-delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        removeCompositionLayer(layer.id)
+                      }}
+                      title="Remover camada"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-text-ghost)',
+                        cursor: 'pointer',
+                        padding: 3,
+                        borderRadius: 4,
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexShrink: 0,
+                        transition: 'color 0.15s, opacity 0.15s',
+                      }}
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
                 </div>
               )
             })}

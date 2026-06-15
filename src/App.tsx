@@ -816,24 +816,26 @@ function App() {
             
             {/* Active Panel Controls */}
             <div style={{ flex: 1, overflow: 'hidden', padding: 16, display: 'flex', flexDirection: 'column' }}>
-              {activePanel === 'typography' && <TypographyPanel />}
-              {activePanel === 'generative' && <GenerativePanel />}
-              {activePanel === 'library' && <LibraryPanel />}
-              {activePanel === 'composition' && <CompositionPanel />}
-              {activePanel === 'export' && <ExportPanel />}
-              {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'composition' && activePanel !== 'export' && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  color: 'var(--color-text-ghost)',
-                  fontSize: '0.8rem',
-                  textAlign: 'center',
-                }}>
-                  Controls for {activePanel} will be unlocked in a future phase.
-                </div>
-              )}
+              <div key={activePanel} className="panel-content-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                {activePanel === 'typography' && <TypographyPanel />}
+                {activePanel === 'generative' && <GenerativePanel />}
+                {activePanel === 'library' && <LibraryPanel />}
+                {activePanel === 'composition' && <CompositionPanel />}
+                {activePanel === 'export' && <ExportPanel />}
+                {activePanel !== 'typography' && activePanel !== 'generative' && activePanel !== 'library' && activePanel !== 'composition' && activePanel !== 'export' && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                    color: 'var(--color-text-ghost)',
+                    fontSize: '0.8rem',
+                    textAlign: 'center',
+                  }}>
+                    Controls for {activePanel} will be unlocked in a future phase.
+                  </div>
+                )}
+              </div>
             </div>
           </>
         )}
