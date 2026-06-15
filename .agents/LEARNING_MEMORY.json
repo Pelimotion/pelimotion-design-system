@@ -1,8 +1,9 @@
 {
-  "sessionsRun": 5,
+  "sessionsRun": 6,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
-    "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks."
+    "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
+    "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -10,6 +11,10 @@
     "Fixed ESLint error on accessing isResizing ref during render by wrapping it in sidebarResizing state.",
     "Resolved empty library sidebar panel by correctly mounting LibraryPanel under the library layout tab.",
     "Fixed missing NoiseChannel import and type assertions for override configurations in GenerativePreview.",
-    "Configured custom geometry sliders for Squares, Hexagons, Stars, Concentric lines, and Spirographs in GenerativePanel."
+    "Configured custom geometry sliders for Squares, Hexagons, Stars, Concentric lines, and Spirographs in GenerativePanel.",
+    "Integrated hardware-accelerated WebCodecs with audio stream copy muxing in FFmpeg.wasm, bypassing slow software video recoding fallback.",
+    "Implemented premium watermark toggle checkbox and config filters in ExportPanel and exportPipeline.",
+    "Created scrub muting state on timeline playhead movements in CompositionTimeline and AudioEngine.",
+    "Resolved scaling jump bugs in InteractiveGizmo by linking handles to the active layer's actual scale and rotation values."
   ]
 }
