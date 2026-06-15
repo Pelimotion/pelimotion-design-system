@@ -1,39 +1,35 @@
 # 🎬 Pelimotion — Roadmap de Melhoria (Orquestrador V4)
 
-*Gerado em: 14/06/2026, 21:49:22 | Sessão #7 | Commit: `e0125cd`*
+*Gerado em: 14/06/2026, 22:11:46 | Sessão #10 | Commit: `d108e22`*
 *Branch: `main` | Arquivos TypeScript/TSX: 51*
 
-> **FOCO DESTA SESSÃO:** **Keyboard Shortcuts & Accessibility**
+> **FOCO DESTA SESSÃO:** **Library Panel & Asset Management**
 > **ATENÇÃO AGENTE EXECUTOR:** Esta roadmap NÃO TEM LIMITE DE COMPLEXIDADE.
 > Use After Effects, Figma, Cavalry, Canva, CapCut, Jitter.video como referências.
 > O Browser DOM está pré-autorizado para todos os testes Playwright desta sessão.
 
 ## 1. 🧠 Memória & Aprendizado Histórico
 
-- Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.
-- Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.
 - Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.
 - Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken.
+- Session 8 [Typography Engine & Text Layer UX]: 0 erros, 4 achados UX, FPS=74. TOP: Composition timeline not found or not visible — main workflow broken.
+- Session 9 [Generative Shapes & Canvas Interaction]: 0 erros, 1 achados UX, FPS=57. Sem achados críticos novos.
+- Session 10 [Library Panel & Asset Management]: 0 erros, 0 achados UX, FPS=56. Sem achados críticos novos.
 
 ## 2. 🔍 Achados dos Testes Automatizados (Playwright Deep Audit)
 
 **📸 Screenshots capturados:** 00_initial_load.png, 01_typography_panel.png, 01b_typography_add_text.png, 02_generative_panel.png, 02b_generative_shape_active.png, 03_library_panel.png, 04_composition_panel.png, 05_export_panel.png, 06_sidebar_collapsed.png, 07_sidebar_auto_expanded.png, session-result.png
-**⚡ FPS medido:** 47 fps
+**⚡ FPS medido:** 56 fps
 **📊 Painéis auditados:** typography, generative, library, composition, export
 
-### 🎯 UX Findings por Prioridade
+*Sem achados UX críticos registrados. A análise visual manual profunda deve prosseguir.*
 
-**🟠 HIGH (1)**
-- [composition] Composition timeline not found or not visible — main workflow broken.
+## 3. ⏳ Issues Carregados de Sessões Anteriores
 
-**🟡 MEDIUM (2)**
-- [library] Library panel shows no items and no empty state — user is confused about what to do here.
-- [viewport] Viewport controls (zoom/fit) not visible — user has no camera control affordance.
+- 🟠 **[S7][composition]** Composition timeline not found or not visible — main workflow broken.
+- 🟠 **[S8][composition]** Composition timeline not found or not visible — main workflow broken.
 
-**🟢 LOW (1)**
-- [composition] Only 1 bento card(s) found in composition sidebar — layout may feel sparse.
-
-## 3. 🚀 Plano de Execução Profunda (Deep Sweep)
+## 4. 🚀 Plano de Execução Profunda (Deep Sweep)
 
 ### Passo 1: Investigação Visual Real (Obrigatório)
 - [ ] Abrir `http://localhost:3000/pelimotion-design-system/` no browser integrado (já pré-autorizado)
@@ -52,7 +48,7 @@
 - [ ] Pesquisar: `best practices sidebar navigation creative tools 2024`
 - [ ] Pesquisar: `empty state design patterns professional software`
 
-### Passo 3: Implementações Prioritárias (Keyboard Shortcuts & Accessibility)
+### Passo 3: Implementações Prioritárias (Library Panel & Asset Management)
 - [ ] **UX: Tooltip de atalhos** — adicionar `title="...  Atalho: Cmd+X"` em TODOS os botões do TopToolbar
 - [ ] **UX: Empty States** — cada painel sem conteúdo deve ter ícone + texto explicativo + botão de ação primário
 - [ ] **UX: Sidebar auto-scroll** — quando o usuário seleciona um item, o painel lateral deve fazer scroll para mostrar os controles relevantes
@@ -75,6 +71,9 @@
 | Sessão | Foco | Erros | UX Findings | FPS |
 |--------|------|-------|-------------|-----|
 | S7 | Keyboard Shortcuts & Accessibility | 0 | 4 | 47 |
+| S8 | Typography Engine & Text Layer UX | 0 | 4 | 74 |
+| S9 | Generative Shapes & Canvas Interact | 0 | 1 | 57 |
+| S10 | Library Panel & Asset Management | 0 | 0 | 56 |
 
 ## 6. ⏱️ Finalização e Reagendamento (VITAL)
 
@@ -82,7 +81,7 @@
 > Quando terminar, crie o commit, registre o backup e inicie novo timer:
 >
 > ```bash
-> npm run agent:backup -- --desc "Após Session 7: [descreva o que foi feito]"
+> npm run agent:backup -- --desc "Após Session 10: [descreva o que foi feito]"
 > ```
 >
 > Depois use a tool: `/schedule DurationSeconds=900 Prompt="Execute npm run agent:research e analise a nova roadmap V4."`

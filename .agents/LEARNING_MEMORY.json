@@ -1,10 +1,13 @@
 {
-  "sessionsRun": 7,
+  "sessionsRun": 10,
   "historicalInsights": [
     "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
     "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
     "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.",
-    "Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken."
+    "Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken.",
+    "Session 8 [Typography Engine & Text Layer UX]: 0 erros, 4 achados UX, FPS=74. TOP: Composition timeline not found or not visible — main workflow broken.",
+    "Session 9 [Generative Shapes & Canvas Interaction]: 0 erros, 1 achados UX, FPS=57. Sem achados críticos novos.",
+    "Session 10 [Library Panel & Asset Management]: 0 erros, 0 achados UX, FPS=56. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -25,6 +28,13 @@
       "issue": "HIGH",
       "text": "Composition timeline not found or not visible — main workflow broken.",
       "resolved": false
+    },
+    {
+      "session": 8,
+      "panel": "composition",
+      "issue": "HIGH",
+      "text": "Composition timeline not found or not visible — main workflow broken.",
+      "resolved": false
     }
   ],
   "sessionLogs": [
@@ -35,6 +45,30 @@
       "uxFindings": 4,
       "fps": 47,
       "timestamp": "2026-06-15T00:49:22.001Z"
+    },
+    {
+      "session": 8,
+      "focus": "Typography Engine & Text Layer UX",
+      "errors": 0,
+      "uxFindings": 4,
+      "fps": 74,
+      "timestamp": "2026-06-15T01:05:54.777Z"
+    },
+    {
+      "session": 9,
+      "focus": "Generative Shapes & Canvas Interaction",
+      "errors": 0,
+      "uxFindings": 1,
+      "fps": 57,
+      "timestamp": "2026-06-15T01:10:34.602Z"
+    },
+    {
+      "session": 10,
+      "focus": "Library Panel & Asset Management",
+      "errors": 0,
+      "uxFindings": 0,
+      "fps": 56,
+      "timestamp": "2026-06-15T01:11:46.019Z"
     }
   ]
 }

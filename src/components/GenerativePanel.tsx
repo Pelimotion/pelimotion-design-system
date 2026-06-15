@@ -5,7 +5,7 @@
  * - Layer editing section shows all appearance + motion controls
  * - Global noise engine settings (amplitude, frequency etc.) remain global
  */
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useEditorStore } from '@/store/useEditorStore'
 import {
@@ -192,9 +192,16 @@ export function GenerativePanel() {
   }
 
   const [activeTab, setActiveTab] = useState('camadas')
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (panelRef.current) {
+      panelRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [activeTab, activeGenerativeLayerId])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
+    <div ref={panelRef} style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }} className="custom-scrollbar">
 
       <SubTabBar
         tabs={[

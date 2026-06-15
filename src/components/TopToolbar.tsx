@@ -59,6 +59,7 @@ function ToolButton({ active, onClick, title, label, children, accentColor, dang
     <button
       onClick={onClick}
       title={title}
+      className="btn-pressable"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -114,25 +115,25 @@ const LAYOUT_MODES: LayoutModeDef[] = [
   {
     id: 'freeform',
     label: 'Livre',
-    title: 'Modo Livre — arrastar com total liberdade de posição',
+    title: 'Modo Livre (Atalho: V) — arrastar com total liberdade de posição',
     icon: <MousePointer2 size={14} />,
   },
   {
     id: 'stack',
     label: 'Stack',
-    title: 'Empilhado — camadas em coluna vertical centralizada',
+    title: 'Empilhado (Atalho: S) — camadas em coluna vertical centralizada',
     icon: <Layers size={14} />,
   },
   {
     id: 'sideBySide',
     label: 'Lado a Lado',
-    title: 'Lado a Lado — camadas em linha horizontal',
+    title: 'Lado a Lado (Atalho: L) — camadas em linha horizontal',
     icon: <AlignHorizontalDistributeCenter size={14} />,
   },
   {
     id: 'grid',
     label: 'Grid',
-    title: 'Grade Inteligente — layout grid automático',
+    title: 'Grade Inteligente (Atalho: G) — layout grid automático',
     icon: <LayoutGrid size={14} />,
   },
 ];
@@ -355,7 +356,7 @@ function GizmoToggle() {
     <ToolButton
       active={showGizmo}
       onClick={toggleGizmo}
-      title={showGizmo ? 'Ocultar Gizmo de transformação' : 'Mostrar Gizmo de transformação'}
+      title={showGizmo ? 'Ocultar Gizmo de transformação (Atalho: G)' : 'Mostrar Gizmo de transformação (Atalho: G)'}
       label="Gizmo"
     >
       {/* Custom Gizmo icon: selection box with handles */}

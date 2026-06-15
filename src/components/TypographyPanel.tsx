@@ -745,6 +745,7 @@ export function TypographyPanel() {
   } = useEditorStore();
 
   const [activeTab, setActiveTab] = useState('camadas');
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const { layers, layoutGap, timeOnScreen, linkAnimation } = motionConfig.typography;
   const globalTrail = motionConfig.trail;
@@ -759,6 +760,12 @@ export function TypographyPanel() {
     bounceOut: 'Ricochete',
     microInteraction: 'Sutil',
   };
+
+  useEffect(() => {
+    if (panelRef.current) {
+      panelRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activeTab, activeTypoLayerId]);
 
   const handleAddLayer = () => {
     const newId = `layer-${Date.now()}`;
@@ -798,6 +805,7 @@ export function TypographyPanel() {
 
   return (
     <div
+      ref={panelRef}
       style={{ display: 'flex', flexDirection: 'column', gap: 4, height: '100%', overflowY: 'auto', paddingRight: 4 }}
       className="custom-scrollbar"
     >

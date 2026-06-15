@@ -89,7 +89,7 @@ export function CompositionPanel() {
       className="custom-scrollbar"
     >
       {/* ── SCENE SETTINGS BENTO ─────────────────────────────────────── */}
-      <div className="bento-card-premium" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="bento-card-premium" style={{ display: 'flex', flexDirection: 'column', gap: 14, borderRadius: '12px' }}>
         <h3
           style={{
             fontSize: '0.85rem',
@@ -213,7 +213,7 @@ export function CompositionPanel() {
       )}
 
       {/* ── BACKGROUND UPLOADER BENTO ─────────────────────────────── */}
-      <div className="bento-card-premium">
+      <div className="bento-card-premium" style={{ borderRadius: '12px' }}>
         <BackgroundUploader />
       </div>
     </div>

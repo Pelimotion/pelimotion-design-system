@@ -43,6 +43,7 @@ function LazyAssetCard({
     <div 
       ref={containerRef}
       className="glass-panel asset-card" 
+      data-library-item
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData('application/json', JSON.stringify({
@@ -98,6 +99,7 @@ function LazyAssetCard({
         </div>
         <button 
           onClick={onAdd} 
+          className="btn-pressable"
           style={{ width: '100%', padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600, marginTop: 4, transition: 'all 0.2s' }}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-accent)'; e.currentTarget.style.color = '#000'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-surface-hover)'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
@@ -232,7 +234,7 @@ export function LibraryPreview() {
             gap: 24
           }}>
             {TYPOGRAPHY_PRESETS.map((preset) => (
-              <div key={preset.id} className="glass-panel" style={{
+              <div key={preset.id} className="glass-panel" data-library-item style={{
                 borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, transition: 'all 0.2s', cursor: 'pointer',
               }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-glow)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div>
@@ -245,10 +247,10 @@ export function LibraryPreview() {
                   <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{preset.description}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
-                  <button onClick={() => { loadTypographyPreset(preset.config); setActivePanel('typography'); }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                  <button onClick={() => { loadTypographyPreset(preset.config); setActivePanel('typography'); }} className="btn-pressable" style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
                     <Sparkles size={14} /> Editar
                   </button>
-                  <button onClick={() => handleAddToComposition(preset.id, preset.name, 'localAsset', preset.config.timeOnScreen || 3)} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
+                  <button onClick={() => handleAddToComposition(preset.id, preset.name, 'localAsset', preset.config.timeOnScreen || 3)} className="btn-pressable" style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
                     <Plus size={14} /> Compor
                   </button>
                 </div>
@@ -264,8 +266,20 @@ export function LibraryPreview() {
           <Layers size={18} color="var(--color-accent)" /> Salvos na Sessão
         </h2>
         {localItems.length === 0 ? (
-          <div style={{ padding: 40, background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--color-surface-border)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-            Nenhum projeto local salvo nesta sessão para esta categoria.
+          <div className="empty-state" style={{ margin: '16px 0' }}>
+            <div className="empty-state__icon">
+              <Layers size={20} />
+            </div>
+            <div className="empty-state__title">Nenhum projeto salvo</div>
+            <div className="empty-state__desc">
+              Você ainda não salvou criações locais nesta aba nesta sessão.
+            </div>
+            <button
+              onClick={() => setActivePanel(activeLibraryTab === 'Tipografia' ? 'typography' : 'generative')}
+              className="empty-state__cta btn-pressable"
+            >
+              Criar no Editor
+            </button>
           </div>
         ) : (
           <div style={{
@@ -274,7 +288,7 @@ export function LibraryPreview() {
             gap: 24
           }}>
             {localItems.map((item) => (
-              <div key={item.id} className="glass-panel" style={{
+              <div key={item.id} className="glass-panel" data-library-item style={{
                 borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, transition: 'all 0.2s',
               }}>
                 <div>
@@ -286,7 +300,7 @@ export function LibraryPreview() {
                     <button onClick={() => {
                       if (item.type === 'typography') { loadTypographyPreset(item.data); setActivePanel('typography'); }
                       else if (item.type === 'generative') { useEditorStore.setState(s => ({ generativeLayers: item.data.layers || [], motionConfig: { ...s.motionConfig, wiggle: item.data.globalWiggle || s.motionConfig.wiggle } })); setActivePanel('generative'); }
-                    }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+                    }} className="btn-pressable" style={{ flex: 1, padding: '10px 0', background: 'var(--color-surface-hover)', border: '1px solid var(--color-surface-border)', borderRadius: 8, color: 'var(--color-text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
                       <Sparkles size={14} /> Editar
                     </button>
                   ) : (
@@ -308,7 +322,7 @@ export function LibraryPreview() {
                     } else {
                       handleAddToComposition(item.id, item.name, 'localAsset', item.data.timeOnScreen || 5)
                     }
-                  }} style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
+                  }} className="btn-pressable" style={{ flex: 1, padding: '10px 0', background: 'var(--color-accent)', border: 'none', borderRadius: 8, color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700 }}>
                     <Plus size={14} /> Compor
                   </button>
                 </div>
@@ -326,8 +340,20 @@ export function LibraryPreview() {
         {loading ? (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-muted)' }}>Sincronizando com a nuvem...</div>
         ) : assets.length === 0 ? (
-          <div style={{ padding: 40, background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--color-surface-border)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-            Nenhum arquivo encontrado nesta categoria.
+          <div className="empty-state" style={{ margin: '16px 0' }}>
+            <div className="empty-state__icon">
+              <Film size={20} />
+            </div>
+            <div className="empty-state__title">Biblioteca vazia</div>
+            <div className="empty-state__desc">
+              Biblioteca vazia. Nenhum ativo de nuvem encontrado nesta categoria.
+            </div>
+            <button
+              onClick={() => setActivePanel(activeLibraryTab === 'Audio' ? 'composition' : 'typography')}
+              className="empty-state__cta btn-pressable"
+            >
+              Compor Projeto
+            </button>
           </div>
         ) : (
           <div className="assets-grid" style={{

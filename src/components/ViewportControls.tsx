@@ -52,8 +52,9 @@ export function ViewportControls() {
     >
       {/* Zoom percentage display — color changes based on level */}
       <span
-        className={`zoom-counter ${zoomClass}`}
-        title="Nível de zoom atual"
+        key={zoomPercent}
+        className={`zoom-counter ${zoomClass} animate-zoom-pop`}
+        title="Current Zoom Level"
       >
         {zoomPercent}%
       </span>
@@ -62,7 +63,7 @@ export function ViewportControls() {
       <button
         onClick={handleZoomOut}
         className="icon-btn-small btn-pressable"
-        title="Diminuir zoom  –"
+        title="Zoom Out"
       >
         <ZoomOut size={15} />
       </button>
@@ -71,7 +72,7 @@ export function ViewportControls() {
       <button
         onClick={handleZoom100}
         className="icon-btn-small text-btn btn-pressable"
-        title="Zoom 100%  0"
+        title="Zoom 100%"
         style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '-0.01em' }}
       >
         100%
@@ -81,7 +82,7 @@ export function ViewportControls() {
       <button
         onClick={handleZoomIn}
         className="icon-btn-small btn-pressable"
-        title="Aumentar zoom  +"
+        title="Zoom In"
       >
         <ZoomIn size={15} />
       </button>
@@ -92,7 +93,7 @@ export function ViewportControls() {
       <button
         onClick={handleFit}
         className="icon-btn-small btn-pressable"
-        title="Ajustar à tela  Cmd+Shift+H"
+        title="Fit to Screen"
       >
         <Maximize size={15} />
       </button>

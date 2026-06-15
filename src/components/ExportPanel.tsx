@@ -27,16 +27,7 @@ const labelStyle: React.CSSProperties = {
   gap: 4
 }
 
-const bentoCardStyle: React.CSSProperties = {
-  background: 'var(--color-bg-elevated)',
-  border: '1px solid var(--color-surface-border)',
-  borderRadius: '12px',
-  padding: '16px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
-  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-}
+
 
 function Campo({ label, children, icon }: { label: string; children: React.ReactNode, icon?: React.ReactNode }) {
   return (
@@ -102,7 +93,7 @@ export function ExportPanel() {
         )}
       </div>
 
-      <div style={bentoCardStyle}>
+      <div className="bento-card-premium" style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: '12px' }}>
         <Campo label="Output Format" icon={<Download size={10} />}>
           <select 
             value={exportConfig.format} 
@@ -255,7 +246,7 @@ export function ExportPanel() {
         )}
       </div>
 
-      <div style={{ padding: 16, background: 'var(--color-bg-elevated)', border: '1px solid var(--color-surface-border)', borderRadius: '12px' }}>
+      <div className="bento-card-premium" style={{ padding: 16, borderRadius: '12px' }}>
         <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', marginBottom: 8 }}>Workflow Tip</span>
         <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
           When using PNG Sequence in <strong>Premiere Pro</strong> or <strong>After Effects</strong>:<br/><br/>
