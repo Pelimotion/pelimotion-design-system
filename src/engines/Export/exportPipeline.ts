@@ -264,7 +264,7 @@ async function exportWithWebCodecs(
     worker = null;
 
     const fileNameTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const finalName = `pelimotion_export_${config.resolution}_${fileNameTimestamp}.${format}`;
+    const finalName = `pelimotion-asset-${fileNameTimestamp}.${format}`;
     const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime';
     
     const audioTracks = useEditorStore.getState().audioTracks;
@@ -476,7 +476,7 @@ async function exportWithFFmpeg(
 
     if (format === 'png-still') {
       finalBlob = new Blob([frames[0] as any], { type: 'image/png' })
-      finalName = `pelimotion_export_${resolution}_${fileNameTimestamp}.png`
+      finalName = `pelimotion-asset-${fileNameTimestamp}.png`
     } 
     else if (format === 'png-sequence') {
       const zipBuffer = await new Promise<Uint8Array>((resolve, reject) => {
@@ -486,7 +486,7 @@ async function exportWithFFmpeg(
         })
       })
       finalBlob = new Blob([zipBuffer as any], { type: 'application/zip' })
-      finalName = `pelimotion_export_${resolution}_${fps}fps_${fileNameTimestamp}.zip`
+      finalName = `pelimotion-asset-${fileNameTimestamp}.zip`
     }
     else if (format === 'mp4' || format === 'mov') {
       const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, audioWav, (prog) => {
@@ -494,7 +494,7 @@ async function exportWithFFmpeg(
       })
       const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime'
       finalBlob = new Blob([videoBuffer as any], { type: mime })
-      finalName = `pelimotion_export_${resolution}_${fileNameTimestamp}.${format}`
+      finalName = `pelimotion-asset-${fileNameTimestamp}.${format}`
     }
 
     if (finalBlob && finalName) {

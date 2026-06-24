@@ -10,7 +10,7 @@ import { useEditorStore } from '@/store/useEditorStore';
 import { runExportPipeline } from '@/engines/Export/exportPipeline';
 import {
   Download, Square, ChevronDown, Loader2, X, Check,
-  Monitor, Smartphone,
+  Monitor, Smartphone, RefreshCw, Sparkles,
 } from 'lucide-react';
 
 // ─── Aspect Ratio Config ─────────────────────────────────────────────────────
@@ -71,7 +71,16 @@ export function ExportBar() {
   const [formatOpen, setFormatOpen] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailInput, setEmailInput] = useState('');
+  const [showSuccessTip, setShowSuccessTip] = useState(false);
   const abortRef = useRef(false);
+
+  React.useEffect(() => {
+    if (exportState.stage === 'complete') {
+      setShowSuccessTip(true);
+    } else {
+      setShowSuccessTip(false);
+    }
+  }, [exportState.stage]);
 
   const isExporting = exportState.isExporting;
   const progress = exportState.progress;
@@ -296,12 +305,11 @@ export function ExportBar() {
       {/* Export CTA Button */}
       <button
         id="export-btn"
-        onClick={handleExport}
-        disabled={exportState.stage === 'complete'}
+        onClick={exportState.stage === 'complete' ? resetExport : handleExport}
         style={{
           display: 'flex', alignItems: 'center', gap: 7,
           padding: '7px 18px', borderRadius: 8, border: 'none',
-          cursor: isExporting ? 'pointer' : 'pointer',
+          cursor: 'pointer',
           fontSize: '0.78rem', fontWeight: 600, fontFamily: 'var(--font-sans)',
           transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
           position: 'relative', overflow: 'hidden',
@@ -309,6 +317,10 @@ export function ExportBar() {
             background: 'hsla(0,70%,50%,0.12)',
             color: 'hsla(0,80%,65%,1)',
             boxShadow: 'inset 0 0 0 1px hsla(0,70%,50%,0.3)',
+          } : exportState.stage === 'complete' ? {
+            background: 'hsla(191, 100%, 50%, 0.1)',
+            color: 'var(--color-accent)',
+            boxShadow: 'inset 0 0 0 1px hsla(191, 100%, 50%, 0.25)',
           } : {
             background: 'linear-gradient(135deg, var(--color-accent), hsla(271,76%,53%,1))',
             color: '#fff',
@@ -320,10 +332,90 @@ export function ExportBar() {
       >
         {isExporting ? (
           <><X size={14} /> Cancelar</>
+        ) : exportState.stage === 'complete' ? (
+          <><RefreshCw size={14} className={isExporting ? 'spin-anim' : ''} style={{ animation: isExporting ? 'spin 1s linear infinite' : 'none' }} /> Exportar Outro</>
         ) : (
           <><Download size={14} /> Gerar Asset ({currentFormat.label})</>
         )}
       </button>
+
+      {/* Success Education Card */}
+      {showSuccessTip && (
+        <div
+          data-testid="export-success-tip"
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            right: 12,
+            marginBottom: 12,
+            zIndex: 10002,
+            width: 320,
+            background: 'var(--color-bg-secondary)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 14,
+            padding: 16,
+            boxShadow: '0 16px 40px rgba(0,0,0,0.7)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            animation: 'fadeScaleIn 0.2s cubic-bezier(0.16,1,0.3,1)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-accent)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Sparkles size={14} /> Asset Gerado!
+            </span>
+            <button
+              onClick={() => setShowSuccessTip(false)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-ghost)', display: 'flex', padding: 2 }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ fontSize: '0.72rem', color: 'var(--color-text-primary)', fontWeight: 600, margin: 0 }}>
+              Como utilizar este asset profissional:
+            </p>
+            <p style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)', lineHeight: 1.4, margin: 0 }}>
+              Este arquivo possui <strong>fundo transparente (canal alpha)</strong> nativo. 
+            </p>
+            <div style={{
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.04)',
+              borderRadius: 8,
+              padding: '8px 10px',
+              fontSize: '0.65rem',
+              color: 'var(--color-text-secondary)',
+              lineHeight: 1.3,
+            }}>
+              Importe o arquivo no <strong>CapCut, Premiere Pro ou DaVinci Resolve</strong> e posicione-o na track superior, acima dos seus vídeos principais.
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setShowSuccessTip(false)}
+            style={{
+              padding: '6px 12px',
+              borderRadius: 6,
+              border: 'none',
+              background: 'hsla(191, 100%, 50%, 0.1)',
+              color: 'var(--color-accent)',
+              fontSize: '0.68rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              textAlign: 'center',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'hsla(191, 100%, 50%, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'hsla(191, 100%, 50%, 0.1)'}
+          >
+            Entendi
+          </button>
+        </div>
+      )}
 
       {/* Email Gate Modal */}
       {showEmailGate && (

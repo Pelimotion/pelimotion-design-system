@@ -1,8 +1,6 @@
 {
-  "sessionsRun": 50,
+  "sessionsRun": 52,
   "historicalInsights": [
-    "Session 36: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 37: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 38: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 39: 3 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 40: fps_idle=91, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
@@ -15,7 +13,9 @@
     "Session 47: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: none.",
     "Session 48: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
     "Session 49: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 1. Loop: none.",
-    "Session 50: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none."
+    "Session 50: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
+    "Session 51: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
+    "Session 52: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -499,6 +499,36 @@
     {
       "session": 50,
       "date": "2026-06-24T21:08:02.512Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 51,
+      "date": "2026-06-24T21:15:54.913Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 52,
+      "date": "2026-06-24T21:23:50.378Z",
       "errors": 0,
       "uxCritical": 0,
       "uxHigh": 0,
