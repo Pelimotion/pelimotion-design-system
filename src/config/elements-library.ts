@@ -53,7 +53,7 @@ export const ELEMENT_CATEGORIES: ElementCategory[] = [
     label: 'Overlays',
     labelPt: 'Overlays',
     icon: 'Layers',
-    description: 'Camadas de sobreposição para efeitos visuais',
+    description: 'Elementos de sobreposição para efeitos visuais',
   },
   {
     id: 'shadows',

@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-06-24T19:56:47.921Z",
+  "suites": [
+    {
+      "name": "s1_empty_state",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s1_console",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s1_fps_idle",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s2_fps_loaded",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s2_properties_panel",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s3_glossary",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s4_watermark",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s5_email_gate",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s6_library",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s7_seo",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    }
+  ],
+  "metrics": {
+    "fps_idle": 60,
+    "fps_loaded": 60,
+    "fps_delta": 0
+  },
+  "glossary_violations": [],
+  "p0_status": {
+    "watermark": "present",
+    "email_gate": "present",
+    "empty_state": "present",
+    "glossary": "clean"
+  }
+}

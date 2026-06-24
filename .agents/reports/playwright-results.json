@@ -2,6 +2,10 @@
   "errors": [
     {
       "type": "network",
+      "text": "NETWORK FAIL: https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap — net::ERR_ABORTED"
+    },
+    {
+      "type": "network",
       "text": "NETWORK FAIL: https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2 — net::ERR_ABORTED"
     },
     {
@@ -22,5 +26,5 @@
     "accessibilityFocused": "BUTTON "
   },
   "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
-  "timestamp": "2026-06-24T12:40:16.039Z"
+  "timestamp": "2026-06-24T19:19:56.115Z"
 }

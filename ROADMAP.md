@@ -80,7 +80,15 @@
 - [x] **Timeline Viewport Auto-Scrolling:** Built horizontal auto-scroll panning when blocks are dragged/trimmed near viewport edges.
 - [x] **Export Pipeline Cancellation:** Programmed periodic check loops checking `isExporting` to abort rendering, throwing `EXPORT_CANCELLED` and cleaning up Web Workers/memory on demand.
 
-## Phase 13: Future Expansion (Backlog)
+## Phase 13: Freemium Safeguards, Test Stability, and Glossary Compliance (v6.2)
+- [x] **Strict Glossary Enforcement:** Replaced all occurrences of forbidden terms (such as "Camadas", "Nenhuma camada", and "Adicionar Camada") with compliant alternatives ("Elementos", "Escolha um elemento para começar", "+ Elemento") across all UI files.
+- [x] **Watermark Overlay:** Implemented responsive, scale-proportional "Pelimotion" watermark overlay inside `#canvas-fixed-resolution` mapped to container width (`2cqw`) for high-fidelity canvas scale consistency.
+- [x] **Lead Capture Email Gate:** Integrated an email capture lead gate modal overlay on the export action (`ExportBar.tsx`) to intercept the first export, storing completion status in `localStorage`.
+- [x] **Library Premium Badges & CTAs:** Configured distinct "Studio Lock" visual badges on items marked as premium (`isPremium: true`) and placed a prominent "Upgrade Studio" conversion CTA button in `LibraryModal.tsx`.
+- [x] **E2E Test Suite Stability:** Resolved parallel execution race conditions and hydration click lag in `user-journey.spec.ts` using click-retry and dynamic `waitFor` state-checking.
+
+## Phase 14: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
 - [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.
+
 

@@ -6,7 +6,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
-import { X, Upload, Search, Image, Video, Music, FileText, Folder } from 'lucide-react';
+import { X, Upload, Search, Image, Video, Music, FileText, Folder, Lock, Zap } from 'lucide-react';
 
 interface LibraryModalProps {
   onClose: () => void;
@@ -164,6 +164,22 @@ export function LibraryModal({ onClose }: LibraryModalProps) {
                 {cat.icon} {cat.label}
               </button>
             ))}
+
+            <div style={{ flex: 1 }} />
+            <button
+              onClick={() => alert("Assine o Pelimotion Studio para desbloquear todos os assets e remover a marca d'água!")}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '8px 10px', borderRadius: 7, border: 'none',
+                background: 'linear-gradient(135deg, var(--color-accent), #7c3aed)',
+                color: '#fff', cursor: 'pointer', fontSize: '0.72rem',
+                fontWeight: 700, fontFamily: 'var(--font-sans)',
+                marginTop: 'auto', width: '100%',
+                boxShadow: '0 4px 12px hsla(191,100%,50%,0.2)',
+              }}
+            >
+              <Zap size={12} fill="currentColor" /> Upgrade Studio
+            </button>
           </div>
 
           {/* Grid */}
@@ -186,10 +202,12 @@ export function LibraryModal({ onClose }: LibraryModalProps) {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
                 gap: 10,
               }}>
-                {filtered.map((item) => (
+                {filtered.map((item: any) => (
                   <div
                     key={item.id}
                     onClick={() => handleAddToCanvas(item)}
+                    data-testid="asset-card"
+                    className="asset-card"
                     style={{
                       borderRadius: 10, overflow: 'hidden', cursor: 'pointer',
                       border: '1px solid var(--color-surface-border)',
@@ -209,7 +227,7 @@ export function LibraryModal({ onClose }: LibraryModalProps) {
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
-                    <div style={{ flex: 1, background: 'hsla(0,0%,100%,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ flex: 1, background: 'hsla(0,0%,100%,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                       {item.type === 'image' && item.data ? (
                         <img src={item.data} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : item.type === 'video' ? (
@@ -218,6 +236,31 @@ export function LibraryModal({ onClose }: LibraryModalProps) {
                         <Music size={28} color="var(--color-text-ghost)" />
                       ) : (
                         <FileText size={28} color="var(--color-text-ghost)" />
+                      )}
+
+                      {/* Premium indicator */}
+                      {item.isPremium && (
+                        <div
+                          data-testid="premium-lock"
+                          className="premium-badge"
+                          style={{
+                            position: 'absolute',
+                            top: 6,
+                            right: 6,
+                            background: 'var(--color-accent)',
+                            color: '#000',
+                            fontSize: '0.55rem',
+                            fontWeight: 700,
+                            padding: '2px 6px',
+                            borderRadius: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                          }}
+                        >
+                          <Lock size={8} className="lock-icon" /> STUDIO
+                        </div>
                       )}
                     </div>
                     <div style={{ padding: '6px 8px', background: 'hsla(0,0%,0%,0.3)' }}>

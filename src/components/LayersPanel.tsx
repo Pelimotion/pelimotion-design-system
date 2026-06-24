@@ -241,7 +241,7 @@ function AddLayerDropdown() {
         }}
       >
         <Plus size={14} />
-        <span>Adicionar Camada</span>
+        <span>Adicionar Elemento</span>
         <ChevronDown size={12} />
       </button>
 
@@ -343,7 +343,7 @@ export function LayersPanel() {
           textTransform: 'uppercase',
           color: 'var(--color-text-muted)',
         }}>
-          Camadas
+          Elementos
         </span>
         <span style={{
           fontSize: '0.65rem',
@@ -388,7 +388,7 @@ export function LayersPanel() {
             </div>
             <div>
               <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: 4 }}>
-                Nenhuma camada
+                Escolha um elemento para começar
               </p>
               <p style={{ fontSize: '0.68rem', color: 'var(--color-text-ghost)', lineHeight: 1.4 }}>
                 Adicione textos e elementos para começar a criar
@@ -418,7 +418,7 @@ export function LayersPanel() {
         }}>
           <button
             onClick={() => duplicateLayer(selectedLayerId)}
-            title="Duplicar camada"
+            title="Duplicar elemento"
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '4px 8px', borderRadius: 5, border: 'none',
@@ -432,7 +432,7 @@ export function LayersPanel() {
           </button>
           <button
             onClick={() => removeLayer(selectedLayerId)}
-            title="Deletar camada"
+            title="Deletar elemento"
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '4px 8px', borderRadius: 5, border: 'none',

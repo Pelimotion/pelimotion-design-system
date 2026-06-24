@@ -252,7 +252,7 @@ function LayerSection({
   return (
     <>
       {/* Text input */}
-      <Campo label="Texto" dica="O conteúdo de texto desta camada.">
+      <Campo label="Texto" dica="O conteúdo de texto deste elemento.">
         <textarea
           value={localText}
           onChange={(e) => setLocalText(e.target.value)}
@@ -323,7 +323,7 @@ function LayerSection({
       </Row2>
 
       <Row2>
-        <Campo label="Cor" dica="Cor do texto desta camada.">
+        <Campo label="Cor" dica="Cor do texto deste elemento.">
           <input
             type="color" value={layer.color || '#ffffff'}
             onChange={(e) => updateLayer({ color: e.target.value })}
@@ -554,7 +554,7 @@ function AnimationSection({
         </Campo>
       </Row2>
 
-      <Campo label="Delay de entrada" valor={`${animation.entryDelay}s`} dica="Atraso antes desta camada começar a animar.">
+      <Campo label="Delay de entrada" valor={`${animation.entryDelay}s`} dica="Atraso antes deste elemento começar a animar.">
         <input type="range" min={0} max={2} step={0.05} value={animation.entryDelay}
           onChange={(e) => updateAnimation({ entryDelay: parseFloat(e.target.value) })} style={sliderStyle} />
       </Campo>
@@ -811,7 +811,7 @@ export function TypographyPanel() {
     >
       <SubTabBar
         tabs={[
-          { id: 'camadas', label: 'Camadas', icon: <Layers /> },
+          { id: 'camadas', label: 'Elementos', icon: <Layers /> },
           { id: 'animacao', label: 'Animação', icon: <Play /> },
           { id: 'efeitos', label: 'Efeitos', icon: <Wand2 /> },
           { id: 'cores', label: 'Cores', icon: <Palette /> }
@@ -1001,7 +1001,7 @@ export function TypographyPanel() {
           {/* ─── LAYOUT GLOBAL ─────────────────────────────────────────── */}
           <Section icon={<Layout size={13} color="var(--color-accent)" />} title="Layout Global" defaultOpen={false}>
             <Row2>
-              <Campo label="Espaçamento" valor={`${layoutGap}px`} dica="Distância entre camadas nos modos empilhado/lado-a-lado.">
+              <Campo label="Espaçamento" valor={`${layoutGap}px`} dica="Distância entre elementos nos modos empilhado/lado-a-lado.">
                 <input type="range" min={0} max={100} step={2} value={layoutGap}
                   onChange={(e) => updateTypography({ layoutGap: parseInt(e.target.value) })} style={sliderStyle} />
               </Campo>
@@ -1011,7 +1011,7 @@ export function TypographyPanel() {
               </Campo>
             </Row2>
 
-            <Campo label="Movimento IDLE Global" dica="Animação contínua aplicada a todas as camadas simultaneamente.">
+            <Campo label="Movimento IDLE Global" dica="Animação contínua aplicada a todos os elementos simultaneamente.">
               <select value={motionConfig.typography.globalIdleMotion || 'none'} onChange={(e) => updateTypography({ globalIdleMotion: e.target.value as any })} style={selectStyle}>
                 {(Object.keys(IDLE_LABELS) as any[]).map(k => (
                   <option key={k} value={k}>{IDLE_LABELS[k as keyof typeof IDLE_LABELS]}</option>
@@ -1062,7 +1062,7 @@ export function TypographyPanel() {
           {/* ─── CAMADA ATIVA ───────────────────────────────────────────── */}
           <Section
             icon={<Heading1 size={13} color="var(--color-accent)" />}
-            title={`Camada: ${activeLayer.name}`}
+            title={`Elemento: ${activeLayer.name}`}
             badge={activeLayer.enabled ? 'ON' : 'OFF'}
             defaultOpen
           >
@@ -1076,7 +1076,7 @@ export function TypographyPanel() {
                     padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer'
                   }}
                 >
-                  Excluir Camada
+                  Excluir Elemento
                 </button>
               ) : <div />}
               <ToggleButton
@@ -1086,7 +1086,7 @@ export function TypographyPanel() {
               />
             </div>
             
-            <Campo label="Nome da camada">
+            <Campo label="Nome do elemento">
               <input
                 type="text"
                 value={activeLayer.name}
@@ -1127,7 +1127,7 @@ export function TypographyPanel() {
               />
             ) : (
               <div style={{ color: 'var(--color-text-ghost)', fontSize: '0.8rem', textAlign: 'center', padding: '16px' }}>
-                Ative a camada para editar a animação.
+                Ative o elemento para editar a animação.
               </div>
             )}
           </Section>
@@ -1136,7 +1136,7 @@ export function TypographyPanel() {
 
       {activeTab === 'efeitos' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* ─── ECO & BRILHO (POR CAMADA) ────────────────────────────────── */}
+          {/* ─── ECO & BRILHO (POR ELEMENTO) ────────────────────────────────── */}
           <Section
             icon={<Sparkles size={13} color={trailEnabled ? 'var(--color-accent)' : 'var(--color-text-secondary)'} />}
             title={`Eco & Brilho: ${activeLayer.name}`}
@@ -1155,7 +1155,7 @@ export function TypographyPanel() {
                   Efeito de eco
                 </span>
                 <span style={{ fontSize: '0.68rem', color: 'var(--color-text-secondary)' }}>
-                  Aplica-se apenas a esta camada
+                  Aplica-se apenas a este elemento
                 </span>
               </div>
               <ToggleButton
@@ -1205,7 +1205,7 @@ export function TypographyPanel() {
                 </Row2>
 
                 <Row2>
-                  <Campo label="Camadas" valor={trailConf.instances}>
+                  <Campo label="Instâncias" valor={trailConf.instances}>
                     <input type="range" min={1} max={12} step={1} value={trailConf.instances}
                       onChange={(e) => updateTrail({ instances: parseInt(e.target.value) })} style={sliderStyle} />
                   </Campo>

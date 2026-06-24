@@ -1,57 +1,67 @@
-# 🎬 Pelimotion — Orquestrador Freemium Profissional (V4)
+# 🎬 Pelimotion — Orquestrador V6 (Anti-Loop + Scoring Matrix)
 
-*Gerado em: 24/06/2026, 09:40:16 | Sessão #38 | Commit: `30d31e7`*
+*Gerado em: 24/06/2026, 16:56:47 | Sessão #48 | Commit: `f294723`*
 *Branch: `main` | Arquivos TypeScript/TSX: 60*
 
-> **ATENÇÃO AGENTE EXECUTOR:** Você está no Loop de 4 Fases (20 minutos).
-> Siga estritamente as novas nomenclaturas (Elementos, Ajustes, Gerar Asset) e os Design Tokens.
+> **ATENÇÃO AGENTE EXECUTOR:** Leia o ORCHESTRATOR_PROMPT.md v6.0 antes de agir.
+> NUNCA pule a Seção 0 (Anti-Loop). NUNCA implemente sem scoring matrix.
 
-## 1. 🧠 Memória & Aprendizado Histórico
+## 1. 🚦 Resultado da Triage (Fase 0)
 
-- Session 34: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
-- Session 35: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
-- Session 36: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
-- Session 37: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
-- Session 38: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
+| Campo | Valor |
+|-------|-------|
+| Loop detectado | ✅ Não |
+| Build | ✅ OK |
+| Módulo bloqueado | nenhum |
+| P0 pendentes | watermark, email-gate, glossário |
 
-## 2. 🔍 Achados dos Testes Automatizados (Phase 3)
+## 2. 🎯 Status P0 (Bloqueadores de Produto)
 
-**📸 Screenshots capturados:** 00_initial_load.png, 01_layers_dropdown_open.png, 01_typography_panel.png, 01b_text_layer_added.png, 01b_typography_add_text.png, 01c_text_layer_selected.png, 02_generative_panel.png, 02_shape_layer_added.png, 02b_generative_shape_active.png, 03_library_modal_open.png, 03_library_panel.png, 03b_library_modal_closed.png, 04_composition_panel.png, 05_export_panel.png, 06_sidebar_collapsed.png, 07_sidebar_auto_expanded.png, session-result.png
-**⚡ FPS medido:** 91
+| Item | Status |
+|------|--------|
+| Watermark no export free tier | ✅ Implementado |
+| Gate de email no primeiro export | ✅ Implementado |
+| Empty state com copy + CTA | ✅ Implementado |
+| Glossário 100% correto na UI | ✅ Limpo |
 
-✅ Nenhum achado UX crítico/alto nesta rodada.
+## 3. 🔍 Achados dos Testes (user-journey.spec.ts v6.0)
 
-## 3. 🚀 Fila de Execução para Próxima Rodada
+**📸 Screenshots:** 14 capturados em .agents/screenshots/
+**⚡ FPS:** idle=60, loaded=60, delta=N/A
 
-### Passo 1: Execução Focada (Phase 2 - Ideation & Code)
-- [x] Integrar engine Generative com UniversalLayers.
-- [x] Aplicar design tokens Violeta e tipografia (Space Grotesk, Inter).
-- [x] Ajustar layout do painel direito (Ajustes) para UX acordeão.
-- [x] Garantir performance: static WebP thumbs, pause GSAP.
+✅ Todas as suites passaram (10 suites).
 
-### Passo 2: Validação Rigorosa (Phase 3)
-- [x] Verificar Empty States nos padrões Freemium conversion.
-- [x] Testar se telas quebram ao adicionar novo elemento.
+## 4. 🧠 Memória Histórica (últimas 5 sessões)
 
-### Passo 3: Fechamento (Phase 4)
-- [x] Rodar npm run build.
-- [x] Realizar git add e git commit descritivo.
+- Session 44: fps_idle=0, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 10. Loop: none.
+- Session 45: fps_idle=60, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.
+- Session 46: fps_idle=60, fps_loaded=0, fps_delta=60. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.
+- Session 47: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: none.
+- Session 48: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.
 
-### Passo 4: Próximos Desafios (Backlog)
-- [ ] Implementar Renderização Headless do lado do servidor (Server-Side Fallback).
-- [ ] Integrar prompts de IA para geração automática de composições.
+## 5. 📈 Histórico de Sessões
 
-## 4. 📈 Histórico de Sessões
+| Sessão | Data | Build | UX Alto | FPS Idle | FPS Delta | Loop | P0 OK |
+|--------|------|-------|---------|----------|-----------|------|-------|
+| S48 | 2026-06-24 | ✅ | 0 | 60 | N/A | ✅ | ✅ |
+| S47 | 2026-06-24 | ✅ | 6 | 60 | N/A | ✅ | ❌ |
+| S46 | 2026-06-24 | ✅ | 7 | 60 | N/A | ✅ | ❌ |
+| S45 | 2026-06-24 | ✅ | 7 | 60 | N/A | ✅ | ❌ |
+| S44 | 2026-06-24 | ✅ | 10 | N/A | N/A | ✅ | ❌ |
+| S43 | 2026-06-24 | ✅ | 6 | 60 | N/A | 🔴 | ❌ |
+| S42 | 2026-06-24 | ✅ | 0 | 60 | N/A | 🔴 | ❌ |
+| S41 | 2026-06-24 | ✅ | 0 | 60 | N/A | 🔴 | ❌ |
+| S40 | 2026-06-24 | ✅ | 0 | 91 | N/A | 🔴 | ❌ |
+| S39 | 2026-06-24 | ❌ | 0 | 91 | N/A | ✅ | ? |
 
-| Sessão | Data | Erros | UX Crítico | UX Alto | FPS |
-|--------|------|-------|------------|---------|-----|
-| S38 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S37 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S36 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S35 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S34 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S33 | 2026-06-24 | 2 | 0 | 0 | 91 |
-| S32 | 2026-06-24 | 0 | 0 | 0 | 92 |
-| S31 | 2026-06-24 | 0 | 0 | 0 | 91 |
-| S30 | 2026-06-24 | 0 | 0 | 0 | 91 |
-| S29 | 2026-06-24 | 0 | 0 | 0 | 91 |
+## 6. 🚀 Recomendação para Próxima Sessão
+
+### Prioridade: P0 Pendentes
+- **watermark** — Bloqueador de produto
+- **email-gate** — Bloqueador de produto
+- **glossário** — Bloqueador de produto
+
+Nenhuma feature P1+ deve ser implementada até todos P0 estarem presentes.
+
+---
+*Orchestrator V6 | Anti-Loop: ✅ OK | Scoring: ATIVO | Atualizado: 24/06/2026, 16:56:47*

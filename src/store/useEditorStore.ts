@@ -333,10 +333,46 @@ export const useEditorStore = create<EditorState>((set) => ({
   globalLibraryItems: (() => {
     try {
       const saved = localStorage.getItem('pelimotion_global_library');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    // Seed default free and premium/studio items
+    return [
+      {
+        id: 'mock-bg-1',
+        name: 'Cyberpunk Neon Horizon',
+        type: 'image',
+        createdAt: Date.now(),
+        data: 'https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?q=80&w=300',
+        isPremium: true
+      },
+      {
+        id: 'mock-bg-2',
+        name: 'Minimalist Abstract Liquid',
+        type: 'image',
+        createdAt: Date.now(),
+        data: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300',
+        isPremium: false
+      },
+      {
+        id: 'mock-vid-1',
+        name: 'Slow Motion Smoke Overlay',
+        type: 'video',
+        createdAt: Date.now(),
+        data: '',
+        isPremium: true
+      },
+      {
+        id: 'mock-aud-1',
+        name: 'Cinematic Ambient Pad',
+        type: 'audio',
+        createdAt: Date.now(),
+        data: '',
+        isPremium: false
+      }
+    ];
   })(),
 
   // Spatial Camera

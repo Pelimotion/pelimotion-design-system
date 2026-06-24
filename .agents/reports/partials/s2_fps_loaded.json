@@ -1,0 +1,9 @@
+{
+  "suiteId": "s2_fps_loaded",
+  "timestamp": "2026-06-24T19:56:37.068Z",
+  "passed": true,
+  "findings": [],
+  "fpsBefore": 60,
+  "fpsAfter": 60,
+  "fpsDelta": 0
+}

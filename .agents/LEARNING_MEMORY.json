@@ -1,21 +1,21 @@
 {
-  "sessionsRun": 38,
+  "sessionsRun": 48,
   "historicalInsights": [
-    "Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.",
-    "Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos.",
-    "Session 27: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 28: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 29: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 30: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 31: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 32: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos.",
-    "Session 33: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 34: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 35: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 36: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 37: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 38: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
+    "Session 38: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 39: 3 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 40: fps_idle=91, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
+    "Session 41: fps_idle=0, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
+    "Session 42: fps_idle=0, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
+    "Session 43: fps_idle=60, fps_loaded=60, fps_delta=1. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
+    "Session 44: fps_idle=0, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 10. Loop: none.",
+    "Session 45: fps_idle=60, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.",
+    "Session 46: fps_idle=60, fps_loaded=0, fps_delta=60. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.",
+    "Session 47: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: none.",
+    "Session 48: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -337,6 +337,157 @@
       "uxCritical": 0,
       "uxHigh": 0,
       "fps": 91
+    },
+    {
+      "session": 39,
+      "date": "2026-06-24T19:19:56.173Z",
+      "errors": 3,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 91
+    },
+    {
+      "session": 40,
+      "date": "2026-06-24T19:22:19.559Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 91,
+      "loopDetected": true,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "missing",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 41,
+      "date": "2026-06-24T19:24:11.860Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 60,
+      "loopDetected": true,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "missing",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 42,
+      "date": "2026-06-24T19:25:45.170Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 60,
+      "loopDetected": true,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "missing",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 43,
+      "date": "2026-06-24T19:29:13.855Z",
+      "errors": 0,
+      "uxCritical": 2,
+      "uxHigh": 6,
+      "fps": 60,
+      "loopDetected": true,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "present",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 44,
+      "date": "2026-06-24T19:31:55.108Z",
+      "errors": 0,
+      "uxCritical": 1,
+      "uxHigh": 10,
+      "fps": 0,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "missing",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 45,
+      "date": "2026-06-24T19:33:47.917Z",
+      "errors": 0,
+      "uxCritical": 2,
+      "uxHigh": 7,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "present",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 46,
+      "date": "2026-06-24T19:35:27.553Z",
+      "errors": 0,
+      "uxCritical": 2,
+      "uxHigh": 7,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "present",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 47,
+      "date": "2026-06-24T19:37:58.356Z",
+      "errors": 0,
+      "uxCritical": 2,
+      "uxHigh": 6,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "missing",
+        "emailGate": "missing",
+        "emptyState": "present",
+        "glossary": "violations_found"
+      }
+    },
+    {
+      "session": 48,
+      "date": "2026-06-24T19:56:47.985Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 60,
+      "loopDetected": false,
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
     }
-  ]
+  ],
+  "lastModuleTouched": null,
+  "moduleTouchHistory": [],
+  "p0Status": {
+    "watermark": "present",
+    "emailGate": "present",
+    "emptyState": "present",
+    "glossary": "clean"
+  }
 }

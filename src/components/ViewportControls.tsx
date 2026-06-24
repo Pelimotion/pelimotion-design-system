@@ -115,7 +115,7 @@ export function ViewportControls() {
           <button
             onClick={handleResetTransforms}
             className="icon-btn-small btn-pressable"
-            title="Resetar transformações da camada selecionada"
+            title="Resetar transformações do elemento selecionado"
             style={{ color: 'var(--color-warning)' }}
           >
             <RotateCcw size={15} />

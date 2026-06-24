@@ -47,7 +47,7 @@ function App() {
 
   const {
     exportConfig, camera, featureFlags, libraryModalOpen,
-    setLibraryModalOpen, selectedLayerId,
+    setLibraryModalOpen,
   } = useEditorStore();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -281,6 +281,30 @@ function App() {
         {/* Universal Canvas Preview (renders all UniversalLayers) */}
         <UniversalCanvasPreview />
 
+        {/* Watermark for free tier preview */}
+        {exportConfig.includeWatermark !== false && (
+          <div
+            data-testid="watermark"
+            className="watermark"
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              right: 24,
+              zIndex: 90,
+              pointerEvents: 'none',
+              fontSize: '2cqw',
+              fontWeight: 700,
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontFamily: 'var(--font-sans)',
+              letterSpacing: '0.05em',
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              userSelect: 'none',
+            }}
+          >
+            Pelimotion
+          </div>
+        )}
+
         {/* Gizmo & Guides */}
         <GlobalGizmo />
         <CanvasGuides />
@@ -352,7 +376,7 @@ function App() {
         <div
           id="properties-panel"
           style={{
-            width: selectedLayerId ? 240 : 40, flexShrink: 0,
+            width: 240, flexShrink: 0,
             borderLeft: '1px solid var(--color-surface-border)',
             display: 'flex', flexDirection: 'column',
             background: 'var(--color-bg-secondary)',

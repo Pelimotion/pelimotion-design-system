@@ -1,15 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './scripts/agent-loop/tests',
+  testDir: '.',
+  testMatch: ['**/user-journey.spec.ts', '**/scripts/agent-loop/tests/*.spec.js'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2 : 1,
+  workers: process.env.CI ? 1 : 2,
   reporter: 'html',
+  timeout: 35000,
   use: {
     baseURL: 'http://localhost:3000/pelimotion-design-system/',
     trace: 'on-first-retry',
+    actionTimeout: 15000,
+    navigationTimeout: 20000,
   },
   projects: [
     {

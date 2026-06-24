@@ -69,6 +69,8 @@ export function ExportBar() {
 
   const [ratioOpen, setRatioOpen] = useState(false);
   const [formatOpen, setFormatOpen] = useState(false);
+  const [showEmailGate, setShowEmailGate] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
   const abortRef = useRef(false);
 
   const isExporting = exportState.isExporting;
@@ -77,12 +79,28 @@ export function ExportBar() {
   const currentRatio = ASPECT_RATIOS.find(r => r.id === activeAspectRatio) ?? ASPECT_RATIOS[0]!;
 
   const handleExport = async () => {
+    console.log('[ExportBar] handleExport triggered');
     if (isExporting) {
-      // Cancel
+      console.log('[ExportBar] cancelling export');
       abortRef.current = true;
       setExportState({ isExporting: false, stage: 'idle', progress: 0 });
       return;
     }
+    
+    // Check if email gate is required
+    const hasExported = localStorage.getItem('pelimotion_has_exported') === 'true';
+    console.log('[ExportBar] hasExported flag in localStorage:', hasExported);
+    if (!hasExported) {
+      console.log('[ExportBar] showing email gate modal');
+      setShowEmailGate(true);
+      return;
+    }
+    
+    await startExport();
+  };
+
+  const startExport = async () => {
+    console.log('[ExportBar] starting export pipeline');
     abortRef.current = false;
     try {
       const element = document.getElementById('canvas-fixed-resolution') as HTMLElement;
@@ -95,10 +113,22 @@ export function ExportBar() {
       );
     } catch (e: any) {
       if (e?.message !== 'EXPORT_CANCELLED') {
+        console.error('[ExportBar] export error:', e);
         setExportState({ stage: 'error', errorMessage: String(e?.message), isExporting: false });
         setTimeout(() => resetExport(), 4000);
       }
     }
+  };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput || !emailInput.includes('@')) {
+      alert('Por favor, insira um e-mail válido.');
+      return;
+    }
+    localStorage.setItem('pelimotion_has_exported', 'true');
+    setShowEmailGate(false);
+    startExport();
   };
 
   return (
@@ -291,9 +321,85 @@ export function ExportBar() {
         {isExporting ? (
           <><X size={14} /> Cancelar</>
         ) : (
-          <><Download size={14} /> Exportar {currentFormat.label}</>
+          <><Download size={14} /> Gerar Asset ({currentFormat.label})</>
         )}
       </button>
+
+      {/* Email Gate Modal */}
+      {showEmailGate && (
+        <>
+          <div
+            style={{
+              position: 'fixed', inset: 0, zIndex: 10000,
+              background: 'rgba(0,0,0,0.85)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+            }}
+            onClick={() => setShowEmailGate(false)}
+          />
+          <div
+            data-testid="email-gate-modal"
+            className="email-gate-modal"
+            style={{
+              position: 'fixed', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 10001,
+              width: 'min(420px, 90vw)',
+              background: 'var(--color-bg-secondary)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 16,
+              padding: 24,
+              boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+              display: 'flex', flexDirection: 'column', gap: 16,
+              animation: 'fadeScaleIn 0.2s cubic-bezier(0.16,1,0.3,1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                Inscreva-se para Exportar
+              </span>
+              <button
+                onClick={() => setShowEmailGate(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-ghost)', display: 'flex' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', lineHeight: 1.4, margin: 0 }}>
+              Você está na versão gratuita. Insira seu e-mail para desbloquear a exportação instantânea em alta fidelidade.
+            </p>
+            <form onSubmit={handleEmailSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input
+                type="email"
+                required
+                data-testid="email-gate-input"
+                placeholder="seu@email.com"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                style={{
+                  width: '100%', padding: '10px 12px',
+                  background: 'hsla(0,0%,100%,0.04)', border: '1px solid var(--color-surface-border)',
+                  borderRadius: 8, color: 'var(--color-text-primary)', fontSize: '0.8rem',
+                  fontFamily: 'var(--font-sans)', outline: 'none', boxSizing: 'border-box',
+                }}
+              />
+              <button
+                type="submit"
+                className="btn-pressable"
+                style={{
+                  padding: '12px', borderRadius: 8, border: 'none',
+                  background: 'var(--color-accent)', color: '#000',
+                  fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
+                  boxShadow: '0 8px 24px hsla(191,100%,50%,0.2)',
+                  textAlign: 'center',
+                }}
+              >
+                Desbloquear e Exportar
+              </button>
+            </form>
+          </div>
+        </>
+      )}
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

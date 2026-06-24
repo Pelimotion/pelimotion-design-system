@@ -1,0 +1,12 @@
+{
+  "suiteId": "s4_watermark",
+  "timestamp": "2026-06-24T19:56:42.748Z",
+  "passed": true,
+  "findings": [],
+  "watermark": "present",
+  "detail": {
+    "hasWatermarkElement": true,
+    "hasWatermarkText": true,
+    "watermarkToggleEnabled": false
+  }
+}

@@ -604,8 +604,23 @@ export function PropertiesPanel() {
 
   if (!selectedLayerId || !layer) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 16, height: '100%', color: 'var(--color-text-ghost)', background: 'var(--color-bg-secondary)' }}>
-        <Settings2 size={16} />
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <div style={{
+          padding: '12px 12px 8px',
+          borderBottom: '1px solid var(--color-surface-border)',
+          display: 'flex', alignItems: 'center',
+        }}>
+          <span style={{
+            fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em',
+            textTransform: 'uppercase', color: 'var(--color-text-muted)',
+          }}>
+            Ajustes
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: 16, gap: 8, color: 'var(--color-text-ghost)', background: 'var(--color-bg-secondary)', textAlign: 'center' }}>
+          <Settings2 size={16} />
+          <span style={{ fontSize: '0.72rem' }}>Selecione um elemento para ver seus ajustes.</span>
+        </div>
       </div>
     );
   }

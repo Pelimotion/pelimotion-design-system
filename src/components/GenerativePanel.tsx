@@ -205,7 +205,7 @@ export function GenerativePanel() {
 
       <SubTabBar
         tabs={[
-          { id: 'camadas', label: 'Camadas', icon: <LayersIcon /> },
+          { id: 'camadas', label: 'Elementos', icon: <LayersIcon /> },
           { id: 'motor', label: 'Motor Global', icon: <Activity /> },
           { id: 'cores', label: 'Cores', icon: <Palette /> },
         ]}
@@ -346,7 +346,7 @@ export function GenerativePanel() {
       {activeTab === 'camadas' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* ─── SEÇÃO 0: COMPOSIÇÃO ───────────────────────────────────────────── */}
-      <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Composição de Camadas" defaultOpen>
+      <Section icon={<Upload size={13} color="var(--color-accent)" />} title="Composição de Elementos" defaultOpen>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
@@ -579,7 +579,7 @@ export function GenerativePanel() {
             {activeLayer.type === 'concentric' && (
               <>
                 <Row2>
-                  <Campo label="Camadas" valor={activeLayer.shapeProps?.layers || 6}>
+                  <Campo label="Níveis" valor={activeLayer.shapeProps?.layers || 6}>
                     <input type="range" min={2} max={30} step={1} value={activeLayer.shapeProps?.layers || 6}
                       onChange={(e) => updateLayerShapeProps(activeLayer.id, { layers: parseInt(e.target.value) })} style={sliderStyle} />
                   </Campo>
@@ -756,7 +756,7 @@ export function GenerativePanel() {
                 onChange={(e) => updateLayerAppearance(activeLayer.id, { targetMode: e.target.value as any })}
                 style={selectStyle}
               >
-                <option value="group">Camada/Grupo Inteiro</option>
+                <option value="group">Elemento/Grupo Inteiro</option>
                 <option value="paths">Paths Individuais</option>
               </select>
             </Campo>
@@ -782,7 +782,7 @@ export function GenerativePanel() {
       {!activeLayer && generativeLayers.length > 0 && (
         <div style={{ padding: '12px 8px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
           <LayersIcon size={24} style={{ opacity: 0.3 }} />
-          <span>Clique em uma camada para editar sua aparência e propriedades</span>
+          <span>Clique em um elemento para editar sua aparência e ajustes</span>
         </div>
       )}
         </div>
@@ -793,7 +793,7 @@ export function GenerativePanel() {
           {/* ─── SEÇÃO 4: RUÍDO PERLIN ────────────────────────────────────────── */}
       <Section icon={<Activity size={13} color="var(--color-accent)" />} title="Ruído Perlin (Motor Global)" defaultOpen={false}>
         <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginBottom: 4 }}>
-          Controles aplicados a todas as camadas. Use os multiplicadores por eixo abaixo para diferenciação.
+          Controles aplicados a todos os elementos. Use os multiplicadores por eixo abaixo para diferenciação.
         </p>
         <Row2>
           <Campo label="Amplitude" valor={amplitude} dica="Deslocamento máximo dos elementos.">

@@ -130,7 +130,7 @@ export function CompositionPanel() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h3 style={{ fontSize: '0.82rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6, margin: 0, fontWeight: 600 }}>
             <Frame size={13} color="var(--color-accent)" />
-            Camadas
+            Elementos
           </h3>
           {hasLayers && (
             <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--color-success)' }}>
@@ -239,7 +239,7 @@ export function CompositionPanel() {
                         display: 'flex',
                         alignItems: 'center',
                       }}
-                      title={layer.hidden ? "Mostrar camada" : "Ocultar camada"}
+                      title={layer.hidden ? "Mostrar elemento" : "Ocultar elemento"}
                     >
                       {layer.hidden ? <EyeOff size={11} /> : <Eye size={11} />}
                     </button>
@@ -260,7 +260,7 @@ export function CompositionPanel() {
                         display: 'flex',
                         alignItems: 'center',
                       }}
-                      title={layer.locked ? "Desbloquear camada" : "Bloquear camada"}
+                      title={layer.locked ? "Desbloquear elemento" : "Bloquear elemento"}
                     >
                       {layer.locked ? <Lock size={11} style={{ color: 'var(--color-error)' }} /> : <Unlock size={11} />}
                     </button>
@@ -272,7 +272,7 @@ export function CompositionPanel() {
                         e.stopPropagation()
                         removeCompositionLayer(layer.id)
                       }}
-                      title="Remover camada"
+                      title="Remover elemento"
                       style={{
                         background: 'none',
                         border: 'none',

@@ -137,6 +137,21 @@ export function ExportPanel() {
           </Campo>
         </div>
 
+        {/* Watermark toggle (Always visible) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', borderTop: '1px solid var(--color-surface-border)', paddingTop: 12, marginTop: 4 }}>
+          <input
+            id="watermark-toggle"
+            type="checkbox"
+            checked={exportConfig.includeWatermark !== false}
+            onChange={e => updateExportConfig({ includeWatermark: e.target.checked })}
+            disabled={exportState.isExporting}
+            style={{ width: 14, height: 14, accentColor: 'var(--color-accent)', cursor: 'pointer' }}
+          />
+          <label htmlFor="watermark-toggle" style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
+            Incluir marca d’água Pelimotion
+          </label>
+        </div>
+
         {/* Opções Avançadas */}
         <div style={{ borderTop: '1px solid var(--color-surface-border)', paddingTop: 12, marginTop: 4 }}>
           <button 
@@ -155,19 +170,7 @@ export function ExportPanel() {
             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             marginTop: showAdvanced ? 12 : 0
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input
-                id="watermark-toggle"
-                type="checkbox"
-                checked={exportConfig.includeWatermark !== false}
-                onChange={e => updateExportConfig({ includeWatermark: e.target.checked })}
-                disabled={exportState.isExporting}
-                style={{ width: 14, height: 14, accentColor: 'var(--color-accent)', cursor: 'pointer' }}
-              />
-              <label htmlFor="watermark-toggle" style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
-                Incluir marca d’água Pelimotion
-              </label>
-            </div>
+            <span style={{ fontSize: '0.68rem', color: 'var(--color-text-ghost)' }}>Nenhum ajuste avançado disponível no momento.</span>
           </div>
         </div>
       </div>

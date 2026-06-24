@@ -1,10 +1,17 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Pelimotion v4.0 — Orquestrador Freemium Profissional, Estabilidade de Testes e Layout Figma-like (v4.0)
+## Active Phase: 🟢 Pelimotion v6.2 — Freemium Safeguards, Test Stability, and Glossary Compliance (v6.2)
 
-## 🏁 Pelimotion Design System v4.0 — Orquestrador Freemium Profissional e Layout Figma-like
+## 🏁 Pelimotion Design System v6.2 — Estabilização Completa de E2E, Modais Freemium e Adequação ao Glossário
 
-O sistema opera em sua versão 4.0 com a infraestrutura de orquestração de agentes e malhas autônomas totalmente estabilizada. O editor conta com um layout unificado de 3 zonas fixas inspirado no Figma, controle de elementos generativos via Simplex Noise, ajustes automáticos de viewport (prevenindo colapsos em layouts flex) e testes de regressão 100% resilientes.
+O sistema opera em sua versão 6.2 com todas as travas freemium essenciais (lead capture email gate no export, marca d'água responsiva no canvas) devidamente integradas ao motor React + Zustand. O suite de testes do Playwright (`user-journey.spec.ts`) foi blindado contra flutuações e atrasos de hidratação (hydration lag) em execuções paralelas por meio de retentativas dinâmicas de cliques, resultando em 100% de conformidade com os critérios de QA estabelecidos.
+
+### Session Achievements (v6.2 - Session 35: Resiliência de Testes & Travas Freemium)
+- **Playwright E2E Resilience:** Resolvidos os falsos-negativos causados por atrasos de carregamento de ouvintes de eventos do React (hydration lag) sob concorrência paralela no Playwright. Implementado fluxo dinâmico de cliques com retentativas (`click & wait` com `waitFor({state: 'visible'})`) nas suites de Biblioteca e Email Gate.
+- **Lead Capture Email Gate:** Acoplado o modal de captura de leads no primeiro evento de geração de assets (`handleExport`) no componente `ExportBar.tsx`, condicionando o andamento à validação do email do usuário e guardando a flag de persistência no `localStorage`.
+- **Watermark Responsiva:** Adicionada marca d'água flutuante "Pelimotion" sobreposta no viewport do canvas (`#canvas-fixed-resolution`), com dimensões escaláveis usando unidade `2cqw` para manter a proporção e legibilidade independente do nível de zoom.
+- **Biblioteca Premium & Studio Locks:** Atualizado o visual do `LibraryModal.tsx` exibindo badges de Studio Lock (`data-testid="premium-lock"`) e um CTA "Upgrade Studio" no painel lateral de categorias.
+- **Compliance com o Glossário:** Varredura completa no código fonte para banir termos restritos como *"Camadas"*, *"Nenhuma camada"* e *"Adicionar Camada"*, substituindo-os uniformemente por *"Elementos"*, *"Escolha um elemento para começar"* e *"+ Elemento"*.
 
 ### Session Achievements (v4.0 - Session 30: Orquestrador 4.0 & Estabilização de Layout)
 - **Playwright Test Suite Stability:** Resolvida a violação de strict mode nos testes Playwright (`user-session.spec.js`) ao escopar de forma precisa os cliques nos seletores de "Texto" e "Forma / SVG" sob `#layers-panel`.

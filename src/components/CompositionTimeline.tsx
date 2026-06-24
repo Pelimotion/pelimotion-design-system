@@ -798,7 +798,7 @@ export function CompositionTimeline() {
         {/* Composition Layers Tracks */}
         {compositionLayers.length === 0 && exportConfig.backgroundType !== 'video' ? (
           <div style={{ textAlign: 'center', padding: '24px 0', fontSize: '0.75rem', color: 'var(--color-text-ghost)' }}>
-            Nenhuma camada de vídeo ou composição na Timeline.
+            Nenhum elemento na Timeline.
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
@@ -808,7 +808,7 @@ export function CompositionTimeline() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                Camadas Visuais ({compositionLayers.length})
+                Elementos Visuais ({compositionLayers.length})
               </div>
               <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
                 <button 
@@ -860,7 +860,7 @@ export function CompositionTimeline() {
                     <button 
                       onClick={() => toggleTrackColor(layer.id, 'comp', layer.colorTag)}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
-                      title="Mudar Cor da Camada"
+                      title="Mudar Cor do Elemento"
                     >
                       <Circle size={10} fill={layer.colorTag || 'transparent'} color={layer.colorTag || 'var(--color-text-ghost)'} />
                     </button>
@@ -875,7 +875,7 @@ export function CompositionTimeline() {
                     <button 
                       onClick={() => updateCompositionLayer(layer.id, { locked: !layer.locked })} 
                       style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={layer.locked ? "Desbloquear camada" : "Bloquear camada"}
+                      title={layer.locked ? "Desbloquear elemento" : "Bloquear elemento"}
                     >
                       {layer.locked ? <Lock size={12} /> : <Unlock size={12} />}
                     </button>
@@ -896,7 +896,7 @@ export function CompositionTimeline() {
                     <button 
                       onClick={() => updateCompositionLayer(layer.id, { hidden: !layer.hidden })} 
                       style={{ background: 'none', border: 'none', color: layer.hidden ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={layer.hidden ? "Mostrar camada" : "Ocultar camada"}
+                      title={layer.hidden ? "Mostrar elemento" : "Ocultar elemento"}
                     >
                       {layer.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
                     </button>
