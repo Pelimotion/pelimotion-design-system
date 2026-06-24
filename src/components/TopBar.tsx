@@ -12,7 +12,7 @@ import {
   Zap, Type, Layers, Play, Pause, BookOpen,
   ChevronDown, Plus, Shield, Square, ImageIcon,
   ZoomIn, ZoomOut, Maximize2, Undo2, Redo2,
-  Settings,
+  HelpCircle, X, Keyboard,
 } from 'lucide-react';
 import {
   createTextLayer, createElementLayer,
@@ -192,6 +192,116 @@ function ZoomControls() {
   );
 }
 
+// ─── Keyboard Shortcuts HUD ──────────────────────────────────────────────────
+
+const SHORTCUTS = [
+  { group: 'Playback', items: [
+    { key: 'Space', desc: 'Play / Pausar' },
+    { key: '← →', desc: 'Mover playhead 0.1s' },
+  ]},
+  { group: 'Elementos', items: [
+    { key: 'Backspace', desc: 'Deletar elemento ativo' },
+    { key: 'Cmd+D', desc: 'Duplicar elemento' },
+    { key: 'Cmd+Shift+D', desc: 'Dividir no playhead' },
+  ]},
+  { group: 'Canvas', items: [
+    { key: 'Cmd+Scroll', desc: 'Zoom in/out' },
+    { key: 'Space+Drag', desc: 'Pan do canvas' },
+    { key: 'Middle Click', desc: 'Pan (alternativo)' },
+  ]},
+  { group: 'Edição', items: [
+    { key: 'Cmd+C', desc: 'Copiar elemento' },
+    { key: 'Cmd+V', desc: 'Colar no playhead' },
+  ]},
+];
+
+function ShortcutsHUD({ onClose }: { onClose: () => void }) {
+  return (
+    <>
+      <div onClick={onClose} style={{
+        position: 'fixed', inset: 0, zIndex: 9000,
+        background: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+      }} />
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 9001,
+        width: 'min(520px, 90vw)',
+        background: 'linear-gradient(145deg, #141414 0%, #101010 100%)',
+        border: '1px solid hsla(0,0%,100%,0.08)',
+        borderRadius: 18,
+        boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+        overflow: 'hidden',
+        animation: 'hudIn 0.22s cubic-bezier(0.16,1,0.3,1)',
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '16px 20px', borderBottom: '1px solid hsla(0,0%,100%,0.07)',
+        }}>
+          <Keyboard size={16} color="var(--color-accent)" />
+          <span style={{ flex: 1, fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-display)' }}>
+            Atalhos do Teclado
+          </span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-ghost)', padding: 4, borderRadius: 6, display: 'flex' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-ghost)'}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Shortcuts Grid */}
+        <div style={{ padding: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {SHORTCUTS.map(group => (
+            <div key={group.group}>
+              <p style={{
+                fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em',
+                textTransform: 'uppercase', color: 'var(--color-accent)',
+                margin: '0 0 10px', fontFamily: 'var(--font-display)',
+              }}>{group.group}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {group.items.map(item => (
+                  <div key={item.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)' }}>{item.desc}</span>
+                    <kbd style={{
+                      fontSize: '0.62rem', fontFamily: 'var(--font-mono)',
+                      background: 'hsla(0,0%,100%,0.06)',
+                      border: '1px solid hsla(0,0%,100%,0.12)',
+                      borderBottom: '2px solid hsla(0,0%,100%,0.08)',
+                      borderRadius: 5, padding: '2px 6px',
+                      color: 'var(--color-text-primary)',
+                      whiteSpace: 'nowrap', flexShrink: 0,
+                    }}>{item.key}</kbd>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer tip */}
+        <div style={{
+          padding: '12px 20px', borderTop: '1px solid hsla(0,0%,100%,0.06)',
+          background: 'hsla(0,0%,0%,0.2)',
+          fontSize: '0.65rem', color: 'var(--color-text-ghost)', textAlign: 'center',
+        }}>
+          Pressione <kbd style={{ fontFamily: 'var(--font-mono)', background: 'hsla(0,0%,100%,0.06)', border: '1px solid hsla(0,0%,100%,0.1)', borderRadius: 3, padding: '1px 5px', fontSize: '0.6rem' }}>?</kbd> a qualquer momento para abrir este painel
+        </div>
+
+        <style>{`
+          @keyframes hudIn {
+            from { opacity: 0; transform: translate(-50%, -48%) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          }
+        `}</style>
+      </div>
+    </>
+  );
+}
+
 // ─── TopBar (Main Export) ────────────────────────────────────────────────────
 
 export function TopBar() {
@@ -199,6 +309,7 @@ export function TopBar() {
     isPlaying, togglePlayback,
     setLibraryModalOpen, libraryModalOpen,
   } = useEditorStore();
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   return (
     <header
@@ -216,13 +327,15 @@ export function TopBar() {
         zIndex: 100,
       }}
     >
+      {showShortcuts && <ShortcutsHUD onClose={() => setShowShortcuts(false)} />}
+
       {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 8 }}>
         <div style={{
           width: 28, height: 28, borderRadius: 8,
           background: 'linear-gradient(135deg, var(--color-accent), #7c3aed)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 16px hsla(191,100%,50%,0.2)',
+          boxShadow: '0 0 16px hsla(247,74%,63%,0.3)',
           flexShrink: 0,
         }}>
           <Zap size={15} color="#fff" />
@@ -231,6 +344,7 @@ export function TopBar() {
           fontWeight: 700, fontSize: '0.9rem',
           letterSpacing: '-0.02em', color: 'var(--color-text-primary)',
           whiteSpace: 'nowrap',
+          fontFamily: 'var(--font-display)',
         }}>
           Pelimotion
         </span>
@@ -286,9 +400,9 @@ export function TopBar() {
 
       <Divider />
 
-      {/* Settings shortcut */}
-      <TopBtn onClick={() => window.open('/admin', '_blank')} title="Painel Admin">
-        <Settings size={14} />
+      {/* Keyboard Shortcuts Help */}
+      <TopBtn onClick={() => setShowShortcuts(true)} title="Atalhos do teclado (?)">
+        <HelpCircle size={14} />
       </TopBtn>
     </header>
   );

@@ -79,40 +79,57 @@ function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
         display: 'flex',
         alignItems: 'center',
         gap: 6,
-        padding: '6px 8px',
+        padding: '6px 8px 6px 6px',
         borderRadius: 8,
         cursor: 'pointer',
-        transition: 'all 0.12s ease',
+        transition: 'all 0.12s cubic-bezier(0.16,1,0.3,1)',
         background: isSelected
-          ? 'hsla(191, 100%, 50%, 0.08)'
+          ? `${config.color}12`
           : hovered
-          ? 'hsla(0, 0%, 100%, 0.03)'
+          ? 'hsla(0, 0%, 100%, 0.035)'
           : 'transparent',
         border: isSelected
-          ? '1px solid hsla(191, 100%, 50%, 0.2)'
+          ? `1px solid ${config.color}35`
           : '1px solid transparent',
-        opacity: layer.visible ? 1 : 0.4,
+        opacity: layer.visible ? 1 : 0.38,
         minHeight: 36,
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Animated left-border accent for selected layer */}
+      {isSelected && (
+        <div style={{
+          position: 'absolute',
+          left: 0, top: 4, bottom: 4,
+          width: 2,
+          borderRadius: 2,
+          background: config.color,
+          boxShadow: `0 0 8px ${config.color}`,
+          animation: 'accentPulse 2s ease-in-out infinite',
+        }} />
+      )}
+
       {/* Drag Handle */}
-      <div style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.6 : 0 }}>
+      <div style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.5 : 0, transition: 'opacity 0.1s', marginLeft: 4 }}>
         <GripVertical size={12} />
       </div>
 
-      {/* Type Badge */}
+      {/* Type Badge with animation on selection */}
       <div
         style={{
           width: 22,
           height: 22,
           borderRadius: 5,
-          background: `${config.color}15`,
-          border: `1px solid ${config.color}30`,
+          background: isSelected ? `${config.color}25` : `${config.color}12`,
+          border: `1px solid ${config.color}${isSelected ? '50' : '25'}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: config.color,
           flexShrink: 0,
+          transition: 'all 0.15s ease',
+          boxShadow: isSelected ? `0 0 6px ${config.color}40` : 'none',
         }}
       >
         {config.icon}
@@ -328,6 +345,18 @@ export function LayersPanel() {
       height: '100%',
       overflow: 'hidden',
     }}>
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes accentPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+        @keyframes dotPulse {
+          0%, 100% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.3); opacity: 1; }
+        }
+      `}</style>
+
       {/* Header */}
       <div style={{
         padding: '12px 12px 8px',
@@ -339,15 +368,19 @@ export function LayersPanel() {
         <span style={{
           fontSize: '0.72rem',
           fontWeight: 600,
-          letterSpacing: '0.04em',
+          letterSpacing: '0.05em',
           textTransform: 'uppercase',
           color: 'var(--color-text-muted)',
+          fontFamily: 'var(--font-display)',
         }}>
           Elementos
         </span>
         <span style={{
-          fontSize: '0.65rem',
+          fontSize: '0.6rem',
           color: 'var(--color-text-ghost)',
+          background: 'hsla(0,0%,100%,0.04)',
+          padding: '1px 6px',
+          borderRadius: 4,
           fontFamily: 'var(--font-mono)',
         }}>
           {layers.length}
@@ -370,28 +403,29 @@ export function LayersPanel() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '40px 16px',
-            gap: 12,
+            gap: 14,
             textAlign: 'center',
           }}>
             <div style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              background: 'hsla(191, 100%, 50%, 0.06)',
-              border: '1px solid hsla(191, 100%, 50%, 0.1)',
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              background: 'hsla(247, 74%, 63%, 0.07)',
+              border: '1px dashed hsla(247, 74%, 63%, 0.25)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--color-text-ghost)',
+              color: 'var(--color-accent)',
+              opacity: 0.6,
             }}>
-              <Layers size={18} />
+              <Layers size={20} />
             </div>
             <div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: 4 }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', margin: '0 0 5px' }}>
                 Escolha um elemento para começar
               </p>
-              <p style={{ fontSize: '0.68rem', color: 'var(--color-text-ghost)', lineHeight: 1.4 }}>
-                Adicione textos e elementos para começar a criar
+              <p style={{ fontSize: '0.66rem', color: 'var(--color-text-ghost)', lineHeight: 1.5 }}>
+                Adicione textos e elementos<br />usando o botão abaixo
               </p>
             </div>
           </div>

@@ -19,19 +19,30 @@ import type { ExportWorkerConfig } from './exportWorker'
 import { Telemetry } from '@/lib/telemetry'
 import ExportWorker from './exportWorker?worker'
 
-function sendAndWait(worker: Worker, message: any, expectedResponseType: string): Promise<any> {
+function sendAndWait(worker: Worker, message: any, expectedResponseType: string, timeoutMs = 0): Promise<any> {
   return new Promise((resolve, reject) => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const cleanup = () => {
+      worker.removeEventListener('message', handler);
+      if (timer) clearTimeout(timer);
+    };
     const handler = (e: MessageEvent) => {
       if (e.data.type === expectedResponseType) {
-        worker.removeEventListener('message', handler);
+        cleanup();
         resolve(e.data);
       } else if (e.data.type === 'ERROR') {
-        worker.removeEventListener('message', handler);
+        cleanup();
         reject(new Error(e.data.message));
       }
     };
     worker.addEventListener('message', handler);
     worker.postMessage(message);
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        cleanup();
+        reject(new Error(`Worker INIT timed out after ${timeoutMs}ms — falling back to FFmpeg`));
+      }, timeoutMs);
+    }
   });
 }
 
@@ -117,7 +128,7 @@ async function exportWithWebCodecs(
         bitrate: 8_000_000,
         totalFrames,
       } as ExportWorkerConfig
-    }, 'READY');
+    }, 'READY', 15_000); // 15s timeout — falls back to FFmpeg if worker hangs
 
     const MAX_IN_FLIGHT = 3;
     let inFlight = 0;
