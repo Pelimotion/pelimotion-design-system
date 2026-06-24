@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 36,
+  "sessionsRun": 37,
   "historicalInsights": [
-    "Session 22: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 23: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.",
     "Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.",
@@ -15,7 +14,8 @@
     "Session 33: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 34: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 35: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 36: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
+    "Session 36: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 37: 2 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -317,6 +317,14 @@
     {
       "session": 36,
       "date": "2026-06-24T12:00:16.317Z",
+      "errors": 2,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 91
+    },
+    {
+      "session": 37,
+      "date": "2026-06-24T12:20:16.152Z",
       "errors": 2,
       "uxCritical": 0,
       "uxHigh": 0,
