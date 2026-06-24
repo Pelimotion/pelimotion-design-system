@@ -2,11 +2,11 @@
   "errors": [
     {
       "type": "network",
-      "text": "NETWORK FAIL: https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2 — net::ERR_ABORTED"
+      "text": "NETWORK FAIL: https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2 — net::ERR_ABORTED"
     },
     {
       "type": "network",
-      "text": "NETWORK FAIL: https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2 — net::ERR_ABORTED"
+      "text": "NETWORK FAIL: https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2 — net::ERR_ABORTED"
     }
   ],
   "uxFindings": [],
@@ -22,5 +22,5 @@
     "accessibilityFocused": "BUTTON "
   },
   "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
-  "timestamp": "2026-06-24T12:20:16.103Z"
+  "timestamp": "2026-06-24T12:40:16.039Z"
 }
