@@ -1,10 +1,17 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Estabilidade Arquitetural, Encerramento do Massive Loop e Refinamento do Editor (v2.6)
+## Active Phase: 🟢 Pelimotion v3.0 — Layout Figma-like, Universal Layers & Violet Premium (v3.0)
 
-## 🏁 Pelimotion Design System v2.6 — Arquitetura de Ponta Estabilizada
+## 🏁 Pelimotion Design System v3.0 — Interface Figma-like e Universal Layers
 
-O ciclo autônomo (Massive Loop Phase 20-25) foi oficialmente encerrado. O Pelimotion agora opera com paridade de recursos a editores NLE de desktop profissionais, possuindo gestão de memória blindada e física de arraste com 60fps cravados.
+O editor foi completamente remodelado para uma UI de 3 zonas fixas inspirada no Figma, unificando a linha do tempo, a biblioteca de assets em modal e consolidando as camadas textuais e formas generativas em um sistema de camadas unificado (`UniversalLayers`).
+
+### Session Achievements (v3.0 - Session 17: Orquestrador, Element Layers & Ajustes UX)
+- **Playwright Test Suite v3.0 Compatibility:** Reconfigurada a suite de testes automatizados para navegar e validar as propriedades e elementos usando seletores baseados em `#layers-panel`, `#properties-panel`, `#top-bar` e `#export-bar`, eliminando time-outs antigos.
+- **Universal Canvas Element Rendering:** Integrado o suporte a camadas do tipo `element` (formas generativas) dentro de `UniversalCanvasPreview.tsx` com renderização dinâmica das equações de spirograph, orbital, hexagon, star, circle, etc., utilizando o Simplex Noise.
+- **Dynamic Property Panel (Ajustes) width:** Implementada a re-dimensão suave do painel lateral de Ajustes: encolhe para `40px` sem seleção ativa (mostrando apenas o ícone de configurações vertical) e expande para `240px` ao selecionar uma camada.
+- **Violet Premium Design Tokens & Fonts:** Configurados a importação da fonte Space Grotesk e os tokens de destaque da cor de realce Violeta Premium (`#6B5CE7`) em `index.css`.
+- **Glossário de Marketing:** Renomeado cabeçalho do painel de propriedades para **Ajustes** no PropertiesPanel, garantindo conformidade estrita com o glossário de negócios.
 
 ### Session Achievements (v2.6 - Session 12: Bugs, Direct Composition & Layer Controls)
 - **BUG 1 — Gizmo Shape Blinking Solved:** Conditional canvas display in `GenerativePreview.tsx` prevents OffscreenCanvas from rendering background circles when colorMode is not tritone.
