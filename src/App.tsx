@@ -326,7 +326,7 @@ function App() {
           {featureFlags.timeline_nle ? (
             <>
               {/* Canvas takes ~65% */}
-              <div style={{ flex: 65, minHeight: 0 }}>{canvasArea}</div>
+              <div style={{ flex: 65, minHeight: 0, display: 'flex', flexDirection: 'column' }}>{canvasArea}</div>
               {/* Resize handle */}
               <div style={{ height: 8, background: 'var(--color-surface-border)', cursor: 'row-resize', flexShrink: 0 }} />
               {/* NLE Timeline */}

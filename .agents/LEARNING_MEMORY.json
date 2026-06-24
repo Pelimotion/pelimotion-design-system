@@ -1,10 +1,6 @@
 {
-  "sessionsRun": 22,
+  "sessionsRun": 26,
   "historicalInsights": [
-    "Breadcrumb-style toolbar context (App / Panel / Sub-section) is far clearer than showing the panel name in a single element — aligns with Figma patterns.",
-    "Group hover via CSS .parent:hover .child-btn { opacity: 1 } is cleaner and more performant than React state for transient UI reveals like delete buttons.",
-    "Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.",
-    "When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools.",
     "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage.",
     "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay",
     "Session 14: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
@@ -15,7 +11,11 @@
     "Session 19: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 20: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 21: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
-    "Session 22: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos."
+    "Session 22: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 23: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.",
+    "Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -45,6 +45,20 @@
       "panel": "typography",
       "issue": "HIGH",
       "text": "\"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text layers.",
+      "resolved": false
+    },
+    {
+      "session": 24,
+      "panel": "composition",
+      "issue": "HIGH",
+      "text": "Composition timeline not found or not visible.",
+      "resolved": false
+    },
+    {
+      "session": 25,
+      "panel": "viewport",
+      "issue": "CRITICAL",
+      "text": "Canvas viewport (#canvas-viewport) not visible.",
       "resolved": false
     }
   ],
@@ -195,6 +209,38 @@
       "uxCritical": 0,
       "uxHigh": 0,
       "fps": 0
+    },
+    {
+      "session": 23,
+      "date": "2026-06-24T09:20:07.629Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 24,
+      "date": "2026-06-24T09:20:58.593Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 1,
+      "fps": 93
+    },
+    {
+      "session": 25,
+      "date": "2026-06-24T09:21:52.216Z",
+      "errors": 0,
+      "uxCritical": 1,
+      "uxHigh": 0,
+      "fps": 91
+    },
+    {
+      "session": 26,
+      "date": "2026-06-24T09:22:45.029Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 92
     }
   ]
 }

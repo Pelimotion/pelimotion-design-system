@@ -1,15 +1,17 @@
 {
-  "errors": [
-    {
-      "type": "crash",
-      "text": "TEST ABORTED: locator.click: Error: strict mode violation: getByRole('button', { name: 'Texto', exact: true }) resolved to 2 elements:\n    1) <button>…</button> aka locator('#top-bar').getByRole('button', { name: 'Texto' })\n    2) <button>…</button> aka locator('#layers-panel').getByRole('button', { name: 'Texto', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Texto', exact: true })\u001b[22m\n"
-    }
-  ],
+  "errors": [],
   "uxFindings": [],
   "metrics": {
-    "fps": 0,
-    "panels": {}
+    "fps": 92,
+    "panels": {
+      "typography": "audited",
+      "generative": "audited",
+      "library": "audited",
+      "composition": "audited",
+      "export": "audited"
+    },
+    "accessibilityFocused": "BUTTON "
   },
   "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
-  "timestamp": "2026-06-24T09:00:43.832Z"
+  "timestamp": "2026-06-24T09:22:44.978Z"
 }

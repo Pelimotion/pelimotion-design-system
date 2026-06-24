@@ -46,7 +46,7 @@ test.describe('Pelimotion Deep UX Audit', () => {
   test('Full multi-panel UX deep sweep with visual snapshot audit', async ({ page }) => {
     try {
       // ── 0. Load App ──────────────────────────────────────────────────────────
-      await page.goto('/', { waitUntil: 'networkidle', timeout: 15000 });
+      await page.goto('/?ff_timeline_nle=true&ff_audio_mixing=true', { waitUntil: 'networkidle', timeout: 15000 });
       await page.waitForTimeout(1000);
 
       // Verify app shell and core elements are present
@@ -75,7 +75,7 @@ test.describe('Pelimotion Deep UX Audit', () => {
         await snap(page, '01_layers_dropdown_open');
         
         // Click "Texto" option
-        await page.getByRole('button', { name: 'Texto', exact: true }).click();
+        await page.locator('#layers-panel').getByRole('button', { name: 'Texto', exact: true }).click();
         await page.waitForTimeout(700);
         await snap(page, '01b_text_layer_added');
       }
@@ -95,7 +95,7 @@ test.describe('Pelimotion Deep UX Audit', () => {
         await addLayerBtn.click();
         await page.waitForTimeout(500);
         // Click "Forma / SVG" option
-        await page.getByRole('button', { name: 'Forma / SVG', exact: true }).click();
+        await page.locator('#layers-panel').getByRole('button', { name: 'Forma / SVG', exact: true }).click();
         await page.waitForTimeout(700);
         await snap(page, '02_shape_layer_added');
       }
