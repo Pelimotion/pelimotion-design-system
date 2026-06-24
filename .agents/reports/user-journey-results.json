@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-24T21:23:50.299Z",
+  "timestamp": "2026-06-24T22:06:00.594Z",
   "suites": [
     {
       "name": "s1_empty_state",
@@ -63,6 +63,20 @@
     },
     {
       "name": "s9_full_workflow",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s10_shortcuts_hud",
+      "passed": false,
+      "findings": [
+        "SHORTCUTS: visible=true, closed=false, openedByKey=false, closedByKey=false"
+      ],
+      "screenshots": []
+    },
+    {
+      "name": "s11_reference_image",
       "passed": true,
       "findings": [],
       "screenshots": []

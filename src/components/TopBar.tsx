@@ -308,8 +308,8 @@ export function TopBar() {
   const {
     isPlaying, togglePlayback,
     setLibraryModalOpen, libraryModalOpen,
+    showShortcuts, setShowShortcuts,
   } = useEditorStore();
-  const [showShortcuts, setShowShortcuts] = useState(false);
 
   return (
     <header

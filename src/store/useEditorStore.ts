@@ -110,6 +110,15 @@ interface EditorState {
   // Clipboard State (for Copy/Paste)
   clipboard: { type: 'composition' | 'audio' | 'typography' | 'generative'; data: any } | null;
 
+  // Reference Image overlay state
+  referenceImage: string | null;
+  setReferenceImage: (img: string | null) => void;
+
+  // Keyboard Shortcuts HUD visibility
+  showShortcuts: boolean;
+  setShowShortcuts: (show: boolean) => void;
+
+
   // ─── Actions ─────────────────────────────────────────────────────────────
 
   // v3.0 Universal Layer Actions
@@ -271,6 +280,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   layers: [],
   selectedLayerId: null,
   libraryModalOpen: false,
+  referenceImage: null,
+  showShortcuts: false,
+
 
   // Default UI state
   activePanel: 'typography',
@@ -445,6 +457,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   resetCamera: () => set({ camera: { x: 0, y: 0, z: 1 } }),
 
   setClipboard: (item) => set({ clipboard: item }),
+
+  setReferenceImage: (img) => set({ referenceImage: img }),
+  setShowShortcuts: (show) => set({ showShortcuts: show }),
+
 
   saveToLocalLibrary: (item: any) =>
     set((state) => ({

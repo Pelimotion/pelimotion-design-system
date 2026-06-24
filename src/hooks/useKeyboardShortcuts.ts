@@ -10,6 +10,13 @@ export function useKeyboardShortcuts() {
         return;
       }
 
+      if (e.key === '?') {
+        e.preventDefault();
+        const { showShortcuts, setShowShortcuts } = useEditorStore.getState();
+        setShowShortcuts(!showShortcuts);
+        return;
+      }
+
       switch (e.code) {
         case 'Space':
           e.preventDefault();
@@ -151,8 +158,14 @@ export function useKeyboardShortcuts() {
           break;
         }
         case 'Escape': {
-          // v3.0: Deselect universal layer
-          useEditorStore.getState().setSelectedLayerId(null);
+          const escState = useEditorStore.getState();
+          // Close ShortcutsHUD first if it's open
+          if (escState.showShortcuts) {
+            escState.setShowShortcuts(false);
+          } else {
+            // v3.0: Deselect universal layer
+            escState.setSelectedLayerId(null);
+          }
           break;
         }
       }

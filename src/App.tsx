@@ -47,7 +47,7 @@ function App() {
 
   const {
     exportConfig, camera, featureFlags, libraryModalOpen,
-    setLibraryModalOpen,
+    setLibraryModalOpen, referenceImage, exportState,
   } = useEditorStore();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -280,6 +280,24 @@ function App() {
 
         {/* Universal Canvas Preview (renders all UniversalLayers) */}
         <UniversalCanvasPreview />
+
+        {/* Reference image overlay (semi-transparent, not exported) */}
+        {referenceImage && !exportState.isExporting && (
+          <img
+            src={referenceImage}
+            alt="reference overlay"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: exportConfig.aspectRatioMode === 'fit' ? 'contain' : 'cover',
+              opacity: 0.3,
+              zIndex: 89, // just behind watermark but above previews
+              pointerEvents: 'none',
+            }}
+          />
+        )}
 
         {/* Watermark for free tier preview */}
         {exportConfig.includeWatermark !== false && (

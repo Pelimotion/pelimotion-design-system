@@ -70,6 +70,30 @@ function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
     }
   };
 
+  let elementBadge = config.icon;
+  if (layer.type === 'element' && layer.elementData) {
+    const shape = layer.elementData.shapeType;
+    const colors = layer.elementData.colors || ['#6B5CE7'];
+    const primaryColor = colors[0] || '#6B5CE7';
+    if (shape === 'circle') {
+      elementBadge = <div style={{ width: 10, height: 10, borderRadius: '50%', background: primaryColor }} />;
+    } else if (shape === 'square') {
+      elementBadge = <div style={{ width: 10, height: 10, borderRadius: 2, background: primaryColor }} />;
+    } else if (shape === 'star') {
+      elementBadge = (
+        <svg width="11" height="11" viewBox="0 0 24 24" fill={primaryColor} stroke="none">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      );
+    } else {
+      elementBadge = (
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="3" strokeLinecap="round">
+          <path d="M4 12a8 8 0 0 1 16 0M4 6a16 16 0 0 1 16 0" />
+        </svg>
+      );
+    }
+  }
+
   return (
     <div
       onClick={onSelect}
@@ -95,6 +119,11 @@ function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
         minHeight: 36,
         position: 'relative',
         overflow: 'hidden',
+        animation: isSelected ? 'selectedLayerGlow 2.5s infinite ease-in-out' : 'none',
+        ['--pulse-bg-start' as any]: `${config.color}12`,
+        ['--pulse-bg-mid' as any]: `${config.color}22`,
+        ['--pulse-border-start' as any]: `${config.color}35`,
+        ['--pulse-border-mid' as any]: `${config.color}65`,
       }}
     >
       {/* Animated left-border accent for selected layer */}
@@ -132,7 +161,7 @@ function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
           boxShadow: isSelected ? `0 0 6px ${config.color}40` : 'none',
         }}
       >
-        {config.icon}
+        {elementBadge}
       </div>
 
       {/* Name */}
@@ -354,6 +383,16 @@ export function LayersPanel() {
         @keyframes dotPulse {
           0%, 100% { transform: scale(1); opacity: 0.7; }
           50% { transform: scale(1.3); opacity: 1; }
+        }
+        @keyframes selectedLayerGlow {
+          0%, 100% {
+            background-color: var(--pulse-bg-start);
+            border-color: var(--pulse-border-start);
+          }
+          50% {
+            background-color: var(--pulse-bg-mid);
+            border-color: var(--pulse-border-mid);
+          }
         }
       `}</style>
 

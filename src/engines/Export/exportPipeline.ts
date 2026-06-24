@@ -74,7 +74,12 @@ export async function runExportPipeline(
       });
 
       if (configSupport.supported) {
-        return exportWithWebCodecs(element, config, onProgress, safeWidth, safeHeight);
+        try {
+          return await exportWithWebCodecs(element, config, onProgress, safeWidth, safeHeight);
+        } catch (webcodecsError) {
+          console.warn('[Export] WebCodecs execution failed. Falling back to FFmpeg.', webcodecsError);
+          Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format, error: String(webcodecsError) });
+        }
       }
     } catch (e) {
       console.warn('[Export] WebCodecs support check failed', e);

@@ -783,3 +783,30 @@ body {
   50% { transform: translateY(-6px); }
 }
 
+/* Selected Layer Glow pulse (uses inline HSL variables) */
+@keyframes selectedLayerGlow {
+  0%, 100% {
+    background-color: var(--pulse-bg-start);
+    border-color: var(--pulse-border-start);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    background-color: var(--pulse-bg-mid);
+    border-color: var(--pulse-border-mid);
+    box-shadow: 0 4px 18px var(--pulse-bg-mid);
+  }
+}
+
+/* Selected Layer left accent border pulse */
+@keyframes accentPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scaleY(0.92);
+  }
+}
+
+

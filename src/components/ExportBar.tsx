@@ -65,6 +65,7 @@ export function ExportBar() {
   const {
     exportConfig, exportState, updateExportConfig,
     setExportState, resetExport, setAspectRatio, activeAspectRatio,
+    referenceImage, setReferenceImage,
   } = useEditorStore();
 
   const [ratioOpen, setRatioOpen] = useState(false);
@@ -279,6 +280,58 @@ export function ExportBar() {
           }}
         />
         <span style={{ fontSize: '0.65rem', color: 'var(--color-text-ghost)' }}>s</span>
+      </div>
+
+      {/* Reference Image Input */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {referenceImage ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <button
+              onClick={() => setReferenceImage(null)}
+              title="Limpar imagem de referência"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '5px 10px', borderRadius: 7,
+                border: '1px solid hsla(0, 80%, 60%, 0.25)',
+                background: 'hsla(0, 80%, 60%, 0.08)',
+                color: 'hsla(0, 80%, 65%, 1)',
+                fontSize: '0.72rem', fontWeight: 500,
+                cursor: 'pointer', fontFamily: 'var(--font-sans)',
+              }}
+            >
+              <span>Ref: Ativo</span>
+              <X size={10} />
+            </button>
+          </div>
+        ) : (
+          <label
+            title="Carregar imagem de referência semi-transparente"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              padding: '5px 10px', borderRadius: 7,
+              border: '1px solid var(--color-surface-border)',
+              background: 'hsla(0,0%,100%,0.04)',
+              color: 'var(--color-text-secondary)',
+              fontSize: '0.72rem', fontWeight: 500,
+              cursor: 'pointer', userSelect: 'none',
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            <span>Referência</span>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  setReferenceImage(url);
+                }
+              }}
+            />
+          </label>
+        )}
       </div>
 
       {/* Spacer */}
