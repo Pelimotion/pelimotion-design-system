@@ -204,18 +204,22 @@ if (uxCritical.length > 0 || uxHigh.length > 0) {
 
 md += `\n## 3. 🚀 Fila de Execução para Próxima Rodada\n\n`;
 md += `### Passo 1: Execução Focada (Phase 2 - Ideation & Code)\n`;
-md += `- [ ] Integrar engine Generative com UniversalLayers.\n`;
-md += `- [ ] Aplicar design tokens Violeta e tipografia (Space Grotesk, Inter).\n`;
-md += `- [ ] Ajustar layout do painel direito (Ajustes) para UX acordeão.\n`;
-md += `- [ ] Garantir performance: static WebP thumbs, pause GSAP.\n\n`;
+md += `- [x] Integrar engine Generative com UniversalLayers.\n`;
+md += `- [x] Aplicar design tokens Violeta e tipografia (Space Grotesk, Inter).\n`;
+md += `- [x] Ajustar layout do painel direito (Ajustes) para UX acordeão.\n`;
+md += `- [x] Garantir performance: static WebP thumbs, pause GSAP.\n\n`;
 
 md += `### Passo 2: Validação Rigorosa (Phase 3)\n`;
-md += `- [ ] Verificar Empty States nos padrões Freemium conversion.\n`;
-md += `- [ ] Testar se telas quebram ao adicionar novo elemento.\n\n`;
+md += `- [x] Verificar Empty States nos padrões Freemium conversion.\n`;
+md += `- [x] Testar se telas quebram ao adicionar novo elemento.\n\n`;
 
 md += `### Passo 3: Fechamento (Phase 4)\n`;
-md += `- [ ] Rodar npm run build.\n`;
-md += `- [ ] Realizar git add e git commit descritivo.\n`;
+md += `- [x] Rodar npm run build.\n`;
+md += `- [x] Realizar git add e git commit descritivo.\n\n`;
+
+md += `### Passo 4: Próximos Desafios (Backlog)\n`;
+md += `- [ ] Implementar Renderização Headless do lado do servidor (Server-Side Fallback).\n`;
+md += `- [ ] Integrar prompts de IA para geração automática de composições.\n`;
 
 md += `\n## 4. 📈 Histórico de Sessões\n\n`;
 md += `| Sessão | Data | Erros | UX Crítico | UX Alto | FPS |\n`;
