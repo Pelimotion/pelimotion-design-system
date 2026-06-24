@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 27,
+  "sessionsRun": 28,
   "historicalInsights": [
-    "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay",
     "Session 14: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 15: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 16: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
@@ -15,7 +14,8 @@
     "Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.",
     "Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos.",
-    "Session 27: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
+    "Session 27: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 28: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -245,6 +245,14 @@
     {
       "session": 27,
       "date": "2026-06-24T09:40:15.254Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 91
+    },
+    {
+      "session": 28,
+      "date": "2026-06-24T10:00:15.121Z",
       "errors": 0,
       "uxCritical": 0,
       "uxHigh": 0,
