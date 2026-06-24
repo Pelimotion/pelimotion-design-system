@@ -37,11 +37,12 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
       const safeHeight = height % 2 === 0 ? height : height - 1;
 
       const isWebm = format === 'mov'; // WebM internally if they requested VP9/mov in the prompt's context. The prompt says 'mov' for VP9 w/ Alpha or Bg. We'll use Webm muxer for VP9 if format is mov.
-      const codecString = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028'; // VP9 or H.264 High Profile Level 4
+      const webcodecsCodec = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028'; // VP9 or H.264 High Profile Level 4
+      const mediabunnyCodec = isWebm ? 'vp9' : 'avc';
 
       // Check hardware acceleration support
       const support = await VideoEncoder.isConfigSupported({
-        codec: codecString,
+        codec: webcodecsCodec,
         width: safeWidth,
         height: safeHeight,
         hardwareAcceleration: 'prefer-hardware',
@@ -53,13 +54,14 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
       });
 
       videoSource = new VideoSampleSource({
-        codec: codecString as any,
+        codec: mediabunnyCodec as any,
         bitrate: bitrate ?? 8_000_000, // 8 Mbps default
         hardwareAcceleration: support.supported ? 'prefer-hardware' : 'prefer-software',
         transform: {
           width: safeWidth,
           height: safeHeight,
           frameRate: fps,
+          fit: 'fill',
         }
       });
 

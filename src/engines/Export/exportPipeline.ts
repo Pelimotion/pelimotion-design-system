@@ -42,8 +42,6 @@ export async function runExportPipeline(
 ) {
   Telemetry.logEvent('EXPORT_STARTED', { format: config.format, resolution: config.resolution });
 
-
-
   // Check if we can use WebCodecs (Hardware Acceleration)
   // WebCodecs standalone lacks an audio multiplexer in our current architecture.
   const isVideo = config.format === 'mp4' || config.format === 'mov';
@@ -124,6 +122,7 @@ async function exportWithWebCodecs(
     const MAX_IN_FLIGHT = 3;
     let inFlight = 0;
     let framesEncodedCount = 0;
+    let workerError: Error | null = null;
 
     worker.addEventListener('message', (e) => {
       if (e.data.type === 'PROGRESS') {
@@ -132,6 +131,8 @@ async function exportWithWebCodecs(
         onProgress({
           progress: (framesEncodedCount / totalFrames) * 100,
         });
+      } else if (e.data.type === 'ERROR') {
+        workerError = new Error(e.data.message);
       }
     });
 
@@ -139,6 +140,9 @@ async function exportWithWebCodecs(
     const ctx = offscreenCanvas.getContext('2d')!;
 
     for (let frame = 0; frame < totalFrames; frame++) {
+      if (workerError) {
+        throw workerError;
+      }
       if (!useEditorStore.getState().exportState.isExporting) {
         throw new Error('EXPORT_CANCELLED');
       }
@@ -196,8 +200,12 @@ async function exportWithWebCodecs(
       ctx.clearRect(0, 0, width, height);
       if (bgVideo) {
         ctx.drawImage(bgVideo, 0, 0, width, height);
-      } else {
+      } else if (config.format !== 'mov') {
         ctx.fillStyle = config.backgroundColor || '#000000';
+        ctx.fillRect(0, 0, width, height);
+      } else {
+        // For MOV (Alpha QuickTime), paint transparent
+        ctx.fillStyle = 'rgba(0,0,0,0)';
         ctx.fillRect(0, 0, width, height);
       }
 
@@ -218,6 +226,9 @@ async function exportWithWebCodecs(
       const bitmap = await createImageBitmap(offscreenCanvas);
 
       while (inFlight >= MAX_IN_FLIGHT) {
+        if (workerError) {
+          throw workerError;
+        }
         await new Promise(r => setTimeout(r, 2));
       }
 
@@ -240,6 +251,9 @@ async function exportWithWebCodecs(
 
     // Wait for all frames to be encoded
     while (framesEncodedCount < totalFrames) {
+      if (workerError) {
+        throw workerError;
+      }
       await new Promise(r => setTimeout(r, 50));
     }
 

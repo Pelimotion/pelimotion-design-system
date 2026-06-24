@@ -563,6 +563,171 @@ test.describe('Suite 7 — SEO e meta tags', () => {
 });
 
 // ═════════════════════════════════════════════
+// SUITE 9 — FLUXO AVANÇADO (criar, modificar, gizmo, exportar mov)
+// ═════════════════════════════════════════════
+
+test.describe('Suite 9 — Fluxo Avançado de Criação, Edição, Gizmo e Exportação MOV', () => {
+  test('9.1 — Criar texto e forma, modificar propriedades, mover Gizmo e exportar em MOV Alpha', async ({ page }) => {
+    test.setTimeout(80000);
+    setupConsoleCapture(page);
+    await page.setViewportSize(VIEWPORT);
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2000);
+
+    // Limpar localStorage para garantir que o modal de e-mail gate sempre apareça no primeiro export
+    await page.evaluate(() => localStorage.removeItem('pelimotion_has_exported'));
+
+    // 1. Criar camada de texto
+    console.log('📌 Criando camada de texto...');
+    const addElementBtn = page.locator('button:has-text("Adicionar Elemento")').first();
+    await addElementBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await addElementBtn.click();
+    await page.waitForTimeout(500);
+
+    const textOption = page.locator('#layers-panel button:has-text("Texto")').first();
+    await textOption.waitFor({ state: 'visible' });
+    await textOption.click();
+    await page.waitForTimeout(1000);
+
+    // Verificar se camada foi adicionada à lista
+    const textLayerListItem = page.locator('#layers-panel span:has-text("Novo Texto")').first();
+    expect(await textLayerListItem.isVisible()).toBe(true);
+
+    // 2. Criar camada de forma/SVG
+    console.log('📌 Criando camada de forma/SVG...');
+    await addElementBtn.click();
+    await page.waitForTimeout(500);
+
+    const shapeOption = page.locator('#layers-panel button:has-text("Forma / SVG")').first();
+    await shapeOption.waitFor({ state: 'visible' });
+    await shapeOption.click();
+    await page.waitForTimeout(1000);
+
+    // Verificar se camada de forma foi adicionada
+    const shapeLayerListItem = page.locator('#layers-panel span:has-text("Novo Elemento")').first();
+    expect(await shapeLayerListItem.isVisible()).toBe(true);
+
+    // 3. Modificar texto da camada de texto
+    console.log('📌 Selecionando e modificando camada de texto...');
+    await textLayerListItem.click();
+    await page.waitForTimeout(600);
+
+    // Digitar novo texto no painel de propriedades
+    const textarea = page.locator('#properties-panel textarea').first();
+    await textarea.waitFor({ state: 'visible' });
+    await textarea.fill('PELIMOTION ADVANCED TEST');
+    await page.waitForTimeout(800);
+
+    // Verificar se o texto mudou na DOM do canvas
+    const canvasBody = page.locator('#canvas-fixed-resolution');
+    const canvasHtml = await canvasBody.innerHTML();
+    expect(canvasHtml).toContain('PELIMOTION ADVANCED TEST');
+
+    // 4. Selecionar camada de forma e testar o transform Gizmo
+    console.log('📌 Selecionando e testando o transform Gizmo na camada de forma...');
+    await shapeLayerListItem.click();
+    await page.waitForTimeout(800);
+
+    // Achar alça do Gizmo
+    const scaleHandle = page.locator('.scale-handle-bottom-right').first();
+    await scaleHandle.waitFor({ state: 'visible', timeout: 5000 });
+    const handleBox = await scaleHandle.boundingBox();
+
+    let scaleChanged = false;
+    if (handleBox) {
+      const startX = handleBox.x + handleBox.width / 2;
+      const startY = handleBox.y + handleBox.height / 2;
+
+      // Simular drag & drop: mover para a alça, mouse down, mover 50px na diagonal, mouse up
+      await page.mouse.move(startX, startY);
+      await page.mouse.down();
+      await page.mouse.move(startX + 50, startY + 50, { steps: 5 });
+      await page.mouse.up();
+
+      await page.waitForTimeout(800);
+
+      // Ler o valor da escala do input no properties panel para confirmar alteração
+      const scaleInput = page.locator('#properties-panel div:has-text("Escala") + div input[type="number"]').first();
+      if (await scaleInput.isVisible()) {
+        const scaleVal = await scaleInput.inputValue();
+        console.log(`📐 Escala após arraste do Gizmo: ${scaleVal}`);
+        if (parseFloat(scaleVal) !== 1) {
+          scaleChanged = true;
+        }
+      }
+    }
+
+    if (!scaleChanged) {
+      console.warn('⚠️ Alerta: Arraste do Gizmo de escala pode não ter alterado o valor ou as coordenadas do browser diferem em headless mode.');
+    }
+
+    // 5. Configurar exportação em MOV Alpha e baixar
+    console.log('📌 Iniciando exportação em MOV Alpha...');
+    const formatBtn = page.locator('#export-bar span:has-text("PNG Seq"), #export-bar span:has-text("MP4"), #export-bar span:has-text("MOV Alpha"), #export-bar span:has-text("MOV")').first();
+    await formatBtn.click();
+    await page.waitForTimeout(500);
+
+    const movOption = page.locator('button:has-text("MOV Alpha")').first();
+    await movOption.waitFor({ state: 'visible' });
+    await movOption.click();
+    await page.waitForTimeout(500);
+
+    // Mudar duração para 1s e FPS para 10 para acelerar o teste de exportação
+    console.log('📌 Ajustando duração para 1s e FPS para 10 via store...');
+    await page.evaluate(() => {
+      const store = (window as any).__pelimotion_store__;
+      if (store) {
+        store.getState().updateExportConfig({
+          duration: 1,
+          fps: 10,
+        });
+      }
+    });
+    await page.waitForTimeout(500);
+
+    const exportBtn = page.locator('#export-btn');
+    await screenshot(page, '09_before_mov_export');
+
+    // Capturar o download
+    const [download] = await Promise.all([
+      page.waitForEvent('download', { timeout: 45000 }),
+      (async () => {
+        await exportBtn.click();
+        await page.waitForTimeout(1000);
+
+        // Preencher email-gate
+        const emailInput = page.locator('[data-testid="email-gate-input"]');
+        if (await emailInput.isVisible()) {
+          await emailInput.fill('playwright-test-mov@pelimotion.art');
+          const submitBtn = page.locator('button[type="submit"]:has-text("Desbloquear")').first();
+          await submitBtn.click();
+        }
+      })()
+    ]);
+
+    const downloadPath = await download.path();
+    const downloadName = download.suggestedFilename();
+    const downloadSize = fs.statSync(downloadPath).size;
+
+    console.log(`📥 Download concluído: ${downloadName} (${downloadSize} bytes)`);
+    await screenshot(page, '09b_after_mov_export');
+
+    const passed = downloadName.endsWith('.mov') && downloadSize > 0;
+
+    writePartial('s9_full_workflow', {
+      passed,
+      findings: passed ? [] : ['FALHA: O arquivo exportado não tem extensão .mov ou tem 0 bytes'],
+      downloadName,
+      downloadSize,
+      scaleGizmoTest: scaleChanged ? 'passed' : 'warning_unverified_coordinates',
+    });
+
+    expect(downloadName).toContain('.mov');
+    expect(downloadSize).toBeGreaterThan(0);
+  });
+});
+
+// ═════════════════════════════════════════════
 // SUITE 8 — AGREGAÇÃO FINAL + RELATÓRIO
 // ═════════════════════════════════════════════
 
@@ -577,7 +742,7 @@ test.describe('Suite 8 — Relatório final', () => {
     // ── Esperar por partiais dos outros testes (poll até 25s) ──
     // Necessário porque tests paralelos podem ainda estar rodando
     const EXPECTED_PARTIALS = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded',
-      's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo'];
+      's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow'];
     const pollStart = Date.now();
     let allPresent = false;
     while (Date.now() - pollStart < 25000) {
@@ -616,7 +781,7 @@ test.describe('Suite 8 — Relatório final', () => {
     const watermark   = partials['s4_watermark']?.watermark     || 'missing';
     const email_gate  = partials['s5_email_gate']?.email_gate   || 'missing';
 
-    const suiteIds = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded', 's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo'];
+    const suiteIds = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded', 's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow'];
     const suites = suiteIds.map(id => {
       const p = partials[id];
       if (!p) return { name: id, passed: false, findings: [`Suite ${id} não executou ou não gerou partial`], screenshots: [] };

@@ -864,4 +864,8 @@ export const useEditorStore = create<EditorState>((set) => ({
       console.error('Failed to fetch local fonts:', error);
     }
   },
-}))
+}));
+
+if (typeof window !== 'undefined') {
+  (window as any).__pelimotion_store__ = useEditorStore;
+}

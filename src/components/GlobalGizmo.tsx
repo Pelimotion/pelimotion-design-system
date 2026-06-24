@@ -16,6 +16,9 @@ import { InteractiveGizmo } from './InteractiveGizmo';
 export function GlobalGizmo() {
   const {
     showGizmo,
+    selectedLayerId,
+    layers,
+    updateLayer,
     activeTypoLayerId,
     activeGenerativeLayerId,
     activeCompositionLayerId,
@@ -42,7 +45,7 @@ export function GlobalGizmo() {
       targetRef.current = target;
 
       // Compute a key that represents "which thing is selected in which mode"
-      const currentKey = `${activeTypoLayerId || activeGenerativeLayerId || activeCompositionLayerId || 'none'}::${layoutMode}`;
+      const currentKey = `${selectedLayerId || activeTypoLayerId || activeGenerativeLayerId || activeCompositionLayerId || 'none'}::${layoutMode}`;
 
       // If target changed (layer switch or layout mode change) → force a fresh mount
       if (currentKey !== lastTargetKeyRef.current) {
@@ -108,14 +111,19 @@ export function GlobalGizmo() {
     gsap.ticker.add(updateGizmo);
     return () => gsap.ticker.remove(updateGizmo);
     // Re-run when showGizmo, active IDs, or layout mode change
-  }, [showGizmo, activeTypoLayerId, activeGenerativeLayerId, activeCompositionLayerId, layoutMode]);
+  }, [showGizmo, selectedLayerId, activeTypoLayerId, activeGenerativeLayerId, activeCompositionLayerId, layoutMode]);
 
   if (!showGizmo) return null;
 
   let currentLayerScale = 1;
   let currentLayerRotation = 0;
 
-  if (activeTypoLayerId) {
+  const selectedLayer = layers.find(l => l.id === selectedLayerId);
+
+  if (selectedLayer) {
+    currentLayerScale = selectedLayer.transform.scale;
+    currentLayerRotation = selectedLayer.transform.rotation;
+  } else if (activeTypoLayerId) {
     const layer = motionConfig.typography.layers.find(l => l.id === activeTypoLayerId);
     if (layer) {
       currentLayerScale = layer.transform.scale;
@@ -136,29 +144,45 @@ export function GlobalGizmo() {
   }
 
   const handleScale = (scale: number) => {
-    if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { scale });
-    if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { scale });
-    if (activeCompositionLayerId) {
-      const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
-      if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, scale } });
+    if (selectedLayerId && selectedLayer) {
+      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, scale } });
+    } else {
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { scale });
+      if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { scale });
+      if (activeCompositionLayerId) {
+        const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
+        if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, scale } });
+      }
     }
   };
 
   const handleRotate = (rotation: number) => {
-    if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { rotation });
-    if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { rotation });
-    if (activeCompositionLayerId) {
-      const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
-      if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, rotation } });
+    if (selectedLayerId && selectedLayer) {
+      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, rotation } });
+    } else {
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { rotation });
+      if (activeGenerativeLayerId) updateLayerTransform(activeGenerativeLayerId, { rotation });
+      if (activeCompositionLayerId) {
+        const layer = useEditorStore.getState().compositionLayers.find(l => l.id === activeCompositionLayerId);
+        if (layer) updateCompositionLayer(activeCompositionLayerId, { transform: { ...layer.transform, rotation } });
+      }
     }
   };
 
   const handleResizeX = (width: number) => {
-    if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxWidth: width });
+    if (selectedLayerId && selectedLayer) {
+      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, textBoxWidth: width } as any });
+    } else {
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxWidth: width });
+    }
   };
 
   const handleResizeY = (height: number) => {
-    if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxHeight: height });
+    if (selectedLayerId && selectedLayer) {
+      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, textBoxHeight: height } as any });
+    } else {
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxHeight: height });
+    }
   };
 
   return (
@@ -191,8 +215,8 @@ export function GlobalGizmo() {
           onRotate={handleRotate}
           onResizeX={handleResizeX}
           onResizeY={handleResizeY}
-          showResizeX={!!activeTypoLayerId}
-          showResizeY={!!activeTypoLayerId}
+          showResizeX={!!activeTypoLayerId || (selectedLayer?.type === 'text')}
+          showResizeY={!!activeTypoLayerId || (selectedLayer?.type === 'text')}
         />
       </div>
     </div>
