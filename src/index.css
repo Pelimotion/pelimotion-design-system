@@ -1,5 +1,5 @@
-/* ─── Google Fonts: Inter + JetBrains Mono ────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* ─── Google Fonts: Inter + Space Grotesk + JetBrains Mono ────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -25,11 +25,11 @@
   --color-text-muted: #666666;
   --color-text-ghost: #444444;
 
-  /* Accent — Electric Cyan */
-  --color-accent: #00d4ff;
-  --color-accent-hover: #33ddff;
-  --color-accent-muted: hsla(191, 100%, 50%, 0.15);
-  --color-accent-glow: hsla(191, 100%, 50%, 0.25);
+  /* Accent — Violeta Premium */
+  --color-accent: #6B5CE7;
+  --color-accent-hover: #A78BFA;
+  --color-accent-muted: hsla(247, 74%, 63%, 0.15);
+  --color-accent-glow: hsla(247, 74%, 63%, 0.25);
 
   /* Status */
   --color-success: #00cc88;
@@ -38,6 +38,7 @@
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', var(--font-sans);
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
 
   /* Spacing Scale */

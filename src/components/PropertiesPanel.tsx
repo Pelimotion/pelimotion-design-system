@@ -138,22 +138,23 @@ function SliderRow({ label, value, onChange, min = 0, max = 100, step = 1, unit,
 }
 
 function ColorInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label?: string }) {
+  const safeValue = value || '#000000';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
       <div style={{ position: 'relative', flexShrink: 0 }}>
         <div style={{
-          width: 24, height: 24, borderRadius: 5, background: value,
+          width: 24, height: 24, borderRadius: 5, background: safeValue,
           border: '1px solid var(--color-surface-border)', cursor: 'pointer',
           boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05)',
         }} />
         <input
-          type="color" value={value}
+          type="color" value={safeValue}
           onChange={(e) => onChange(e.target.value)}
           style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }}
         />
       </div>
       <span style={{ fontSize: '0.65rem', color: 'var(--color-text-ghost)', fontFamily: 'var(--font-mono)' }}>
-        {label || value.toUpperCase()}
+        {label || safeValue.toUpperCase()}
       </span>
     </div>
   );
@@ -597,42 +598,17 @@ function TextBoxProperties({ layer }: { layer: UniversalLayer }) {
     </SectionHeader>
   );
 }
-
-// ─── Empty State ─────────────────────────────────────────────────────────────
-
-function EmptyState() {
-  return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', height: '100%', gap: 12, padding: 24, textAlign: 'center',
-    }}>
-      <div style={{
-        width: 44, height: 44, borderRadius: 12,
-        background: 'hsla(0,0%,100%,0.03)',
-        border: '1px solid var(--color-surface-border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--color-text-ghost)',
-      }}>
-        <Settings2 size={20} />
-      </div>
-      <div>
-        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: 4 }}>
-          Propriedades
-        </p>
-        <p style={{ fontSize: '0.68rem', color: 'var(--color-text-ghost)', lineHeight: 1.5 }}>
-          Selecione uma camada para ver e editar suas propriedades
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ─── PropertiesPanel (Main Export) ───────────────────────────────────────────
-
 export function PropertiesPanel() {
   const { layers, selectedLayerId } = useEditorStore();
   const layer = layers.find(l => l.id === selectedLayerId);
 
+  if (!selectedLayerId || !layer) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 16, height: '100%', color: 'var(--color-text-ghost)', background: 'var(--color-bg-secondary)' }}>
+        <Settings2 size={16} />
+      </div>
+    );
+  }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
@@ -645,7 +621,7 @@ export function PropertiesPanel() {
           fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em',
           textTransform: 'uppercase', color: 'var(--color-text-muted)',
         }}>
-          Propriedades
+          Ajustes
         </span>
         {layer && (
           <span style={{
@@ -659,24 +635,20 @@ export function PropertiesPanel() {
         )}
       </div>
 
-      {!layer ? (
-        <EmptyState />
-      ) : (
-        <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* Type-specific properties */}
-          {layer.type === 'text' && <TextProperties layer={layer} />}
-          {layer.type === 'element' && <ElementProperties layer={layer} />}
-          {layer.type === 'overlay' && <OverlayProperties layer={layer} />}
-          {layer.type === 'shadow-guard' && <ShadowGuardProperties layer={layer} />}
-          {layer.type === 'text-box' && <TextBoxProperties layer={layer} />}
+      <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {/* Type-specific properties */}
+        {layer.type === 'text' && <TextProperties layer={layer} />}
+        {layer.type === 'element' && <ElementProperties layer={layer} />}
+        {layer.type === 'overlay' && <OverlayProperties layer={layer} />}
+        {layer.type === 'shadow-guard' && <ShadowGuardProperties layer={layer} />}
+        {layer.type === 'text-box' && <TextBoxProperties layer={layer} />}
 
-          {/* Shared: Transform */}
-          <TransformSection layer={layer} />
+        {/* Shared: Transform */}
+        <TransformSection layer={layer} />
 
-          {/* Shared: Animation */}
-          <AnimationSection layer={layer} />
-        </div>
-      )}
+        {/* Shared: Animation */}
+        <AnimationSection layer={layer} />
+      </div>
     </div>
   );
 }

@@ -47,7 +47,7 @@ function App() {
 
   const {
     exportConfig, camera, featureFlags, libraryModalOpen,
-    setLibraryModalOpen,
+    setLibraryModalOpen, selectedLayerId,
   } = useEditorStore();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -352,11 +352,12 @@ function App() {
         <div
           id="properties-panel"
           style={{
-            width: 280, flexShrink: 0,
+            width: selectedLayerId ? 240 : 40, flexShrink: 0,
             borderLeft: '1px solid var(--color-surface-border)',
             display: 'flex', flexDirection: 'column',
             background: 'var(--color-bg-secondary)',
             overflowY: 'auto',
+            transition: 'width 0.2s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
           <PropertiesPanel />

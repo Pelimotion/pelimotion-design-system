@@ -55,139 +55,104 @@ test.describe('Pelimotion Deep UX Audit', () => {
         errors.push({ type: 'crash', text: 'App shell (#app-shell) not found — app did not boot.' });
       }
 
-      const sidebar = page.locator('#sidebar');
+      const layersPanel = page.locator('#layers-panel');
+      const propertiesPanel = page.locator('#properties-panel');
       const topBar = page.locator('#top-bar');
-      if (!await sidebar.isVisible()) errors.push({ type: 'usability', text: 'Sidebar (#sidebar) is not visible on load.' });
+      if (!await layersPanel.isVisible()) errors.push({ type: 'usability', text: 'Layers Panel (#layers-panel) is not visible on load.' });
+      if (!await propertiesPanel.isVisible()) errors.push({ type: 'usability', text: 'Properties Panel (#properties-panel) is not visible on load.' });
       if (!await topBar.isVisible()) errors.push({ type: 'usability', text: 'Top toolbar (#top-bar) is not visible on load.' });
 
       await snap(page, '00_initial_load');
 
-      // ── 1. TIPOGRAFIA panel ──────────────────────────────────────────────────
-      await page.locator('#nav-typography').click();
-      await page.waitForTimeout(700);
-      await snap(page, '01_typography_panel');
-
-      // Check for Add Text button in toolbar
-      const addTextBtn = page.getByRole('button', { name: /Adicionar Texto/i }).first();
-      if (!await addTextBtn.isVisible()) {
-        uxFindings.push({ panel: 'typography', issue: 'HIGH', text: '"Adicionar Texto" button NOT found in toolbar — user cannot quickly add text layers.' });
+      // ── 1. Add Text Layer ──────────────────────────────────────────────────
+      // Open add layer dropdown in LayersPanel
+      const addLayerBtn = page.locator('#layers-panel').getByRole('button', { name: /Adicionar Camada/i }).first();
+      if (!await addLayerBtn.isVisible()) {
+        uxFindings.push({ panel: 'layers', issue: 'HIGH', text: '"Adicionar Camada" button NOT found in Layers Panel.' });
       } else {
-        await addTextBtn.click();
+        await addLayerBtn.click();
         await page.waitForTimeout(500);
-        await snap(page, '01b_typography_add_text');
+        await snap(page, '01_layers_dropdown_open');
+        
+        // Click "Texto" option
+        await page.getByRole('button', { name: 'Texto', exact: true }).click();
+        await page.waitForTimeout(700);
+        await snap(page, '01b_text_layer_added');
       }
 
-      // Check sidebar has content
-      const typoPanel = page.locator('.custom-scrollbar').first();
-      if (!await typoPanel.isVisible()) {
-        uxFindings.push({ panel: 'typography', issue: 'HIGH', text: 'Typography panel content is not rendering inside sidebar.' });
-      }
-
-      // Check layout mode buttons
-      const layoutModeGroup = page.locator('[role="group"][aria-label="Modo de Layout"]');
-      if (!await layoutModeGroup.isVisible()) {
-        uxFindings.push({ panel: 'typography', issue: 'MEDIUM', text: 'Layout mode group (Stack, Grid, etc.) not found in top toolbar for typography panel.' });
+      // Check properties panel has typography settings when text layer is selected
+      const textItem = page.locator('#layers-panel').getByText('Novo Texto').first();
+      if (await textItem.isVisible()) {
+        await textItem.click();
+        await page.waitForTimeout(500);
+        await snap(page, '01c_text_layer_selected');
       }
 
       metrics.panels.typography = 'audited';
 
-      // ── 2. GENERATIVO panel ──────────────────────────────────────────────────
-      await page.locator('#nav-generative').click();
-      await page.waitForTimeout(800);
-      await snap(page, '02_generative_panel');
-
-      const shapeButtons = page.getByRole('button', { name: /Spirograph|Onda|Grade|Hex|Partícula/i });
-      const shapeCount = await shapeButtons.count();
-      if (shapeCount === 0) {
-        uxFindings.push({ panel: 'generative', issue: 'HIGH', text: 'No generative shape buttons found — cannot create generative content.' });
-      } else {
-        await shapeButtons.first().click();
-        await page.waitForTimeout(600);
-        await snap(page, '02b_generative_shape_active');
+      // ── 2. Add Shape Element Layer ──────────────────────────────────────────
+      if (await addLayerBtn.isVisible()) {
+        await addLayerBtn.click();
+        await page.waitForTimeout(500);
+        // Click "Forma / SVG" option
+        await page.getByRole('button', { name: 'Forma / SVG', exact: true }).click();
+        await page.waitForTimeout(700);
+        await snap(page, '02_shape_layer_added');
       }
 
       // Check for canvas rendering
       const canvasViewport = page.locator('#canvas-viewport');
       if (!await canvasViewport.isVisible()) {
-        uxFindings.push({ panel: 'generative', issue: 'CRITICAL', text: 'Canvas viewport (#canvas-viewport) not visible in generative mode.' });
+        uxFindings.push({ panel: 'viewport', issue: 'CRITICAL', text: 'Canvas viewport (#canvas-viewport) not visible.' });
       }
 
-      metrics.panels.generative = `${shapeCount} shapes found`;
+      metrics.panels.generative = 'audited';
 
-      // ── 3. BIBLIOTECA panel ──────────────────────────────────────────────────
-      await page.locator('#nav-library').click();
-      await page.waitForTimeout(700);
-      await snap(page, '03_library_panel');
-
-      // Check if library has content or an empty state
-      const libraryEmpty = page.getByText(/Nenhum ativo|Biblioteca vazia|Empty/i).first();
-      const libraryItems = page.locator('[data-library-item]');
-      if (!await libraryEmpty.isVisible() && (await libraryItems.count()) === 0) {
-        uxFindings.push({ panel: 'library', issue: 'MEDIUM', text: 'Library panel shows no items and no empty state — user is confused about what to do here.' });
+      // ── 3. BIBLIOTECA panel (modal) ─────────────────────────────────────────
+      const libBtn = page.locator('#top-bar').getByRole('button', { name: /Biblioteca/i }).first();
+      if (!await libBtn.isVisible()) {
+        uxFindings.push({ panel: 'library', issue: 'HIGH', text: 'Library button not found in TopBar.' });
+      } else {
+        await libBtn.click();
+        await page.waitForTimeout(700);
+        await snap(page, '03_library_modal_open');
+        
+        // Close modal
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(500);
+        await snap(page, '03b_library_modal_closed');
       }
       metrics.panels.library = 'audited';
 
-      // ── 4. COMPOSIÇÃO panel ──────────────────────────────────────────────────
-      await page.locator('#nav-composition').click();
-      await page.waitForTimeout(700);
-      await snap(page, '04_composition_panel');
-
-      // Check for timeline
+      // ── 4. COMPOSIÇÃO / TIMELINE audit ──────────────────────────────────────
       const timeline = page.locator('#composition-timeline, [data-testid="timeline"]').first();
       if (!await timeline.isVisible()) {
-        uxFindings.push({ panel: 'composition', issue: 'HIGH', text: 'Composition timeline not found or not visible — main workflow broken.' });
+        uxFindings.push({ panel: 'composition', issue: 'HIGH', text: 'Composition timeline not found or not visible.' });
       }
 
-      // Check bento cards in sidebar
-      const bentoCards = page.locator('[style*="border-radius: 12px"]');
-      const bentoCount = await bentoCards.count();
-      if (bentoCount < 2) {
-        uxFindings.push({ panel: 'composition', issue: 'LOW', text: `Only ${bentoCount} bento card(s) found in composition sidebar — layout may feel sparse.` });
+      // Check resolution selector in export bar
+      const exportBar = page.locator('#export-bar');
+      if (await exportBar.isVisible()) {
+        const propDropdown = exportBar.getByText(/Proporção|16:9|9:16|1:1/i).first();
+        if (!await propDropdown.isVisible()) {
+          uxFindings.push({ panel: 'composition', issue: 'MEDIUM', text: 'Aspect ratio selector not visible in export bar.' });
+        }
       }
+      metrics.panels.composition = 'audited';
 
-      // Check resolution selector
-      const resolutionSelect = page.locator('select').first();
-      if (!await resolutionSelect.isVisible()) {
-        uxFindings.push({ panel: 'composition', issue: 'MEDIUM', text: 'Resolution selector not visible in composition panel.' });
-      }
-      metrics.panels.composition = `${bentoCount} bento cards`;
-
-      // ── 5. EXPORTAR panel ──────────────────────────────────────────────────
-      await page.locator('#nav-export').click();
-      await page.waitForTimeout(800);
-      await snap(page, '05_export_panel');
-
-      const exportButton = page.getByRole('button', { name: /exportar|export|Render/i }).first();
-      if (!await exportButton.isVisible()) {
-        uxFindings.push({ panel: 'export', issue: 'CRITICAL', text: 'Export/Render button NOT visible in export panel — user cannot export anything!' });
+      // ── 5. EXPORTAR button ──────────────────────────────────────────────────
+      if (await exportBar.isVisible()) {
+        const exportButton = exportBar.getByRole('button', { name: /Exportar/i }).first();
+        if (!await exportButton.isVisible()) {
+          uxFindings.push({ panel: 'export', issue: 'CRITICAL', text: 'Export button NOT visible in export bar.' });
+        }
       }
       metrics.panels.export = 'audited';
 
       // ── 6. ViewportControls audit ─────────────────────────────────────────
-      // Navigate back to generative to check viewport controls
-      await page.locator('#nav-generative').click();
-      await page.waitForTimeout(500);
-      const viewportControls = page.locator('[title="Fit to Screen"], [title="Zoom In"]').first();
+      const viewportControls = page.locator('[title="Fit to Screen"], [title="Zoom In"], button:has-text("100%")').first();
       if (!await viewportControls.isVisible()) {
-        uxFindings.push({ panel: 'viewport', issue: 'MEDIUM', text: 'Viewport controls (zoom/fit) not visible — user has no camera control affordance.' });
-      }
-
-      // ── 7. Sidebar collapse / expand ─────────────────────────────────────
-      const toggleSidebarBtn = page.locator('#toggle-sidebar');
-      if (!await toggleSidebarBtn.isVisible()) {
-        uxFindings.push({ panel: 'navigation', issue: 'MEDIUM', text: 'Sidebar toggle button (#toggle-sidebar) not visible.' });
-      } else {
-        await toggleSidebarBtn.click();
-        await page.waitForTimeout(400);
-        await snap(page, '06_sidebar_collapsed');
-        // Clicking a nav item when sidebar is collapsed should auto-expand
-        await page.locator('#nav-typography').click();
-        await page.waitForTimeout(600);
-        await snap(page, '07_sidebar_auto_expanded');
-        const sidebarWidth = await page.locator('#sidebar').evaluate(el => el.getBoundingClientRect().width);
-        if (sidebarWidth <= 60) {
-          uxFindings.push({ panel: 'navigation', issue: 'HIGH', text: `Sidebar did NOT auto-expand when nav tab clicked while collapsed (width=${sidebarWidth}px). This is a UX regression.` });
-        }
+        uxFindings.push({ panel: 'viewport', issue: 'MEDIUM', text: 'Viewport controls (zoom/fit) not visible.' });
       }
 
       // ── 8. Keyboard shortcut smoke test ─────────────────────────────────
@@ -200,8 +165,6 @@ test.describe('Pelimotion Deep UX Audit', () => {
       await page.keyboard.press('Space');
 
       // ── 9. FPS measurement ───────────────────────────────────────────────
-      await page.locator('#nav-generative').click();
-      await page.waitForTimeout(400);
       const fps = await page.evaluate(() => new Promise(resolve => {
         let frames = 0;
         const start = performance.now();

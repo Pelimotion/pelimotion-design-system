@@ -1,8 +1,6 @@
 {
-  "sessionsRun": 13,
+  "sessionsRun": 16,
   "historicalInsights": [
-    "Sidebar auto-expansion when clicking nav tabs on a collapsed sidebar provides much higher UX coherence than forcing a manual expansion.",
-    "Decoupling canvas/generative overlays to accept partial motionConfig structures allows independent rendering states during static and composition playbacks.",
     "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.",
     "Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken.",
     "Session 8 [Typography Engine & Text Layer UX]: 0 erros, 4 achados UX, FPS=74. TOP: Composition timeline not found or not visible — main workflow broken.",
@@ -14,7 +12,10 @@
     "Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.",
     "When a feature is duplicated across sidebar nav and toolbar, always keep it ONLY in the sidebar nav to reduce cognitive load and keep the toolbar focused on canvas-context tools.",
     "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage.",
-    "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay"
+    "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay",
+    "Session 14: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 15: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 16: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -122,6 +123,30 @@
       "uxFindings": 1,
       "fps": 15,
       "timestamp": "2026-06-15T02:58:12.073Z"
+    },
+    {
+      "session": 14,
+      "date": "2026-06-24T07:26:47.593Z",
+      "errors": 2,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 15,
+      "date": "2026-06-24T07:27:35.947Z",
+      "errors": 2,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 16,
+      "date": "2026-06-24T07:29:43.992Z",
+      "errors": 2,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
     }
   ]
 }

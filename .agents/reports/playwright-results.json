@@ -1,28 +1,15 @@
 {
   "errors": [
     {
-      "type": "performance",
-      "text": "FPS TOO LOW: 15 fps — canvas animation is janky. Must be above 30fps for acceptable UX."
+      "type": "crash",
+      "text": "TEST ABORTED: locator.click: Error: strict mode violation: getByRole('button', { name: 'Texto', exact: true }) resolved to 2 elements:\n    1) <button>…</button> aka locator('#top-bar').getByRole('button', { name: 'Texto' })\n    2) <button>…</button> aka locator('#layers-panel').getByRole('button', { name: 'Texto', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Texto', exact: true })\u001b[22m\n"
     }
   ],
-  "uxFindings": [
-    {
-      "panel": "typography",
-      "issue": "HIGH",
-      "text": "\"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text layers."
-    }
-  ],
+  "uxFindings": [],
   "metrics": {
-    "fps": 15,
-    "panels": {
-      "typography": "audited",
-      "generative": "5 shapes found",
-      "library": "audited",
-      "composition": "4 bento cards",
-      "export": "audited"
-    },
-    "accessibilityFocused": "BUTTON "
+    "fps": 0,
+    "panels": {}
   },
   "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
-  "timestamp": "2026-06-15T02:58:11.602Z"
+  "timestamp": "2026-06-24T07:36:17.002Z"
 }

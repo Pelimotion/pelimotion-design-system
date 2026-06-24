@@ -11,10 +11,13 @@ import React, { useEffect, useRef } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { UniversalLayer } from '@/types/universalLayers.types';
 import { gsap } from 'gsap';
+import { renderGenerativeShape } from '@/engines/Generative/shapes';
+import { createNoiseDriver } from '@/engines/Generative/noiseEngine';
+import type { NoiseChannel, NoiseDriver } from '@/engines/Generative/noiseEngine';
 
 // ─── Text Layer Renderer ─────────────────────────────────────────────────────
 
-function TextLayerRenderer({ layer }: { layer: UniversalLayer }) {
+function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelected: boolean }) {
   const d = layer.textData!;
   const t = layer.transform;
   const ref = useRef<HTMLDivElement>(null);
@@ -68,6 +71,7 @@ function TextLayerRenderer({ layer }: { layer: UniversalLayer }) {
   return (
     <div
       ref={ref}
+      data-gizmo-target={isSelected ? 'active' : undefined}
       style={{
         position: 'absolute',
         transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
@@ -194,19 +198,212 @@ function TextBoxRenderer({ layer }: { layer: UniversalLayer }) {
   return <div style={getBoxStyle()} />;
 }
 
+// ─── Element Colors Helper ───────────────────────────────────────────────────
+
+function applyElementColors(container: HTMLElement, colorMode: string, colors: string[]) {
+  let palette = colors && colors.length > 0 ? colors.filter(Boolean) : ['#a78bfa'];
+  
+  if (colorMode === 'duotone') {
+    palette = ['var(--canvas-primary)', 'var(--canvas-accent)'];
+  } else if (colorMode === 'tritone') {
+    palette = ['var(--canvas-primary)', 'var(--canvas-accent)', 'var(--canvas-secondary)'];
+  }
+
+  const paintableEls = Array.from(container.querySelectorAll(
+    'svg path, svg rect, svg circle, svg polygon, svg ellipse, svg line, svg polyline, svg text, svg use'
+  )) as SVGElement[];
+
+  paintableEls.forEach(el => {
+    if (!el.hasAttribute('data-orig-fill-recorded')) {
+      el.setAttribute('data-orig-fill', el.style.fill || '');
+      el.setAttribute('data-orig-stroke', el.style.stroke || '');
+      el.setAttribute('data-orig-color', el.style.color || '');
+      el.setAttribute('data-orig-fill-recorded', 'true');
+    }
+  });
+
+  paintableEls.forEach(el => {
+    el.style.fill = el.getAttribute('data-orig-fill') || '';
+    el.style.stroke = el.getAttribute('data-orig-stroke') || '';
+    el.style.color = el.getAttribute('data-orig-color') || '';
+  });
+
+  if (colorMode === 'original') {
+    return;
+  }
+
+  let colorIndex = 0;
+  paintableEls.forEach(el => {
+    const color = colorMode === 'solid' ? palette[0] || '#a78bfa' : palette[colorIndex % palette.length] || '#a78bfa';
+    
+    const isLine = el.tagName.toLowerCase() === 'line' || el.tagName.toLowerCase() === 'polyline';
+    const hasFillNone = el.getAttribute('fill') === 'none' || el.getAttribute('data-orig-fill') === 'none';
+    const isStrokeBased = isLine || hasFillNone;
+    
+    if (isStrokeBased) {
+      el.style.stroke = color;
+      el.style.fill = 'none';
+    } else {
+      el.style.fill = color;
+      const originalStroke = el.getAttribute('stroke');
+      if (originalStroke && originalStroke !== 'none') {
+        el.style.stroke = color;
+      } else {
+        el.style.stroke = 'none';
+      }
+    }
+    
+    colorIndex++;
+  });
+}
+
+// ─── Element Layer Renderer ──────────────────────────────────────────────────
+
+function ElementLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelected: boolean }) {
+  const d = layer.elementData!;
+  const t = layer.transform;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isPlaying } = useEditorStore();
+  const driversRef = useRef<Map<string, NoiseDriver>>(new Map());
+
+  useEffect(() => {
+    if (!containerRef.current || !layer.visible) return;
+    const container = containerRef.current;
+    
+    applyElementColors(container, d.colorMode, d.colors);
+
+    const baseChannels = ['x', 'y', 'rotation', 'scale', 'scaleX', 'scaleY', 'skew'] as const;
+    const channels = d.opacityMode === 'wiggle-group'
+      ? [...baseChannels, 'opacity' as const]
+      : [...baseChannels];
+
+    let groupTargets: Element[] = [];
+    let pathTargets: Element[] = [];
+
+    if (d.targetMode === 'group') {
+      groupTargets = [container];
+    } else {
+      pathTargets = Array.from(container.querySelectorAll(
+        'svg path, svg rect, svg circle, svg polygon, svg ellipse, svg line, svg polyline'
+      ));
+      if (pathTargets.length === 0) groupTargets = [container];
+    }
+
+    const motionTargets = groupTargets.length > 0 ? groupTargets : pathTargets;
+    const currentDrivers = driversRef.current;
+    
+    currentDrivers.forEach(dr => dr.stop());
+    currentDrivers.clear();
+
+    const layerSeed = 12345;
+
+    if (motionTargets.length > 0) {
+      const driver = createNoiseDriver(motionTargets, {
+        amplitude: d.noiseAmplitude,
+        frequency: d.noiseFrequency,
+        octaves: d.noiseOctaves,
+        persistence: d.noisePersistence,
+        noiseType: 'simplex2D',
+        seed: layerSeed,
+        channels: channels as NoiseChannel[],
+        propertyFps: {},
+        propertyAmplitudes: {},
+        propertyFrequencies: {},
+        targetMode: d.targetMode === 'group' ? 'group' : 'layers',
+        colorMode: d.colorMode === 'original' ? 'solid' : d.colorMode as any,
+        colors: d.colors,
+        previewGrid: 'none',
+      });
+      currentDrivers.set(layer.id + '_motion', driver);
+      if (isPlaying) driver.start();
+    }
+
+    if (d.opacityMode === 'wiggle-paths' && pathTargets.length > 0) {
+      const opacityDriver = createNoiseDriver(pathTargets, {
+        amplitude: 20,
+        frequency: d.noiseFrequency,
+        octaves: d.noiseOctaves,
+        persistence: d.noisePersistence,
+        noiseType: 'simplex2D',
+        seed: layerSeed + 500,
+        channels: ['opacity'],
+        propertyFps: {},
+        propertyAmplitudes: { opacity: 1 },
+        propertyFrequencies: { opacity: 1 },
+        targetMode: 'layers',
+        colorMode: 'solid',
+        colors: [],
+        previewGrid: 'none',
+      });
+      currentDrivers.set(layer.id + '_opacity', opacityDriver);
+      if (isPlaying) opacityDriver.start();
+    }
+
+    return () => {
+      currentDrivers.forEach(dr => dr.stop());
+      currentDrivers.clear();
+    };
+  }, [
+    d.noiseAmplitude, d.noiseFrequency, d.noiseOctaves, d.noisePersistence,
+    d.targetMode, d.opacityMode, d.colorMode, d.colors, layer.visible, isPlaying
+  ]);
+
+  if (!layer.visible) return null;
+
+  const shapeColor = d.colors?.[0] || '#a78bfa';
+
+  return (
+    <div
+      className="layer-base"
+      data-gizmo-target={isSelected ? 'active' : undefined}
+      style={{
+        position: 'absolute',
+        transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
+        top: '50%', left: '50%',
+        opacity: d.opacityMode === 'fixed' ? t.opacity : 1,
+        width: 200, height: 200,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: layer.zIndex + 10,
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        ref={containerRef}
+        className="gen-layer-container"
+        style={{ width: '100%', height: '100%' }}
+      >
+        {d.shapeType === 'raw' && d.svgString ? (
+          <div
+            style={{ width: '100%', height: '100%' }}
+            dangerouslySetInnerHTML={{ __html: d.svgString }}
+          />
+        ) : (
+          <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+            {renderGenerativeShape(
+              { type: d.shapeType, shapeProps: d.shapeProps } as any,
+              shapeColor
+            )}
+          </svg>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── UniversalCanvasPreview (Main Export) ─────────────────────────────────────
 
 export function UniversalCanvasPreview() {
-  const { layers } = useEditorStore();
+  const { layers, selectedLayerId } = useEditorStore();
   const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
 
   return (
     <div style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
       {sorted.map(layer => {
         if (!layer.visible) return null;
+        const isSelected = selectedLayerId === layer.id;
         switch (layer.type) {
           case 'text':
-            return <TextLayerRenderer key={layer.id} layer={layer} />;
+            return <TextLayerRenderer key={layer.id} layer={layer} isSelected={isSelected} />;
           case 'overlay':
             return <OverlayLayerRenderer key={layer.id} layer={layer} />;
           case 'shadow-guard':
@@ -214,9 +411,7 @@ export function UniversalCanvasPreview() {
           case 'text-box':
             return <TextBoxRenderer key={layer.id} layer={layer} />;
           case 'element':
-            // Element layers are handled by the existing Generative engine
-            // This is a placeholder – integrated via GenerativePreview adapter
-            return null;
+            return <ElementLayerRenderer key={layer.id} layer={layer} isSelected={isSelected} />;
           default:
             return null;
         }
