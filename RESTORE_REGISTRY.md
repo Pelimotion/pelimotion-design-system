@@ -116,3 +116,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-15T00-50-10-065Z** | `backup-branch-2026-06-15T00-50-10-065Z` | `1221b42` | 14/06/2026, 21:50:10 | Após Session 7: Melhorias de UX no ViewportControls, CompositionPanel e LibraryPanel com states vazios e bento cards premium |
 | **restore-2026-06-15T01-55-50-395Z** | `backup-branch-2026-06-15T01-55-50-395Z` | `3b826a0` | 14/06/2026, 22:55:50 | Antes da Sessão 11: Reestruturação completa de UI/UX — remoção de duplicações e reorganização do workflow |
 | **restore-2026-06-15T02-32-23-717Z** | `backup-branch-2026-06-15T02-32-23-717Z` | `8344507` | 14/06/2026, 23:32:23 | Antes da Sessão 12 |
+| **restore-2026-06-24T06-05-49-609Z** | `backup-branch-2026-06-24T06-05-49-609Z` | `f34c6c9` | 24/06/2026, 03:05:49 | Antes da reformulação Freemium v3.0 — preservando protótipo Pro v2.6 completo |

@@ -28,7 +28,10 @@ export function useKeyboardShortcuts() {
         case 'Backspace':
         case 'Delete': {
           const state = useEditorStore.getState();
-          if (state.activeCompositionLayerId) {
+          // v3.0: Universal layer takes priority
+          if (state.selectedLayerId) {
+            state.removeLayer(state.selectedLayerId);
+          } else if (state.activeCompositionLayerId) {
             state.removeCompositionLayer(state.activeCompositionLayerId);
             state.setActiveCompositionLayerId(null);
           } else if (state.activeAudioTrackId) {
@@ -47,6 +50,13 @@ export function useKeyboardShortcuts() {
           if (e.metaKey || e.ctrlKey) {
             e.preventDefault();
             const state = useEditorStore.getState();
+
+            // v3.0: Universal layer duplication
+            if (state.selectedLayerId) {
+              state.duplicateLayer(state.selectedLayerId);
+              break;
+            }
+
             const ct = state.currentTime;
 
             if (e.shiftKey) {
@@ -138,6 +148,11 @@ export function useKeyboardShortcuts() {
               state.setActiveGenerativeLayerId(duplicate.id);
             }
           }
+          break;
+        }
+        case 'Escape': {
+          // v3.0: Deselect universal layer
+          useEditorStore.getState().setSelectedLayerId(null);
           break;
         }
       }

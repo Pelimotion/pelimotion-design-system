@@ -31,6 +31,9 @@ import type {
   AudioTrack,
 } from '@/types/motion.types'
 import type { ColorPalette } from '@/config/color-palettes'
+import type { UniversalLayer } from '@/types/universalLayers.types'
+import type { FeatureFlags } from '@/config/featureFlags'
+import { loadFeatureFlags, saveFeatureFlags } from '@/config/featureFlags'
 
 import globalMotionData from '@/config/global-motion.json'
 import libraryData from '@/config/library.json'
@@ -41,6 +44,18 @@ interface EditorState {
   // Configuration
   motionConfig: GlobalMotionConfig;
   libraryConfig: LibraryConfig;
+
+  // ─── v3.0 Freemium State ────────────────────────────────────────────────
+  /** Editor mode: 'free' = Freemium public, 'pro' = Full NLE */
+  editorMode: 'free' | 'pro';
+  /** Feature flags for gating Pro features */
+  featureFlags: FeatureFlags;
+  /** Universal layer system (v3.0) — replaces separate typo/generative in Free mode */
+  layers: UniversalLayer[];
+  /** Currently selected layer ID */
+  selectedLayerId: string | null;
+  /** Whether the library modal is open */
+  libraryModalOpen: boolean;
 
   // UI State
   activePanel: EditorPanel;
@@ -96,6 +111,19 @@ interface EditorState {
   clipboard: { type: 'composition' | 'audio' | 'typography' | 'generative'; data: any } | null;
 
   // ─── Actions ─────────────────────────────────────────────────────────────
+
+  // v3.0 Universal Layer Actions
+  addLayer: (layer: UniversalLayer) => void;
+  removeLayer: (id: string) => void;
+  updateLayer: (id: string, patch: Partial<UniversalLayer>) => void;
+  reorderLayers: (fromIndex: number, toIndex: number) => void;
+  duplicateLayer: (id: string) => void;
+  setSelectedLayerId: (id: string | null) => void;
+
+  // v3.0 Feature Flag Actions
+  setFeatureFlag: (flag: keyof FeatureFlags, value: boolean) => void;
+  setEditorMode: (mode: 'free' | 'pro') => void;
+  setLibraryModalOpen: (open: boolean) => void;
 
   setCamera: (camera: Partial<{ x: number; y: number; z: number }>) => void;
   resetCamera: () => void;
@@ -237,6 +265,13 @@ export const useEditorStore = create<EditorState>((set) => ({
   motionConfig: initialMotionConfig,
   libraryConfig: libraryData as LibraryConfig,
 
+  // ─── v3.0 Freemium State ────────────────────────────────────────────────
+  editorMode: 'free',
+  featureFlags: loadFeatureFlags(),
+  layers: [],
+  selectedLayerId: null,
+  libraryModalOpen: false,
+
   // Default UI state
   activePanel: 'typography',
   sidebarCollapsed: false,
@@ -311,6 +346,64 @@ export const useEditorStore = create<EditorState>((set) => ({
   clipboard: null,
 
   // ─── Actions Implementation ──────────────────────────────────────────────
+
+  // ─── v3.0 Universal Layer Actions ────────────────────────────────────────
+
+  addLayer: (layer) => set((state) => ({
+    layers: [...state.layers, { ...layer, zIndex: state.layers.length }],
+    selectedLayerId: layer.id,
+    animForceKey: state.animForceKey + 1,
+  })),
+
+  removeLayer: (id) => set((state) => ({
+    layers: state.layers.filter(l => l.id !== id).map((l, i) => ({ ...l, zIndex: i })),
+    selectedLayerId: state.selectedLayerId === id ? null : state.selectedLayerId,
+  })),
+
+  updateLayer: (id, patch) => set((state) => ({
+    layers: state.layers.map(l => l.id === id ? { ...l, ...patch } : l),
+  })),
+
+  reorderLayers: (fromIndex, toIndex) => set((state) => {
+    const result = Array.from(state.layers);
+    const [removed] = result.splice(fromIndex, 1);
+    if (removed) {
+      result.splice(toIndex, 0, removed);
+    }
+    return { layers: result.map((l, i) => ({ ...l, zIndex: i })) };
+  }),
+
+  duplicateLayer: (id) => set((state) => {
+    const source = state.layers.find(l => l.id === id);
+    if (!source) return state;
+    const clone: UniversalLayer = {
+      ...JSON.parse(JSON.stringify(source)),
+      id: crypto.randomUUID(),
+      name: `${source.name} (cópia)`,
+      zIndex: state.layers.length,
+    };
+    return {
+      layers: [...state.layers, clone],
+      selectedLayerId: clone.id,
+      animForceKey: state.animForceKey + 1,
+    };
+  }),
+
+  setSelectedLayerId: (id) => set({ selectedLayerId: id, showGizmo: !!id }),
+
+  // ─── v3.0 Feature Flag Actions ──────────────────────────────────────────
+
+  setFeatureFlag: (flag, value) => set((state) => {
+    const newFlags = { ...state.featureFlags, [flag]: value };
+    saveFeatureFlags(newFlags);
+    return { featureFlags: newFlags };
+  }),
+
+  setEditorMode: (mode) => set({ editorMode: mode }),
+
+  setLibraryModalOpen: (open) => set({ libraryModalOpen: open }),
+
+  // ─── Camera & Clipboard ─────────────────────────────────────────────────
 
   setCamera: (camera) => set((state) => ({ camera: { ...state.camera, ...camera } })),
   resetCamera: () => set({ camera: { x: 0, y: 0, z: 1 } }),
