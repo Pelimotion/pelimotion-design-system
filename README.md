@@ -4,22 +4,24 @@ Bem-vindo ao **Pelimotion Design System**! Este guia prático foi criado para en
 
 ---
 
-## 🧭 1. Conhecendo a Interface Principal
+## 🧭 1. Conhecendo a Interface Principal (Layout Figma-like)
 
-A área de trabalho do Pelimotion é limpa e focada em resultados. Ela é dividida em três setores principais:
+A área de trabalho do Pelimotion foi completamente remodelada na versão 4.0 para uma interface unificada de 3 zonas fixas inspirada no Figma, otimizando o fluxo de edição e removendo a navegação por abas que fragmentavam o editor:
 
-1. **Painel Central (Preview & Câmera Espacial):** É o coração do sistema. Todas as suas mudanças refletem instantaneamente aqui. Além da visualização em tempo real, este painel abriga os controles de **Câmera Espacial** e uma barra de ferramentas no centro inferior com:
+1. **Painel de Camadas (Layers Panel - Esquerda):** O centro de controle estrutural da cena (`#layers-panel`).
+   - **Adicionar Camada:** Um botão dropdown unificado para injetar camadas de **Texto** ou **Forma / SVG** diretamente no topo da agulha de reprodução.
+   - **Lista de Elementos:** Exibe todas as camadas e trilhas de áudio. Permite o controle individual de visibilidade (ícone de olho), bloqueio físico contra interações (ícone de cadeado) e seleção de tags de cores visuais para melhor identificação.
+2. **Painel Central (Preview & Câmera Espacial):** É o coração do sistema (`#canvas-viewport`). Todas as suas mudanças e trilhas de movimento do motor Simplex Noise refletem instantaneamente aqui em tempo real. Além da visualização, este painel abriga os controles de **Câmera Espacial** e uma barra de ferramentas no centro inferior com:
    - **Feedback de Zoom:** Mostra a porcentagem atual de magnificação do canvas (de 10% a 1000%).
    - **Botões de Lupa:** Atalhos rápidos para dar Zoom In, Zoom Out e redefinir para 100%.
-   - **Fit to Screen (Enquadrar):** Ajusta automaticamente o zoom para centralizar e encaixar perfeitamente a composição no espaço visível da tela.
-   - **Reset Transform (🔄):** Um botão de ação rápida que aparece ao selecionar uma camada (Tipografia ou Generativa), permitindo zerar sua rotação, escala e translação instantaneamente caso ocorram distorções ou inversões indesejadas.
-2. **Barra Lateral Esquerda (Navegação):** É onde você escolhe a "ferramenta" do momento:
-   - *Tipografia:* Para criar e configurar textos animados e títulos de impacto.
-   - *Generativo:* Para gerar e customizar formas orgânicas e ícones baseados em SVG e motores de ruído.
-   - *Biblioteca:* Abre a galeria de assets em tela cheia na área central para visualização detalhada.
-   - *Composição:* O centro de controle da cena (onde se define resolução, duração, FPS e fundos de vídeo/imagem/cor sólida).
-   - *Exportar:* Onde você inicia o pipeline de render do projeto para arquivos MP4, MOV ou PNG.
-3. **Barra Lateral Direita (Controles):** O painel de ajustes finos. Ali ficam todos os botões e controles deslizantes para definir cor, velocidade, efeitos e comportamento das camadas ativas.
+   - **Fit to Screen (Enquadrar - ícone de Maximizar):** Ajusta automaticamente o zoom para centralizar e encaixar perfeitamente a composição no espaço visível da tela.
+   - **Reset Transform (🔄):** Um botão de ação rápida que aparece ao selecionar uma camada (Texto ou Elemento), permitindo zerar sua rotação, escala e translação instantaneamente.
+3. **Painel de Ajustes (Properties Panel - Direita):** O painel de ajustes finos dinâmico (`#properties-panel`). 
+   - **Comportamento Responsivo:** Caso nenhuma camada esteja selecionada, o painel se encolhe automaticamente para uma largura mínima de `40px` (exibindo apenas o ícone vertical de configurações de Ajustes para maximizar a área visual do canvas) com uma transição suave.
+   - **Acordeão de Controles:** Ao selecionar qualquer camada, o painel expande suavemente para `240px`, exibindo abas do tipo acordeão para ajustar *Texto/Forma* (conteúdo, fontes, trails, geometrias do spirograph/star), *Paleta de Cores* (Solid, Duotone e Tritone vinculados às variáveis de marca), *Timing* (velocidades de ruído, PosterizeTime), *Posição* (coordenadas X, Y, rotação e escala) e *Formato*.
+4. **Linha do Tempo (Timeline - Inferior):** A timeline não-linear (NLE) multi-track, posicionada abaixo do canvas. É onde você gerencia a duração, cortes, snap magnético e sobreposições temporais de camadas visuais e trilhas sonoras.
+5. **Barra Superior (TopBar):** O topo do editor (`#top-bar`) exibe o título da composição e o botão de acesso à **Biblioteca** integrada, que abre a galeria de assets em nuvem diretamente em um modal de tela cheia.
+6. **Barra de Exportação (ExportBar - Centro-Inferior):** Localizada na base inferior do painel central (`#export-bar`), concentra os seletores rápidos de Aspect Ratio (16:9, 9:16, 1:1, 4:5 com cálculo de pixel de resolução automática) e o botão primário de **Exportar** (WASM/WebCodecs).
 
 ---
 
