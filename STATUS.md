@@ -1,18 +1,16 @@
 # STATUS — Pelimotion Design System
 
-## Active Phase: 🟢 Pelimotion v3.0 — Layout Figma-like, Universal Layers & Violet Premium (v3.0)
+## Active Phase: 🟢 Pelimotion v4.0 — Orquestrador Freemium Profissional, Estabilidade de Testes e Layout Figma-like (v4.0)
 
-## 🏁 Pelimotion Design System v3.0 — Interface Figma-like e Universal Layers
+## 🏁 Pelimotion Design System v4.0 — Orquestrador Freemium Profissional e Layout Figma-like
 
-O editor foi completamente remodelado para uma UI de 3 zonas fixas inspirada no Figma, unificando a linha do tempo, a biblioteca de assets em modal e consolidando as camadas textuais e formas generativas em um sistema de camadas unificado (`UniversalLayers`).
+O sistema opera em sua versão 4.0 com a infraestrutura de orquestração de agentes e malhas autônomas totalmente estabilizada. O editor conta com um layout unificado de 3 zonas fixas inspirado no Figma, controle de elementos generativos via Simplex Noise, ajustes automáticos de viewport (prevenindo colapsos em layouts flex) e testes de regressão 100% resilientes.
 
-### Session Achievements (v3.0 - Session 17: Orquestrador, Element Layers & Ajustes UX)
-- **Autonomous Orchestration Setup:** Configurado o cron task (`task-347`) para rodar o orquestrador autonomamente a cada 20 minutos por 6 horas (18 iterações), com todas as permissões de git, build e teste pré-autorizadas e sem necessidade de interação humana.
-- **Playwright Test Suite v3.0 Compatibility:** Reconfigurada a suite de testes automatizados para navegar e validar as propriedades e elementos usando seletores baseados em `#layers-panel`, `#properties-panel`, `#top-bar` e `#export-bar`, eliminando time-outs antigos.
-- **Universal Canvas Element Rendering:** Integrado o suporte a camadas do tipo `element` (formas generativas) dentro de `UniversalCanvasPreview.tsx` com renderização dinâmica das equações de spirograph, orbital, hexagon, star, circle, etc., utilizando o Simplex Noise.
-- **Dynamic Property Panel (Ajustes) width:** Implementada a re-dimensão suave do painel lateral de Ajustes: encolhe para `40px` sem seleção ativa (mostrando apenas o ícone de configurações vertical) e expande para `240px` ao selecionar uma camada.
-- **Violet Premium Design Tokens & Fonts:** Configurados a importação da fonte Space Grotesk e os tokens de destaque da cor de realce Violeta Premium (`#6B5CE7`) in `index.css`.
-- **Glossário de Marketing:** Renomeado cabeçalho do painel de propriedades para **Ajustes** no PropertiesPanel, garantindo conformidade estrita com o glossário de negócios.
+### Session Achievements (v4.0 - Session 30: Orquestrador 4.0 & Estabilização de Layout)
+- **Playwright Test Suite Stability:** Resolvida a violação de strict mode nos testes Playwright (`user-session.spec.js`) ao escopar de forma precisa os cliques nos seletores de "Texto" e "Forma / SVG" sob `#layers-panel`.
+- **Flex Layout Fix (Viewport):** Corrigido o bug de colapso de altura (`0px`) no container principal do canvas (`#canvas-viewport`) ao habilitar a timeline NLE, definindo o wrapper como um flex container ativo.
+- **Autonomous Agent Cron (task-347):** Agendamento e validação de tarefa cron com execução ininterrupta a cada 20 minutos (18 iterações, totalizando 6 horas), validado com git push livre de credenciais e auto-inicialização do servidor de testes.
+- **Violet Premium & Ajustes:** Consolidação da tipografia Space Grotesk, destaque Violeta Premium (`#6B5CE7`) no arquivo `index.css` e transições suaves de painel direito de Ajustes (40px a 240px) com cabeçalhos atualizados conforme glossário.
 
 ### Session Achievements (v2.6 - Session 12: Bugs, Direct Composition & Layer Controls)
 - **BUG 1 — Gizmo Shape Blinking Solved:** Conditional canvas display in `GenerativePreview.tsx` prevents OffscreenCanvas from rendering background circles when colorMode is not tritone.
@@ -115,7 +113,7 @@ O editor foi completamente remodelado para uma UI de 3 zonas fixas inspirada no 
 - **AlphaVideoPlayer:** Player customizado de HTML5 Video desenhado para renderizar arquivos com Alpha Channel (`.webm` VP9 e `.mov` HEVC), com background xadrez para validar transparência.
 - **Manipuladores de Download:** Função `downloadFile` implementada forçando trigger via `<a>` DOM element.
 
-### Phase 3 Completed Tasks
+### Phase 3 Completed Tasks     
 - **SVG Injector:** Fetch + injeção inline de SVGs de `public/assets/svg-generative/`.
 - **Noise Engine (Simplex):** Motor de ruído Simplex 2D/3D com driver lifecycle start/stop/tick. Canais: x, y, rotation, scale, opacity.
 - **PosterizeTime:** Substituição do ticker GSAP. Callbacks a 8/12/15/24fps com tweens UI a 60fps.
