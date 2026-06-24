@@ -1,12 +1,6 @@
 {
-  "sessionsRun": 16,
+  "sessionsRun": 22,
   "historicalInsights": [
-    "Zoom-to-mouse-position requires offsetting the camera coordinates proportionally to the delta zoom and target canvas bounds to prevent layout drift.",
-    "Session 7 [Keyboard Shortcuts & Accessibility]: 0 erros, 4 achados UX, FPS=47. TOP: Composition timeline not found or not visible — main workflow broken.",
-    "Session 8 [Typography Engine & Text Layer UX]: 0 erros, 4 achados UX, FPS=74. TOP: Composition timeline not found or not visible — main workflow broken.",
-    "Session 9 [Generative Shapes & Canvas Interaction]: 0 erros, 1 achados UX, FPS=57. Sem achados críticos novos.",
-    "Session 10 [Library Panel & Asset Management]: 0 erros, 0 achados UX, FPS=56. Sem achados críticos novos.",
-    "Session 11 [Interface Restructure & UX Overhaul]: Identified 10 critical UX issues. Removed duplicate Export+AddText buttons from TopToolbar. Consolidated Resolution/FPS to ExportPanel only. Added layer list with delete to CompositionPanel. Added file import button to LibraryPanel. Standardized language to PT-BR throughout. Status bar now shows autosave + resolution. Nav badges removed. All in a zero-error build.",
     "Breadcrumb-style toolbar context (App / Panel / Sub-section) is far clearer than showing the panel name in a single element — aligns with Figma patterns.",
     "Group hover via CSS .parent:hover .child-btn { opacity: 1 } is cleaner and more performant than React state for transient UI reveals like delete buttons.",
     "Semantic <button> elements should always be used for interactive actions — using <div onClick> for the render button was an accessibility anti-pattern.",
@@ -15,7 +9,13 @@
     "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay",
     "Session 14: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 15: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
-    "Session 16: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos."
+    "Session 16: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 17: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 18: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 19: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 20: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 21: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
+    "Session 22: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -144,6 +144,54 @@
       "session": 16,
       "date": "2026-06-24T07:29:43.992Z",
       "errors": 2,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 17,
+      "date": "2026-06-24T07:37:02.326Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 18,
+      "date": "2026-06-24T08:00:12.441Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 19,
+      "date": "2026-06-24T08:00:44.872Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 20,
+      "date": "2026-06-24T08:20:10.273Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 21,
+      "date": "2026-06-24T08:40:10.196Z",
+      "errors": 1,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 0
+    },
+    {
+      "session": 22,
+      "date": "2026-06-24T09:00:10.404Z",
+      "errors": 1,
       "uxCritical": 0,
       "uxHigh": 0,
       "fps": 0

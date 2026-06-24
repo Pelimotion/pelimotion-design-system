@@ -1,5 +1,5 @@
 {
   "persona": "dev_senior",
-  "timestamp": "2026-06-24T07:29:43.991Z",
-  "evaluation": "### SENIOR SOFTWARE ENGINEER (UI/VISUAL SYSTEM & PERFORMANCE)\n**Timestamp:** 2026-06-24T07:29:43.991Z\n\n**⛔ ERROS CRÍTICOS ENCONTRADOS:** 1 erros de runtime.\n  - TEST ABORTED: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#nav-typography')\u001b[22m\n\n\n**Diretriz:** Você é o Engenheiro de Software Sênior responsável pelo UI/Visual System e Performance.\nREGRAS OBRIGATÓRIAS DE PERFORMANCE:\n1. Canvas re-render apenas nos elementos afetados (não redraw completo).\n2. ...\n"
+  "timestamp": "2026-06-24T09:00:10.402Z",
+  "evaluation": "### SENIOR SOFTWARE ENGINEER (UI/VISUAL SYSTEM & PERFORMANCE)\n**Timestamp:** 2026-06-24T09:00:10.402Z\n\n**⛔ ERROS CRÍTICOS ENCONTRADOS:** 1 erros de runtime.\n  - TEST ABORTED: locator.click: Error: strict mode violation: getByRole('button', { name: 'Texto', exact: true }) resolved to 2 elements:\n    1) <button>…</button> aka locator('#top-bar').getByRole('button', { name: 'Texto' })\n    2) <button>…</button> aka locator('#layers-panel').getByRole('button', { name: 'Texto', exact: true })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Texto', exact: true })\u001b[22m\n\n\n**Diretriz:** Você é o Engenheiro de Software Sênior responsável pelo UI/Visual System e Performance.\nREGRAS OBRIGATÓRIAS DE PERFORMANCE:\n1. Canvas re-render apenas nos elementos afetados (não redraw completo).\n2. ...\n"
 }

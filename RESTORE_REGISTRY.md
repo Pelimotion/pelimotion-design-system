@@ -117,3 +117,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-15T01-55-50-395Z** | `backup-branch-2026-06-15T01-55-50-395Z` | `3b826a0` | 14/06/2026, 22:55:50 | Antes da Sessão 11: Reestruturação completa de UI/UX — remoção de duplicações e reorganização do workflow |
 | **restore-2026-06-15T02-32-23-717Z** | `backup-branch-2026-06-15T02-32-23-717Z` | `8344507` | 14/06/2026, 23:32:23 | Antes da Sessão 12 |
 | **restore-2026-06-24T06-05-49-609Z** | `backup-branch-2026-06-24T06-05-49-609Z` | `f34c6c9` | 24/06/2026, 03:05:49 | Antes da reformulação Freemium v3.0 — preservando protótipo Pro v2.6 completo |
+| **restore-2026-06-24T07-36-29-182Z** | `backup-branch-2026-06-24T07-36-29-182Z` | `4fe1ca9` | 24/06/2026, 04:36:29 | Integracao de element layers no canvas, design tokens Violeta e correcao dos testes Playwright |
