@@ -1,6 +1,6 @@
 # 🎬 Pelimotion — Orquestrador Freemium Profissional (V4)
 
-*Gerado em: 24/06/2026, 06:22:45 | Sessão #26 | Commit: `fbc1bfe`*
+*Gerado em: 24/06/2026, 06:40:15 | Sessão #27 | Commit: `16cddfa`*
 *Branch: `main` | Arquivos TypeScript/TSX: 60*
 
 > **ATENÇÃO AGENTE EXECUTOR:** Você está no Loop de 4 Fases (20 minutos).
@@ -8,16 +8,16 @@
 
 ## 1. 🧠 Memória & Aprendizado Histórico
 
-- Session 22: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.
 - Session 23: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.
 - Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.
 - Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.
 - Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos.
+- Session 27: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.
 
 ## 2. 🔍 Achados dos Testes Automatizados (Phase 3)
 
 **📸 Screenshots capturados:** 00_initial_load.png, 01_layers_dropdown_open.png, 01_typography_panel.png, 01b_text_layer_added.png, 01b_typography_add_text.png, 01c_text_layer_selected.png, 02_generative_panel.png, 02_shape_layer_added.png, 02b_generative_shape_active.png, 03_library_modal_open.png, 03_library_panel.png, 03b_library_modal_closed.png, 04_composition_panel.png, 05_export_panel.png, 06_sidebar_collapsed.png, 07_sidebar_auto_expanded.png, session-result.png
-**⚡ FPS medido:** 92
+**⚡ FPS medido:** 91
 
 ✅ Nenhum achado UX crítico/alto nesta rodada.
 
@@ -45,6 +45,7 @@
 
 | Sessão | Data | Erros | UX Crítico | UX Alto | FPS |
 |--------|------|-------|------------|---------|-----|
+| S27 | 2026-06-24 | 0 | 0 | 0 | 91 |
 | S26 | 2026-06-24 | 0 | 0 | 0 | 92 |
 | S25 | 2026-06-24 | 0 | 1 | 0 | 91 |
 | S24 | 2026-06-24 | 0 | 0 | 1 | 93 |
@@ -54,4 +55,3 @@
 | S20 | 2026-06-24 | 1 | 0 | 0 | N/A |
 | S19 | 2026-06-24 | 1 | 0 | 0 | N/A |
 | S18 | 2026-06-24 | 1 | 0 | 0 | N/A |
-| S17 | 2026-06-24 | 1 | 0 | 0 | N/A |

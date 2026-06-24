@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 26,
+  "sessionsRun": 27,
   "historicalInsights": [
-    "Session 12 [Bugs, Direct Composition & Layer Controls]: Canvas hiding display conditional resolved ghost blinking element on Star shape. Timeline Settings Popover freed up ~400px of width, preventing UI truncation in 1280px. Direct Composition action simplifies creative workflows by bypassing permanent library storage.",
     "Session 13 [Global Navigation, Sidebar & Bento UX]: 1 erros, 1 achados UX, FPS=15. TOP: \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text lay",
     "Session 14: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 15: 2 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
@@ -15,7 +14,8 @@
     "Session 23: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 24: 0 erros, 1 achados UX, FPS=93. TOP: Composition timeline not found or not visible.",
     "Session 25: 0 erros, 1 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos."
+    "Session 26: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos.",
+    "Session 27: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -241,6 +241,14 @@
       "uxCritical": 0,
       "uxHigh": 0,
       "fps": 92
+    },
+    {
+      "session": 27,
+      "date": "2026-06-24T09:40:15.254Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 91
     }
   ]
 }
