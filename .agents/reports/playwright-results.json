@@ -2,7 +2,7 @@
   "errors": [],
   "uxFindings": [],
   "metrics": {
-    "fps": 91,
+    "fps": 92,
     "panels": {
       "typography": "audited",
       "generative": "audited",
@@ -13,5 +13,5 @@
     "accessibilityFocused": "BUTTON "
   },
   "screenshotDir": "/Volumes/PLM_SSD_01/Dev/Aura Motion Design System/.agents/reports/screenshots",
-  "timestamp": "2026-06-24T10:29:07.656Z"
+  "timestamp": "2026-06-24T10:40:15.530Z"
 }

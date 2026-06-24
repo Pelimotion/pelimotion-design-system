@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 31,
+  "sessionsRun": 32,
   "historicalInsights": [
-    "Session 17: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 18: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 19: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
     "Session 20: 1 erros, 0 achados UX, FPS=0. Sem achados críticos novos.",
@@ -15,7 +14,8 @@
     "Session 28: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 29: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
     "Session 30: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
-    "Session 31: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos."
+    "Session 31: 0 erros, 0 achados UX, FPS=91. Sem achados críticos novos.",
+    "Session 32: 0 erros, 0 achados UX, FPS=92. Sem achados críticos novos."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -281,6 +281,14 @@
       "uxCritical": 0,
       "uxHigh": 0,
       "fps": 91
+    },
+    {
+      "session": 32,
+      "date": "2026-06-24T10:40:15.580Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "uxHigh": 0,
+      "fps": 92
     }
   ]
 }
