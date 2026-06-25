@@ -1,7 +1,7 @@
 // timeline-needle-sync
 // timeline-simplified
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Settings } from 'lucide-react';
+import { Layers, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Settings } from 'lucide-react';
 import { formatTimecode, parseTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
@@ -17,7 +17,6 @@ export function CompositionTimeline() {
     localLibraryItems,
     exportConfig,
     updateExportConfig,
-    currentTime,
     seek,
     isPlaying,
     togglePlayback,
@@ -39,29 +38,31 @@ export function CompositionTimeline() {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [timelineZoom, setTimelineZoom] = useState(100);
   const playheadRef = useRef<HTMLDivElement>(null);
+  const timecodeDisplayRef = useRef<HTMLDivElement>(null);
   const [isEditingTimecode, setIsEditingTimecode] = useState(false);
   const [tempTimecode, setTempTimecode] = useState('');
 
-  useEffect(() => {
-    if (!isEditingTimecode) {
-      setTempTimecode(formatTimecode(currentTime, exportConfig.fps));
-    }
-  }, [currentTime, exportConfig.fps, isEditingTimecode]);
+  // tempTimecode is only set when user clicks to edit; the gsap.ticker handles live DOM updates
   
   // Playhead Realtime Sync — always active, reads state directly to avoid stale closures
   useEffect(() => {
     const ticker = () => {
-      const time = useEditorStore.getState().currentTime;
-      const duration = useEditorStore.getState().exportConfig.duration;
+      const state = useEditorStore.getState();
+      const time = state.currentTime;
+      const duration = state.exportConfig.duration;
+      const fps = state.exportConfig.fps;
       if (playheadRef.current && duration > 0) {
         const pct = (time / duration) * 100;
         const px = (time / duration) * 24;
         playheadRef.current.style.left = `calc(12px + ${pct}% - ${px}px)`;
       }
+      if (timecodeDisplayRef.current && !isEditingTimecode) {
+        timecodeDisplayRef.current.innerText = formatTimecode(time, fps);
+      }
     };
     gsap.ticker.add(ticker);
     return () => gsap.ticker.remove(ticker);
-  }, []); // no deps — runs forever, reads from store directly
+  }, [isEditingTimecode]); // dependency only on edit state to properly attach/detach visual text updates
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
@@ -82,6 +83,7 @@ export function CompositionTimeline() {
     setShowAddMenu(false);
   };
 
+  /*
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -107,6 +109,7 @@ export function CompositionTimeline() {
       audioInputRef.current.value = '';
     }
   };
+  */
 
   /*
   const toggleTrackColor = (id: string, type: 'audio' | 'comp', currentColor?: string) => {
@@ -305,14 +308,17 @@ export function CompositionTimeline() {
     };
 
     if (dragging) {
+      document.body.classList.add('dragging-active');
       window.addEventListener('pointermove', handleWindowPointerMove);
       window.addEventListener('pointerup', handlePointerUp);
       scrollAnimationFrame = requestAnimationFrame(autoScrollLoop);
     } else {
+      document.body.classList.remove('dragging-active');
       window.removeEventListener('pointermove', handleWindowPointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     }
     return () => {
+      document.body.classList.remove('dragging-active');
       window.removeEventListener('pointermove', handleWindowPointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
       cancelAnimationFrame(scrollAnimationFrame);
@@ -337,13 +343,13 @@ export function CompositionTimeline() {
 
   // Track rendering styles
   const trackStyle: React.CSSProperties = {
-    height: 24,
+    height: 20,
     background: 'var(--color-bg-base)',
     border: '1px solid var(--color-surface-border)',
-    borderRadius: 6,
+    borderRadius: 4,
     position: 'relative',
     overflow: 'hidden',
-    marginTop: 4
+    marginTop: 2
   };
 
   const blockStyle = (start: number, dur: number, bg?: string): React.CSSProperties => ({
@@ -415,10 +421,12 @@ export function CompositionTimeline() {
             />
           ) : (
             <div 
+              ref={timecodeDisplayRef}
               onClick={() => {
                 if (isPlaying) togglePlayback();
                 setIsEditingTimecode(true);
-                setTempTimecode(formatTimecode(currentTime, exportConfig.fps));
+                const currentPlayTime = useEditorStore.getState().currentTime;
+                setTempTimecode(formatTimecode(currentPlayTime, exportConfig.fps));
               }}
               style={{ 
                 fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, 
@@ -428,7 +436,7 @@ export function CompositionTimeline() {
               }}
               title="Clique para editar o timecode"
             >
-              {formatTimecode(currentTime, exportConfig.fps)}
+              {formatTimecode(useEditorStore.getState().currentTime, exportConfig.fps)}
             </div>
           )}
         </div>
@@ -492,26 +500,6 @@ export function CompositionTimeline() {
             title="Velocidade de Reprodução"
           >
             {playbackSpeed}x
-          </button>
-          
-          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
-
-          <button
-            onClick={() => setShowAddMenu(!showAddMenu)}
-            style={{
-              background: 'var(--color-accent)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: '0.7rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
-            }}
-          >
-            <Plus size={12} /> Adicionar Peça
           </button>
           
           <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
@@ -664,82 +652,12 @@ export function CompositionTimeline() {
             )}
           </div>
 
-          <div style={{ width: 1, height: 16, background: 'var(--color-surface-border)', margin: '0 4px' }} />
 
-          <input
-            type="file"
-            accept="audio/*,video/*"
-            style={{ display: 'none' }}
-            ref={audioInputRef}
-            onChange={handleAudioUpload}
-          />
-          <button
-            onClick={() => {
-               if (audioInputRef.current) {
-                 audioInputRef.current.click();
-               }
-            }}
-            style={{
-              background: 'var(--color-surface-glass)',
-              color: 'var(--color-text-primary)',
-              border: '1px solid var(--color-surface-border)',
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: '0.7rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
-            }}
-          >
-            <Music size={12} /> Add Áudio
-          </button>
         </div>
       </div>
 
-      {showAddMenu && (
-        <div style={{
-          background: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-surface-border)',
-          borderRadius: 8,
-          padding: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-          maxHeight: 150,
-          overflowY: 'auto'
-        }}>
-          {localLibraryItems.length === 0 ? (
-            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', padding: 4 }}>
-              Nenhum item na biblioteca local. Crie itens em Tipografia ou Generativo e salve-os.
-            </div>
-          ) : (
-            localLibraryItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => handleAddLocalItem(item)}
-                style={{
-                  background: 'none',
-                  border: '1px solid transparent',
-                  color: 'var(--color-text-primary)',
-                  padding: '6px 8px',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  borderRadius: 4,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                }}
-                onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-border)'}
-                onMouseOut={e => e.currentTarget.style.background = 'none'}
-              >
-                <span>{item.name}</span>
-                <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.65rem', textTransform: 'uppercase' }}>{item.type}</span>
-              </button>
-            ))
-          )}
-        </div>
-      )}
+
+
 
       {/* TIMELINE AREA */}
       <div 
@@ -788,7 +706,7 @@ export function CompositionTimeline() {
             position: 'absolute',
             top: 12,
             bottom: 24,
-            left: `calc(12px + ${(currentTime / exportConfig.duration) * 100}% - ${(currentTime / exportConfig.duration) * 24}px)`,
+            left: `calc(12px + ${(useEditorStore.getState().currentTime / exportConfig.duration) * 100}% - ${(useEditorStore.getState().currentTime / exportConfig.duration) * 24}px)`,
             width: 12, // Wider clickable container
             marginLeft: -5,
             background: 'transparent',
@@ -896,7 +814,7 @@ export function CompositionTimeline() {
                   gridTemplateColumns: '160px 1fr',
                   alignItems: 'center',
                   gap: 6,
-                  height: 22,
+                  height: 20,
                   background: selectedLayerId === layer.id ? 'hsla(191,100%,50%,0.07)' : 'transparent',
                   borderRadius: 4,
                   paddingLeft: 4,
@@ -929,7 +847,7 @@ export function CompositionTimeline() {
                   />
                 </div>
                 {/* Clip track */}
-                <div style={{ ...trackStyle, marginTop: 0, height: 18 }}>
+                <div style={{ ...trackStyle, marginTop: 0, height: 16 }}>
                   <div 
                     className="timeline-track-block"
                     style={blockStyle(0, exportConfig.duration, 'rgba(0, 150, 255, 0.18)')}
@@ -994,7 +912,7 @@ export function CompositionTimeline() {
                   gridTemplateColumns: '160px 1fr',
                   alignItems: 'center',
                   gap: 6,
-                  height: 22,
+                  height: 20,
                   background: activeAudioTrackId === track.id ? 'hsla(157,100%,50%,0.07)' : 'transparent',
                   borderRadius: 4,
                   paddingLeft: 4,
@@ -1040,7 +958,7 @@ export function CompositionTimeline() {
                   />
                 </div>
                 {/* Audio clip track */}
-                <div style={{ ...trackStyle, marginTop: 0, height: 18 }}>
+                <div style={{ ...trackStyle, marginTop: 0, height: 16 }}>
                   <div 
                     className="timeline-track-block"
                     style={{
@@ -1113,18 +1031,19 @@ export function CompositionTimeline() {
             <Copy size={12} /> Duplicar
           </button>
 
-          <button onClick={() => {
+                      <button onClick={() => {
              const state = useEditorStore.getState();
              const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.layers.find(l => l.id === contextMenu.layerId);
-             if (layer && contextMenu.isAudio && currentTime > (layer as any).startTime && currentTime < (layer as any).startTime + (layer as any).duration) {
-               const newDuration1 = currentTime - (layer as any).startTime;
-               const newDuration2 = ((layer as any).startTime + (layer as any).duration) - currentTime;
+             const currentPlayTime = state.currentTime;
+             if (layer && contextMenu.isAudio && currentPlayTime > (layer as any).startTime && currentPlayTime < (layer as any).startTime + (layer as any).duration) {
+               const newDuration1 = currentPlayTime - (layer as any).startTime;
+               const newDuration2 = ((layer as any).startTime + (layer as any).duration) - currentPlayTime;
                state.updateAudioTrack(layer.id, { duration: newDuration1 });
-               const duplicate = { ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 };
+               const duplicate = { ...layer, id: crypto.randomUUID(), startTime: currentPlayTime, duration: newDuration2 };
                state.addAudioTrack(duplicate as any);
              }
              setContextMenu(null);
-          }} style={{ background: 'none', border: 'none', color: contextMenu.isAudio && currentTime > (contextMenu.isAudio ? useEditorStore.getState().audioTracks.find(t => t.id === contextMenu.layerId)?.startTime || 0 : 0) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', padding: '6px 12px', textAlign: 'left', cursor: contextMenu.isAudio ? 'pointer' : 'default', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} disabled={!contextMenu.isAudio} onMouseOver={e => !e.currentTarget.disabled && (e.currentTarget.style.background = 'var(--color-surface-hover)')} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+          }} style={{ background: 'none', border: 'none', color: contextMenu.isAudio && useEditorStore.getState().currentTime > (contextMenu.isAudio ? useEditorStore.getState().audioTracks.find(t => t.id === contextMenu.layerId)?.startTime || 0 : 0) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', padding: '6px 12px', textAlign: 'left', cursor: contextMenu.isAudio ? 'pointer' : 'default', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} disabled={!contextMenu.isAudio} onMouseOver={e => !e.currentTarget.disabled && (e.currentTarget.style.background = 'var(--color-surface-hover)')} onMouseOut={e => e.currentTarget.style.background = 'none'}>
             <Scissors size={12} /> Fatiar (Cmd+Shift+D)
           </button>
 

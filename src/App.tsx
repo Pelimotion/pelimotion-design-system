@@ -624,7 +624,7 @@ function App() {
 
             <button
               onClick={() => {
-                useEditorStore.setState({ isExporting: false, stage: 'idle', progress: 0 });
+                useEditorStore.getState().setExportState({ isExporting: false, stage: 'idle', progress: 0 });
               }}
               style={{
                 background: 'rgba(255,255,255,0.05)',
