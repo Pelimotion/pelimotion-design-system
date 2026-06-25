@@ -115,11 +115,11 @@ dist/assets/exportWorker  199 kB
 
 ## 🔁 Orquestrador de Agentes
 
-- **Cron ativo:** Suspenso temporariamente (hand-off da fase P2, reativar no próximo ciclo com `npm run agent:research`)
-- **Versão:** V7 + modo Feature Discovery
+- **Cron ativo:** Ativado a cada 10 minutos (Fase P2 ativa com 5/5 features monitoradas pelo Feature Discovery)
+- **Versão:** V7 + modo Feature Discovery (Fase P2)
 - **Loop detection:** Anti-loop com `ZERO_UX_FINDINGS` resolvido
 - **E2E:** `user-journey.spec.ts` v6.1 — 14 suites
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão 64 | v7.0-beta*
+*Atualizado: 25/06/2026 — Sessão 65 | v7.0-beta-p2*

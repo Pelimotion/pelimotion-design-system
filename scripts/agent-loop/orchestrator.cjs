@@ -207,68 +207,56 @@ forbidden.forEach(term => {
   else     { console.log(color('green', `  ✅ "${term}" ausente`)); }
 });
 
-// ─── Feature Discovery: verifica features P1 no código ────────────────────
-console.log(color('cyan', '\n[Feature Discovery] Verificando implementação de P1s...'));
+// ─── Feature Discovery: verifica features P2 no código ────────────────────
+console.log(color('cyan', '\n[Feature Discovery] Verificando implementação de P2s...'));
 
-const p1Checks = [
+const p2Checks = [
   {
-    name: 'Toast Notifications',
-    check: () => !!run('grep -r "toast\\|Toast\\|showToast" src/ --include="*.tsx" 2>/dev/null | head -1'),
-    score: 4.2, effort: 'Baixo', impact: 'Alto',
-    why: 'Feedback visual não-bloqueante é padrão em editores profissionais (Canva, Figma)'
+    name: 'Professional Export Naming',
+    check: () => !!run('grep -r "pelimotion-asset-" src/engines/Export/exportPipeline.ts 2>/dev/null | head -1'),
+    score: 4.8, effort: 'Baixo', impact: 'Alto',
+    why: 'Nomear os arquivos de saída de forma profissional aumenta a identificação da marca e organização'
   },
   {
-    name: 'Export Quality Presets',
-    check: () => !!run('grep -r "quality.*preset\\|Draft.*Standard\\|Broadcast" src/ --include="*.tsx" --include="*.ts" 2>/dev/null | head -1'),
-    score: 4.0, effort: 'Médio', impact: 'Alto',
-    why: 'Presets de qualidade (Draft/Standard/Broadcast) aumentam profissionalismo percebido'
-  },
-  {
-    name: 'Custom Font Upload',
-    check: () => !!run('grep -r "FontFace\\|font.*upload\\|ttf\\|otf" src/ --include="*.tsx" --include="*.ts" 2>/dev/null | head -1'),
-    score: 3.8, effort: 'Médio', impact: 'Alto',
-    why: 'Fontes customizadas são funcionalidade core no Canva e no Adobe Express'
-  },
-  {
-    name: 'Safe Zone Guides',
-    check: () => !!run('grep -r "safeZone\\|safe.zone\\|ActionSafe\\|TitleSafe" src/ --include="*.tsx" 2>/dev/null | head -1'),
-    score: 3.5, effort: 'Baixo', impact: 'Médio',
-    why: 'Guias de safe zone são essenciais para profissionais de TV/broadcast'
-  },
-  {
-    name: 'Undo/Redo History',
-    check: () => !!run('grep -r "undo\\|redo\\|history.*past" src/store --include="*.ts" 2>/dev/null | head -1'),
-    score: 5.0, effort: 'Médio', impact: 'Crítico',
-    why: 'Ctrl+Z é a feature mais esperada por qualquer editor profissional'
-  },
-  {
-    name: 'Keyboard Shortcuts HUD',
-    check: () => !!run('grep -r "ShortcutsHUD\\|showShortcuts" src/ --include="*.tsx" --include="*.ts" 2>/dev/null | head -1'),
+    name: 'Lighthouse & CWV Audits',
+    check: () => fs.existsSync(path.resolve(WORKSPACE_DIR, 'scripts/agent-loop/lighthouse-audit.cjs')) && !!run('grep -r "description" index.html 2>/dev/null | head -1'),
     score: 4.5, effort: 'Baixo', impact: 'Alto',
-    why: 'Atalhos documentados aumentam retenção e percepção de product quality'
+    why: 'Auditorias de performance e SEO automatizadas evitam regressões de Core Web Vitals'
   },
   {
-    name: 'Reference Background',
-    check: () => !!run('grep -r "referenceImage\\|overlay.*opacity" src/ --include="*.tsx" 2>/dev/null | head -1'),
-    score: 4.0, effort: 'Baixo', impact: 'Alto',
-    why: 'Referência de cena permite alinhamento preciso com contexto de uso real'
+    name: 'SEO Category Landing Page',
+    check: () => !!run('grep -r "category\\|tags" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | head -1'),
+    score: 4.0, effort: 'Médio', impact: 'Alto',
+    why: 'Landing pages segmentadas por tags/categorias atraem tráfego qualificado de criadores e agências'
   },
+  {
+    name: 'Niche Element Presets',
+    check: () => !!run('grep -r "ELEMENT_CATEGORIES\\|ELEMENT_CATALOG" src/config/elements-library.ts 2>/dev/null | head -1'),
+    score: 4.2, effort: 'Médio', impact: 'Alto',
+    why: 'Presets de design prontos aceleram o fluxo de trabalho de usuários corporativos e criadores de conteúdo'
+  },
+  {
+    name: 'Render Performance Telemetry',
+    check: () => !!run('grep -r "Telemetry\\.logEvent" src/ 2>/dev/null | head -1'),
+    score: 4.0, effort: 'Médio', impact: 'Médio',
+    why: 'Medir telemetria de performance e falhas silenciosas de exportação garante estabilidade'
+  }
 ];
 
-const pendingP1 = [];
-const implementedP1 = [];
-p1Checks.forEach(f => {
+const pendingP2 = [];
+const implementedP2 = [];
+p2Checks.forEach(f => {
   const done = f.check();
   if (done) {
-    implementedP1.push(f.name);
+    implementedP2.push(f.name);
     console.log(color('green', `  ✅ ${f.name}`));
   } else {
-    pendingP1.push(f);
+    pendingP2.push(f);
     console.log(color('yellow', `  ⬜ ${f.name} (score: ${f.score}, esforço: ${f.effort})`));
   }
 });
 
-console.log(color('cyan', `\n[P1 Score] ${implementedP1.length}/${p1Checks.length} features P1 implementadas`));
+console.log(color('cyan', `\n[P2 Score] ${implementedP2.length}/${p2Checks.length} features P2 implementadas`));
 
 // ─── Code Quality Metrics ──────────────────────────────────────────────────
 console.log(color('cyan', '\n[Code Quality]'));
@@ -283,10 +271,10 @@ const candidates = [];
 
 if (p0Missing.length > 0) {
   p0Missing.forEach(item => candidates.push({ name: item, score: '5.0', priority: 'P0', implement: true }));
-} else if (pendingP1.length > 0) {
+} else if (pendingP2.length > 0) {
   // Ordena por score desc
-  pendingP1.sort((a,b) => b.score - a.score).slice(0,5).forEach(f => {
-    candidates.push({ name: f.name, score: f.score.toFixed(1), priority: 'P1', implement: f.score >= 3.5, why: f.why });
+  pendingP2.sort((a,b) => b.score - a.score).slice(0,5).forEach(f => {
+    candidates.push({ name: f.name, score: f.score.toFixed(1), priority: 'P2', implement: f.score >= 3.5, why: f.why });
   });
 }
 
@@ -302,7 +290,7 @@ if (candidates.length > 0) {
     if (candidates[0].why) console.log(color('gray', `    Por quê: ${candidates[0].why}`));
   }
 } else {
-  console.log(color('green', '  ✅ Todas P1 prioritárias implementadas! Avaliar P2 ou refactor.'));
+  console.log(color('green', '  ✅ Todas P2 prioritárias implementadas! Avaliar futuros passos ou refactor.'));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -372,8 +360,8 @@ function buildPersonaReport(personaId) {
     ev += `**🎯 Findings (${allFindings.length}):**\n`;
     allFindings.slice(0,5).forEach(f => { ev += `  - ${f}\n`; });
   }
-  if (pendingP1.length > 0) {
-    ev += `**🚀 P1 Pendentes (${pendingP1.length}):** ${pendingP1.map(f=>f.name).slice(0,3).join(', ')}\n`;
+  if (pendingP2.length > 0) {
+    ev += `**🚀 P2 Pendentes (${pendingP2.length}):** ${pendingP2.map(f=>f.name).slice(0,3).join(', ')}\n`;
   }
   ev += `\n**Sistema:** ${systemMode} | Bundle: ${bundleKB}KB | Tests: ${testCount}\n`;
   ev += `\n**Diretriz:** ${p.systemInstruction.slice(0, 150)}...\n`;
@@ -393,7 +381,7 @@ const newInsight = `S${memory.sessionsRun} [${systemMode}]: ` +
   `es=${memory.p0Status.emptyState} gl=${memory.p0Status.glossary}. ` +
   `glossary_violations=${glossaryViolations.length}. ` +
   `failed_suites=${failedSuites.length}. bundle=${bundleKB}KB. ` +
-  `p1_done=${implementedP1.length}/${p1Checks.length}.`;
+  `p2_done=${implementedP2.length}/${p2Checks.length}.`;
 
 memory.historicalInsights.push(newInsight);
 if (memory.historicalInsights.length > 20) memory.historicalInsights.shift();
@@ -407,7 +395,7 @@ memory.sessionLogs.push({
   fps:          fpsIdle || fpsLoaded,
   fpsDelta,
   bundleKB,
-  p1Done:       implementedP1.length,
+  p2Done:       implementedP2.length,
   loopDetected,
   systemMode,
   p0Status:     { ...memory.p0Status },
@@ -446,15 +434,15 @@ md += `| Email Gate | ${memory.p0Status.emailGate === 'present' ? '✅' : '🔴 
 md += `| Empty State | ${memory.p0Status.emptyState === 'present' ? '✅' : '🔴 P0 PENDENTE'} |\n`;
 md += `| Glossário | ${memory.p0Status.glossary === 'clean' ? '✅ Limpo' : `🔴 ${glossaryViolations.length} violação(ões)`} |\n\n`;
 
-// S3: P1 Maturidade
-md += `## 3. 🚀 Maturidade P1 (Feature Discovery)\n\n`;
-md += `**${implementedP1.length}/${p1Checks.length} features P1 implementadas**\n\n`;
+// S3: P2 Maturidade
+md += `## 3. 🚀 Maturidade P2 (Feature Discovery)\n\n`;
+md += `**${implementedP2.length}/${p2Checks.length} features P2 implementadas**\n\n`;
 md += `### Implementadas ✅\n`;
-implementedP1.forEach(f => { md += `- ${f}\n`; });
-if (pendingP1.length > 0) {
+implementedP2.forEach(f => { md += `- ${f}\n`; });
+if (pendingP2.length > 0) {
   md += `\n### Pendentes (ordenadas por score)\n`;
   md += `| Feature | Score | Esforço | Por quê |\n|---------|-------|---------|--------|\n`;
-  pendingP1.sort((a,b) => b.score-a.score).forEach(f => {
+  pendingP2.sort((a,b) => b.score-a.score).forEach(f => {
     md += `| ${f.name} | ${f.score}/5 | ${f.effort} | ${f.why} |\n`;
   });
 }
@@ -501,7 +489,7 @@ memory.sessionLogs.slice(-8).reverse().forEach(l => {
   const p0ok = l.p0Status
     ? Object.values(l.p0Status).every(v => v === 'present' || v === 'clean') ? '✅' : '❌'
     : '?';
-  md += `| S${l.session} | ${d} | ${l.systemMode||'NORMAL'} | ${l.errors>0?'❌':'✅'} | ${l.failedSuites||0} | ${l.fps||'N/A'} | ${l.bundleKB||'?'}KB | ${l.p1Done||'?'}/${p1Checks.length} |\n`;
+  md += `| S${l.session} | ${d} | ${l.systemMode||'NORMAL'} | ${l.errors>0?'❌':'✅'} | ${l.failedSuites||0} | ${l.fps||'N/A'} | ${l.bundleKB||'?'}KB | ${l.p2Done||'?'}/${p2Checks.length} |\n`;
 });
 md += '\n';
 
@@ -516,18 +504,18 @@ if (buildFailed) {
 } else if (p0Missing.length > 0) {
   md += `### P0 Pendentes — Implementar antes de qualquer P1\n`;
   p0Missing.forEach(i => { md += `- **${i}**\n`; });
-} else if (systemMode === 'FEATURE_DISCOVERY' && pendingP1.length > 0) {
-  const top = pendingP1.sort((a,b) => b.score-a.score)[0];
+} else if (systemMode === 'FEATURE_DISCOVERY' && pendingP2.length > 0) {
+  const top = pendingP2.sort((a,b) => b.score-a.score)[0];
   md += `### ✨ FEATURE DISCOVERY — Top candidato:\n\n`;
   md += `**${top.name}** (score: ${top.score}/5, esforço: ${top.effort})\n\n`;
   md += `> ${top.why}\n\n`;
-  md += `Outras candidatas: ${pendingP1.slice(1,4).map(f=>f.name).join(', ')}\n`;
+  md += `Outras candidatas: ${pendingP2.slice(1,4).map(f=>f.name).join(', ')}\n`;
 } else {
-  md += `### Sistema saudável — P1 em andamento\n`;
-  if (pendingP1.length > 0) {
-    md += `Top candidato: **${pendingP1.sort((a,b)=>b.score-a.score)[0]?.name}**\n`;
+  md += `### Sistema saudável — P2 em andamento\n`;
+  if (pendingP2.length > 0) {
+    md += `Top candidato: **${pendingP2.sort((a,b)=>b.score-a.score)[0]?.name}**\n`;
   } else {
-    md += `Avaliar features P2 ou refactoring de performance.\n`;
+    md += `Avaliar futuros passos ou refactoring de performance.\n`;
   }
 }
 
@@ -547,5 +535,5 @@ console.log(`║ FPS:             idle=${fpsIdle}, loaded=${fpsLoaded}, delta=${
 console.log(`║ Suites falha:    ${failedSuites.length > 0 ? color('red',failedSuites.length) : color('green','0')}`);
 console.log(`║ Glossário:       ${glossaryViolations.length} violações`);
 console.log(`║ Bundle:          ${bundleKB}KB`);
-console.log(`║ P1 implementadas: ${implementedP1.length}/${p1Checks.length}`);
+console.log(`║ P2 implementadas: ${implementedP2.length}/${p2Checks.length}`);
 console.log(color('bold', '╚═══════════════════════════════════════════════╝'));
