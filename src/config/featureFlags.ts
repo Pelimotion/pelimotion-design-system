@@ -36,7 +36,7 @@ export interface FeatureFlags {
 }
 
 export const DEFAULT_FLAGS: FeatureFlags = {
-  timeline_nle: false,
+  timeline_nle: true,
   audio_mixing: false,
   composition_advanced: false,
   multi_track: false,

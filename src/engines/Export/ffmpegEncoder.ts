@@ -5,13 +5,18 @@ export async function encodeVideoWithFFmpeg(
   fps: number,
   format: 'mp4' | 'mov',
   audioWav: Uint8Array | null,
-  onProgress: (prog: number) => void
+  onProgress: (prog: number) => void,
+  abortCheck?: () => boolean
 ): Promise<Uint8Array> {
   const ffmpeg = new FFmpeg()
 
   ffmpeg.on('progress', ({ progress }) => {
     // progress is 0 to 1
     onProgress(Math.min(100, Math.max(0, progress * 100)))
+    if (abortCheck && abortCheck()) {
+      ffmpeg.terminate()
+      throw new Error('EXPORT_CANCELLED')
+    }
   })
 
   // Load from unpkg
@@ -72,13 +77,20 @@ export async function muxVideoAndAudioWithFFmpeg(
   videoData: Uint8Array,
   audioWav: Uint8Array,
   format: 'mp4' | 'mov',
-  onProgress?: (prog: number) => void
+  onProgress?: (prog: number) => void,
+  abortCheck?: () => boolean
 ): Promise<Uint8Array> {
   const ffmpeg = new FFmpeg()
 
-  if (onProgress) {
+  if (onProgress || abortCheck) {
     ffmpeg.on('progress', ({ progress }) => {
-      onProgress(Math.min(100, Math.max(0, progress * 100)))
+      if (onProgress) {
+        onProgress(Math.min(100, Math.max(0, progress * 100)))
+      }
+      if (abortCheck && abortCheck()) {
+        ffmpeg.terminate()
+        throw new Error('EXPORT_CANCELLED')
+      }
     })
   }
 

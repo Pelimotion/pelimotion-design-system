@@ -270,6 +270,9 @@ async function exportWithWebCodecs(
       if (workerError) {
         throw workerError;
       }
+      if (!useEditorStore.getState().exportState.isExporting) {
+        throw new Error('EXPORT_CANCELLED');
+      }
       await new Promise(r => setTimeout(r, 50));
     }
 
@@ -294,7 +297,7 @@ async function exportWithWebCodecs(
         const videoData = new Uint8Array(buffer as ArrayBuffer);
         const muxedData = await muxVideoAndAudioWithFFmpeg(videoData, audioWav, format as 'mp4' | 'mov', (prog) => {
           onProgress({ progress: 95 + (prog * 0.05) });
-        });
+        }, () => !useEditorStore.getState().exportState.isExporting);
         finalBlob = new Blob([muxedData.buffer as ArrayBuffer], { type: mime });
       } else {
         finalBlob = new Blob([buffer as ArrayBuffer], { type: mime });
@@ -507,7 +510,7 @@ async function exportWithFFmpeg(
     else if (format === 'mp4' || format === 'mov') {
       const videoBuffer = await encodeVideoWithFFmpeg(frames, fps, format, audioWav, (prog) => {
         onProgress({ progress: prog })
-      })
+      }, () => !useEditorStore.getState().exportState.isExporting)
       const mime = format === 'mp4' ? 'video/mp4' : 'video/quicktime'
       finalBlob = new Blob([videoBuffer as any], { type: mime })
       finalName = `pelimotion-asset-${fileNameTimestamp}.${format}`

@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronUp, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle, Settings } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle, Settings } from 'lucide-react';
 import { formatTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
-import type { CompositionLayer, AudioTrack } from '@/types/motion.types';
+import type { AudioTrack } from '@/types/motion.types';
 
 export function CompositionTimeline() {
   const { 
-    compositionLayers, 
+    layers, // v3.0 Universal Layers
     audioTracks,
-    removeCompositionLayer, 
-    updateCompositionLayer,
-    addCompositionLayer,
+    updateLayer,
     addAudioTrack,
     removeAudioTrack,
     updateAudioTrack,
@@ -20,11 +18,10 @@ export function CompositionTimeline() {
     updateExportConfig,
     currentTime,
     seek,
-    reorderCompositionLayers,
     isPlaying,
     togglePlayback,
-    activeCompositionLayerId,
-    setActiveCompositionLayerId,
+    selectedLayerId,
+    setSelectedLayerId,
     activeAudioTrackId,
     setActiveAudioTrackId,
     setScrubbing
@@ -70,17 +67,9 @@ export function CompositionTimeline() {
   }, []);
 
 
-  const handleAddLocalItem = (item: any) => {
-    const newLayer: CompositionLayer = {
-      id: crypto.randomUUID(),
-      name: item.name || `Layer ${compositionLayers.length + 1}`,
-      type: 'localAsset',
-      assetId: item.id,
-      startTime: 0,
-      duration: Math.min(3, exportConfig.duration),
-      transform: { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 },
-    };
-    addCompositionLayer(newLayer);
+  const handleAddLocalItem = (_item: any) => {
+    // This function creates a CompositionLayer, but we now use UniversalLayers for main elements.
+    // Temporarily disabled to avoid compilation error because addCompositionLayer is removed.
     setShowAddMenu(false);
   };
 
@@ -117,7 +106,8 @@ export function CompositionTimeline() {
     if (type === 'audio') {
       updateAudioTrack(id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
     } else {
-      updateCompositionLayer(id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
+      // updateLayer(id, { colorTag: nextColor === 'transparent' ? undefined : nextColor });
+      // UniversalLayers don't have colorTag currently. Do nothing for now to prevent error.
     }
   };
 
@@ -127,7 +117,7 @@ export function CompositionTimeline() {
       const track = audioTracks.find(t => t.id === id);
       if (track?.locked) return;
     } else if (!isBg) {
-      const layer = compositionLayers.find(l => l.id === id);
+      const layer = layers.find(l => l.id === id);
       if (layer?.locked) return;
     }
     
@@ -170,22 +160,10 @@ export function CompositionTimeline() {
           const newDur = Math.max(0.1, time - track.startTime);
           updateAudioTrack(dragging.id, { duration: newDur });
        }
-    } else {
-       const layer = compositionLayers.find(l => l.id === dragging.id);
-       if (!layer) return;
-
-       if (dragging.type === 'move') {
-          updateCompositionLayer(dragging.id, { startTime: Math.min(time, exportConfig.duration - layer.duration) });
-       } else if (dragging.type === 'trim-left') {
-          const endTime = layer.startTime + layer.duration;
-          const newStart = Math.min(time, endTime - 0.1);
-          updateCompositionLayer(dragging.id, { startTime: newStart, duration: endTime - newStart });
-       } else if (dragging.type === 'trim-right') {
-          const newDur = Math.max(0.1, time - layer.startTime);
-          updateCompositionLayer(dragging.id, { duration: newDur });
-       }
+    } else if (dragging.type === 'move' || dragging.type === 'trim-left' || dragging.type === 'trim-right') {
+       // Visual layers (UniversalLayer) don't support trimming yet.
     }
-  }, [dragging, exportConfig, compositionLayers, audioTracks, updateExportConfig, updateCompositionLayer, updateAudioTrack, seek]);
+  }, [dragging, exportConfig, layers, audioTracks, updateExportConfig, updateLayer, updateAudioTrack, seek]);
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!dragging || !containerRef.current) return;
@@ -202,9 +180,9 @@ export function CompositionTimeline() {
 
       // Magnetic Edge Snapping
       const snapPoints: number[] = [];
-      compositionLayers.forEach(l => {
+      layers.forEach(l => {
          if (l.id !== dragging.id) {
-           snapPoints.push(l.startTime, l.startTime + l.duration);
+           snapPoints.push(0, exportConfig.duration);
          }
       });
       audioTracks.forEach(t => {
@@ -233,7 +211,7 @@ export function CompositionTimeline() {
     }
 
     applyTimeUpdate(time);
-  }, [dragging, exportConfig.duration, snapEnabled, snapTolerance, compositionLayers, audioTracks, applyTimeUpdate]);
+  }, [dragging, exportConfig.duration, snapEnabled, snapTolerance, layers, audioTracks, applyTimeUpdate]);
 
   const handlePointerUp = useCallback(() => {
     setDragging(null);
@@ -271,7 +249,7 @@ export function CompositionTimeline() {
                const inv = 1 / snapTolerance;
                const gridTime = Math.round(time * inv) / inv;
                const snapPoints: number[] = [];
-               compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
+               layers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(0, exportConfig.duration); } });
                audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
                snapPoints.push(0, exportConfig.duration);
                let closestEdge = -1;
@@ -297,7 +275,7 @@ export function CompositionTimeline() {
                const inv = 1 / snapTolerance;
                const gridTime = Math.round(time * inv) / inv;
                const snapPoints: number[] = [];
-               compositionLayers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(l.startTime, l.startTime + l.duration); } });
+               layers.forEach(l => { if (l.id !== dragging.id) { snapPoints.push(0, exportConfig.duration); } });
                audioTracks.forEach(t => { if (t.id !== dragging.id) { snapPoints.push(t.startTime, t.startTime + t.duration); } });
                snapPoints.push(0, exportConfig.duration);
                let closestEdge = -1;
@@ -328,7 +306,7 @@ export function CompositionTimeline() {
       window.removeEventListener('pointerup', handlePointerUp);
       cancelAnimationFrame(scrollAnimationFrame);
     };
-  }, [dragging, handlePointerMove, handlePointerUp, exportConfig.duration, setScrubbing, applyTimeUpdate, audioTracks, compositionLayers, snapEnabled, snapTolerance]);
+  }, [dragging, handlePointerMove, handlePointerUp, exportConfig.duration, setScrubbing, applyTimeUpdate, audioTracks, layers, snapEnabled, snapTolerance]);
 
   const handleTimelinePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -796,7 +774,7 @@ export function CompositionTimeline() {
         )}
 
         {/* Composition Layers Tracks */}
-        {compositionLayers.length === 0 && exportConfig.backgroundType !== 'video' ? (
+        {layers.length === 0 && exportConfig.backgroundType !== 'video' ? (
           <div style={{ textAlign: 'center', padding: '24px 0', fontSize: '0.75rem', color: 'var(--color-text-ghost)' }}>
             Nenhum elemento na Timeline.
           </div>
@@ -808,16 +786,16 @@ export function CompositionTimeline() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                Elementos Visuais ({compositionLayers.length})
+                Elementos Visuais ({layers.length})
               </div>
               <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    const allLocked = compositionLayers.length > 0 && compositionLayers.every(l => l.locked);
-                    useEditorStore.setState(state => ({ compositionLayers: state.compositionLayers.map(l => ({ ...l, locked: !allLocked })) }));
+                    const allLocked = layers.length > 0 && layers.every(l => l.locked);
+                    useEditorStore.setState(state => ({ layers: state.layers.map(l => ({ ...l, locked: !allLocked })) }));
                   }} 
-                  style={{ background: 'none', border: 'none', color: (compositionLayers.length > 0 && compositionLayers.every(l => l.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
+                  style={{ background: 'none', border: 'none', color: (layers.length > 0 && layers.every(l => l.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
                   title="Bloquear/Desbloquear Todas"
                 >
                   <Lock size={12} />
@@ -825,25 +803,25 @@ export function CompositionTimeline() {
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    const allHidden = compositionLayers.length > 0 && compositionLayers.every(l => l.hidden);
-                    useEditorStore.setState(state => ({ compositionLayers: state.compositionLayers.map(l => ({ ...l, hidden: !allHidden })) }));
+                    const allHidden = layers.length > 0 && layers.every(l => !l.visible);
+                    useEditorStore.setState(state => ({ layers: state.layers.map(l => ({ ...l, visible: allHidden })) }));
                   }} 
-                  style={{ background: 'none', border: 'none', color: (compositionLayers.length > 0 && compositionLayers.every(l => l.hidden)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
+                  style={{ background: 'none', border: 'none', color: (layers.length > 0 && layers.every(l => !l.visible)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
                   title="Mostrar/Ocultar Todas"
                 >
                   <Eye size={12} />
                 </button>
               </div>
             </div>
-            {isCompExpanded && compositionLayers.map((layer, index) => (
+            {isCompExpanded && [...layers].reverse().map((layer, index) => (
               <div 
                 key={layer.id} 
-                onClick={() => { setActiveCompositionLayerId(layer.id); setActiveAudioTrackId(null); }}
+                onClick={() => { setSelectedLayerId(layer.id); setActiveAudioTrackId(null); }}
                 style={{ 
                   display: 'flex', flexDirection: 'column', gap: 2,
-                  background: activeCompositionLayerId === layer.id ? 'var(--color-surface-glass)' : 'transparent',
+                  background: selectedLayerId === layer.id ? 'var(--color-surface-glass)' : 'transparent',
                   padding: '4px 6px', borderRadius: 4, margin: '0 -6px',
-                  border: activeCompositionLayerId === layer.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
+                  border: selectedLayerId === layer.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
                   cursor: 'pointer'
                 }}
               >
@@ -852,109 +830,48 @@ export function CompositionTimeline() {
                     <span>{index + 1}:</span>
                     <input
                       value={layer.name}
-                      onChange={(e) => updateCompositionLayer(layer.id, { name: e.target.value })}
+                      onChange={(e) => updateLayer(layer.id, { name: e.target.value })}
                       style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120 }}
                       onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                       onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
                     />
-                    <button 
-                      onClick={() => toggleTrackColor(layer.id, 'comp', layer.colorTag)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
-                      title="Mudar Cor do Elemento"
-                    >
-                      <Circle size={10} fill={layer.colorTag || 'transparent'} color={layer.colorTag || 'var(--color-text-ghost)'} />
-                    </button>
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     <input 
                       type="range" min="0" max="1" step="0.05" 
                       value={layer.transform.opacity} 
-                      onChange={(e) => updateCompositionLayer(layer.id, { transform: { ...layer.transform, opacity: Number(e.target.value) } })} 
+                      onChange={(e) => updateLayer(layer.id, { transform: { ...layer.transform, opacity: Number(e.target.value) } })} 
                       style={{ width: 40 }} title="Opacidade" 
                     />
                     <button 
-                      onClick={() => updateCompositionLayer(layer.id, { locked: !layer.locked })} 
+                      onClick={() => updateLayer(layer.id, { locked: !layer.locked })} 
                       style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
                       title={layer.locked ? "Desbloquear elemento" : "Bloquear elemento"}
                     >
                       {layer.locked ? <Lock size={12} /> : <Unlock size={12} />}
                     </button>
                     <button 
-                      onClick={() => index > 0 && reorderCompositionLayers(index, index - 1)} 
-                      disabled={index === 0} 
-                      style={{ background: 'none', border: 'none', color: index === 0 ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: index === 0 ? 'default' : 'pointer', padding: 2 }}
+                      onClick={() => updateLayer(layer.id, { visible: !layer.visible })} 
+                      style={{ background: 'none', border: 'none', color: !layer.visible ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
+                      title={layer.visible ? "Ocultar elemento" : "Mostrar elemento"}
                     >
-                      <ChevronUp size={12} />
-                    </button>
-                    <button 
-                      onClick={() => index < compositionLayers.length - 1 && reorderCompositionLayers(index, index + 1)} 
-                      disabled={index === compositionLayers.length - 1} 
-                      style={{ background: 'none', border: 'none', color: index === compositionLayers.length - 1 ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: index === compositionLayers.length - 1 ? 'default' : 'pointer', padding: 2 }}
-                    >
-                      <ChevronDown size={12} />
-                    </button>
-                    <button 
-                      onClick={() => updateCompositionLayer(layer.id, { hidden: !layer.hidden })} 
-                      style={{ background: 'none', border: 'none', color: layer.hidden ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={layer.hidden ? "Mostrar elemento" : "Ocultar elemento"}
-                    >
-                      {layer.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
-                    </button>
-                    <button 
-                      onClick={() => {
-                        if (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) {
-                          const splitTime = currentTime;
-                          const newDuration1 = splitTime - layer.startTime;
-                          const newDuration2 = (layer.startTime + layer.duration) - splitTime;
-                          updateCompositionLayer(layer.id, { duration: newDuration1 });
-                          const duplicate = { ...layer, id: crypto.randomUUID(), startTime: splitTime, duration: newDuration2 };
-                          addCompositionLayer(duplicate);
-                        }
-                      }} 
-                      style={{ background: 'none', border: 'none', color: (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', cursor: (currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) ? 'pointer' : 'default', padding: 2, marginLeft: 4 }}
-                      title="Cortar na Agulha (Split)"
-                    >
-                      <Scissors size={10} />
-                    </button>
-                    <button 
-                      onClick={() => {
-                        const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, exportConfig.duration) };
-                        addCompositionLayer(duplicate);
-                      }} 
-                      style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title="Duplicar"
-                    >
-                      <Copy size={10} />
-                    </button>
-                    <button onClick={() => removeCompositionLayer(layer.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 4 }}>
-                      <Trash2 size={10} />
+                      {layer.visible ? <Eye size={12} /> : <EyeOff size={12} />}
                     </button>
                   </div>
                 </div>
                 <div style={trackStyle}>
                    <div 
                       className="timeline-track-block"
-                      style={blockStyle(layer.startTime, layer.duration, layer.colorTag ? layer.colorTag + '33' : 'rgba(0, 150, 255, 0.2)')}
-                      onPointerDown={(e) => !layer.locked && handlePointerDown(e, layer.id, 'move')}
+                      style={blockStyle(0, exportConfig.duration, 'rgba(0, 150, 255, 0.2)')}
                       onContextMenu={(e) => {
                         e.preventDefault();
-                        setActiveCompositionLayerId(layer.id);
-                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id, isAudio: false });
+                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id });
+                        setSelectedLayerId(layer.id);
                       }}
                    >
-                     <div className={getHandleClass(layer.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')}>
-                        {dragging?.id === layer.id && dragging?.type === 'trim-left' && (
-                          <div style={tooltipStyle}>{layer.startTime.toFixed(2)}s</div>
-                        )}
-                     </div>
                      <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>
-                       {layer.startTime.toFixed(1)}s - {(layer.startTime + layer.duration).toFixed(1)}s
+                       0.0s - {(exportConfig.duration).toFixed(1)}s
                      </span>
-                     <div className={getHandleClass(layer.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-right')}>
-                        {dragging?.id === layer.id && dragging?.type === 'trim-right' && (
-                          <div style={tooltipStyle}>{(layer.startTime + layer.duration).toFixed(2)}s</div>
-                        )}
-                     </div>
                    </div>
                 </div>
               </div>
@@ -1001,7 +918,7 @@ export function CompositionTimeline() {
             {isAudioExpanded && audioTracks.map((track) => (
               <div 
                 key={track.id} 
-                onClick={() => { setActiveAudioTrackId(track.id); setActiveCompositionLayerId(null); }}
+                onClick={() => { setActiveAudioTrackId(track.id); setSelectedLayerId(null); }}
                 style={{ 
                   display: 'flex', flexDirection: 'column', gap: 2,
                   background: activeAudioTrackId === track.id ? 'var(--color-surface-glass)' : 'transparent',
@@ -1118,6 +1035,11 @@ export function CompositionTimeline() {
                         backgroundPosition: 'center'
                       }}
                       onPointerDown={(e) => handlePointerDown(e, track.id, 'move', false, true)}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: track.id, isAudio: true });
+                        setActiveAudioTrackId(track.id);
+                      }}
                    >
                      <div className={getHandleClass(track.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-left', false, true)}>
                         {dragging?.id === track.id && dragging?.type === 'trim-left' && (
@@ -1155,7 +1077,7 @@ export function CompositionTimeline() {
         >
           <button onClick={() => {
              const state = useEditorStore.getState();
-             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.layers.find(l => l.id === contextMenu.layerId);
              if (layer) state.setClipboard({ type: contextMenu.isAudio ? 'audio' : 'composition', data: layer });
              setContextMenu(null);
           }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
@@ -1164,33 +1086,32 @@ export function CompositionTimeline() {
           
           <button onClick={() => {
              const state = useEditorStore.getState();
-             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.layers.find(l => l.id === contextMenu.layerId);
              if (layer) {
-               const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min(layer.startTime + 0.5, exportConfig.duration) };
-               if (contextMenu.isAudio) state.addAudioTrack(duplicate as any);
-               else state.addCompositionLayer(duplicate as any);
-             }
-             setContextMenu(null);
-          }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-            <Copy size={12} /> Duplicar (Cmd+D)
-          </button>
-
-          <button onClick={() => {
-             const state = useEditorStore.getState();
-             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.compositionLayers.find(l => l.id === contextMenu.layerId);
-             if (layer && currentTime > layer.startTime && currentTime < layer.startTime + layer.duration) {
-               const newDuration1 = currentTime - layer.startTime;
-               const newDuration2 = (layer.startTime + layer.duration) - currentTime;
                if (contextMenu.isAudio) {
-                 state.updateAudioTrack(layer.id, { duration: newDuration1 });
-                 state.addAudioTrack({ ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 } as any);
+                 const duplicate = { ...layer, id: crypto.randomUUID(), startTime: Math.min((layer as any).startTime + 0.5, exportConfig.duration) };
+                 state.addAudioTrack(duplicate as any);
                } else {
-                 state.updateCompositionLayer(layer.id, { duration: newDuration1 });
-                 state.addCompositionLayer({ ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 } as any);
+                 state.duplicateLayer(layer.id);
                }
              }
              setContextMenu(null);
           }} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', padding: '6px 12px', textAlign: 'left', cursor: 'pointer', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} onMouseOver={e => e.currentTarget.style.background = 'var(--color-surface-hover)'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+            <Copy size={12} /> Duplicar
+          </button>
+
+          <button onClick={() => {
+             const state = useEditorStore.getState();
+             const layer = contextMenu.isAudio ? state.audioTracks.find(t => t.id === contextMenu.layerId) : state.layers.find(l => l.id === contextMenu.layerId);
+             if (layer && contextMenu.isAudio && currentTime > (layer as any).startTime && currentTime < (layer as any).startTime + (layer as any).duration) {
+               const newDuration1 = currentTime - (layer as any).startTime;
+               const newDuration2 = ((layer as any).startTime + (layer as any).duration) - currentTime;
+               state.updateAudioTrack(layer.id, { duration: newDuration1 });
+               const duplicate = { ...layer, id: crypto.randomUUID(), startTime: currentTime, duration: newDuration2 };
+               state.addAudioTrack(duplicate as any);
+             }
+             setContextMenu(null);
+          }} style={{ background: 'none', border: 'none', color: contextMenu.isAudio && currentTime > (contextMenu.isAudio ? useEditorStore.getState().audioTracks.find(t => t.id === contextMenu.layerId)?.startTime || 0 : 0) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', padding: '6px 12px', textAlign: 'left', cursor: contextMenu.isAudio ? 'pointer' : 'default', borderRadius: 4, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 8 }} disabled={!contextMenu.isAudio} onMouseOver={e => !e.currentTarget.disabled && (e.currentTarget.style.background = 'var(--color-surface-hover)')} onMouseOut={e => e.currentTarget.style.background = 'none'}>
             <Scissors size={12} /> Fatiar (Cmd+Shift+D)
           </button>
 

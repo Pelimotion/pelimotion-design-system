@@ -42,9 +42,15 @@ interface LayerItemProps {
   layer: UniversalLayer;
   isSelected: boolean;
   onSelect: () => void;
+  index: number;
+  onDragStart: (e: React.DragEvent, index: number) => void;
+  onDragOver: (e: React.DragEvent, index: number) => void;
+  onDrop: (e: React.DragEvent, index: number) => void;
+  onDragEnd: (e: React.DragEvent) => void;
+  dragOverIndex: number | null;
 }
 
-function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
+function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver, onDrop, onDragEnd, dragOverIndex }: LayerItemProps) {
   const { updateLayer } = useEditorStore();
   const [hovered, setHovered] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -139,8 +145,26 @@ function LayerItem({ layer, isSelected, onSelect }: LayerItemProps) {
         }} />
       )}
 
+      {/* Drag Indicator */}
+      {dragOverIndex === index && (
+        <div style={{
+          position: 'absolute',
+          left: 0, right: 0, top: 0,
+          height: 2,
+          background: 'var(--color-accent)',
+          zIndex: 10,
+        }} />
+      )}
+
       {/* Drag Handle */}
-      <div style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.5 : 0, transition: 'opacity 0.1s', marginLeft: 4 }}>
+      <div 
+        draggable
+        onDragStart={(e) => onDragStart(e, index)}
+        onDragOver={(e) => onDragOver(e, index)}
+        onDrop={(e) => onDrop(e, index)}
+        onDragEnd={onDragEnd}
+        style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.5 : 0, transition: 'opacity 0.1s', marginLeft: 4 }}
+      >
         <GripVertical size={12} />
       </div>
 
@@ -362,10 +386,48 @@ export function LayersPanel() {
     setSelectedLayerId,
     removeLayer,
     duplicateLayer,
+    reorderLayers,
   } = useEditorStore();
 
   // Reverse order so topmost layer is at top of list (like Figma)
   const sortedLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
+
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (draggedIndex === null) return;
+    if (draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+    
+    // Convert visually sorted indices back to actual zIndex in the store
+    const fromLayer = sortedLayers[draggedIndex];
+    const toLayer = sortedLayers[index];
+    
+    if (fromLayer && toLayer) {
+      reorderLayers(fromLayer.zIndex, toLayer.zIndex);
+    }
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
 
   return (
     <div style={{
@@ -469,12 +531,18 @@ export function LayersPanel() {
             </div>
           </div>
         ) : (
-          sortedLayers.map((layer) => (
+          sortedLayers.map((layer, index) => (
             <LayerItem
               key={layer.id}
               layer={layer}
               isSelected={selectedLayerId === layer.id}
               onSelect={() => setSelectedLayerId(layer.id)}
+              index={index}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragEnd={handleDragEnd}
+              dragOverIndex={dragOverIndex}
             />
           ))
         )}

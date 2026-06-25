@@ -388,7 +388,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   // Export pipeline
   exportConfig: {
     resolution: '1920x1080',
-    fps: 60,
+    fps: 30,
     duration: 5,
     format: 'png-sequence',
     stillFrame: 0,

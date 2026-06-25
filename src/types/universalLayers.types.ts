@@ -271,7 +271,7 @@ export function createTextLayer(overrides?: Partial<UniversalLayer> & { textData
     locked: false,
     zIndex: 0,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeUp' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeUp', autoAnimatePreset: 'float' },
     textData: {
       text: 'Seu texto aqui',
       fontFamily: 'Inter',
@@ -311,7 +311,7 @@ export function createElementLayer(overrides?: Partial<UniversalLayer> & { eleme
     locked: false,
     zIndex: 0,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION },
+    animation: { ...DEFAULT_ANIMATION, autoAnimatePreset: 'wiggle' },
     elementData: {
       shapeType: 'circle',
       colorMode: 'solid',
@@ -337,10 +337,10 @@ export function createOverlayLayer(style: OverlayStyle = 'gradient-bottom'): Uni
     locked: false,
     zIndex: 0,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', exitPreset: 'fadeOut' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', exitPreset: 'fadeOut', autoAnimatePreset: 'pulse' },
     overlayData: {
       overlayStyle: style,
-      color: '#000000',
+      color: '#6B5CE7',
       intensity: 60,
     },
   };
@@ -355,10 +355,10 @@ export function createShadowGuardLayer(style: ShadowGuardStyle = 'text-protectio
     locked: false,
     zIndex: 0,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', autoAnimatePreset: 'breathe' },
     shadowGuardData: {
       guardStyle: style,
-      color: '#000000',
+      color: '#1a1a24',
       intensity: 70,
       height: 40,
     },
