@@ -78,6 +78,17 @@ export function InteractiveGizmo({
     window.addEventListener('mouseup', handleMouseUp);
   };
 
+  // ─── Double Click (Trigger Text Edit) ─────────────────────────────────────
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.gizmo-handle')) return;
+    e.stopPropagation();
+    e.preventDefault();
+    if (elementRef.current) {
+      elementRef.current.dispatchEvent(new CustomEvent('trigger-text-edit'));
+    }
+  };
+
   // ─── Scale (corner drag) ─────────────────────────────────────────────────
 
   const handleScaleMouseDown = (e: React.MouseEvent, corner: string) => {
@@ -207,6 +218,7 @@ export function InteractiveGizmo({
   return (
     <div
       onMouseDown={handleMoveMouseDown}
+      onDoubleClick={handleDoubleClick}
       style={{
         position: 'absolute',
         inset: -8,

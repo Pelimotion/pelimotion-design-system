@@ -5,16 +5,13 @@ import { Layers, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack,
 import { formatTimecode, parseTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
-import type { AudioTrack } from '@/types/motion.types';
 
 export function CompositionTimeline() {
   const { 
     layers, // v3.0 Universal Layers
     audioTracks,
     updateLayer,
-    addAudioTrack,
     updateAudioTrack,
-    localLibraryItems,
     exportConfig,
     updateExportConfig,
     seek,
@@ -30,12 +27,10 @@ export function CompositionTimeline() {
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const [isCompExpanded, setIsCompExpanded] = useState(true);
   const [isAudioExpanded, setIsAudioExpanded] = useState(true);
-  const [showAddMenu, setShowAddMenu] = useState(false);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [snapTolerance, setSnapTolerance] = useState<number>(0.5);
   const containerRef = useRef<HTMLDivElement>(null);
-  const audioInputRef = useRef<HTMLInputElement>(null);
   const [timelineZoom, setTimelineZoom] = useState(100);
   const playheadRef = useRef<HTMLDivElement>(null);
   const timecodeDisplayRef = useRef<HTMLDivElement>(null);
@@ -75,13 +70,6 @@ export function CompositionTimeline() {
     window.addEventListener('click', closeContextMenu);
     return () => window.removeEventListener('click', closeContextMenu);
   }, []);
-
-
-  const handleAddLocalItem = (_item: any) => {
-    // This function creates a CompositionLayer, but we now use UniversalLayers for main elements.
-    // Temporarily disabled to avoid compilation error because addCompositionLayer is removed.
-    setShowAddMenu(false);
-  };
 
   /*
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
