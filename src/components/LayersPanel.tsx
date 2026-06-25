@@ -409,6 +409,7 @@ export function LayersPanel() {
     e.dataTransfer.setDragImage(ghost, 0, 0);
     setTimeout(() => ghost.remove(), 0);
     setDraggedIndex(index);
+    document.body.classList.add('dragging-active');
   };
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
@@ -440,6 +441,7 @@ export function LayersPanel() {
   const handleDragEnd = () => {
     setDraggedIndex(null);
     setDragOverIndex(null);
+    document.body.classList.remove('dragging-active');
   };
 
   return (

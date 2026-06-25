@@ -210,6 +210,7 @@ export function GlobalGizmo() {
     >
       <div
         ref={containerRef}
+        data-gizmo-container="true"
         style={{
           position: 'absolute',
           top: 0,
@@ -235,8 +236,8 @@ export function GlobalGizmo() {
           onRotate={handleRotate}
           onResizeX={handleResizeX}
           onResizeY={handleResizeY}
-          showResizeX={!!activeTypoLayerId || (selectedLayer?.type === 'text')}
-          showResizeY={!!activeTypoLayerId || (selectedLayer?.type === 'text')}
+          showResizeX={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box')}
+          showResizeY={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box')}
         />
       </div>
     </div>

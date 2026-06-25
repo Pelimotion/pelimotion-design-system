@@ -809,4 +809,9 @@ body {
   }
 }
 
-
+/* Block browser text selection globally while drag actions are active */
+body.dragging-active,
+body.dragging-active * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}

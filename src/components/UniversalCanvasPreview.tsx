@@ -202,7 +202,7 @@ function ShadowGuardRenderer({ layer }: { layer: UniversalLayer }) {
 
 // ─── Text Box Renderer ───────────────────────────────────────────────────────
 
-function TextBoxRenderer({ layer }: { layer: UniversalLayer }) {
+function TextBoxRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelected: boolean }) {
   if (!layer.visible) return null;
   const d = layer.textBoxData!;
   const t = layer.transform;
@@ -214,7 +214,7 @@ function TextBoxRenderer({ layer }: { layer: UniversalLayer }) {
       transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
       opacity: t.opacity,
       zIndex: layer.zIndex + 10,
-      pointerEvents: 'none',
+      pointerEvents: isSelected ? 'auto' : 'none',
       backgroundColor: d.backgroundColor,
       borderRadius: d.borderRadius,
       padding: d.padding,
@@ -234,7 +234,13 @@ function TextBoxRenderer({ layer }: { layer: UniversalLayer }) {
     return base;
   };
 
-  return <div data-layer-id={layer.id} style={getBoxStyle()} />;
+  return (
+    <div
+      data-layer-id={layer.id}
+      data-gizmo-target={isSelected ? 'active' : undefined}
+      style={getBoxStyle()}
+    />
+  );
 }
 
 // ─── Element Colors Helper ───────────────────────────────────────────────────
@@ -449,7 +455,7 @@ export function UniversalCanvasPreview() {
           case 'shadow-guard':
             return <ShadowGuardRenderer key={layer.id} layer={layer} />;
           case 'text-box':
-            return <TextBoxRenderer key={layer.id} layer={layer} />;
+            return <TextBoxRenderer key={layer.id} layer={layer} isSelected={isSelected} />;
           case 'element':
             return <ElementLayerRenderer key={layer.id} layer={layer} isSelected={isSelected} />;
           default:

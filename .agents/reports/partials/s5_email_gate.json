@@ -1,6 +1,6 @@
 {
   "suiteId": "s5_email_gate",
-  "timestamp": "2026-06-25T11:04:03.519Z",
+  "timestamp": "2026-06-25T11:32:26.441Z",
   "passed": true,
   "findings": [],
   "email_gate": "present"

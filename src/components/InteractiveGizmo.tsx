@@ -36,6 +36,11 @@ export function InteractiveGizmo({
 }: InteractiveGizmoProps) {
   if (!active) return null;
 
+  // ─── Drag helpers ─────────────────────────────────────────────────────────
+  // Prevent browser text-selection during all Gizmo drag operations.
+  const startDrag = () => document.body.classList.add('dragging-active');
+  const stopDrag  = () => document.body.classList.remove('dragging-active');
+
   // ─── Move (center drag) ───────────────────────────────────────────────────
 
   const handleMoveMouseDown = (e: React.MouseEvent) => {
@@ -65,8 +70,10 @@ export function InteractiveGizmo({
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      stopDrag();
     };
 
+    startDrag();
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };
@@ -99,8 +106,10 @@ export function InteractiveGizmo({
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      stopDrag();
     };
 
+    startDrag();
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };
@@ -129,8 +138,10 @@ export function InteractiveGizmo({
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      stopDrag();
     };
 
+    startDrag();
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };
@@ -156,8 +167,10 @@ export function InteractiveGizmo({
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      stopDrag();
     };
 
+    startDrag();
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };
@@ -183,8 +196,10 @@ export function InteractiveGizmo({
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      stopDrag();
     };
 
+    startDrag();
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
   };

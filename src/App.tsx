@@ -228,6 +228,7 @@ function App() {
       lastPanPos.current = { x: e.clientX, y: e.clientY };
       if (viewportRef.current) viewportRef.current.style.cursor = 'grabbing';
       e.currentTarget.setPointerCapture(e.pointerId);
+      document.body.classList.add('dragging-active');
     } else {
       handleCanvasSelection(e);
     }
@@ -283,6 +284,7 @@ function App() {
     isPanning.current = false;
     if (viewportRef.current) viewportRef.current.style.cursor = isSpaceDown.current ? 'grab' : 'default';
     e.currentTarget.releasePointerCapture(e.pointerId);
+    document.body.classList.remove('dragging-active');
   };
 
   // ─── GSAP Camera Apply ───────────────────────────────────────────────────
