@@ -211,6 +211,7 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
               width: '100%',
               outline: 'none',
               fontFamily: 'var(--font-sans)',
+              userSelect: 'text',
             }}
           />
         ) : (
@@ -435,6 +436,7 @@ export function LayersPanel() {
       flexDirection: 'column',
       height: '100%',
       overflow: 'hidden',
+      userSelect: 'none', // user-select: none
     }}>
       {/* CSS Animations */}
       <style>{`

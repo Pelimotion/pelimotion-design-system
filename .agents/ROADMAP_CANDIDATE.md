@@ -1,18 +1,18 @@
 # 🎬 Pelimotion — Orquestrador V7 (Anti-Loop + Feature Discovery)
 
-*Gerado: 25/06/2026, 00:21:26 | Sessão #63 | Commit: `f7ffcd5` | Modo: **FEATURE_DISCOVERY***
-*Branch: `main` | TS/TSX: 62 arquivos | E2E: 14 testes*
+*Gerado: 25/06/2026, 07:18:10 | Sessão #104 | Commit: `4e38e3f` | Modo: **NORMAL***
+*Branch: `main` | TS/TSX: 63 arquivos | E2E: 15 testes*
 
-> **AGENTE EXECUTOR:** Leia ORCHESTRATOR_PROMPT.md v6 antes de agir. Siga o modo FEATURE_DISCOVERY.
+> **AGENTE EXECUTOR:** Leia ORCHESTRATOR_PROMPT.md v6 antes de agir. Siga o modo NORMAL.
 
 ## 1. 🚦 Triage (Fase 0)
 
 | Campo | Valor |
 |-------|-------|
-| Modo | **FEATURE_DISCOVERY** |
+| Modo | **NORMAL** |
 | Loop | ✅ Não detectado |
 | Build | ✅ OK |
-| Bundle | 503KB (gzip ~156KB) |
+| Bundle | 505KB (gzip ~157KB) |
 | Módulo bloqueado | nenhum |
 | P0 pendentes | ✅ Nenhum |
 
@@ -25,62 +25,95 @@
 | Empty State | ✅ |
 | Glossário | ✅ Limpo |
 
-## 3. 🚀 Maturidade P1 (Feature Discovery)
+## 3. 🚀 Maturidade P2 (Feature Discovery)
 
-**7/7 features P1 implementadas**
+**8/11 features P2 implementadas**
 
 ### Implementadas ✅
-- Toast Notifications
-- Export Quality Presets
-- Custom Font Upload
-- Safe Zone Guides
-- Undo/Redo History
-- Keyboard Shortcuts HUD
-- Reference Background
+- Background Export Persistence
+- Client-side Render UI Unblocking
+- Professional Export Naming
+- Lighthouse & CWV Audits
+- SEO Category Landing Page
+- Niche Element Presets
+- Render Performance Telemetry
+- Drag Text Selection Prevention
+
+### Pendentes (ordenadas por score)
+| Feature | Score | Esforço | Por quê |
+|---------|-------|---------|--------|
+| Timeline Playhead & Timecode Sync | 4.8/5 | Médio | Garante que a agulha de reprodução (playhead) esteja sincronizada e funcional com o timecode numérico e responda perfeitamente aos botões de play, pause e arraste. |
+| In-Canvas Text Editing & Smart Selection | 4.7/5 | Alto | Permitir a edição direta de texto no canvas e seleção inteligente de objetos melhora drasticamente o fluxo de trabalho imitando ferramentas de ponta |
+| Simplified Timeline UX | 4.6/5 | Alto | Simplifica trilhas e remove poluição visual na timeline para uma experiência intuitiva NLE |
 
 ## 4. 🔍 Resultados E2E
 
-**📸 Screenshots:** 16 | **⚡ FPS:** idle=60 loaded=60 delta=0
+**📸 Screenshots:** 18 | **⚡ FPS:** idle=60 loaded=60 delta=0
 
-✅ **Todas 13 suites passaram.**
+✅ **Todas 14 suites passaram.**
 
 ## 5. 📦 Bundle Trend
 
 | Sessão | KB | Gzip (est.) |
 |--------|----|--------------|
-| S59 (2026-06-25) | 500KB | ~155KB |
-| S60 (2026-06-25) | 502KB | ~156KB |
-| S61 (2026-06-25) | 502KB | ~156KB |
-| S62 (2026-06-25) | 505KB | ~157KB |
-| S63 (2026-06-25) | 503KB | ~156KB |
+| S100 (2026-06-25) | 504KB | ~156KB |
+| S101 (2026-06-25) | 504KB | ~156KB |
+| S102 (2026-06-25) | 504KB | ~156KB |
+| S103 (2026-06-25) | 505KB | ~157KB |
+| S104 (2026-06-25) | 505KB | ~157KB |
 
 ## 6. 🧠 Memória (últimas 7 sessões)
 
-- S57 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=493KB. p1_done=5/7.
-- S58 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.
-- S59 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.
-- S60 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7.
-- S61 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7.
-- S62 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=505KB. p1_done=7/7.
-- S63 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p1_done=7/7.
+- S98 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=6/10.
+- S99 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=7/10.
+- S100 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=7/10.
+- S101 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.
+- S102 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.
+- S103 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=505KB. p2_done=8/11.
+- S104 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=505KB. p2_done=8/11.
 
 ## 7. 📈 Sessões Recentes
 
 | # | Data | Modo | Build | Falhas | FPS | Bundle | P1 Done |
 |---|------|------|-------|--------|-----|--------|---------|
-| S63 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 503KB | 7/7 |
-| S62 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 505KB | 7/7 |
-| S61 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 502KB | 7/7 |
-| S60 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 502KB | 7/7 |
-| S59 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 500KB | 7/7 |
-| S58 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 500KB | 7/7 |
-| S57 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 493KB | 5/7 |
-| S56 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 493KB | 5/7 |
+| S104 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 505KB | 8/11 |
+| S103 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 1 | 60 | 505KB | 8/11 |
+| S102 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 8/11 |
+| S101 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 8/11 |
+| S100 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 7/11 |
+| S99 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 7/11 |
+| S98 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 503KB | 6/11 |
+| S97 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 503KB | 5/11 |
 
 ## 8. 🎯 Recomendação para Próxima Sessão
 
-### Sistema saudável — P1 em andamento
-Avaliar features P2 ou refactoring de performance.
+### Sistema saudável — P2 em andamento
+Top candidato: **Timeline Playhead & Timecode Sync**
+## 9. 🧠 Auditoria de UX e Performance: Interatividade e Exportação
+
+### A. Prevenção de Seleção Indesejada de Texto Nativa da Web
+Ao criar interfaces NLE web complexas (com timelines arrastáveis, resizers de painel e Gizmo de transform), o maior atrito de UX ocorre quando o navegador seleciona textos acidentalmente como se fosse um documento web comum.
+
+**Recomendações técnicas baseadas na Figma & Canva:**
+- **Bloqueio de user-select**: Aplicar as classes `select-none` (Tailwind) ou CSS `user-select: none` em todos os botões de controle, trilhas da timeline, alças do Gizmo e barras de resizer.
+- **Pointer Captures e preventDefault**: Prevenir o comportamento padrão do navegador no evento `pointerdown` / `mousedown` das alças interativas, impedindo que o navegador ative o cursor de seleção de texto.
+- **Classe global ativa no body**: Durante o arrasto ativo (ex: redimensionamento de painel ou transformação no Gizmo), adicionar uma classe temporária `dragging-active` no `document.body` com `user-select: none` global, removendo-a no `pointerup`.
+
+### B. Simplificação e Despoluição Visual de Timeline
+Timelines web profissionais precisam equilibrar poder de edição e simplicidade visual. Pesquisa de tendências (Canva e CapCut Web):
+
+- **Controles contextuais**: Remover botões repetidos em cada linha de track (ex: fades de áudio, volume de trilha). Estes ajustes devem ficar ocultos no track e aparecer apenas no properties panel contextual ao selecionar a trilha correspondente.
+- **Compactação das faixas**: Reduzir a altura das faixas quando não selecionadas, e usar cores distintas para diferentes mídias (ex: violeta para tipografia, azul para formas, verde para áudio).
+- **Visual Grid & Zoom**: Facilitar o controle de zoom horizontal da timeline com um controle centralizado simples e demarcar o tempo de forma limpa (ex: segundos agrupados de forma espaçada, sem ticks milissegundos excessivos).
+
+### C. Edição Direta e Seleção no Canvas
+A capacidade de editar textos "In-Place" duplo-clicando no canvas, assim como seleção em laço (marquee) são essenciais para uma sensação NLE/Figma.
+
+### D. Desbloqueio de UI e Persistência na Exportação
+Exportações client-side pesadas travam a main thread da interface gráfica.
+- **OffscreenCanvas & Web Workers:** Isolar o FFmpeg.wasm ou WebCodecs em Web Workers para renderizar frames em segundo plano sem freezar a UI.
+- **Page Visibility API:** Prevenir pausas de renderização se a aba do navegador for minimizada, alertando o usuário caso tente fechar a página prematuramente.
+
 
 ---
-*Orchestrator V7 | Modo: FEATURE_DISCOVERY | Loop: ✅ | 25/06/2026, 00:21:26*
+*Orchestrator V7 | Modo: NORMAL | Loop: ✅ | 25/06/2026, 07:18:10*

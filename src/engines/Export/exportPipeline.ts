@@ -18,6 +18,7 @@ import { useEditorStore } from '@/store/useEditorStore'
 import type { ExportWorkerConfig } from './exportWorker'
 import { Telemetry } from '@/lib/telemetry'
 import ExportWorker from './exportWorker?worker'
+import { backgroundDelay } from './backgroundTimer'
 
 function sendAndWait(worker: Worker, message: any, expectedResponseType: string, timeoutMs = 0): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -53,43 +54,55 @@ export async function runExportPipeline(
 ) {
   Telemetry.logEvent('EXPORT_STARTED', { format: config.format, resolution: config.resolution });
 
-  // Check if we can use WebCodecs (Hardware Acceleration)
-  // WebCodecs standalone lacks an audio multiplexer in our current architecture.
-  const isVideo = config.format === 'mp4' || config.format === 'mov';
-  if (isVideo && typeof VideoEncoder !== 'undefined') {
-    const isWebm = config.format === 'mov';
-    const codecString = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028';
-    
-    const [wStr, hStr] = (config.resolution || "1920x1080").split('x') as [string, string];
-    const width = parseInt(wStr, 10);
-    const height = parseInt(hStr, 10);
-    const safeWidth = width % 2 === 0 ? width : width - 1;
-    const safeHeight = height % 2 === 0 ? height : height - 1;
+  // export-warning-leave: register beforeunload to warn user when attempting to close tab during active render
+  const preventClose = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = 'Exportação em andamento. Se você fechar a página, o progresso será perdido.';
+    return e.returnValue;
+  };
+  window.addEventListener('beforeunload', preventClose);
 
-    try {
-      const configSupport = await VideoEncoder.isConfigSupported({
-        codec: codecString,
-        width: safeWidth,
-        height: safeHeight,
-      });
+  try {
+    // Check if we can use WebCodecs (Hardware Acceleration)
+    // WebCodecs standalone lacks an audio multiplexer in our current architecture.
+    const isVideo = config.format === 'mp4' || config.format === 'mov';
+    if (isVideo && typeof VideoEncoder !== 'undefined') {
+      const isWebm = config.format === 'mov';
+      const codecString = isWebm ? 'vp09.00.10.08' : 'avc1.4d0028';
+      
+      const [wStr, hStr] = (config.resolution || "1920x1080").split('x') as [string, string];
+      const width = parseInt(wStr, 10);
+      const height = parseInt(hStr, 10);
+      const safeWidth = width % 2 === 0 ? width : width - 1;
+      const safeHeight = height % 2 === 0 ? height : height - 1;
 
-      if (configSupport.supported) {
-        try {
-          return await exportWithWebCodecs(element, config, onProgress, safeWidth, safeHeight);
-        } catch (webcodecsError) {
-          console.warn('[Export] WebCodecs execution failed. Falling back to FFmpeg.', webcodecsError);
-          Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format, error: String(webcodecsError) });
+      try {
+        const configSupport = await VideoEncoder.isConfigSupported({
+          codec: codecString,
+          width: safeWidth,
+          height: safeHeight,
+        });
+
+        if (configSupport.supported) {
+          try {
+            return await exportWithWebCodecs(element, config, onProgress, safeWidth, safeHeight);
+          } catch (webcodecsError) {
+            console.warn('[Export] WebCodecs execution failed. Falling back to FFmpeg.', webcodecsError);
+            Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format, error: String(webcodecsError) });
+          }
         }
+      } catch (e) {
+        console.warn('[Export] WebCodecs support check failed', e);
       }
-    } catch (e) {
-      console.warn('[Export] WebCodecs support check failed', e);
     }
-  }
 
-  // Fallback to existing FFmpeg.wasm / PNG Sequence pipeline
-  console.warn('[Export] WebCodecs not supported or not a video. Falling back to FFmpeg/Zip.');
-  Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format });
-  return exportWithFFmpeg(element, config, onProgress);
+    // Fallback to existing FFmpeg.wasm / PNG Sequence pipeline
+    console.warn('[Export] WebCodecs not supported or not a video. Falling back to FFmpeg/Zip.');
+    Telemetry.logEvent('WEBCODECS_FALLBACK', { format: config.format });
+    return await exportWithFFmpeg(element, config, onProgress);
+  } finally {
+    window.removeEventListener('beforeunload', preventClose);
+  }
 }
 
 async function exportWithWebCodecs(
@@ -185,7 +198,7 @@ async function exportWithWebCodecs(
         }
       });
 
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await backgroundDelay(50);
 
       const compVideos = allVideos.filter(vid => vid.id !== 'export-bg-video');
       const videoPlaceholders = compVideos.map(vid => {
@@ -245,7 +258,7 @@ async function exportWithWebCodecs(
         if (workerError) {
           throw workerError;
         }
-        await new Promise(r => setTimeout(r, 2));
+        await backgroundDelay(2);
       }
 
       inFlight++;
@@ -273,7 +286,7 @@ async function exportWithWebCodecs(
       if (!useEditorStore.getState().exportState.isExporting) {
         throw new Error('EXPORT_CANCELLED');
       }
-      await new Promise(r => setTimeout(r, 50));
+      await backgroundDelay(50);
     }
 
     onProgress({ stage: 'encoding' }); // just to update the text if needed, but it's done
@@ -416,7 +429,7 @@ async function exportWithFFmpeg(
       });
 
       // Wait a tiny bit for the DOM to flush styles/layout and video to seek
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await backgroundDelay(50)
       
       // Replace composition videos with static images so html-to-image can capture them
       const compVideos = allVideos.filter(vid => vid.id !== 'export-bg-video')

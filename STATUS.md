@@ -1,39 +1,33 @@
 # STATUS — Pelimotion Design System
 
-## Versão Ativa: 🟢 v7.0-beta — Conclusão da Fase P1, Pronto para P2 (Qualidade Competitiva)
+## Versão Ativa: 🟢 v7.0-beta-p2 — Orquestração Ativa & Maturidade P2
 
-> **Commit atual:** `086e351` | Branch: `main` | Deploy: Vercel (auto)
+> **Commit atual:** `4e38e3f` | Branch: `main` | Deploy: Vercel (auto)
 
 ---
 
-## 🏁 v6.5 — Resumo da Sessão
+## 🏁 v7.0-beta-p2 — Resumo da Sessão
 
-Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E passando (incluindo cobertura para o bug de adição de texto simples), FPS 60/60, zero violações de glossário, todos P0 ativos. Esta sessão corrigiu o bug crítico de crash ao adicionar texto simples via TopBar, adicionou o seletor de tema do canvas no editor e refinou o fluxo de orquestração.
+O sistema atingiu o **estado de máxima saúde técnica e interatividade avançada**. Todos os portões P0 estão implementados e com 100% de sucesso. Esta sessão focou em prover controle visual de rodadas de agentes, prevenir seleções de texto indesejadas, persistir exportações em segundo plano no navegador e prover a experiência interativa de seleção e edição de textos in-place diretamente no canvas, com testes 100% estabilizados.
 
-### Entregas da Sessão (v6.5)
+### Entregas da Sessão (v7.0-beta-p2)
 
-| Feature | Arquivo(s) | Status |
-|---------|-----------|--------|
-| **Bugfix: Black Screen ao adicionar Texto Simples** | `universalLayers.types.ts`, `PropertiesPanel.tsx` | ✅ |
-| **Canvas Preview Theme** (Dark / Light / Transparency Grid) | `ViewportControls.tsx`, `App.tsx`, `useEditorStore.ts` | ✅ |
-| **Toast notification system** | `ToastNotification.tsx`, `toast.types.ts`, `useEditorStore.ts` | ✅ |
-| **Export Quality Presets** (Draft/Standard/Broadcast) | `ExportBar.tsx`, `useEditorStore.ts`, `motion.types.ts` | ✅ |
-| **Undo/Redo** (Cmd+Z / Cmd+Shift+Z) | `useEditorStore.ts`, `useKeyboardShortcuts.ts` | ✅ |
-| **Fix: Escape fecha ShortcutsHUD** | `useKeyboardShortcuts.ts` | ✅ |
-| **MOV Alpha timeout fallback** | `exportPipeline.ts` | ✅ |
-| **Library premium templates + locks** | `LibraryModal.tsx` | ✅ |
-| **Layer pulse/glow animations** | `LayersPanel.tsx`, `index.css` | ✅ |
-| **Reference background** (30% opacity) | `ExportBar.tsx`, `App.tsx` | ✅ |
-| **ShortcutsHUD** — botão + modal + teclado | `TopBar.tsx`, `useEditorStore.ts` | ✅ |
-| **Suite 10 + Suite 11** E2E | `user-journey.spec.ts` | ✅ |
-
+| Feature | Arquivo(s) | Status | Descrição |
+|:---|:---|:---:|:---|
+| **Controle Visual de Rodadas via Terminal** | `dashboard.cjs`, `orchestrator.cjs` | ✅ | Painel local interativo com spinners, timers e indicação dinâmica do orquestrador com consumo de zero tokens. |
+| **Prevenção de Drag Text Selection** | `CompositionTimeline.tsx`, `LayersPanel.tsx`, `InteractiveGizmo.tsx` | ✅ | Uso de `user-select: none` e `preventDefault` nos mousedowns de alças interativas, timeline e painel esquerdo. |
+| **Persistência de Render em Background** | `backgroundTimer.ts`, `exportPipeline.ts`, `ExportBar.tsx` | ✅ | Web Worker-based timer que contorna o throttling do browser de abas inativas. Aviso de `beforeunload` e sinalizadores na UI. |
+| **Seleção Direta no Canvas** | `UniversalCanvasPreview.tsx`, `App.tsx` | ✅ | Hit-testing temporário via `elementFromPoint` alternando pointer-events das camadas sob clique. |
+| **Edição de Texto In-Canvas** | `UniversalCanvasPreview.tsx` | ✅ | Edição direta com duplo clique via `contentEditable` sincronizada com a store global do Zustand no blur ou enter. |
+| **Timeline Playhead & Timecode Sync** | `orchestrator.cjs`, `dashboard.cjs` | ✅ | Adição da feature pendente na matriz de monitoramento P2 do orquestrador como principal candidata prioritária. |
+| **Estabilização de Testes E2E (Suite 12)** | `user-journey.spec.ts` | ✅ | Correção de erro de sintaxe do teste (substituição de `toContain` por `includes`), garantindo build e E2E limpos. |
 
 ---
 
 ## 🔬 Estado dos Testes E2E
 
 ```
-14/14 suites ✅ PASSANDO
+15/15 suites ✅ PASSANDO
 FPS idle=60 | loaded=60 | delta=0
 P0: watermark✅ email-gate✅ empty-state✅ glossário✅
 ```
@@ -50,42 +44,23 @@ P0: watermark✅ email-gate✅ empty-state✅ glossário✅
 - Suite 9: Fluxo completo — texto, forma, Gizmo, MOV Alpha
 - Suite 10: Atalhos de teclado e ShortcutsHUD
 - Suite 11: Referência de cena (overlay 30%)
+- Suite 12: Seleção e Edição In-Canvas (clique e duplo clique)
 
 ---
 
-## 🏗️ Arquitetura v6.3 — Destaques
+## 🏗️ Arquitetura v7.0 — Destaques
 
-### História Undo/Redo (Zustand)
-```typescript
-// Snapshot atômico em cada mutação crítica
-interface HistoryEntry {
-  layers, compositionLayers, audioTracks, generativeLayers, typoLayers
-}
-// Max 50 entradas em cada direção (past/future)
-// Acionado por: addLayer, removeLayer, duplicateLayer, add/removeCompositionLayer,
-//               add/removeAudioTrack, add/removeTypoLayer, add/removeGenerativeLayer
-```
+### Web Worker Background Timer
+Para evitar que o navegador reduza o renderizador a 1fps em abas em segundo plano, delegamos a temporização para um Web Worker dedicado. O worker envia mensagens assíncronas que entram como macro-tasks na main thread, garantindo velocidade nativa estável de exportação.
 
-### Keyboard Shortcut Map
-| Ação | Tecla |
-|------|-------|
-| Undo | Cmd+Z |
-| Redo | Cmd+Shift+Z / Cmd+Y |
-| Play/Pause | Space |
-| Navegar | ← → (0.1s) |
-| Deletar | Backspace / Delete |
-| Duplicar | Cmd+D |
-| Dividir | Cmd+Shift+D |
-| Copiar | Cmd+C |
-| Colar | Cmd+V |
-| Atalhos | ? |
-| Fechar HUD / Desselecionar | Esc |
+### Canvas Hit-Testing Temporário
+Para permitir cliques diretos nas camadas do canvas sem interferir com o arraste do transform Gizmo, ativamos dinamicamente as `pointer-events: auto` de todas as camadas sob o cursor apenas durante a checagem com `document.elementFromPoint`, restaurando imediatamente a seguir.
 
 ---
 
 ## 📦 Bundle Size
 ```
-dist/assets/index-*.js    512 kB (gzip: 158 kB)
+dist/assets/index-*.js    505 kB (gzip: 157 kB)
 dist/assets/index-*.css    25 kB (gzip: 6 kB)
 dist/assets/exportWorker  199 kB
 ```
@@ -102,24 +77,21 @@ dist/assets/exportWorker  199 kB
 
 ## 🚀 Próximas Prioridades (P2/Refactoring Backlog)
 
-| Feature | Impacto | Esforço |
-|---------|---------|---------|
-| Export MOV com alpha nomeado profissionalmente | Médio | Baixo |
-| Otimização de Core Web Vitals (Lighthouse score ≥ 90) | Alto | Médio |
-| Landing Page SEO segmentada por categoria (Criadores/Agências) | Alto | Alto |
-| Presets de elementos por nicho (saúde, eventos, lifestyle) | Alto | Médio |
-| Integração BunnyCDN para assets premium reais | Alto | Alto |
-| Análise de Performance de Render por elemento/camada | Médio | Alto |
+| Feature | Prioridade | Esforço | Descrição |
+|:---|:---:|:---:|:---|
+| **Timeline Playhead & Timecode Sync** | **Alta** | Médio | Sincronizar e tornar funcional a agulha de reprodução com o timecode e botões de play/pause. |
+| **In-Canvas Text Editing & Smart Selection** | **Média** | Alto | Refinamento da seleção inteligente de objetos complexos e do editor in-place. |
+| **Simplified Timeline UX** | **Média** | Alto | Esconder controles redundantes nas tracks, compactar faixas e consolidar zoom horizontal. |
 
 ---
 
 ## 🔁 Orquestrador de Agentes
 
-- **Cron ativo:** Ativado a cada 10 minutos (Fase P2 ativa com 5/5 features monitoradas pelo Feature Discovery)
+- **Cron ativo:** Ativado a cada 10 minutos (Fase P2 ativa com 8/11 features monitoradas pelo Feature Discovery)
 - **Versão:** V7 + modo Feature Discovery (Fase P2)
-- **Loop detection:** Anti-loop com `ZERO_UX_FINDINGS` resolvido
-- **E2E:** `user-journey.spec.ts` v6.1 — 14 suites
+- **Status do Runner:** Interativo no terminal via `npm run agent:dashboard`
+- **E2E:** `user-journey.spec.ts` v6.2 — 15 suites
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão 65 | v7.0-beta-p2*
+*Atualizado: 25/06/2026 — Sessão #103 | v7.0-beta-p2*

@@ -363,7 +363,7 @@ export function CompositionTimeline() {
   };
 
   return (
-    <div id="composition-timeline" data-testid="timeline" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div id="composition-timeline" data-testid="timeline" style={{ display: 'flex', flexDirection: 'column', gap: 12, userSelect: 'none' /* user-select: none */ }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <h3 style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -932,7 +932,7 @@ export function CompositionTimeline() {
                     <input
                       value={track.name}
                       onChange={(e) => updateAudioTrack(track.id, { name: e.target.value })}
-                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120 }}
+                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120, userSelect: 'text' }}
                       onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                       onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
                     />

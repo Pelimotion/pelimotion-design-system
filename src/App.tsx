@@ -178,12 +178,58 @@ function App() {
     return () => vp.removeEventListener('wheel', handleWheel);
   }, [targetW, targetH]);
 
+  const handleCanvasSelection = (e: React.PointerEvent) => {
+    const target = e.target as HTMLElement;
+    // Don't select if clicking on Gizmo handles, toolbar, or other UI controls
+    if (
+      target.closest('.gizmo-handle') || 
+      target.closest('#floating-toolbar') || 
+      target.closest('#export-bar') || 
+      target.closest('#top-bar') || 
+      target.closest('#layers-panel') || 
+      target.closest('#properties-panel')
+    ) {
+      return;
+    }
+
+    // 1. Temporarily set pointer-events: auto on all layer elements to enable hit testing
+    const layerEls = document.querySelectorAll('[data-layer-id]');
+    layerEls.forEach(el => {
+      (el as HTMLElement).style.pointerEvents = 'auto';
+    });
+
+    // 2. Perform hit test at client coordinates
+    const hitEl = document.elementFromPoint(e.clientX, e.clientY);
+
+    // 3. Restore pointer-events: none (except currently selected/editing layers which manage it themselves)
+    layerEls.forEach(el => {
+      const isEditing = el.getAttribute('contenteditable') === 'true';
+      const isSelected = el.getAttribute('data-gizmo-target') === 'active';
+      (el as HTMLElement).style.pointerEvents = (isSelected || isEditing) ? 'auto' : 'none';
+    });
+
+    // 4. Find the closest wrapper with data-layer-id
+    const clickedLayerEl = hitEl?.closest('[data-layer-id]');
+    if (clickedLayerEl) {
+      const layerId = clickedLayerEl.getAttribute('data-layer-id');
+      if (layerId) {
+        useEditorStore.getState().setSelectedLayerId(layerId);
+        return;
+      }
+    }
+
+    // 5. Clicked empty space -> deselect
+    useEditorStore.getState().setSelectedLayerId(null);
+  };
+
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isSpaceDown.current || e.button === 1) {
       isPanning.current = true;
       lastPanPos.current = { x: e.clientX, y: e.clientY };
       if (viewportRef.current) viewportRef.current.style.cursor = 'grabbing';
       e.currentTarget.setPointerCapture(e.pointerId);
+    } else {
+      handleCanvasSelection(e);
     }
   };
   const handlePointerMove = (e: React.PointerEvent) => {

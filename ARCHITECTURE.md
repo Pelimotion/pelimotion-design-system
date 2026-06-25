@@ -111,6 +111,17 @@ Para monetizar de forma sustentável mantendo o processamento totalmente no clie
 - **Hospedagem Serverless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.
 - **Micro-Armazenamento:** APIs diretas e contínuas entre Web Workers isolados e o Edge Storage (BunnyCDN), criando workflows automatizados onde peças criadas e validadas são instantaneamente provisionadas em catálogos baseados em nuvem.
 
+### 2.9. Monitor de Controle do Orquestrador Local (Zero-Token Dashboard)
+Implementamos uma arquitetura local de controle de rodadas dos agentes de pesquisa e desenvolvimento:
+- **Comunicação Bidirecional de Estado:** O orquestrador (`orchestrator.cjs`) sincroniza o status de execução atual e a fase ativa (Fase 0 à Fase 4) gravando no arquivo `.agents/LEARNING_MEMORY.json`.
+- **Monitor no Terminal (`dashboard.cjs`):** Um script CLI rodando sob Node.js consome esse arquivo e renderiza painéis formatados com cores ANSI e spinners em Braille para indicar progresso de rodadas e tempo decorrido.
+- **Temporização e Resiliência (Zero Tokens):** Os tempos de cron e as regressões das rodadas são calculados de forma 100% offline no cliente, eliminando a dependência de APIs de terceiros ou o consumo desnecessário de tokens de LLM. Inclui heurística de timeout para acusar falhas de execução do orquestrador caso a última atualização exceda 6 minutos.
+
+### 2.10. Técnicas Avançadas de Interação & Renderização em Background
+- **Bypassing Background Throttling via Web Workers:** Navegadores modernos atenuam agressivamente loops na main thread em abas inativas (minimizadas ou em segundo plano), reduzindo temporizadores para no máximo 1fps. Para manter a exportação fluida, o sistema delega a temporização a um Web Worker isolado (`backgroundTimer.ts`). Como as mensagens do worker (`postMessage`) entram como macro-tasks na fila do navegador, a main thread executa os frames em velocidade nativa sem interrupções.
+- **Pointer Events Hit-Testing Temporário:** Para permitir que cliques na viewport selecionem camadas diretamente no canvas sem travar o arraste do transform Gizmo, implementamos uma alternância dinâmica: as camadas iniciam com `pointer-events: none` para passar eventos adiante. Ao detectar um clique inicial, o manipulador temporariamente seta `pointer-events: auto` em todas as camadas com `data-layer-id`, realiza um hit-test físico via `document.elementFromPoint` para descobrir o ID do objeto clicado e imediatamente restaura as propriedades para o estado padrão.
+- **Edição de Texto In-Place Sincronizada:** Camadas de texto duplo-clicadas ativam o atributo `contentEditable` nativo e habilitam a edição local. No evento de `blur` ou pressionar da tecla `Enter`, o texto final extraído de `innerText` é commitado via dispatch do Zustand para a store global do editor, sincronizando a camada e recriando o layout de forma estável.
+
 ---
 
 ## 3. Topologia do Repositório (Guia para Engenharia Interna)

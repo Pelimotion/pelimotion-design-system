@@ -7,7 +7,7 @@
  *   - element: uses existing Generative engine shapes
  *   - overlay/shadow-guard/text-box: pure CSS/SVG renders
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { UniversalLayer } from '@/types/universalLayers.types';
 import { gsap } from 'gsap';
@@ -21,6 +21,8 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
   const d = layer.textData!;
   const t = layer.transform;
   const ref = useRef<HTMLDivElement>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const { updateLayer } = useEditorStore();
 
   useEffect(() => {
     if (!ref.current || !layer.visible) return;
@@ -66,19 +68,43 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
     return () => gsap.killTweensOf(el);
   }, [layer.animation, layer.visible]);
 
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    setIsEditing(false);
+    const newText = e.currentTarget.innerText;
+    updateLayer(layer.id, { textData: { ...d, text: newText } });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  };
+
   if (!layer.visible) return null;
 
   return (
     <div
       ref={ref}
+      data-layer-id={layer.id}
       data-gizmo-target={isSelected ? 'active' : undefined}
+      onDoubleClick={handleDoubleClick}
+      contentEditable={isEditing}
+      suppressContentEditableWarning
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
       style={{
         position: 'absolute',
         transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
         top: '50%', left: '50%',
         opacity: t.opacity,
         zIndex: layer.zIndex + 10,
-        pointerEvents: 'none',
+        pointerEvents: (isSelected || isEditing) ? 'auto' : 'none',
         textAlign: d.textAlign,
         color: d.color,
         fontFamily: `'${d.fontFamily}', sans-serif`,
@@ -91,6 +117,9 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
         maxWidth: `${d.maxWidth}%`,
         width: `${d.maxWidth}%`,
         wordBreak: 'break-word',
+        outline: isEditing ? '1.5px solid var(--color-accent)' : 'none',
+        borderRadius: isEditing ? 4 : 0,
+        padding: isEditing ? 4 : 0,
       } as React.CSSProperties}
     >
       {d.text}
@@ -128,7 +157,7 @@ function OverlayLayerRenderer({ layer }: { layer: UniversalLayer }) {
     }
   };
 
-  return <div style={getStyle()} />;
+  return <div data-layer-id={layer.id} style={getStyle()} />;
 }
 
 // ─── Shadow Guard Renderer ───────────────────────────────────────────────────
@@ -158,7 +187,7 @@ function ShadowGuardRenderer({ layer }: { layer: UniversalLayer }) {
     }
   };
 
-  return <div style={getStyle()} />;
+  return <div data-layer-id={layer.id} style={getStyle()} />;
 }
 
 // ─── Text Box Renderer ───────────────────────────────────────────────────────
@@ -195,7 +224,7 @@ function TextBoxRenderer({ layer }: { layer: UniversalLayer }) {
     return base;
   };
 
-  return <div style={getBoxStyle()} />;
+  return <div data-layer-id={layer.id} style={getBoxStyle()} />;
 }
 
 // ─── Element Colors Helper ───────────────────────────────────────────────────
@@ -355,6 +384,7 @@ function ElementLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; is
   return (
     <div
       className="layer-base"
+      data-layer-id={layer.id}
       data-gizmo-target={isSelected ? 'active' : undefined}
       style={{
         position: 'absolute',
@@ -364,7 +394,7 @@ function ElementLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; is
         width: 200, height: 200,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: layer.zIndex + 10,
-        pointerEvents: 'none',
+        pointerEvents: isSelected ? 'auto' : 'none',
       }}
     >
       <div

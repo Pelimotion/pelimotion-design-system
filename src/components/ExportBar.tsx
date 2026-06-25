@@ -445,6 +445,22 @@ export function ExportBar() {
           </span>
           {exportState.stage === 'capturing' && <span style={{ fontSize: '0.65rem', color: 'var(--color-text-ghost)' }}>Capturando frames…</span>}
           {exportState.stage === 'encoding' && <span style={{ fontSize: '0.65rem', color: 'var(--color-text-ghost)' }}>Codificando…</span>}
+          <span style={{
+            fontSize: '0.62rem',
+            color: 'var(--color-accent)',
+            opacity: 0.9,
+            marginLeft: 8,
+            padding: '2px 6px',
+            border: '1px solid hsla(191,100%,50%,0.2)',
+            borderRadius: 4,
+            background: 'hsla(191,100%,50%,0.04)',
+            fontFamily: 'var(--font-sans)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4
+          }}>
+            ℹ️ Render em background ativo. Pode minimizar/mudar de aba. Não feche a aba!
+          </span>
         </div>
       )}
 

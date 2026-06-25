@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-25T03:21:26.187Z",
+  "timestamp": "2026-06-25T10:18:10.487Z",
   "suites": [
     {
       "name": "s1_empty_state",
@@ -75,6 +75,12 @@
     },
     {
       "name": "s11_reference_image",
+      "passed": true,
+      "findings": [],
+      "screenshots": []
+    },
+    {
+      "name": "s12_canvas_interactivity",
       "passed": true,
       "findings": [],
       "screenshots": []

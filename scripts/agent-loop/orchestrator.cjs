@@ -75,7 +75,26 @@ function color(c, text) {
   return `\x1b[${codes[c]||0}m${text}\x1b[0m`;
 }
 
+function updateMemoryActiveRun(status, phase) {
+  if (fs.existsSync(MEMORY_FILE)) {
+    try {
+      const currentMem = JSON.parse(fs.readFileSync(MEMORY_FILE, 'utf8'));
+      currentMem.activeRun = {
+        status,
+        phase,
+        updatedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(MEMORY_FILE, JSON.stringify(currentMem, null, 2));
+      memory.activeRun = currentMem.activeRun;
+    } catch (e) {
+      // Ignora erros concorrentes de leitura/escrita
+    }
+  }
+}
+
 // ─── Banner ────────────────────────────────────────────────────────────────
+
+updateMemoryActiveRun('running', 'Triage & Saúde (Fase 0)');
 
 console.log(color('magenta', '╔══════════════════════════════════════════════════════════════╗'));
 console.log(color('magenta', `║  PELIMOTION AGENT LOOP — ORCHESTRATOR V7                     ║`));
@@ -195,6 +214,8 @@ console.log(color('cyan', `[Balancing] Módulo bloqueado: ${lastModule || 'nenhu
 // PHASE 1 & 2: Research, Scoring & Feature Discovery
 // ═══════════════════════════════════════════════════════════════════════════
 
+updateMemoryActiveRun('running', 'Pesquisa e Pontuação (Fases 1 & 2)');
+
 console.log('\n' + color('cyan', '[Phase 1 & 2] Research + Scoring Matrix...'));
 
 // ─── Glossário scan ────────────────────────────────────────────────────────
@@ -211,6 +232,24 @@ forbidden.forEach(term => {
 console.log(color('cyan', '\n[Feature Discovery] Verificando implementação de P2s...'));
 
 const p2Checks = [
+  {
+    name: 'In-Canvas Text Editing & Smart Selection',
+    check: () => !!run('grep -r "contentEditable\\|isEditingText" src/components/Canvas 2>/dev/null | head -1'),
+    score: 4.7, effort: 'Alto', impact: 'Crítico',
+    why: 'Permitir a edição direta de texto no canvas e seleção inteligente de objetos melhora drasticamente o fluxo de trabalho imitando ferramentas de ponta'
+  },
+  {
+    name: 'Background Export Persistence',
+    check: () => !!run('grep -r "visibilitychange\\|export-warning-leave" src/engines/Export 2>/dev/null | head -1'),
+    score: 4.8, effort: 'Médio', impact: 'Crítico',
+    why: 'Garante que a renderização continue mesmo se o usuário mudar de aba, evitando perda de progresso e melhorando a percepção de robustez'
+  },
+  {
+    name: 'Client-side Render UI Unblocking',
+    check: () => !!run('grep -r "Worker\\|OffscreenCanvas" src/engines/Export 2>/dev/null | head -1'),
+    score: 5.0, effort: 'Alto', impact: 'Crítico',
+    why: 'Mover o processamento de renderização pesada (FFmpeg/WebCodecs) para fora da main thread evita o travamento da UI, mantendo o app responsivo durante a exportação'
+  },
   {
     name: 'Professional Export Naming',
     check: () => !!run('grep -r "pelimotion-asset-" src/engines/Export/exportPipeline.ts 2>/dev/null | head -1'),
@@ -252,6 +291,12 @@ const p2Checks = [
     check: () => !!run('grep -r "timeline-simplified\\|simplifiedTimeline\\|compact-timeline" src/components/CompositionTimeline.tsx 2>/dev/null | head -1'),
     score: 4.6, effort: 'Alto', impact: 'Alto',
     why: 'Simplifica trilhas e remove poluição visual na timeline para uma experiência intuitiva NLE'
+  },
+  {
+    name: 'Timeline Playhead & Timecode Sync',
+    check: () => !!run('grep -r "playhead-timecode-sync\\|timeline-needle-sync" src/ 2>/dev/null | head -1'),
+    score: 4.8, effort: 'Médio', impact: 'Crítico',
+    why: 'Garante que a agulha de reprodução (playhead) esteja sincronizada e funcional com o timecode numérico e responda perfeitamente aos botões de play, pause e arraste.'
   }
 ];
 
@@ -308,6 +353,8 @@ if (candidates.length > 0) {
 // ═══════════════════════════════════════════════════════════════════════════
 // PHASE 3: E2E Tests
 // ═══════════════════════════════════════════════════════════════════════════
+
+updateMemoryActiveRun('running', 'Executando Testes E2E (Fase 3)');
 
 console.log('\n' + color('blue', '[Phase 3] Rodando E2E (user-journey.spec.ts)...'));
 try {
@@ -420,6 +467,8 @@ fs.writeFileSync(MEMORY_FILE, JSON.stringify(memory, null, 2));
 // PHASE 4: Synthesis — ROADMAP_CANDIDATE v7
 // ═══════════════════════════════════════════════════════════════════════════
 
+updateMemoryActiveRun('running', 'Síntese e Geração do Roadmap (Fase 4)');
+
 console.log('\n' + color('green', '[Phase 4] Gerando ROADMAP_CANDIDATE.md v7...'));
 
 const dt = new Date().toLocaleString('pt-BR');
@@ -531,8 +580,8 @@ if (buildFailed) {
   }
 }
 
-// S9: UX & Drag Interactivity Research
-md += `## 9. 🧠 Auditoria de UX: Drag Selection & Timeline Simplificada\n\n`;
+// S9: UX, Rendering & Editing Interactivity Research
+md += `## 9. 🧠 Auditoria de UX e Performance: Interatividade e Exportação\n\n`;
 md += `### A. Prevenção de Seleção Indesejada de Texto Nativa da Web\n`;
 md += `Ao criar interfaces NLE web complexas (com timelines arrastáveis, resizers de painel e Gizmo de transform), o maior atrito de UX ocorre quando o navegador seleciona textos acidentalmente como se fosse um documento web comum.\n\n`;
 md += `**Recomendações técnicas baseadas na Figma & Canva:**\n`;
@@ -544,6 +593,14 @@ md += `Timelines web profissionais precisam equilibrar poder de edição e simpl
 md += `- **Controles contextuais**: Remover botões repetidos em cada linha de track (ex: fades de áudio, volume de trilha). Estes ajustes devem ficar ocultos no track e aparecer apenas no properties panel contextual ao selecionar a trilha correspondente.\n`;
 md += `- **Compactação das faixas**: Reduzir a altura das faixas quando não selecionadas, e usar cores distintas para diferentes mídias (ex: violeta para tipografia, azul para formas, verde para áudio).\n`;
 md += `- **Visual Grid & Zoom**: Facilitar o controle de zoom horizontal da timeline com um controle centralizado simples e demarcar o tempo de forma limpa (ex: segundos agrupados de forma espaçada, sem ticks milissegundos excessivos).\n\n`;
+
+md += `### C. Edição Direta e Seleção no Canvas\n`;
+md += `A capacidade de editar textos "In-Place" duplo-clicando no canvas, assim como seleção em laço (marquee) são essenciais para uma sensação NLE/Figma.\n\n`;
+
+md += `### D. Desbloqueio de UI e Persistência na Exportação\n`;
+md += `Exportações client-side pesadas travam a main thread da interface gráfica.\n`;
+md += `- **OffscreenCanvas & Web Workers:** Isolar o FFmpeg.wasm ou WebCodecs em Web Workers para renderizar frames em segundo plano sem freezar a UI.\n`;
+md += `- **Page Visibility API:** Prevenir pausas de renderização se a aba do navegador for minimizada, alertando o usuário caso tente fechar a página prematuramente.\n\n`;
 
 md += `\n---\n`;
 md += `*Orchestrator V7 | Modo: ${systemMode} | Loop: ${loopDetected ? '🔴' : '✅'} | ${dt}*\n`;
@@ -563,3 +620,5 @@ console.log(`║ Glossário:       ${glossaryViolations.length} violações`);
 console.log(`║ Bundle:          ${bundleKB}KB`);
 console.log(`║ P2 implementadas: ${implementedP2.length}/${p2Checks.length}`);
 console.log(color('bold', '╚═══════════════════════════════════════════════╝'));
+
+updateMemoryActiveRun('idle', 'Aguardando próxima rodada...');

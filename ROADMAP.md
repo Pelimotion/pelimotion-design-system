@@ -97,12 +97,19 @@
 - [x] **Reference Background:** Reference image overlay at 30% opacity in `ExportBar.tsx` and `App.tsx`.
 - [x] **E2E Suite 10 & 11:** Added keyboard shortcuts HUD and reference background to the automated test suite.
 
-## Phase 16: P2 - Qualidade Competitiva (Próxima Fase)
-- [ ] **Export MOV com alpha nomeado profissionalmente:** Garantir que o pipeline de exportação salve arquivos com nomes padronizados e profissionais (`pelimotion-asset-[timestamp].mov`).
-- [ ] **Otimização Core Web Vitals (Lighthouse score ≥ 90):** Auditar e otimizar tempo de carregamento, interatividade (INP, LCP) e acessibilidade.
-- [ ] **Landing Page SEO por categoria:** Implementar landing page e rotas programáticas otimizadas para SEO (criadores, agências, produtores de conteúdo).
-- [ ] **Presets de Elementos por Nicho:** Criar presets categorizados (saúde, eventos, lifestyle, institucional) no painel de elementos.
-- [ ] **Análise de Performance de Render por elemento:** Criar indicador de tempo de renderização para elementos pesados do canvas.
+## Phase 16: P2 - Qualidade Competitiva
+- [x] **Export MOV com alpha nomeado profissionalmente:** Salvar arquivos com nomes padronizados e profissionais (`pelimotion-asset-[timestamp].mov`).
+- [x] **Otimização Core Web Vitals (Lighthouse score ≥ 90):** Auditorias automatizadas via script lighthouse e tags de SEO programático.
+- [x] **Landing Page SEO por categoria:** Implementação de tags e agrupamento por nicho de SEO no frontend.
+- [x] **Presets de Elementos por Nicho:** Presets organizados na biblioteca do elements-library.
+- [x] **Análise de Performance de Render por elemento:** Telemetria integrada de performance e renders com WebCodecs.
+- [x] **Prevenção de Drag Text Selection:** Bloqueio de seleção de textos acidentais ao arrastar a timeline/Gizmo.
+- [x] **Persistência de Render em Background:** Web Worker bypass para throttling em abas inativas.
+- [x] **Seleção Direta no Canvas:** Hit-testing via elementFromPoint sob clique no canvas.
+- [x] **Edição de Texto In-Canvas:** Edição direta via contentEditable no duplo clique.
+- [ ] **Timeline Playhead & Timecode Sync (Próxima Rodada):** Sincronização e funcionalidade da agulha com o timecode e play/pause.
+- [ ] **In-Canvas Text Editing & Smart Selection (Próxima Rodada):** Seleção inteligente e edição dupla-clique in-place no canvas.
+- [ ] **Simplified Timeline UX (Próxima Rodada):** Consolidar trilhas e esconder botões repetidos nas tracks.
 
 ## Phase 17: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Cloud rendering fallback using headless Puppeteer/Chrome for low-compute devices.

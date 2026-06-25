@@ -830,6 +830,77 @@ test.describe('Suite 11 — Imagem de Referência', () => {
 });
 
 // ═════════════════════════════════════════════
+// SUITE 12 — INTERATIVIDADE NO CANVAS (Seleção & Edição In-Canvas)
+// ═════════════════════════════════════════════
+
+test.describe('Suite 12 — Seleção e Edição In-Canvas', () => {
+  test('12.1 — Clicar em elemento no canvas deve selecioná-lo e duplo clique deve iniciar edição de texto', async ({ page }) => {
+    test.setTimeout(40000);
+    await page.setViewportSize(VIEWPORT);
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2000);
+
+    // 1. Criar camada de texto
+    const topBarTextBtn = page.locator('#top-bar button:has-text("Texto")').first();
+    await topBarTextBtn.waitFor({ state: 'visible' });
+    await topBarTextBtn.click();
+    await page.waitForTimeout(500);
+
+    const textOption = page.locator('button:has-text("Texto Simples")').first();
+    await textOption.waitFor({ state: 'visible' });
+    await textOption.click();
+    await page.waitForTimeout(1000);
+
+    // Desmarcar seleção clicando fora
+    const canvasViewport = page.locator('#canvas-viewport');
+    await canvasViewport.click({ position: { x: 10, y: 10 } });
+    await page.waitForTimeout(500);
+
+    // Confirmar que nenhuma camada está selecionada
+    const propertiesText = page.locator('#properties-panel');
+    expect(await propertiesText.innerText()).toContain('Selecione um elemento');
+
+    // 2. Clicar no texto diretamente no canvas
+    const textLayer = page.locator('[data-layer-id]').first();
+    await textLayer.click({ force: true });
+    await page.waitForTimeout(800);
+
+    // Confirmar que foi selecionado
+    expect(await propertiesText.innerText()).not.toContain('Selecione um elemento');
+
+    // 3. Duplo clique para ativar contentEditable
+    await textLayer.dblclick({ force: true });
+    await page.waitForTimeout(800);
+
+    // Confirmar que está editável
+    const isEditable = await textLayer.getAttribute('contenteditable');
+    expect(isEditable).toBe('true');
+
+    // 4. Modificar conteúdo do texto in-canvas
+    await textLayer.evaluate(el => {
+      (el as HTMLElement).focus();
+      el.innerText = 'CANVAS DIRECT EDIT';
+    });
+    await page.waitForTimeout(300);
+    await textLayer.evaluate(el => {
+      (el as HTMLElement).blur();
+    });
+    await page.waitForTimeout(1000);
+
+    // Confirmar que não está mais editável
+    const isEditableAfter = await textLayer.getAttribute('contenteditable');
+    expect(isEditableAfter).toBe('false');
+
+    // Confirmar que o store de fato atualizou o texto na DOM
+    const canvasHtml = await page.locator('#canvas-fixed-resolution').innerHTML();
+    expect(canvasHtml).toContain('CANVAS DIRECT EDIT');
+
+    const passed = canvasHtml.includes('CANVAS DIRECT EDIT') && isEditable === 'true' && isEditableAfter === 'false';
+    writePartial('s12_canvas_interactivity', { passed, findings: passed ? [] : ['FALHA: Edição direta no canvas não funcionou ou texto não atualizou no store'] });
+  });
+});
+
+// ═════════════════════════════════════════════
 // SUITE 8 — AGREGAÇÃO FINAL + RELATÓRIO
 // ═════════════════════════════════════════════
 
@@ -844,7 +915,7 @@ test.describe('Suite 8 — Relatório final', () => {
     // ── Esperar por partiais dos outros testes (poll até 25s) ──
     // Necessário porque tests paralelos podem ainda estar rodando
     const EXPECTED_PARTIALS = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded',
-      's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow', 's10_shortcuts_hud', 's11_reference_image'];
+      's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow', 's10_shortcuts_hud', 's11_reference_image', 's12_canvas_interactivity'];
     const pollStart = Date.now();
     let allPresent = false;
     while (Date.now() - pollStart < 25000) {
@@ -883,7 +954,7 @@ test.describe('Suite 8 — Relatório final', () => {
     const watermark   = partials['s4_watermark']?.watermark     || 'missing';
     const email_gate  = partials['s5_email_gate']?.email_gate   || 'missing';
 
-    const suiteIds = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded', 's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow', 's10_shortcuts_hud', 's11_reference_image'];
+    const suiteIds = ['s1_empty_state', 's1_console', 's1_fps_idle', 's2_fps_loaded', 's2_properties_panel', 's3_glossary', 's4_watermark', 's5_email_gate', 's6_library', 's7_seo', 's9_full_workflow', 's10_shortcuts_hud', 's11_reference_image', 's12_canvas_interactivity'];
     const suites = suiteIds.map(id => {
       const p = partials[id];
       if (!p) return { name: id, passed: false, findings: [`Suite ${id} não executou ou não gerou partial`], screenshots: [] };

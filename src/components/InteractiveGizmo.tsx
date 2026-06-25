@@ -32,6 +32,7 @@ export function InteractiveGizmo({
 
   const handleScaleMouseDown = (e: React.MouseEvent, corner: string) => {
     e.stopPropagation();
+    e.preventDefault();
     const startX = e.clientX;
     const startY = e.clientY;
     const startScale = currentScale;
@@ -65,6 +66,7 @@ export function InteractiveGizmo({
 
   const handleRotateMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!elementRef.current) return;
     const rect = elementRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -92,6 +94,7 @@ export function InteractiveGizmo({
 
   const handleResizeXMouseDown = (e: React.MouseEvent, direction: 'left' | 'right') => {
     e.stopPropagation();
+    e.preventDefault();
     const startX = e.clientX;
     // Get actual width if currentWidth is undefined or 0
     let startWidth = currentWidth || 300;
@@ -119,6 +122,7 @@ export function InteractiveGizmo({
 
   const handleResizeYMouseDown = (e: React.MouseEvent, direction: 'top' | 'bottom') => {
     e.stopPropagation();
+    e.preventDefault();
     const startY = e.clientY;
     let startHeight = currentHeight || 100;
     if (!currentHeight && elementRef.current) {
@@ -153,6 +157,7 @@ export function InteractiveGizmo({
         pointerEvents: 'none',
         zIndex: 100,
         boxShadow: '0 0 12px hsla(191, 100%, 50%, 0.15)',
+        userSelect: 'none', // user-select: none
       }}
     >
       {/* Corner handles for scale */}

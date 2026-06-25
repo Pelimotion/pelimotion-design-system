@@ -1,26 +1,26 @@
 {
-  "sessionsRun": 63,
+  "sessionsRun": 104,
   "historicalInsights": [
-    "Session 44: fps_idle=0, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 10. Loop: none.",
-    "Session 45: fps_idle=60, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.",
-    "Session 46: fps_idle=60, fps_loaded=0, fps_delta=60. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 7. Loop: none.",
-    "Session 47: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: none.",
-    "Session 48: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
-    "Session 49: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 1. Loop: none.",
-    "Session 50: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
-    "Session 51: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
-    "Session 52: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
-    "Session 53: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
-    "Session 54: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 1. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
-    "Session 55: fps_idle=60, fps_loaded=60, fps_delta=0. P0: wm=present, eg=present, es=present, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: none.",
-    "S56 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=493KB. p1_done=5/7.",
-    "S57 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=493KB. p1_done=5/7.",
-    "S58 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.",
-    "S59 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.",
-    "S60 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7.",
-    "S61 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7.",
-    "S62 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=505KB. p1_done=7/7.",
-    "S63 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p1_done=7/7."
+    "S85 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S86 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S87 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S88 [FEATURE_DISCOVERY]: fps=60/60 delta=1. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S89 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S90 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S91 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S92 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S93 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S94 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/5.",
+    "S95 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/7.",
+    "S96 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/7.",
+    "S97 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=5/7.",
+    "S98 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=503KB. p2_done=6/10.",
+    "S99 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=7/10.",
+    "S100 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=7/10.",
+    "S101 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.",
+    "S102 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.",
+    "S103 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=505KB. p2_done=8/11.",
+    "S104 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=505KB. p2_done=8/11."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -68,446 +68,6 @@
     }
   ],
   "sessionLogs": [
-    {
-      "session": 15,
-      "date": "2026-06-24T07:27:35.947Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 16,
-      "date": "2026-06-24T07:29:43.992Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 17,
-      "date": "2026-06-24T07:37:02.326Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 18,
-      "date": "2026-06-24T08:00:12.441Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 19,
-      "date": "2026-06-24T08:00:44.872Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 20,
-      "date": "2026-06-24T08:20:10.273Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 21,
-      "date": "2026-06-24T08:40:10.196Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 22,
-      "date": "2026-06-24T09:00:10.404Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 23,
-      "date": "2026-06-24T09:20:07.629Z",
-      "errors": 1,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 0
-    },
-    {
-      "session": 24,
-      "date": "2026-06-24T09:20:58.593Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 1,
-      "fps": 93
-    },
-    {
-      "session": 25,
-      "date": "2026-06-24T09:21:52.216Z",
-      "errors": 0,
-      "uxCritical": 1,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 26,
-      "date": "2026-06-24T09:22:45.029Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 92
-    },
-    {
-      "session": 27,
-      "date": "2026-06-24T09:40:15.254Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 28,
-      "date": "2026-06-24T10:00:15.121Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 29,
-      "date": "2026-06-24T10:20:14.787Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 30,
-      "date": "2026-06-24T10:26:49.254Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 31,
-      "date": "2026-06-24T10:29:07.705Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 32,
-      "date": "2026-06-24T10:40:15.580Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 92
-    },
-    {
-      "session": 33,
-      "date": "2026-06-24T11:00:15.949Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 34,
-      "date": "2026-06-24T11:20:16.388Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 35,
-      "date": "2026-06-24T11:40:15.663Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 36,
-      "date": "2026-06-24T12:00:16.317Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 37,
-      "date": "2026-06-24T12:20:16.152Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 38,
-      "date": "2026-06-24T12:40:16.087Z",
-      "errors": 2,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 39,
-      "date": "2026-06-24T19:19:56.173Z",
-      "errors": 3,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91
-    },
-    {
-      "session": 40,
-      "date": "2026-06-24T19:22:19.559Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 91,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "missing",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 41,
-      "date": "2026-06-24T19:24:11.860Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "missing",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 42,
-      "date": "2026-06-24T19:25:45.170Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "missing",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 43,
-      "date": "2026-06-24T19:29:13.855Z",
-      "errors": 0,
-      "uxCritical": 2,
-      "uxHigh": 6,
-      "fps": 60,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "present",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 44,
-      "date": "2026-06-24T19:31:55.108Z",
-      "errors": 0,
-      "uxCritical": 1,
-      "uxHigh": 10,
-      "fps": 0,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "missing",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 45,
-      "date": "2026-06-24T19:33:47.917Z",
-      "errors": 0,
-      "uxCritical": 2,
-      "uxHigh": 7,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "present",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 46,
-      "date": "2026-06-24T19:35:27.553Z",
-      "errors": 0,
-      "uxCritical": 2,
-      "uxHigh": 7,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "present",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 47,
-      "date": "2026-06-24T19:37:58.356Z",
-      "errors": 0,
-      "uxCritical": 2,
-      "uxHigh": 6,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "missing",
-        "emailGate": "missing",
-        "emptyState": "present",
-        "glossary": "violations_found"
-      }
-    },
-    {
-      "session": 48,
-      "date": "2026-06-24T19:56:47.985Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 49,
-      "date": "2026-06-24T20:59:38.822Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 1,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 50,
-      "date": "2026-06-24T21:08:02.512Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 51,
-      "date": "2026-06-24T21:15:54.913Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 52,
-      "date": "2026-06-24T21:23:50.378Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 53,
-      "date": "2026-06-24T22:02:09.177Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 54,
-      "date": "2026-06-24T22:06:00.742Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 1,
-      "fps": 60,
-      "loopDetected": true,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
-    {
-      "session": 55,
-      "date": "2026-06-25T02:25:54.399Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "uxHigh": 0,
-      "fps": 60,
-      "loopDetected": false,
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
     {
       "session": 56,
       "date": "2026-06-25T02:31:28.666Z",
@@ -659,6 +219,785 @@
         "emptyState": "present",
         "glossary": "clean"
       }
+    },
+    {
+      "session": 64,
+      "date": "2026-06-25T03:32:06.822Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 65,
+      "date": "2026-06-25T03:41:03.763Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 66,
+      "date": "2026-06-25T03:51:03.545Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 67,
+      "date": "2026-06-25T04:01:03.882Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 68,
+      "date": "2026-06-25T04:11:02.053Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 69,
+      "date": "2026-06-25T04:21:02.371Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 70,
+      "date": "2026-06-25T04:31:02.603Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 71,
+      "date": "2026-06-25T04:41:02.597Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 72,
+      "date": "2026-06-25T04:51:02.344Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 73,
+      "date": "2026-06-25T05:01:02.805Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 74,
+      "date": "2026-06-25T05:11:02.884Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 75,
+      "date": "2026-06-25T05:21:02.980Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 76,
+      "date": "2026-06-25T05:31:04.737Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 77,
+      "date": "2026-06-25T05:41:04.846Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 78,
+      "date": "2026-06-25T05:51:02.880Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 79,
+      "date": "2026-06-25T06:01:03.436Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 80,
+      "date": "2026-06-25T06:11:02.944Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 81,
+      "date": "2026-06-25T06:21:03.831Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 82,
+      "date": "2026-06-25T06:31:04.201Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 83,
+      "date": "2026-06-25T06:41:04.056Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 84,
+      "date": "2026-06-25T06:51:03.115Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 85,
+      "date": "2026-06-25T07:01:03.471Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 86,
+      "date": "2026-06-25T07:11:06.583Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 87,
+      "date": "2026-06-25T07:21:03.412Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 88,
+      "date": "2026-06-25T07:31:03.861Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 1,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 89,
+      "date": "2026-06-25T07:41:03.654Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 90,
+      "date": "2026-06-25T07:51:09.141Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 91,
+      "date": "2026-06-25T08:01:04.305Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 92,
+      "date": "2026-06-25T08:11:03.568Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 93,
+      "date": "2026-06-25T08:21:23.293Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 94,
+      "date": "2026-06-25T08:31:08.885Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 95,
+      "date": "2026-06-25T08:35:05.474Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 96,
+      "date": "2026-06-25T08:41:18.589Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 97,
+      "date": "2026-06-25T08:51:14.770Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 5,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 98,
+      "date": "2026-06-25T09:01:13.629Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 503,
+      "p2Done": 6,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 99,
+      "date": "2026-06-25T09:05:24.209Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 504,
+      "p2Done": 7,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 100,
+      "date": "2026-06-25T09:07:48.907Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 504,
+      "p2Done": 7,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 101,
+      "date": "2026-06-25T09:09:14.886Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 504,
+      "p2Done": 8,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 102,
+      "date": "2026-06-25T09:11:05.421Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 504,
+      "p2Done": 8,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 103,
+      "date": "2026-06-25T09:32:52.564Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 1,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 505,
+      "p2Done": 8,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
+    },
+    {
+      "session": 104,
+      "date": "2026-06-25T10:18:10.556Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 505,
+      "p2Done": 8,
+      "loopDetected": false,
+      "systemMode": "NORMAL",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
     }
   ],
   "lastModuleTouched": null,
@@ -671,45 +1010,110 @@
   },
   "bundleHistory": [
     {
-      "session": 56,
-      "kb": 493,
+      "session": 85,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 57,
-      "kb": 493,
+      "session": 86,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 58,
-      "kb": 500,
+      "session": 87,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 59,
-      "kb": 500,
+      "session": 88,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 60,
-      "kb": 502,
+      "session": 89,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 61,
-      "kb": 502,
+      "session": 90,
+      "kb": 503,
       "date": "2026-06-25"
     },
     {
-      "session": 62,
+      "session": 91,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 92,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 93,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 94,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 95,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 96,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 97,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 98,
+      "kb": 503,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 99,
+      "kb": 504,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 100,
+      "kb": 504,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 101,
+      "kb": 504,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 102,
+      "kb": 504,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 103,
       "kb": 505,
       "date": "2026-06-25"
     },
     {
-      "session": 63,
-      "kb": 503,
+      "session": 104,
+      "kb": 505,
       "date": "2026-06-25"
     }
   ],
-  "featureFlags": {}
+  "featureFlags": {},
+  "activeRun": {
+    "status": "idle",
+    "phase": "Aguardando próxima rodada...",
+    "updatedAt": "2026-06-25T10:18:10.586Z"
+  }
 }
