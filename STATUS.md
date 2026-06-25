@@ -17,6 +17,11 @@ O sistema atingiu o **marco histórico de conclusão de 100% da Fase P2 (Qualida
 | **Timeline Playhead & Timecode Sync** | `CompositionTimeline.tsx` | ✅ | Agulha de reprodução funcional com timecode editável e suporte a arraste preciso na timeline. |
 | **Simplified Timeline UX** | `CompositionTimeline.tsx` | ✅ | Altura das tracks compactada de 32 para 24 e remoção de sliders redundantes (opacidade e volume) nas linhas. |
 | **Edição de Texto In-Canvas** | `App.tsx`, `UniversalCanvasPreview.tsx` | ✅ | Duplo clique no canvas dispara evento customizado para iniciar a edição direta de texto via `contentEditable` no preview. |
+| **Gizmo Rotation Fix** | `GlobalGizmo.tsx` | ✅ | Correção do tamanho do Gizmo usando offsetWidth e offsetHeight desconsiderando a inflação da bounding box na rotação. |
+| **Shapes e Elementos Primitivos** | `PropertiesPanel.tsx` | ✅ | Selecionador completo de tipos de formas (círculo, quadrado, mesh, etc) para a camada de elementos. |
+| **Timeline Trimming (Visual Layers)** | `CompositionTimeline.tsx`, `UniversalLayers` | ✅ | Suporte a `timeIn` e `duration` para arrastar as bordas das camadas visuais na timeline respeitando a duração da composição. |
+| **Universal Animation Engine** | `UniversalCanvasPreview.tsx` | ✅ | Implementação de master GSAP timelines reagindo ao `currentTime` do player. Sincronização e animações de Entrada/Saída/Auto-Animar ativas para todas as camadas visuais com visibilidade por tempo de entrada. |
+| **Reorganização de Propriedades** | `PropertiesPanel.tsx` | ✅ | Agrupamento coeso de Animações (com Advanced Mode) e ajustes de UI, colocando Motion Settings mais no topo. |
 | **Controle Visual de Rodadas via Terminal** | `dashboard.cjs`, `orchestrator.cjs` | ✅ | Painel local interativo com spinners, timers e indicação dinâmica do orquestrador com consumo de zero tokens. |
 | **Prevenção de Drag Text Selection** | `CompositionTimeline.tsx`, `LayersPanel.tsx`, `InteractiveGizmo.tsx` | ✅ | Uso de `user-select: none` e `preventDefault` nos mousedowns de alças interativas, timeline e painel esquerdo. |
 | **Persistência de Render em Background** | `backgroundTimer.ts`, `exportPipeline.ts`, `ExportBar.tsx` | ✅ | Web Worker-based timer que contorna o throttling do browser de abas inativas. |

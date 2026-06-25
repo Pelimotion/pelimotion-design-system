@@ -18,6 +18,22 @@ import type { NoiseChannel, NoiseDriver } from '@/engines/Generative/noiseEngine
 // ─── Layer Time Sync Hook ────────────────────────────────────────────────────
 
 function useLayerTimeSync(layer: UniversalLayer, ref: React.RefObject<HTMLElement | null>) {
+  // Sync React transform state to GSAP
+  useEffect(() => {
+    if (ref.current) {
+      const t = layer.transform;
+      gsap.set(ref.current, {
+        xPercent: -50,
+        yPercent: -50,
+        x: t.x,
+        y: t.y,
+        scaleX: t.scale,
+        scaleY: t.scale,
+        rotation: t.rotation,
+      });
+    }
+  }, [layer.transform, ref]);
+
   useEffect(() => {
     const el = ref.current;
     if (!el || !layer.visible) return;
@@ -25,8 +41,8 @@ function useLayerTimeSync(layer: UniversalLayer, ref: React.RefObject<HTMLElemen
     const anim = layer.animation;
     const tl = gsap.timeline({ paused: true });
 
-    // Ensure initial state
-    gsap.set(el, { opacity: 1, scale: 1, x: 0, y: 0, rotation: 0, filter: 'blur(0px)' });
+    // Ensure initial state for filters
+    gsap.set(el, { filter: 'blur(0px)' });
 
     // Entry animation
     if (anim.entryPreset !== 'none') {
@@ -160,7 +176,6 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
       onKeyDown={handleKeyDown}
       style={{
         position: 'absolute',
-        transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
         top: '50%', left: '50%',
         opacity: t.opacity,
         zIndex: layer.zIndex + 10,
@@ -270,7 +285,6 @@ function TextBoxRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelec
     const base: React.CSSProperties = {
       position: 'absolute',
       top: '50%', left: '50%',
-      transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
       opacity: t.opacity,
       zIndex: layer.zIndex + 10,
       pointerEvents: isSelected ? 'auto' : 'none',
@@ -466,10 +480,9 @@ function ElementLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; is
       data-gizmo-target={isSelected ? 'active' : undefined}
       style={{
         position: 'absolute',
-        transform: `translate(calc(-50% + ${t.x}px), calc(-50% + ${t.y}px)) scale(${t.scale}) rotate(${t.rotation}deg)`,
         top: '50%', left: '50%',
         opacity: d.opacityMode === 'fixed' ? t.opacity : 1,
-        width: 200, height: 200,
+        width: t.width || 200, height: t.height || 200,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: layer.zIndex + 10,
         pointerEvents: isSelected ? 'auto' : 'none',

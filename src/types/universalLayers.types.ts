@@ -250,11 +250,11 @@ export const DEFAULT_TRANSFORM: UniversalTransform = {
 };
 
 export const DEFAULT_ANIMATION: UniversalAnimation = {
-  entryPreset: 'fadeIn',
-  entryDuration: 0.6,
+  entryPreset: 'none',
+  entryDuration: 1,
   entryDelay: 0,
   entryEase: 'power2.out',
-  exitPreset: 'fadeOut',
+  exitPreset: 'none',
   exitDuration: 0.4,
   exitDelay: 0,
   exitEase: 'power2.in',
@@ -275,7 +275,7 @@ export function createTextLayer(overrides?: Partial<UniversalLayer> & { textData
     timeIn: 0,
     duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeUp', autoAnimatePreset: 'float' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'none', autoAnimatePreset: 'float' },
     textData: {
       text: 'Seu texto aqui',
       fontFamily: 'Inter',
@@ -345,7 +345,7 @@ export function createOverlayLayer(style: OverlayStyle = 'gradient-bottom'): Uni
     timeIn: 0,
     duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', exitPreset: 'fadeOut', autoAnimatePreset: 'pulse' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'none', exitPreset: 'none', autoAnimatePreset: 'pulse' },
     overlayData: {
       overlayStyle: style,
       color: '#6B5CE7',
@@ -365,7 +365,7 @@ export function createShadowGuardLayer(style: ShadowGuardStyle = 'text-protectio
     timeIn: 0,
     duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
-    animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', autoAnimatePreset: 'breathe' },
+    animation: { ...DEFAULT_ANIMATION, entryPreset: 'none', autoAnimatePreset: 'breathe' },
     shadowGuardData: {
       guardStyle: style,
       color: '#1a1a24',

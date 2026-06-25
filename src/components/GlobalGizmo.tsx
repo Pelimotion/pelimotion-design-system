@@ -188,17 +188,23 @@ export function GlobalGizmo() {
 
   const handleResizeX = (width: number) => {
     if (selectedLayerId && selectedLayer) {
-      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, textBoxWidth: width } as any });
+      if (selectedLayer.type === 'text') {
+        updateLayer(selectedLayerId, { textData: { ...selectedLayer.textData, maxWidth: width } as any });
+      } else if (selectedLayer.type === 'text-box') {
+        updateLayer(selectedLayerId, { textBoxData: { ...selectedLayer.textBoxData, minWidth: width } as any });
+      } else {
+        updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, width } as any });
+      }
     } else {
-      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxWidth: width });
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxWidth: width } as any);
     }
   };
 
   const handleResizeY = (height: number) => {
     if (selectedLayerId && selectedLayer) {
-      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, textBoxHeight: height } as any });
+      updateLayer(selectedLayerId, { transform: { ...selectedLayer.transform, height } as any });
     } else {
-      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxHeight: height });
+      if (activeTypoLayerId) updateTypoLayerTransform(activeTypoLayerId, { textBoxHeight: height } as any);
     }
   };
 
@@ -239,8 +245,8 @@ export function GlobalGizmo() {
           onRotate={handleRotate}
           onResizeX={handleResizeX}
           onResizeY={handleResizeY}
-          showResizeX={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box')}
-          showResizeY={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box')}
+          showResizeX={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box') || (selectedLayer?.type === 'element')}
+          showResizeY={!!activeTypoLayerId || (selectedLayer?.type === 'text') || (selectedLayer?.type === 'text-box') || (selectedLayer?.type === 'element')}
         />
       </div>
     </div>
