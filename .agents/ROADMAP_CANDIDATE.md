@@ -1,15 +1,15 @@
 # 🎬 Pelimotion — Orquestrador V7 (Anti-Loop + Feature Discovery)
 
-*Gerado: 25/06/2026, 07:42:38 | Sessão #108 | Commit: `e5f45ef` | Modo: **NORMAL***
+*Gerado: 25/06/2026, 07:51:13 | Sessão #109 | Commit: `0dcecbf` | Modo: **FEATURE_DISCOVERY***
 *Branch: `main` | TS/TSX: 63 arquivos | E2E: 15 testes*
 
-> **AGENTE EXECUTOR:** Leia ORCHESTRATOR_PROMPT.md v6 antes de agir. Siga o modo NORMAL.
+> **AGENTE EXECUTOR:** Leia ORCHESTRATOR_PROMPT.md v6 antes de agir. Siga o modo FEATURE_DISCOVERY.
 
 ## 1. 🚦 Triage (Fase 0)
 
 | Campo | Valor |
 |-------|-------|
-| Modo | **NORMAL** |
+| Modo | **FEATURE_DISCOVERY** |
 | Loop | ✅ Não detectado |
 | Build | ✅ OK |
 | Bundle | 509KB (gzip ~158KB) |
@@ -52,26 +52,27 @@
 
 | Sessão | KB | Gzip (est.) |
 |--------|----|--------------|
-| S104 (2026-06-25) | 505KB | ~157KB |
 | S105 (2026-06-25) | 509KB | ~158KB |
 | S106 (2026-06-25) | 509KB | ~158KB |
 | S107 (2026-06-25) | 509KB | ~158KB |
 | S108 (2026-06-25) | 509KB | ~158KB |
+| S109 (2026-06-25) | 509KB | ~158KB |
 
 ## 6. 🧠 Memória (últimas 7 sessões)
 
-- S102 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.
 - S103 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=505KB. p2_done=8/11.
 - S104 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=505KB. p2_done=8/11.
 - S105 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=509KB. p2_done=11/11.
 - S106 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=509KB. p2_done=11/11.
 - S107 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=509KB. p2_done=11/11.
 - S108 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=509KB. p2_done=11/11.
+- S109 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=509KB. p2_done=11/11.
 
 ## 7. 📈 Sessões Recentes
 
 | # | Data | Modo | Build | Falhas | FPS | Bundle | P1 Done |
 |---|------|------|-------|--------|-----|--------|---------|
+| S109 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 509KB | 11/11 |
 | S108 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 509KB | 11/11 |
 | S107 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 509KB | 11/11 |
 | S106 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 509KB | 11/11 |
@@ -79,7 +80,6 @@
 | S104 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 505KB | 8/11 |
 | S103 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 1 | 60 | 505KB | 8/11 |
 | S102 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 8/11 |
-| S101 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 504KB | 8/11 |
 
 ## 8. 🎯 Recomendação para Próxima Sessão
 
@@ -112,4 +112,4 @@ Exportações client-side pesadas travam a main thread da interface gráfica.
 
 
 ---
-*Orchestrator V7 | Modo: NORMAL | Loop: ✅ | 25/06/2026, 07:42:38*
+*Orchestrator V7 | Modo: FEATURE_DISCOVERY | Loop: ✅ | 25/06/2026, 07:51:13*

@@ -1,6 +1,6 @@
 {
   "persona": "dev_senior",
-  "timestamp": "2026-06-25T10:42:38.052Z",
-  "evaluation": "### SENIOR SOFTWARE ENGINEER (PERFORMANCE & ARCHITECTURE)\n**Timestamp:** 2026-06-25T10:42:38.052Z\n\n**⚡ FPS:** idle=60, loaded=60, delta=0\n\n**Sistema:** NORMAL | Bundle: 509KB | Tests: 15\n\n**Diretriz:** Engenheiro Sênior — responsável por performance, arquitetura e qualidade de código.\n\nTOKENS DE DESIGN VIOLETA PREMIUM:\n--bg-base: #0A0A0C | --bg-surfa...\n",
-  "mode": "NORMAL"
+  "timestamp": "2026-06-25T10:51:13.893Z",
+  "evaluation": "### SENIOR SOFTWARE ENGINEER (PERFORMANCE & ARCHITECTURE)\n**Timestamp:** 2026-06-25T10:51:13.893Z\n\n**⚡ FPS:** idle=60, loaded=60, delta=0\n\n**Sistema:** FEATURE_DISCOVERY | Bundle: 509KB | Tests: 15\n\n**Diretriz:** Engenheiro Sênior — responsável por performance, arquitetura e qualidade de código.\n\nTOKENS DE DESIGN VIOLETA PREMIUM:\n--bg-base: #0A0A0C | --bg-surfa...\n",
+  "mode": "FEATURE_DISCOVERY"
 }
