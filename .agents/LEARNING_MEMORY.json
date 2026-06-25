@@ -982,7 +982,7 @@
     },
     {
       "session": 120,
-      "date": "2026-06-25T12:01:21.314Z",
+      "date": "2026-06-25T12:02:20.838Z",
       "errors": 0,
       "uxCritical": 0,
       "failedSuites": 0,
@@ -1116,6 +1116,6 @@
   "activeRun": {
     "status": "idle",
     "phase": "Aguardando próxima rodada...",
-    "updatedAt": "2026-06-25T12:01:21.357Z"
+    "updatedAt": "2026-06-25T12:02:20.852Z"
   }
 }
