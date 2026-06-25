@@ -98,10 +98,10 @@
 - [x] **E2E Suite 10 & 11:** Added keyboard shortcuts HUD and reference background to the automated test suite.
 
 ## Phase 16: Future Expansion (Backlog)
-- [ ] **Toast Notification System:** Non-blocking feedback for undo/redo, copy, export and layer actions.
-- [ ] **Export Quality Presets:** Draft (360p/15fps), Standard (720p/30fps), Broadcast (1080p/60fps) mapped to bitrate settings.
-- [ ] **Custom Font Drag-Drop:** Accept TTF/OTF via drag-drop or file picker, register with FontFace API.
-- [ ] **Canvas Safe Zone Guides:** Toggleable 16:9/9:16 safe-zone overlay for broadcast/social framing.
+- [x] **Toast Notification System:** Non-blocking feedback for undo/redo, copy, export and layer actions.
+- [x] **Export Quality Presets:** Draft (360p/15fps), Standard (720p/30fps), Broadcast (1080p/60fps) mapped to bitrate settings.
+- [x] **Custom Font Drag-Drop:** Accept TTF/OTF via drag-drop or file picker, register with FontFace API.
+- [x] **Canvas Safe Zone Guides:** Toggleable 16:9/9:16 safe-zone overlay for broadcast/social framing.
 - [ ] **Real-time Server-Side Fallback:** Cloud rendering fallback using headless Puppeteer/Chrome for low-compute devices.
 - [ ] **AI-Assisted Composition:** LLM prompts to automatically generate typography wiggles, SVG selections, and timing cues.
 - [ ] **BunnyCDN Asset Integration:** Real premium video/audio assets from BunnyCDN with signed URL auth.

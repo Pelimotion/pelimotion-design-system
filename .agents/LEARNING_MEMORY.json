@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 60,
+  "sessionsRun": 61,
   "historicalInsights": [
-    "Session 41: fps_idle=0, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
     "Session 42: fps_idle=0, fps_loaded=60, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=clean. Glossary violations: 0. Failed suites: 0. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
     "Session 43: fps_idle=60, fps_loaded=60, fps_delta=1. P0: wm=missing, eg=missing, es=present, gl=violations_found. Glossary violations: 6. Failed suites: 6. Loop: ZERO_UX_FINDINGS: 0 UX findings for 5+ sessions (tests may be broken).",
     "Session 44: fps_idle=0, fps_loaded=0, fps_delta=0. P0: wm=missing, eg=missing, es=missing, gl=violations_found. Glossary violations: 0. Failed suites: 10. Loop: none.",
@@ -20,7 +19,8 @@
     "S57 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=493KB. p1_done=5/7.",
     "S58 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.",
     "S59 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=500KB. p1_done=7/7.",
-    "S60 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7."
+    "S60 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7.",
+    "S61 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=502KB. p1_done=7/7."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -68,24 +68,6 @@
     }
   ],
   "sessionLogs": [
-    {
-      "session": 12,
-      "focus": "Bugs, Direct Composition & Layer Controls",
-      "errors": 0,
-      "uxFindings": 5,
-      "fps": null,
-      "filesChanged": [
-        "GenerativePreview.tsx",
-        "CompositionTimeline.tsx",
-        "TypographyPanel.tsx",
-        "GenerativePanel.tsx",
-        "TopToolbar.tsx",
-        "CompositionPanel.tsx",
-        "App.tsx"
-      ],
-      "timestamp": "2026-06-15T02:57:00.000Z",
-      "commit": "709286a"
-    },
     {
       "session": 13,
       "focus": "Global Navigation, Sidebar & Bento UX",
@@ -636,6 +618,25 @@
         "emptyState": "present",
         "glossary": "clean"
       }
+    },
+    {
+      "session": 61,
+      "date": "2026-06-25T03:01:11.639Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 502,
+      "p1Done": 7,
+      "loopDetected": false,
+      "systemMode": "FEATURE_DISCOVERY",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
     }
   ],
   "lastModuleTouched": null,
@@ -669,6 +670,11 @@
     },
     {
       "session": 60,
+      "kb": 502,
+      "date": "2026-06-25"
+    },
+    {
+      "session": 61,
       "kb": 502,
       "date": "2026-06-25"
     }

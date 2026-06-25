@@ -5,12 +5,12 @@
  * Shows properties of the selected universal layer.
  * Uses progressive disclosure: basic props visible, advanced in collapsed section.
  */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { UniversalLayer, TextLayerData, ElementLayerData, OverlayLayerData, ShadowGuardLayerData, TextBoxLayerData, AnimationEntryPreset, AnimationExitPreset, AutoAnimatePreset } from '@/types/universalLayers.types';
 import {
   ChevronDown, ChevronRight, Zap, Type, Layers, Settings2, Palette, Move,
-  Sparkles, RotateCcw, AlignLeft, AlignCenter, AlignRight, Square,
+  Sparkles, RotateCcw, AlignLeft, AlignCenter, AlignRight, Square, Upload,
 } from 'lucide-react';
 
 // ─── Shared Sub-components ──────────────────────────────────────────────────
@@ -327,68 +327,188 @@ function AnimationSection({ layer }: { layer: UniversalLayer }) {
   );
 }
 
-// ─── Text Properties Section ─────────────────────────────────────────────────
-
 function TextProperties({ layer }: { layer: UniversalLayer }) {
-  const { updateLayer } = useEditorStore();
+  const { updateLayer, availableFonts, showToast } = useEditorStore();
   const d = layer.textData!;
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const update = (patch: Partial<TextLayerData>) =>
     updateLayer(layer.id, { textData: { ...d, ...patch } });
 
+  const fontesPadrao = ['Inter', 'Space Grotesk', 'Playfair Display', 'Syne', 'JetBrains Mono', 'Bebas Neue'];
+  const todasFontes = [...new Set([...fontesPadrao, ...availableFonts])];
+
+  const processFontFile = async (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (!['ttf', 'otf', 'woff', 'woff2'].includes(ext || '')) {
+      showToast({
+        type: 'error',
+        title: 'Formato inválido',
+        message: 'Por favor, envie um arquivo de fonte válido (.ttf, .otf, .woff, .woff2).'
+      });
+      return;
+    }
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const fontName = (file.name.split('.')[0] || 'CustomFont').replace(/[^a-zA-Z0-9 ]/g, ' ').trim();
+      const fontFace = new FontFace(fontName, buffer);
+      
+      const loadedFace = await fontFace.load();
+      document.fonts.add(loadedFace);
+      
+      useEditorStore.setState((state) => ({
+        availableFonts: [...new Set([...state.availableFonts, fontName])]
+      }));
+      
+      update({ fontFamily: fontName });
+      
+      showToast({
+        type: 'success',
+        title: 'Fonte importada!',
+        message: `A fonte "${fontName}" foi carregada e aplicada com sucesso.`,
+        duration: 3500
+      });
+    } catch (err: any) {
+      showToast({
+        type: 'error',
+        title: 'Erro ao carregar fonte',
+        message: err?.message || 'Falha ao processar o arquivo de fonte.'
+      });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await processFontFile(file);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await processFontFile(file);
+    }
+  };
+
   return (
     <SectionHeader title="Texto" icon={<Type size={12} />}>
-      {/* Text content */}
-      <div style={{ marginBottom: 10 }}>
-        <textarea
-          value={d.text}
-          onChange={(e) => update({ text: e.target.value })}
-          rows={2}
-          style={{
-            width: '100%', background: 'hsla(0,0%,100%,0.05)',
-            border: '1px solid var(--color-surface-border)',
-            borderRadius: 8, padding: '7px 10px',
-            color: 'var(--color-text-primary)', fontSize: '0.78rem',
-            fontFamily: 'var(--font-sans)', resize: 'none', outline: 'none',
-            lineHeight: 1.4, transition: 'border-color 0.15s ease',
-            boxSizing: 'border-box',
-          }}
-          onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
-          onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-surface-border)'}
-        />
-      </div>
+      {/* Container with drag and drop */}
+      <div 
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{
+          position: 'relative',
+          borderRadius: 8,
+          transition: 'all 0.2s',
+          border: isDragging ? '1px dashed var(--color-accent)' : '1px solid transparent',
+          background: isDragging ? 'var(--color-accent-muted)' : 'transparent',
+          padding: isDragging ? 4 : 0,
+        }}
+      >
+        {isDragging && (
+          <div style={{
+            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 10, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', borderRadius: 8,
+            fontSize: '0.72rem', fontWeight: 600, color: 'var(--color-accent)'
+          }}>
+            Solte o arquivo de fonte aqui
+          </div>
+        )}
 
-      {/* Color + Align */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <ColorInput value={d.color} onChange={(v) => update({ color: v })} />
-        <div style={{ display: 'flex', gap: 2 }}>
-          {(['left', 'center', 'right'] as const).map((align) => (
-            <button key={align} onClick={() => update({ textAlign: align })}
-              style={{
-                padding: '4px 6px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                background: d.textAlign === align ? 'hsla(191,100%,50%,0.12)' : 'transparent',
-                color: d.textAlign === align ? 'var(--color-accent)' : 'var(--color-text-ghost)',
-                display: 'flex', alignItems: 'center',
-              }}>
-              {align === 'left' ? <AlignLeft size={13} /> : align === 'center' ? <AlignCenter size={13} /> : <AlignRight size={13} />}
-            </button>
-          ))}
+        {/* Text content */}
+        <div style={{ marginBottom: 10 }}>
+          <textarea
+            value={d.text}
+            onChange={(e) => update({ text: e.target.value })}
+            rows={2}
+            style={{
+              width: '100%', background: 'hsla(0,0%,100%,0.05)',
+              border: '1px solid var(--color-surface-border)',
+              borderRadius: 8, padding: '7px 10px',
+              color: 'var(--color-text-primary)', fontSize: '0.78rem',
+              fontFamily: 'var(--font-sans)', resize: 'none', outline: 'none',
+              lineHeight: 1.4, transition: 'border-color 0.15s ease',
+              boxSizing: 'border-box',
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-accent)'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-surface-border)'}
+          />
         </div>
-      </div>
 
-      {/* Font */}
-      <PropRow label="Fonte">
-        <input
-          type="text" value={d.fontFamily}
-          onChange={(e) => update({ fontFamily: e.target.value })}
-          style={{
-            width: '100%', background: 'hsla(0,0%,100%,0.05)',
-            border: '1px solid var(--color-surface-border)', borderRadius: 6,
-            padding: '4px 8px', color: 'var(--color-text-primary)',
-            fontSize: '0.72rem', fontFamily: 'var(--font-sans)', outline: 'none',
-          }}
-        />
-      </PropRow>
+        {/* Color + Align */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <ColorInput value={d.color} onChange={(v) => update({ color: v })} />
+          <div style={{ display: 'flex', gap: 2 }}>
+            {(['left', 'center', 'right'] as const).map((align) => (
+              <button key={align} onClick={() => update({ textAlign: align })}
+                style={{
+                  padding: '4px 6px', borderRadius: 5, border: 'none', cursor: 'pointer',
+                  background: d.textAlign === align ? 'hsla(191,100%,50%,0.12)' : 'transparent',
+                  color: d.textAlign === align ? 'var(--color-accent)' : 'var(--color-text-ghost)',
+                  display: 'flex', alignItems: 'center',
+                }}>
+                {align === 'left' ? <AlignLeft size={13} /> : align === 'center' ? <AlignCenter size={13} /> : <AlignRight size={13} />}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Font Selection Dropdown & Manual Upload */}
+        <PropRow label="Fonte">
+          <div style={{ display: 'flex', gap: 6, width: '100%' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <SelectInput 
+                value={d.fontFamily} 
+                onChange={(v) => update({ fontFamily: v })} 
+                options={todasFontes.map(f => ({ value: f, label: f }))} 
+              />
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload de Fonte (.ttf, .otf, .woff)"
+              style={{
+                flexShrink: 0, padding: '0 8px', borderRadius: 6,
+                background: 'hsla(0,0%,100%,0.05)', border: '1px solid var(--color-surface-border)',
+                color: 'var(--color-text-secondary)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'hsla(191,100%,50%,0.12)';
+                e.currentTarget.style.color = 'var(--color-accent)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'hsla(0,0%,100%,0.05)';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }}
+            >
+              <Upload size={13} />
+            </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange}
+              accept=".ttf,.otf,.woff,.woff2" 
+              style={{ display: 'none' }} 
+            />
+          </div>
+        </PropRow>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
         <div>
