@@ -204,6 +204,11 @@ const SHORTCUTS = [
     { key: 'Cmd+D', desc: 'Duplicar elemento' },
     { key: 'Cmd+Shift+D', desc: 'Dividir no playhead' },
   ]},
+  { group: 'Histórico', items: [
+    { key: 'Cmd+Z', desc: 'Desfazer' },
+    { key: 'Cmd+Shift+Z', desc: 'Refazer' },
+    { key: 'Cmd+Y', desc: 'Refazer (alternativo)' },
+  ]},
   { group: 'Canvas', items: [
     { key: 'Cmd+Scroll', desc: 'Zoom in/out' },
     { key: 'Space+Drag', desc: 'Pan do canvas' },
@@ -212,6 +217,8 @@ const SHORTCUTS = [
   { group: 'Edição', items: [
     { key: 'Cmd+C', desc: 'Copiar elemento' },
     { key: 'Cmd+V', desc: 'Colar no playhead' },
+    { key: '?', desc: 'Atalhos do teclado' },
+    { key: 'Esc', desc: 'Fechar painel / Desselecionar' },
   ]},
 ];
 

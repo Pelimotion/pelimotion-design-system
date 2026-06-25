@@ -10,6 +10,20 @@ export function useKeyboardShortcuts() {
         return;
       }
 
+      // Undo: Cmd/Ctrl + Z
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        useEditorStore.getState().undo();
+        return;
+      }
+
+      // Redo: Cmd/Ctrl + Shift + Z  or  Cmd/Ctrl + Y
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        useEditorStore.getState().redo();
+        return;
+      }
+
       if (e.key === '?') {
         e.preventDefault();
         const { showShortcuts, setShowShortcuts } = useEditorStore.getState();

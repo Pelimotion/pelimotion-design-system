@@ -121,3 +121,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-24T20-10-36-990Z** | `backup-branch-2026-06-24T20-10-36-990Z` | `7cdf51b` | 24/06/2026, 17:10:37 | Fim da Session 35: Travas Freemium, Estabilizacao E2E e Glossario OK |
 | **restore-2026-06-24T21-09-07-025Z** | `backup-branch-2026-06-24T21-09-07-025Z` | `86ef990` | 24/06/2026, 18:09:07 | Fix E2E test timeout during MOV Alpha export by optimizing duration/fps |
 | **restore-2026-06-24T21-45-48-932Z** | `backup-branch-2026-06-24T21-45-48-932Z` | `54dcc52` | 24/06/2026, 18:45:48 | Antes de implementar: Thumbs animados, Preview BG referência, tab premium biblioteca e melhorias UX profissionais |
+| **restore-2026-06-24T22-08-42-246Z** | `backup-branch-2026-06-24T22-08-42-246Z` | `2a74812` | 24/06/2026, 19:08:42 | Fix: Escape closes ShortcutsHUD; all 14 E2E suites passing; build OK |

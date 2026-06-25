@@ -38,6 +38,16 @@ import { loadFeatureFlags, saveFeatureFlags } from '@/config/featureFlags'
 import globalMotionData from '@/config/global-motion.json'
 import libraryData from '@/config/library.json'
 
+// ─── History Types ───────────────────────────────────────────────────────────
+
+interface HistoryEntry {
+  layers: UniversalLayer[];
+  compositionLayers: CompositionLayer[];
+  audioTracks: AudioTrack[];
+  generativeLayers: GenerativeLayer[];
+  typoLayers: TypographyLayer[];
+}
+
 // ─── Store Interface ─────────────────────────────────────────────────────────
 
 interface EditorState {
@@ -217,6 +227,13 @@ interface EditorState {
   restoreState: (payload: any) => void;
   setActiveAudioTrackId: (id: string | null) => void;
 
+  // History (Undo / Redo)
+  history: { past: HistoryEntry[]; future: HistoryEntry[] };
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
   // Local Font actions
   fetchLocalFonts: () => Promise<void>;
 }
@@ -255,6 +272,42 @@ function syncLegacyFields(typo: TypographyConfig): Partial<TypographyConfig> {
   };
 }
 
+// ─── History Helpers ────────────────────────────────────────────────────────
+
+function snapshotState(state: EditorState): HistoryEntry {
+  return {
+    layers: JSON.parse(JSON.stringify(state.layers)),
+    compositionLayers: JSON.parse(JSON.stringify(state.compositionLayers)),
+    audioTracks: JSON.parse(JSON.stringify(state.audioTracks)),
+    generativeLayers: JSON.parse(JSON.stringify(state.generativeLayers)),
+    typoLayers: JSON.parse(JSON.stringify(state.motionConfig.typography.layers)),
+  };
+}
+
+function pushToHistory(
+  history: { past: HistoryEntry[]; future: HistoryEntry[] },
+  snapshot: HistoryEntry
+) {
+  return { past: [...history.past.slice(-49), snapshot], future: [] };
+}
+
+function applySnapshot(state: EditorState, snapshot: HistoryEntry): Partial<EditorState> {
+  return {
+    layers: snapshot.layers,
+    compositionLayers: snapshot.compositionLayers,
+    audioTracks: snapshot.audioTracks,
+    generativeLayers: snapshot.generativeLayers,
+    motionConfig: {
+      ...state.motionConfig,
+      typography: { ...state.motionConfig.typography, layers: snapshot.typoLayers },
+    },
+    selectedLayerId: null,
+    activeCompositionLayerId: null,
+    activeAudioTrackId: null,
+    animForceKey: state.animForceKey + 1,
+  };
+}
+
 // ─── Store Creation ──────────────────────────────────────────────────────────
 
 const rawMotionData = globalMotionData as any;
@@ -269,7 +322,7 @@ const initialMotionConfig: GlobalMotionConfig = {
   }
 };
 
-export const useEditorStore = create<EditorState>((set) => ({
+export const useEditorStore = create<EditorState>((set, get) => ({
   // Load configs from JSON at initialization
   motionConfig: initialMotionConfig,
   libraryConfig: libraryData as LibraryConfig,
@@ -282,6 +335,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   libraryModalOpen: false,
   referenceImage: null,
   showShortcuts: false,
+  history: { past: [], future: [] },
 
 
   // Default UI state
@@ -397,16 +451,24 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // ─── v3.0 Universal Layer Actions ────────────────────────────────────────
 
-  addLayer: (layer) => set((state) => ({
-    layers: [...state.layers, { ...layer, zIndex: state.layers.length }],
-    selectedLayerId: layer.id,
-    animForceKey: state.animForceKey + 1,
-  })),
+  addLayer: (layer) => set((state) => {
+    const snapshot = snapshotState(state);
+    return {
+      history: pushToHistory(state.history, snapshot),
+      layers: [...state.layers, { ...layer, zIndex: state.layers.length }],
+      selectedLayerId: layer.id,
+      animForceKey: state.animForceKey + 1,
+    };
+  }),
 
-  removeLayer: (id) => set((state) => ({
-    layers: state.layers.filter(l => l.id !== id).map((l, i) => ({ ...l, zIndex: i })),
-    selectedLayerId: state.selectedLayerId === id ? null : state.selectedLayerId,
-  })),
+  removeLayer: (id) => set((state) => {
+    const snapshot = snapshotState(state);
+    return {
+      history: pushToHistory(state.history, snapshot),
+      layers: state.layers.filter(l => l.id !== id).map((l, i) => ({ ...l, zIndex: i })),
+      selectedLayerId: state.selectedLayerId === id ? null : state.selectedLayerId,
+    };
+  }),
 
   updateLayer: (id, patch) => set((state) => ({
     layers: state.layers.map(l => l.id === id ? { ...l, ...patch } : l),
@@ -424,6 +486,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   duplicateLayer: (id) => set((state) => {
     const source = state.layers.find(l => l.id === id);
     if (!source) return state;
+    const snapshot = snapshotState(state);
     const clone: UniversalLayer = {
       ...JSON.parse(JSON.stringify(source)),
       id: crypto.randomUUID(),
@@ -431,6 +494,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       zIndex: state.layers.length,
     };
     return {
+      history: pushToHistory(state.history, snapshot),
       layers: [...state.layers, clone],
       selectedLayerId: clone.id,
       animForceKey: state.animForceKey + 1,
@@ -607,28 +671,36 @@ export const useEditorStore = create<EditorState>((set) => ({
   // ─── Typography Layer Actions ──────────────────────────────────────────
 
   addTypoLayer: (layer) =>
-    set((state) => ({
-      motionConfig: {
-        ...state.motionConfig,
-        typography: {
-          ...state.motionConfig.typography,
-          layers: [...state.motionConfig.typography.layers, layer],
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        motionConfig: {
+          ...state.motionConfig,
+          typography: {
+            ...state.motionConfig.typography,
+            layers: [...state.motionConfig.typography.layers, layer],
+          },
         },
-      },
-      activeTypoLayerId: layer.id,
-    })),
+        activeTypoLayerId: layer.id,
+      };
+    }),
 
   removeTypoLayer: (id) =>
-    set((state) => ({
-      motionConfig: {
-        ...state.motionConfig,
-        typography: {
-          ...state.motionConfig.typography,
-          layers: state.motionConfig.typography.layers.filter(l => l.id !== id),
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        motionConfig: {
+          ...state.motionConfig,
+          typography: {
+            ...state.motionConfig.typography,
+            layers: state.motionConfig.typography.layers.filter(l => l.id !== id),
+          },
         },
-      },
-      activeTypoLayerId: state.activeTypoLayerId === id ? null : state.activeTypoLayerId,
-    })),
+        activeTypoLayerId: state.activeTypoLayerId === id ? null : state.activeTypoLayerId,
+      };
+    }),
 
   updateTypoLayer: (id, patch) =>
     set((state) => {
@@ -736,14 +808,22 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // ─── Generative Actions ────────────────────────────────────────────────
 
-  addGenerativeLayer: (layer: GenerativeLayer) => set((state) => ({ 
-    generativeLayers: [...state.generativeLayers, layer],
-    activeGenerativeLayerId: layer.id 
-  })),
-  removeGenerativeLayer: (id) => set((state) => ({ 
-    generativeLayers: state.generativeLayers.filter(l => l.id !== id),
-    activeGenerativeLayerId: state.activeGenerativeLayerId === id ? null : state.activeGenerativeLayerId
-  })),
+  addGenerativeLayer: (layer: GenerativeLayer) => set((state) => {
+    const snapshot = snapshotState(state);
+    return {
+      history: pushToHistory(state.history, snapshot),
+      generativeLayers: [...state.generativeLayers, layer],
+      activeGenerativeLayerId: layer.id,
+    };
+  }),
+  removeGenerativeLayer: (id) => set((state) => {
+    const snapshot = snapshotState(state);
+    return {
+      history: pushToHistory(state.history, snapshot),
+      generativeLayers: state.generativeLayers.filter(l => l.id !== id),
+      activeGenerativeLayerId: state.activeGenerativeLayerId === id ? null : state.activeGenerativeLayerId,
+    };
+  }),
   clearGenerativeLayers: () => set({ generativeLayers: [], activeGenerativeLayerId: null }),
   setActiveGenerativeLayerId: (id) => set({ activeGenerativeLayerId: id }),
   updateLayerTransform: (id, transform) => set((state) => ({
@@ -799,16 +879,24 @@ export const useEditorStore = create<EditorState>((set) => ({
   // ─── Composition Actions ───────────────────────────────────────────────
 
   addCompositionLayer: (layer) =>
-    set((state) => ({
-      compositionLayers: [...state.compositionLayers, layer],
-      activeCompositionLayerId: layer.id,
-    })),
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        compositionLayers: [...state.compositionLayers, layer],
+        activeCompositionLayerId: layer.id,
+      };
+    }),
 
   removeCompositionLayer: (id) =>
-    set((state) => ({
-      compositionLayers: state.compositionLayers.filter((l) => l.id !== id),
-      activeCompositionLayerId: state.activeCompositionLayerId === id ? null : state.activeCompositionLayerId,
-    })),
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        compositionLayers: state.compositionLayers.filter((l) => l.id !== id),
+        activeCompositionLayerId: state.activeCompositionLayerId === id ? null : state.activeCompositionLayerId,
+      };
+    }),
 
   updateCompositionLayer: (id, patch) =>
     set((state) => ({
@@ -838,16 +926,24 @@ export const useEditorStore = create<EditorState>((set) => ({
   // ─── Audio Actions ─────────────────────────────────────────────────────
 
   addAudioTrack: (track) =>
-    set((state) => ({
-      audioTracks: [...state.audioTracks, track],
-      activeAudioTrackId: track.id,
-    })),
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        audioTracks: [...state.audioTracks, track],
+        activeAudioTrackId: track.id,
+      };
+    }),
 
   removeAudioTrack: (id) =>
-    set((state) => ({
-      audioTracks: state.audioTracks.filter((t) => t.id !== id),
-      activeAudioTrackId: state.activeAudioTrackId === id ? null : state.activeAudioTrackId,
-    })),
+    set((state) => {
+      const snapshot = snapshotState(state);
+      return {
+        history: pushToHistory(state.history, snapshot),
+        audioTracks: state.audioTracks.filter((t) => t.id !== id),
+        activeAudioTrackId: state.activeAudioTrackId === id ? null : state.activeAudioTrackId,
+      };
+    }),
 
   updateAudioTrack: (id, patch) =>
     set((state) => ({
@@ -855,6 +951,39 @@ export const useEditorStore = create<EditorState>((set) => ({
         t.id === id ? { ...t, ...patch } : t
       ),
     })),
+
+  // ─── Undo / Redo ──────────────────────────────────────────────────────────
+
+  undo: () => set((state) => {
+    const snapshot = state.history.past[state.history.past.length - 1];
+    if (!snapshot) return {};
+    const currentSnapshot = snapshotState(state);
+    const newPast = state.history.past.slice(0, -1);
+    return {
+      ...applySnapshot(state, snapshot),
+      history: {
+        past: newPast,
+        future: [currentSnapshot, ...state.history.future.slice(0, 49)],
+      },
+    };
+  }),
+
+  redo: () => set((state) => {
+    const snapshot = state.history.future[0];
+    if (!snapshot) return {};
+    const currentSnapshot = snapshotState(state);
+    const newFuture = state.history.future.slice(1);
+    return {
+      ...applySnapshot(state, snapshot),
+      history: {
+        past: [...state.history.past.slice(-49), currentSnapshot],
+        future: newFuture,
+      },
+    };
+  }),
+
+  canUndo: () => get().history.past.length > 0,
+  canRedo: () => get().history.future.length > 0,
 
   restoreState: (payload) => set((state) => ({
     compositionLayers: payload.compositionLayers || state.compositionLayers,
