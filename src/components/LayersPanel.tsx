@@ -48,9 +48,10 @@ interface LayerItemProps {
   onDrop: (e: React.DragEvent, index: number) => void;
   onDragEnd: (e: React.DragEvent) => void;
   dragOverIndex: number | null;
+  isDragging: boolean;
 }
 
-function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver, onDrop, onDragEnd, dragOverIndex }: LayerItemProps) {
+function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver, onDrop, onDragEnd, dragOverIndex, isDragging }: LayerItemProps) {
   const { updateLayer } = useEditorStore();
   const [hovered, setHovered] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -102,7 +103,12 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
 
   return (
     <div
+      draggable
       onClick={onSelect}
+      onDragStart={(e) => onDragStart(e, index)}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDrop={(e) => onDrop(e, index)}
+      onDragEnd={onDragEnd}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -111,7 +117,7 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
         gap: 6,
         padding: '6px 8px 6px 6px',
         borderRadius: 8,
-        cursor: 'pointer',
+        cursor: 'grab',
         transition: 'all 0.12s cubic-bezier(0.16,1,0.3,1)',
         background: isSelected
           ? `${config.color}12`
@@ -121,7 +127,7 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
         border: isSelected
           ? `1px solid ${config.color}35`
           : '1px solid transparent',
-        opacity: layer.visible ? 1 : 0.38,
+        opacity: isDragging ? 0.4 : layer.visible ? 1 : 0.38,
         minHeight: 36,
         position: 'relative',
         overflow: 'hidden',
@@ -130,6 +136,8 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
         ['--pulse-bg-mid' as any]: `${config.color}22`,
         ['--pulse-border-start' as any]: `${config.color}35`,
         ['--pulse-border-mid' as any]: `${config.color}65`,
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
       }}
     >
       {/* Animated left-border accent for selected layer */}
@@ -156,14 +164,9 @@ function LayerItem({ layer, isSelected, onSelect, index, onDragStart, onDragOver
         }} />
       )}
 
-      {/* Drag Handle */}
-      <div 
-        draggable
-        onDragStart={(e) => onDragStart(e, index)}
-        onDragOver={(e) => onDragOver(e, index)}
-        onDrop={(e) => onDrop(e, index)}
-        onDragEnd={onDragEnd}
-        style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.5 : 0, transition: 'opacity 0.1s', marginLeft: 4 }}
+      {/* Drag Handle (visual only — actual drag is on parent wrapper) */}
+      <div
+        style={{ color: 'var(--color-text-ghost)', cursor: 'grab', flexShrink: 0, opacity: hovered ? 0.5 : 0, transition: 'opacity 0.1s', marginLeft: 4, pointerEvents: 'none' }}
       >
         <GripVertical size={12} />
       </div>
@@ -398,11 +401,19 @@ export function LayersPanel() {
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.effectAllowed = 'move';
+    // Use a ghost image that shows the layer name
+    const ghost = document.createElement('div');
+    ghost.textContent = sortedLayers[index]?.name ?? 'Layer';
+    ghost.style.cssText = 'position:fixed;top:-100px;left:-100px;padding:6px 12px;background:var(--color-accent);color:#000;border-radius:6px;font-size:12px;font-weight:600;font-family:sans-serif;pointer-events:none;';
+    document.body.appendChild(ghost);
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+    setTimeout(() => ghost.remove(), 0);
     setDraggedIndex(index);
   };
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     if (draggedIndex === null) return;
     if (draggedIndex !== index) {
@@ -412,6 +423,7 @@ export function LayersPanel() {
 
   const handleDrop = (e: React.DragEvent, index: number) => {
     e.preventDefault();
+    e.stopPropagation();
     if (draggedIndex === null || draggedIndex === index) return;
     
     // Convert visually sorted indices back to actual zIndex in the store
@@ -545,6 +557,7 @@ export function LayersPanel() {
               onDrop={handleDrop}
               onDragEnd={handleDragEnd}
               dragOverIndex={dragOverIndex}
+              isDragging={draggedIndex === index}
             />
           ))
         )}
