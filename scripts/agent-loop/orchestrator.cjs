@@ -240,6 +240,18 @@ const p2Checks = [
     check: () => !!run('grep -r "Telemetry\\.logEvent" src/ 2>/dev/null | head -1'),
     score: 4.0, effort: 'Médio', impact: 'Médio',
     why: 'Medir telemetria de performance e falhas silenciosas de exportação garante estabilidade'
+  },
+  {
+    name: 'Drag Text Selection Prevention',
+    check: () => !!run('grep -r "select-none\\|user-select:.*none" src/components/CompositionTimeline.tsx src/components/LayersPanel.tsx src/components/InteractiveGizmo.tsx 2>/dev/null | head -1'),
+    score: 4.9, effort: 'Baixo', impact: 'Crítico',
+    why: 'Evita a seleção acidental de texto web ao arrastar Gizmo, painéis e elementos da timeline'
+  },
+  {
+    name: 'Simplified Timeline UX',
+    check: () => !!run('grep -r "timeline-simplified\\|simplifiedTimeline\\|compact-timeline" src/components/CompositionTimeline.tsx 2>/dev/null | head -1'),
+    score: 4.6, effort: 'Alto', impact: 'Alto',
+    why: 'Simplifica trilhas e remove poluição visual na timeline para uma experiência intuitiva NLE'
   }
 ];
 
@@ -518,6 +530,20 @@ if (buildFailed) {
     md += `Avaliar futuros passos ou refactoring de performance.\n`;
   }
 }
+
+// S9: UX & Drag Interactivity Research
+md += `## 9. 🧠 Auditoria de UX: Drag Selection & Timeline Simplificada\n\n`;
+md += `### A. Prevenção de Seleção Indesejada de Texto Nativa da Web\n`;
+md += `Ao criar interfaces NLE web complexas (com timelines arrastáveis, resizers de painel e Gizmo de transform), o maior atrito de UX ocorre quando o navegador seleciona textos acidentalmente como se fosse um documento web comum.\n\n`;
+md += `**Recomendações técnicas baseadas na Figma & Canva:**\n`;
+md += `- **Bloqueio de user-select**: Aplicar as classes \`select-none\` (Tailwind) ou CSS \`user-select: none\` em todos os botões de controle, trilhas da timeline, alças do Gizmo e barras de resizer.\n`;
+md += `- **Pointer Captures e preventDefault**: Prevenir o comportamento padrão do navegador no evento \`pointerdown\` / \`mousedown\` das alças interativas, impedindo que o navegador ative o cursor de seleção de texto.\n`;
+md += `- **Classe global ativa no body**: Durante o arrasto ativo (ex: redimensionamento de painel ou transformação no Gizmo), adicionar uma classe temporária \`dragging-active\` no \`document.body\` com \`user-select: none\` global, removendo-a no \`pointerup\`.\n\n`;
+md += `### B. Simplificação e Despoluição Visual de Timeline\n`;
+md += `Timelines web profissionais precisam equilibrar poder de edição e simplicidade visual. Pesquisa de tendências (Canva e CapCut Web):\n\n`;
+md += `- **Controles contextuais**: Remover botões repetidos em cada linha de track (ex: fades de áudio, volume de trilha). Estes ajustes devem ficar ocultos no track e aparecer apenas no properties panel contextual ao selecionar a trilha correspondente.\n`;
+md += `- **Compactação das faixas**: Reduzir a altura das faixas quando não selecionadas, e usar cores distintas para diferentes mídias (ex: violeta para tipografia, azul para formas, verde para áudio).\n`;
+md += `- **Visual Grid & Zoom**: Facilitar o controle de zoom horizontal da timeline com um controle centralizado simples e demarcar o tempo de forma limpa (ex: segundos agrupados de forma espaçada, sem ticks milissegundos excessivos).\n\n`;
 
 md += `\n---\n`;
 md += `*Orchestrator V7 | Modo: ${systemMode} | Loop: ${loopDetected ? '🔴' : '✅'} | ${dt}*\n`;

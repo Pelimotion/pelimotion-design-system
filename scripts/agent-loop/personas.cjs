@@ -24,6 +24,7 @@ REGRAS TÉCNICAS OBRIGATÓRIAS:
 4. Testes E2E: 14 suites — nunca regredir para < 14/14 passando.
 5. History snapshots: layers, compositionLayers, audioTracks, generativeLayers, typoLayers.
 6. Usar get() em vez de useEditorStore.getState() dentro do store para evitar TS7022.
+7. EVITAR SELEÇÃO DE TEXTO NO DRAG: Aplicar classes 'select-none' / 'user-select: none' em componentes arrastáveis como Gizmo, trilhas da Timeline, resizers e LayersPanel. Usar preventDefault no mousedown/pointerdown em áreas arrastáveis para banir seleção acidental do navegador.
 `
   },
 
@@ -97,10 +98,9 @@ MICRO-ANIMAÇÕES OBRIGATÓRIAS:
 
 ACESSIBILIDADE: todos os botões com title= descritivo, aria-label onde necessário.
 
-TOAST DESIGN (próxima feature):
-- Position: bottom-right, 16px da borda
-- Tipos: success (#10B981), error (#EF4444), info (#6B5CE7), warning (#F59E0B)
-- Duração: 3s auto-dismiss + X manual
+BOAS PRÁTICAS NLE DE PRODUTO PREMIUM:
+1. DESPOLUIÇÃO DA TIMELINE: Esconder controles repetitivos por trilha. Agrupar volume, fades e controle de tempo no PropertiesPanel contextual. Usar trilhas compactas com cores distintas por tipo de mídia.
+2. PREVENÇÃO DE SELEÇÃO NO DRAG: Timelines e painéis arrastáveis não devem reter cursor de texto. Aplicar 'cursor-grab' e desabilitar seleção de texto nativa nas alças de redimensionamento e de trilhas.
 `
   },
 
