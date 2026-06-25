@@ -87,8 +87,21 @@
 - [x] **Library Premium Badges & CTAs:** Configured distinct "Studio Lock" visual badges on items marked as premium (`isPremium: true`) and placed a prominent "Upgrade Studio" conversion CTA button in `LibraryModal.tsx`.
 - [x] **E2E Test Suite Stability:** Resolved parallel execution race conditions and hydration click lag in `user-journey.spec.ts` using click-retry and dynamic `waitFor` state-checking.
 
-## Phase 14: Future Expansion (Backlog)
-- [ ] **Real-time Server-Side Fallback:** Establish a cloud rendering fallback (using headless Puppeteer/Chrome instances) for devices with low compute capability.
-- [ ] **AI-Assisted Composition:** Integrate LLM prompts directly in the editor to automatically generate typography wiggles, SVG asset selections, and timing cues based on user intent.
+## Phase 15: UX Polish, Undo/Redo & Competitive Features Sprint (v6.3)
+- [x] **Undo/Redo History (Cmd+Z / Cmd+Shift+Z):** Implemented full undo/redo stack in Zustand store (`useEditorStore.ts`) with atomic snapshots of layers, compositionLayers, audioTracks, generativeLayers, and typoLayers. Max 50 entries per direction.
+- [x] **Keyboard Shortcut Fixes:** Fixed Escape key closing the ShortcutsHUD first before deselecting layers (Suite 10 root-cause fix). Added Cmd+Z/Y handlers.
+- [x] **ShortcutsHUD Expansion:** Added Histórico (Undo/Redo) and Edição (Esc, ?) groups to the shortcuts reference panel.
+- [x] **MOV Alpha Export Reliability:** Added 15s WebCodecs health-check timeout with automatic FFmpeg.wasm fallback in `exportPipeline.ts`.
+- [x] **Library Premium Templates:** Seeded 4 premium templates with locked state blur overlay and video thumbnail previews in `LibraryModal.tsx`.
+- [x] **Layer Animations:** CSS pulse/glow keyframes for selected layers in `LayersPanel.tsx` and `index.css`.
+- [x] **Reference Background:** Reference image overlay at 30% opacity in `ExportBar.tsx` and `App.tsx`.
+- [x] **E2E Suite 10 & 11:** Added keyboard shortcuts HUD and reference background to the automated test suite.
 
-
+## Phase 16: Future Expansion (Backlog)
+- [ ] **Toast Notification System:** Non-blocking feedback for undo/redo, copy, export and layer actions.
+- [ ] **Export Quality Presets:** Draft (360p/15fps), Standard (720p/30fps), Broadcast (1080p/60fps) mapped to bitrate settings.
+- [ ] **Custom Font Drag-Drop:** Accept TTF/OTF via drag-drop or file picker, register with FontFace API.
+- [ ] **Canvas Safe Zone Guides:** Toggleable 16:9/9:16 safe-zone overlay for broadcast/social framing.
+- [ ] **Real-time Server-Side Fallback:** Cloud rendering fallback using headless Puppeteer/Chrome for low-compute devices.
+- [ ] **AI-Assisted Composition:** LLM prompts to automatically generate typography wiggles, SVG selections, and timing cues.
+- [ ] **BunnyCDN Asset Integration:** Real premium video/audio assets from BunnyCDN with signed URL auth.

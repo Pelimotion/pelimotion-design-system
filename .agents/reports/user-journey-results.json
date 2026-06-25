@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-24T22:06:00.594Z",
+  "timestamp": "2026-06-25T02:25:54.303Z",
   "suites": [
     {
       "name": "s1_empty_state",
@@ -69,10 +69,8 @@
     },
     {
       "name": "s10_shortcuts_hud",
-      "passed": false,
-      "findings": [
-        "SHORTCUTS: visible=true, closed=false, openedByKey=false, closedByKey=false"
-      ],
+      "passed": true,
+      "findings": [],
       "screenshots": []
     },
     {

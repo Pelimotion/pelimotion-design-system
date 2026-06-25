@@ -508,7 +508,7 @@ function ElementProperties({ layer }: { layer: UniversalLayer }) {
               { value: 'wiggle-paths', label: 'Wiggle (caminhos)' },
             ]} />
         </PropRow>
-        <SliderRow label="Oitavas" value={d.noiseOctaves} onChange={(v) => update({ noiseOctaves: Math.round(v) })} min={1} max={8} step={1} tooltip="Camadas de ruído (mais = mais orgânico)" />
+        <SliderRow label="Oitavas" value={d.noiseOctaves} onChange={(v) => update({ noiseOctaves: Math.round(v) })} min={1} max={8} step={1} tooltip="Oitavas de ruído (mais = mais orgânico)" />
         <SliderRow label="Persistência" value={d.noisePersistence * 100} onChange={(v) => update({ noisePersistence: v / 100 })} min={1} max={100} tooltip="Persistência do ruído fractal" />
       </AdvancedSection>
     </SectionHeader>

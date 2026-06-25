@@ -1,8 +1,0 @@
-{
-  "suiteId": "s10_shortcuts_hud",
-  "timestamp": "2026-06-24T22:05:54.315Z",
-  "passed": false,
-  "findings": [
-    "SHORTCUTS: visible=true, closed=false, openedByKey=false, closedByKey=false"
-  ]
-}
