@@ -105,8 +105,6 @@ dist/assets/exportWorker  199 kB
 | Feature | Impacto | Esforço |
 |---------|---------|---------|
 | Análise de Performance de Render por camada | Médio | Alto |
-| Suporte a fontes customizadas via drag-drop (P1) | Alto | Médio |
-| Preview modo escuro/claro do canvas | Médio | Baixo |
 | Integração BunnyCDN para assets premium reais | Alto | Alto |
 
 ---
@@ -120,4 +118,4 @@ dist/assets/exportWorker  199 kB
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão 59 | v6.5*
+*Atualizado: 25/06/2026 — Sessão 61 | v6.6*
