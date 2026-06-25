@@ -49,7 +49,7 @@ function App() {
   const {
     exportConfig, camera, featureFlags, libraryModalOpen,
     setLibraryModalOpen, referenceImage, exportState,
-    canvasPreviewTheme,
+    canvasPreviewTheme, isPlaying,
   } = useEditorStore();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -100,6 +100,36 @@ function App() {
     });
     return () => { unsub(); clearTimeout(timer); };
   }, []);
+
+  // ─── Global Playback Loop ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    let animationFrameId: number;
+    let lastTime = performance.now();
+
+    const loop = (time: number) => {
+      const state = useEditorStore.getState();
+      if (state.isPlaying) {
+        const delta = (time - lastTime) / 1000;
+        let nextTime = state.currentTime + delta;
+        if (nextTime >= state.exportConfig.duration) {
+          nextTime = 0; // loop back to start
+        }
+        state.seek(nextTime);
+      }
+      lastTime = time;
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    if (isPlaying) {
+      lastTime = performance.now();
+      animationFrameId = requestAnimationFrame(loop);
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [isPlaying]);
 
   // ─── Canvas dimensions ───────────────────────────────────────────────────
 
@@ -180,8 +210,9 @@ function App() {
 
   const handleCanvasSelection = (e: React.PointerEvent) => {
     const target = e.target as HTMLElement;
-    // Don't select if clicking on Gizmo handles, toolbar, or other UI controls
+    // Don't select if clicking on Gizmo container, handles, toolbar, or other UI controls
     if (
+      target.closest('[data-gizmo-container]') ||
       target.closest('.gizmo-handle') || 
       target.closest('#floating-toolbar') || 
       target.closest('#export-bar') || 
@@ -237,6 +268,7 @@ function App() {
   const handleDoubleClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (
+      target.closest('[data-gizmo-container]') ||
       target.closest('.gizmo-handle') || 
       target.closest('#floating-toolbar') || 
       target.closest('#export-bar') || 
@@ -510,6 +542,109 @@ function App() {
 
       {/* Toast Notification System */}
       <ToastContainer />
+
+      {/* Full-screen frosted glass export blocking overlay */}
+      {exportState.isExporting && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(5, 5, 5, 0.75)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          zIndex: 99999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontFamily: 'var(--font-sans)',
+          pointerEvents: 'auto',
+        }}>
+          <div className="bento-card-premium" style={{
+            width: 380,
+            padding: '24px 32px',
+            borderRadius: 16,
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.8)',
+          }}>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--color-accent)' }}>
+              Renderizando seu Motion Design
+            </h3>
+            
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '12px 0' }}>
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                border: '3px solid rgba(255,255,255,0.05)',
+                borderTopColor: 'var(--color-accent)',
+                animation: 'spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                  {Math.round(exportState.progress)}%
+                </span>
+              </div>
+            </div>
+
+            <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{
+                width: `${exportState.progress}%`,
+                height: '100%',
+                background: 'var(--color-accent)',
+                transition: 'width 0.2s ease',
+              }} />
+            </div>
+
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)' }}>
+              {exportState.stage === 'capturing' && 'Capturando frames do canvas…'}
+              {exportState.stage === 'encoding' && 'Codificando vídeo (WebCodecs/FFmpeg)…'}
+              {exportState.stage === 'idle' && 'Iniciando pipeline…'}
+            </div>
+
+            <div style={{
+              fontSize: '0.58rem',
+              color: 'hsla(191, 100%, 50%, 0.8)',
+              background: 'hsla(191, 100%, 50%, 0.05)',
+              padding: '6px 12px',
+              borderRadius: 6,
+              border: '1px solid hsla(191, 100%, 50%, 0.1)',
+              lineHeight: 1.4,
+            }}>
+              Render em background ativo. Você pode mudar de aba ou minimizar o navegador. Por favor, mantenha esta página aberta.
+            </div>
+
+            <button
+              onClick={() => {
+                useEditorStore.setState({ isExporting: false, stage: 'idle', progress: 0 });
+              }}
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: 'var(--color-text-muted)',
+                padding: '6px 12px',
+                fontSize: '0.7rem',
+                cursor: 'pointer',
+                marginTop: 8,
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,50,50,0.1)'; e.currentTarget.style.color = '#ff6b6b'; e.currentTarget.style.borderColor = 'rgba(255,50,50,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            >
+              Cancelar Exportação
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Headless Audio Engine */}
       <AudioEngine />
