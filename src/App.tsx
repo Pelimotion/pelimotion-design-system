@@ -232,6 +232,43 @@ function App() {
       handleCanvasSelection(e);
     }
   };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      target.closest('.gizmo-handle') || 
+      target.closest('#floating-toolbar') || 
+      target.closest('#export-bar') || 
+      target.closest('#top-bar') || 
+      target.closest('#layers-panel') || 
+      target.closest('#properties-panel')
+    ) {
+      return;
+    }
+
+    const layerEls = document.querySelectorAll('[data-layer-id]');
+    layerEls.forEach(el => {
+      (el as HTMLElement).style.pointerEvents = 'auto';
+    });
+
+    const hitEl = document.elementFromPoint(e.clientX, e.clientY);
+
+    layerEls.forEach(el => {
+      const isEditing = el.getAttribute('contenteditable') === 'true';
+      const isSelected = el.getAttribute('data-gizmo-target') === 'active';
+      (el as HTMLElement).style.pointerEvents = (isSelected || isEditing) ? 'auto' : 'none';
+    });
+
+    const clickedLayerEl = hitEl?.closest('[data-layer-id]');
+    if (clickedLayerEl) {
+      const layerId = clickedLayerEl.getAttribute('data-layer-id');
+      if (layerId) {
+        useEditorStore.getState().setSelectedLayerId(layerId);
+        clickedLayerEl.dispatchEvent(new CustomEvent('trigger-text-edit'));
+        return;
+      }
+    }
+  };
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isPanning.current) return;
     if (isSpaceDown.current) hasDraggedWithSpace.current = true;
@@ -273,6 +310,7 @@ function App() {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onDoubleClick={handleDoubleClick}
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => {
         e.preventDefault();

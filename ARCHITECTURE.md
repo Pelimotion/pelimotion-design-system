@@ -111,11 +111,20 @@ Para monetizar de forma sustentável mantendo o processamento totalmente no clie
 - **Hospedagem Serverless e Proxy Routing:** Integrado nativamente à malha da Vercel Edge Network para distribuição do SPA.
 - **Micro-Armazenamento:** APIs diretas e contínuas entre Web Workers isolados e o Edge Storage (BunnyCDN), criando workflows automatizados onde peças criadas e validadas são instantaneamente provisionadas em catálogos baseados em nuvem.
 
-### 2.9. Monitor de Controle do Orquestrador Local (Zero-Token Dashboard)
-Implementamos uma arquitetura local de controle de rodadas dos agentes de pesquisa e desenvolvimento:
+### 2.9. Monitor de Controle e as 6 Personas do Orquestrador (Zero-Token Dashboard)
+Implementamos uma arquitetura local de controle de rodadas dos agentes de pesquisa e desenvolvimento de forma 100% offline (Zero Tokens):
 - **Comunicação Bidirecional de Estado:** O orquestrador (`orchestrator.cjs`) sincroniza o status de execução atual e a fase ativa (Fase 0 à Fase 4) gravando no arquivo `.agents/LEARNING_MEMORY.json`.
 - **Monitor no Terminal (`dashboard.cjs`):** Um script CLI rodando sob Node.js consome esse arquivo e renderiza painéis formatados com cores ANSI e spinners em Braille para indicar progresso de rodadas e tempo decorrido.
 - **Temporização e Resiliência (Zero Tokens):** Os tempos de cron e as regressões das rodadas são calculados de forma 100% offline no cliente, eliminando a dependência de APIs de terceiros ou o consumo desnecessário de tokens de LLM. Inclui heurística de timeout para acusar falhas de execução do orquestrador caso a última atualização exceda 6 minutos.
+
+#### As 6 Perspectivas da Matriz de Decisão (Personas):
+Para garantir que cada iteração seja avaliada sob os critérios mais exigentes do mercado, o orquestrador gera relatórios individuais de conformidade para as seguintes personas oficiais definidas em [personas.cjs](file:///Volumes/PLM_SSD_01/Dev/Aura%20Motion%20Design%20System/scripts/agent-loop/personas.cjs):
+1. **Dev Senior (Arquiteto de Software):** Valida a performance de renderização (FPS), vazamento de heap/canvas, tipagem estrita de Zustand, timeouts de 15s de WebCodecs com fallback FFmpeg.wasm automático e prevenção de seleção acidental de textos em elementos arrastáveis.
+2. **CEO (Visão Estratégica):** Focado na proposta de valor de Zero-Server Rendering (ZSR), estratégias de monetização e conversão do funil freemium (ex: controle de lead gate no primeiro export e Studio badges na biblioteca).
+3. **SEO Specialist (Growth Marketing):** Focado em indexação Google, pontuações 100/100 no Lighthouse, tags HTML5 semânticas, metadados estruturados e na estratégia programática de landing pages de nicho ("Zipper Strategy").
+4. **Product Designer (UX/UI Lead):** Focado no layout unificado de 3 zonas inspiradas no Figma (painel de elementos, canvas com câmera espacial e properties panel responsivo e colapsável) e na suavidade das transições e micro-animações do editor.
+5. **Senior Analyst (Analista de Dados):** Focado na telemetria local de uso e conversões via `telemetry.ts`, medição de tempos médios de renderização por quadro e identificação de falhas silenciosas na exportação.
+6. **Diretor de Criação (Motion Design Lead):** Focado na qualidade estética das curvas GSAP, stagger e wiggles baseados em ruído Simplex, pré-visualizações animadas em grid Bento e na experiência sensorial impactante ("WOW") do render final.
 
 ### 2.10. Técnicas Avançadas de Interação & Renderização em Background
 - **Bypassing Background Throttling via Web Workers:** Navegadores modernos atenuam agressivamente loops na main thread em abas inativas (minimizadas ou em segundo plano), reduzindo temporizadores para no máximo 1fps. Para manter a exportação fluida, o sistema delega a temporização a um Web Worker isolado (`backgroundTimer.ts`). Como as mensagens do worker (`postMessage`) entram como macro-tasks na fila do navegador, a main thread executa os frames em velocidade nativa sem interrupções.

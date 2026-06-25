@@ -22,6 +22,9 @@ export default defineConfig({
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
     },
+    watch: {
+      ignored: ['**/.agents/**', '**/test-results/**', '**/playwright-report/**'],
+    },
   },
 
   // Allow WASM files as importable assets

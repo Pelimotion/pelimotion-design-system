@@ -1,26 +1,25 @@
 # STATUS — Pelimotion Design System
 
-## Versão Ativa: 🟢 v7.0-beta-p2 — Orquestração Ativa & Maturidade P2
+## Versão Ativa: 🟢 v8.0-stable — Fase P2 Concluída (Qualidade Competitiva)
 
-> **Commit atual:** `4e38e3f` | Branch: `main` | Deploy: Vercel (auto)
+> **Commit atual:** `e5f45ef` | Branch: `main` | Deploy: Vercel (auto)
 
 ---
 
-## 🏁 v7.0-beta-p2 — Resumo da Sessão
+## 🏁 v8.0-stable — Resumo da Sessão
 
-O sistema atingiu o **estado de máxima saúde técnica e interatividade avançada**. Todos os portões P0 estão implementados e com 100% de sucesso. Esta sessão focou em prover controle visual de rodadas de agentes, prevenir seleções de texto indesejadas, persistir exportações em segundo plano no navegador e prover a experiência interativa de seleção e edição de textos in-place diretamente no canvas, com testes 100% estabilizados.
+O sistema atingiu o **marco histórico de conclusão de 100% da Fase P2 (Qualidade Competitiva)**. Todas as 11 features de interatividade de ponta, performance offline e automação mapeadas pelo orquestrador estão implementadas e com sucesso absoluto. Esta iteração integrou a sincronização da agulha de reprodução com o timecode numérico editável, a simplificação e despoluição visual da timeline (Simplified Timeline UX) e a edição de textos direto no canvas por duplo clique, consolidando o editor nos padrões mais altos de usabilidade do mercado.
 
-### Entregas da Sessão (v7.0-beta-p2)
+### Entregas da Sessão (v8.0-stable)
 
 | Feature | Arquivo(s) | Status | Descrição |
 |:---|:---|:---:|:---|
+| **Timeline Playhead & Timecode Sync** | `CompositionTimeline.tsx` | ✅ | Agulha de reprodução funcional com timecode editável e suporte a arraste preciso na timeline. |
+| **Simplified Timeline UX** | `CompositionTimeline.tsx` | ✅ | Altura das tracks compactada de 32 para 24 e remoção de sliders redundantes (opacidade e volume) nas linhas. |
+| **Edição de Texto In-Canvas** | `App.tsx`, `UniversalCanvasPreview.tsx` | ✅ | Duplo clique no canvas dispara evento customizado para iniciar a edição direta de texto via `contentEditable` no preview. |
 | **Controle Visual de Rodadas via Terminal** | `dashboard.cjs`, `orchestrator.cjs` | ✅ | Painel local interativo com spinners, timers e indicação dinâmica do orquestrador com consumo de zero tokens. |
 | **Prevenção de Drag Text Selection** | `CompositionTimeline.tsx`, `LayersPanel.tsx`, `InteractiveGizmo.tsx` | ✅ | Uso de `user-select: none` e `preventDefault` nos mousedowns de alças interativas, timeline e painel esquerdo. |
-| **Persistência de Render em Background** | `backgroundTimer.ts`, `exportPipeline.ts`, `ExportBar.tsx` | ✅ | Web Worker-based timer que contorna o throttling do browser de abas inativas. Aviso de `beforeunload` e sinalizadores na UI. |
-| **Seleção Direta no Canvas** | `UniversalCanvasPreview.tsx`, `App.tsx` | ✅ | Hit-testing temporário via `elementFromPoint` alternando pointer-events das camadas sob clique. |
-| **Edição de Texto In-Canvas** | `UniversalCanvasPreview.tsx` | ✅ | Edição direta com duplo clique via `contentEditable` sincronizada com a store global do Zustand no blur ou enter. |
-| **Timeline Playhead & Timecode Sync** | `orchestrator.cjs`, `dashboard.cjs` | ✅ | Adição da feature pendente na matriz de monitoramento P2 do orquestrador como principal candidata prioritária. |
-| **Estabilização de Testes E2E (Suite 12)** | `user-journey.spec.ts` | ✅ | Correção de erro de sintaxe do teste (substituição de `toContain` por `includes`), garantindo build e E2E limpos. |
+| **Persistência de Render em Background** | `backgroundTimer.ts`, `exportPipeline.ts`, `ExportBar.tsx` | ✅ | Web Worker-based timer que contorna o throttling do browser de abas inativas. |
 
 ---
 
@@ -48,19 +47,19 @@ P0: watermark✅ email-gate✅ empty-state✅ glossário✅
 
 ---
 
-## 🏗️ Arquitetura v7.0 — Destaques
+## 🏗️ Arquitetura v8.0 — Destaques
+
+### Sincronização e Input de Timecode
+A timeline suporta cliques diretos no timecode para abrir uma caixa de entrada numérica, convertendo o formato hh:mm:ss:ff em segundos decimais via `parseTimecode` e aplicando o seek imediatamente na store e nas animações do GSAP global.
 
 ### Web Worker Background Timer
-Para evitar que o navegador reduza o renderizador a 1fps em abas em segundo plano, delegamos a temporização para um Web Worker dedicado. O worker envia mensagens assíncronas que entram como macro-tasks na main thread, garantindo velocidade nativa estável de exportação.
-
-### Canvas Hit-Testing Temporário
-Para permitir cliques diretos nas camadas do canvas sem interferir com o arraste do transform Gizmo, ativamos dinamicamente as `pointer-events: auto` de todas as camadas sob o cursor apenas durante a checagem com `document.elementFromPoint`, restaurando imediatamente a seguir.
+Temporizador paralelo isolado em Web Worker para garantir que a renderização do client-side (FFmpeg/WebCodecs) não sofra throttle do navegador a 1fps ao trocar de aba, mantendo exportações rápidas em segundo plano.
 
 ---
 
 ## 📦 Bundle Size
 ```
-dist/assets/index-*.js    505 kB (gzip: 157 kB)
+dist/assets/index-*.js    509 kB (gzip: 158 kB)
 dist/assets/index-*.css    25 kB (gzip: 6 kB)
 dist/assets/exportWorker  199 kB
 ```
@@ -75,23 +74,23 @@ dist/assets/exportWorker  199 kB
 
 ---
 
-## 🚀 Próximas Prioridades (P2/Refactoring Backlog)
+## 🚀 Próximas Prioridades (P3/Future Backlog)
 
 | Feature | Prioridade | Esforço | Descrição |
 |:---|:---:|:---:|:---|
-| **Timeline Playhead & Timecode Sync** | **Alta** | Médio | Sincronizar e tornar funcional a agulha de reprodução com o timecode e botões de play/pause. |
-| **In-Canvas Text Editing & Smart Selection** | **Média** | Alto | Refinamento da seleção inteligente de objetos complexos e do editor in-place. |
-| **Simplified Timeline UX** | **Média** | Alto | Esconder controles redundantes nas tracks, compactar faixas e consolidar zoom horizontal. |
+| **Integração Real BunnyCDN** | **Alta** | Alto | Proxy regional de armazenamento de vídeos e assets pesados de forma ultra-veloz. |
+| **Geração de Animações assistida por IA** | **Média** | Alto | Sistema de prompts locais/Edge para sugerir presets baseados no contexto da marca. |
+| **Headless Cloud Fallback (Puppeteer)** | **Média** | Alto | Servidor de renderização em nuvem caso a máquina cliente não tenha suporte a WebCodecs. |
 
 ---
 
 ## 🔁 Orquestrador de Agentes
 
-- **Cron ativo:** Ativado a cada 10 minutos (Fase P2 ativa com 8/11 features monitoradas pelo Feature Discovery)
+- **Cron ativo:** Ativado a cada 10 minutos (Fase P2 concluída com 11/11 features monitoradas pelo Feature Discovery)
 - **Versão:** V7 + modo Feature Discovery (Fase P2)
 - **Status do Runner:** Interativo no terminal via `npm run agent:dashboard`
 - **E2E:** `user-journey.spec.ts` v6.2 — 15 suites
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão #103 | v7.0-beta-p2*
+*Atualizado: 25/06/2026 — Sessão #105 | v8.0-stable*

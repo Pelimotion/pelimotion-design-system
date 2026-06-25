@@ -1,6 +1,8 @@
+// timeline-needle-sync
+// timeline-simplified
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Layers, Plus, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle, Settings } from 'lucide-react';
-import { formatTimecode } from '@/utils/timecode';
+import { formatTimecode, parseTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
 import type { AudioTrack } from '@/types/motion.types';
@@ -38,6 +40,14 @@ export function CompositionTimeline() {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [timelineZoom, setTimelineZoom] = useState(100);
   const playheadRef = useRef<HTMLDivElement>(null);
+  const [isEditingTimecode, setIsEditingTimecode] = useState(false);
+  const [tempTimecode, setTempTimecode] = useState('');
+
+  useEffect(() => {
+    if (!isEditingTimecode) {
+      setTempTimecode(formatTimecode(currentTime, exportConfig.fps));
+    }
+  }, [currentTime, exportConfig.fps, isEditingTimecode]);
   
   // Playhead Realtime Sync
   useEffect(() => {
@@ -326,13 +336,13 @@ export function CompositionTimeline() {
 
   // Track rendering styles
   const trackStyle: React.CSSProperties = {
-    height: 32,
+    height: 24,
     background: 'var(--color-bg-base)',
     border: '1px solid var(--color-surface-border)',
     borderRadius: 6,
     position: 'relative',
     overflow: 'hidden',
-    marginTop: 8
+    marginTop: 4
   };
 
   const blockStyle = (start: number, dur: number, bg?: string): React.CSSProperties => ({
@@ -369,13 +379,57 @@ export function CompositionTimeline() {
           <h3 style={{ fontSize: '0.85rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <Layers size={14} color="var(--color-accent)" /> Linha do Tempo
           </h3>
-          <div style={{ 
-            fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, 
-            color: 'var(--color-accent)', background: 'rgba(0,0,0,0.3)', 
-            padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)'
-          }}>
-            {formatTimecode(currentTime, exportConfig.fps)}
-          </div>
+          {isEditingTimecode ? (
+            <input
+              type="text"
+              value={tempTimecode}
+              onChange={(e) => setTempTimecode(e.target.value)}
+              onBlur={() => {
+                setIsEditingTimecode(false);
+                const time = parseTimecode(tempTimecode, exportConfig.fps);
+                if (!isNaN(time)) {
+                  const bounded = Math.max(0, Math.min(exportConfig.duration, time));
+                  seek(bounded);
+                  import('gsap').then(({ gsap }) => {
+                    gsap.globalTimeline.pause();
+                    gsap.globalTimeline.seek(bounded);
+                  });
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                } else if (e.key === 'Escape') {
+                  setIsEditingTimecode(false);
+                }
+              }}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, 
+                color: 'var(--color-accent)', background: 'rgba(0,0,0,0.6)', 
+                padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-accent)',
+                outline: 'none', width: 110, textAlign: 'center'
+              }}
+              autoFocus
+            />
+          ) : (
+            <div 
+              onClick={() => {
+                if (isPlaying) togglePlayback();
+                setIsEditingTimecode(true);
+                setTempTimecode(formatTimecode(currentTime, exportConfig.fps));
+              }}
+              style={{ 
+                fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, 
+                color: 'var(--color-accent)', background: 'rgba(0,0,0,0.3)', 
+                padding: '2px 8px', borderRadius: 4, border: '1px solid var(--color-surface-border)',
+                cursor: 'pointer'
+              }}
+              title="Clique para editar o timecode"
+            >
+              {formatTimecode(currentTime, exportConfig.fps)}
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
@@ -723,25 +777,44 @@ export function CompositionTimeline() {
         {/* Playhead Indicator */}
         <div 
           ref={playheadRef}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setScrubbing(true);
+            setDragging({ id: 'playhead', type: 'playhead' });
+          }}
           style={{
-          position: 'absolute',
-          top: 12,
-          bottom: 24,
-          left: `calc(12px + ${(currentTime / exportConfig.duration) * 100}% - ${(currentTime / exportConfig.duration) * 24}px)`,
-          width: 2,
-          background: 'var(--color-accent, red)',
-          zIndex: 50,
-          pointerEvents: 'none',
-        }}>
+            position: 'absolute',
+            top: 12,
+            bottom: 24,
+            left: `calc(12px + ${(currentTime / exportConfig.duration) * 100}% - ${(currentTime / exportConfig.duration) * 24}px)`,
+            width: 12, // Wider clickable container
+            marginLeft: -5,
+            background: 'transparent',
+            zIndex: 50,
+            cursor: 'col-resize',
+            pointerEvents: 'auto',
+          }}
+        >
+          {/* Red line */}
+          <div style={{
+            position: 'absolute',
+            left: 5,
+            top: 0,
+            bottom: 0,
+            width: 2,
+            background: 'var(--color-accent, red)',
+          }} />
           {/* Playhead Handle */}
           <div style={{
             position: 'absolute',
             top: -6,
-            left: -4,
+            left: 1,
             width: 10,
             height: 10,
             background: 'var(--color-accent, red)',
             borderRadius: '50%',
+            boxShadow: '0 0 4px rgba(255,0,0,0.5)',
           }} />
         </div>
 
@@ -837,12 +910,6 @@ export function CompositionTimeline() {
                     />
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    <input 
-                      type="range" min="0" max="1" step="0.05" 
-                      value={layer.transform.opacity} 
-                      onChange={(e) => updateLayer(layer.id, { transform: { ...layer.transform, opacity: Number(e.target.value) } })} 
-                      style={{ width: 40 }} title="Opacidade" 
-                    />
                     <button 
                       onClick={() => updateLayer(layer.id, { locked: !layer.locked })} 
                       style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
@@ -945,28 +1012,6 @@ export function CompositionTimeline() {
                     </button>
                   </div>
                   <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--color-bg-base)', padding: '2px 4px', borderRadius: 4, gap: 4, marginRight: 4 }}>
-                      <span style={{ fontSize: '0.55rem', opacity: 0.8 }}>In</span>
-                      <input 
-                        type="number" min="0" max="5" step="0.1" 
-                        value={track.fadeIn || 0} 
-                        onChange={(e) => updateAudioTrack(track.id, { fadeIn: Number(e.target.value) })} 
-                        style={{ width: 35, fontSize: '0.6rem', textAlign: 'center', background: 'transparent', border: 'none', color: 'white', outline: 'none' }} title="Fade In (s)" 
-                      />
-                      <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 2 }}>Out</span>
-                      <input 
-                        type="number" min="0" max="5" step="0.1" 
-                        value={track.fadeOut || 0} 
-                        onChange={(e) => updateAudioTrack(track.id, { fadeOut: Number(e.target.value) })} 
-                        style={{ width: 35, fontSize: '0.6rem', textAlign: 'center', background: 'transparent', border: 'none', color: 'white', outline: 'none' }} title="Fade Out (s)" 
-                      />
-                    </div>
-                    <input 
-                      type="range" min="0" max="1" step="0.05" 
-                      value={track.volume} 
-                      onChange={(e) => updateAudioTrack(track.id, { volume: Number(e.target.value) })} 
-                      style={{ width: 40 }} title="Volume" 
-                    />
                     <button 
                       onClick={() => updateAudioTrack(track.id, { locked: !track.locked })} 
                       style={{ background: 'none', border: 'none', color: track.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}

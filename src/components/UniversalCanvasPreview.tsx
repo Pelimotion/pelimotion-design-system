@@ -25,6 +25,16 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
   const { updateLayer } = useEditorStore();
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const handleTriggerEdit = () => {
+      setIsEditing(true);
+    };
+    el.addEventListener('trigger-text-edit', handleTriggerEdit);
+    return () => el.removeEventListener('trigger-text-edit', handleTriggerEdit);
+  }, []);
+
+  useEffect(() => {
     if (!ref.current || !layer.visible) return;
     const el = ref.current;
 

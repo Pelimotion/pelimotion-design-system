@@ -211,7 +211,7 @@ function drawDashboard() {
       const timeStr = new Date(log.date).toLocaleTimeString('pt-BR');
       const res = log.errors > 0 
         ? `${C.red}Build Fail${C.reset}` 
-        : `${C.green}Sucesso (P2: ${log.p2Done}/10)${C.reset}`;
+        : `${C.green}Sucesso (P2: ${log.p2Done}/${p2TotalCount})${C.reset}`;
       console.log(`    [${timeStr}] Sessão #${log.session} (${log.systemMode}) ➔ ${res}`);
     });
   }

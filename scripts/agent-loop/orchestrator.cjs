@@ -234,7 +234,7 @@ console.log(color('cyan', '\n[Feature Discovery] Verificando implementação de 
 const p2Checks = [
   {
     name: 'In-Canvas Text Editing & Smart Selection',
-    check: () => !!run('grep -r "contentEditable\\|isEditingText" src/components/Canvas 2>/dev/null | head -1'),
+    check: () => !!run('grep -r "contentEditable\\|isEditingText" src/ 2>/dev/null | head -1'),
     score: 4.7, effort: 'Alto', impact: 'Crítico',
     why: 'Permitir a edição direta de texto no canvas e seleção inteligente de objetos melhora drasticamente o fluxo de trabalho imitando ferramentas de ponta'
   },

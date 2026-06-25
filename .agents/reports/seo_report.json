@@ -1,5 +1,0 @@
-{
-  "persona": "seo",
-  "timestamp": "2026-06-15T02:58:12.072Z",
-  "evaluation": "### GROWTH & SEO SPECIALIST (PRODUCT-LED VISION)\n**Área de Foco da Sessão:** Global Navigation, Sidebar & Bento UX\n**Timestamp:** 2026-06-15T02:58:12.072Z\n\n**⚡ PERFORMANCE:** FPS = 15. FPS TOO LOW: 15 fps — canvas animation is janky. Must be above 30fps for acceptable UX.\n**🎯 UX FINDINGS:** 0 críticos, 1 altos, 0 médios.\n  - [HIGH][typography] \"Adicionar Texto\" button NOT found in toolbar — user cannot quickly add text layers.\n\n**Diretriz:** Você atua no Crescimento e SEO do Pelimotion.\nVá além do Lighthouse. Analise se a interface, quando o usuário chega, é confusa e o fará sair da página.\nAjude a varrer a aplicação buscando fluidez no p...\n"
-}

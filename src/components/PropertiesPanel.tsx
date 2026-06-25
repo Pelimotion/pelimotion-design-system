@@ -8,9 +8,10 @@
 import React, { useState, useRef } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
 import type { UniversalLayer, TextLayerData, ElementLayerData, OverlayLayerData, ShadowGuardLayerData, TextBoxLayerData, AnimationEntryPreset, AnimationExitPreset, AutoAnimatePreset } from '@/types/universalLayers.types';
+import type { AudioTrack } from '@/types/motion.types';
 import {
   ChevronDown, ChevronRight, Zap, Type, Layers, Settings2, Palette, Move,
-  Sparkles, RotateCcw, AlignLeft, AlignCenter, AlignRight, Square, Upload,
+  Sparkles, RotateCcw, AlignLeft, AlignCenter, AlignRight, Square, Upload, Music,
 } from 'lucide-react';
 
 // ─── Shared Sub-components ──────────────────────────────────────────────────
@@ -719,9 +720,116 @@ function TextBoxProperties({ layer }: { layer: UniversalLayer }) {
     </SectionHeader>
   );
 }
+function AudioProperties({ track }: { track: AudioTrack }) {
+  const { updateAudioTrack } = useEditorStore();
+  const update = (patch: Partial<AudioTrack>) => updateAudioTrack(track.id, patch);
+
+  return (
+    <SectionHeader title="Faixa de Áudio" icon={<Music size={12} />}>
+      <PropRow label="Nome">
+        <input
+          type="text"
+          value={track.name}
+          onChange={(e) => update({ name: e.target.value })}
+          style={{
+            width: '100%',
+            background: 'var(--color-bg-base)',
+            border: '1px solid var(--color-surface-border)',
+            borderRadius: 6,
+            padding: '5px 8px',
+            fontSize: '0.72rem',
+            color: 'white',
+            outline: 'none',
+          }}
+        />
+      </PropRow>
+      <SliderRow
+        label="Volume"
+        value={track.volume * 100}
+        onChange={(v) => update({ volume: v / 100 })}
+        min={0}
+        max={100}
+        unit="%"
+        tooltip="Volume da faixa de áudio"
+      />
+      <PropRow label="Fade In">
+        <NumInput
+          value={track.fadeIn || 0}
+          onChange={(v) => update({ fadeIn: v })}
+          min={0}
+          max={10}
+          step={0.1}
+          unit="s"
+        />
+      </PropRow>
+      <PropRow label="Fade Out">
+        <NumInput
+          value={track.fadeOut || 0}
+          onChange={(v) => update({ fadeOut: v })}
+          min={0}
+          max={10}
+          step={0.1}
+          unit="s"
+        />
+      </PropRow>
+      <PropRow label="Início" tooltip="Tempo de início da faixa na timeline (segundos)">
+        <NumInput
+          value={track.startTime}
+          onChange={(v) => update({ startTime: v })}
+          min={0}
+          step={0.1}
+          unit="s"
+        />
+      </PropRow>
+      <PropRow label="Duração" tooltip="Duração da reprodução do áudio (segundos)">
+        <NumInput
+          value={track.duration}
+          onChange={(v) => update({ duration: v })}
+          min={0.1}
+          step={0.1}
+          unit="s"
+        />
+      </PropRow>
+    </SectionHeader>
+  );
+}
+
 export function PropertiesPanel() {
-  const { layers, selectedLayerId } = useEditorStore();
+  const { layers, selectedLayerId, activeAudioTrackId, audioTracks } = useEditorStore();
   const layer = layers.find(l => l.id === selectedLayerId);
+  const audioTrack = audioTracks.find(t => t.id === activeAudioTrackId);
+
+  if (!layer && audioTrack) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        {/* Header */}
+        <div style={{
+          padding: '12px 12px 8px',
+          borderBottom: '1px solid var(--color-surface-border)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{
+            fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.04em',
+            textTransform: 'uppercase', color: 'var(--color-text-muted)',
+          }}>
+            Ajustes
+          </span>
+          <span style={{
+            fontSize: '0.62rem', color: 'var(--color-text-ghost)',
+            background: 'hsla(0,0%,100%,0.04)',
+            border: '1px solid var(--color-surface-border)',
+            padding: '2px 6px', borderRadius: 4,
+          }}>
+            audio
+          </span>
+        </div>
+
+        <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <AudioProperties track={audioTrack} />
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedLayerId || !layer) {
     return (

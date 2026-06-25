@@ -107,9 +107,9 @@
 - [x] **Persistência de Render em Background:** Web Worker bypass para throttling em abas inativas.
 - [x] **Seleção Direta no Canvas:** Hit-testing via elementFromPoint sob clique no canvas.
 - [x] **Edição de Texto In-Canvas:** Edição direta via contentEditable no duplo clique.
-- [ ] **Timeline Playhead & Timecode Sync (Próxima Rodada):** Sincronização e funcionalidade da agulha com o timecode e play/pause.
-- [ ] **In-Canvas Text Editing & Smart Selection (Próxima Rodada):** Seleção inteligente e edição dupla-clique in-place no canvas.
-- [ ] **Simplified Timeline UX (Próxima Rodada):** Consolidar trilhas e esconder botões repetidos nas tracks.
+- [x] **Timeline Playhead & Timecode Sync:** Sincronização e funcionalidade da agulha com o timecode e controles de play/pause.
+- [x] **In-Canvas Text Editing & Smart Selection:** Seleção inteligente e edição dupla-clique in-place no canvas.
+- [x] **Simplified Timeline UX:** Trilhas compactadas e ocultação de controles repetitivos no properties panel.
 
 ## Phase 17: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Cloud rendering fallback using headless Puppeteer/Chrome for low-compute devices.
