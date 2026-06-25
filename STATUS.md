@@ -1,19 +1,21 @@
 # STATUS — Pelimotion Design System
 
-## Versão Ativa: 🟢 v6.4 — Toast Notifications, Export Quality Presets, Sprint P1 Concluído!
+## Versão Ativa: 🟢 v6.5 — Bugfix Adição de Texto Simples, Canvas Preview Theme, Estabilidade v7
 
-> **Commit atual:** `f20f115` | Branch: `main` | Deploy: Vercel (auto)
+> **Commit atual:** `08a267e` | Branch: `main` | Deploy: Vercel (auto)
 
 ---
 
-## 🏁 v6.4 — Resumo da Sessão
+## 🏁 v6.5 — Resumo da Sessão
 
-Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E passando, FPS 60/60, zero violações de glossário, todos P0 ativos. Esta sessão concluiu 100% das features P1 pendentes: Toast Notifications + Export Quality Presets.
+Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E passando (incluindo cobertura para o bug de adição de texto simples), FPS 60/60, zero violações de glossário, todos P0 ativos. Esta sessão corrigiu o bug crítico de crash ao adicionar texto simples via TopBar, adicionou o seletor de tema do canvas no editor e refinou o fluxo de orquestração.
 
-### Entregas da Sessão (v6.4)
+### Entregas da Sessão (v6.5)
 
 | Feature | Arquivo(s) | Status |
 |---------|-----------|--------|
+| **Bugfix: Black Screen ao adicionar Texto Simples** | `universalLayers.types.ts`, `PropertiesPanel.tsx` | ✅ |
+| **Canvas Preview Theme** (Dark / Light / Transparency Grid) | `ViewportControls.tsx`, `App.tsx`, `useEditorStore.ts` | ✅ |
 | **Toast notification system** | `ToastNotification.tsx`, `toast.types.ts`, `useEditorStore.ts` | ✅ |
 | **Export Quality Presets** (Draft/Standard/Broadcast) | `ExportBar.tsx`, `useEditorStore.ts`, `motion.types.ts` | ✅ |
 | **Undo/Redo** (Cmd+Z / Cmd+Shift+Z) | `useEditorStore.ts`, `useKeyboardShortcuts.ts` | ✅ |
@@ -118,4 +120,4 @@ dist/assets/exportWorker  199 kB
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão 58 | v6.4*
+*Atualizado: 25/06/2026 — Sessão 59 | v6.5*
