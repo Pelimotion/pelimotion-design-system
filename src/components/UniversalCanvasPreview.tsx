@@ -15,7 +15,99 @@ import { renderGenerativeShape } from '@/engines/Generative/shapes';
 import { createNoiseDriver } from '@/engines/Generative/noiseEngine';
 import type { NoiseChannel, NoiseDriver } from '@/engines/Generative/noiseEngine';
 
+// ─── Layer Time Sync Hook ────────────────────────────────────────────────────
+
+function useLayerTimeSync(layer: UniversalLayer, ref: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !layer.visible) return;
+
+    const anim = layer.animation;
+    const tl = gsap.timeline({ paused: true });
+
+    // Ensure initial state
+    gsap.set(el, { opacity: 1, scale: 1, x: 0, y: 0, rotation: 0, filter: 'blur(0px)' });
+
+    // Entry animation
+    if (anim.entryPreset !== 'none') {
+      const from: gsap.TweenVars = { opacity: 0 };
+      if (anim.entryPreset === 'fadeUp') { from.y = 30; }
+      if (anim.entryPreset === 'fadeDown') { from.y = -30; }
+      if (anim.entryPreset === 'slideLeft') { from.x = 60; }
+      if (anim.entryPreset === 'slideRight') { from.x = -60; }
+      if (anim.entryPreset === 'scaleIn') { from.scale = 0.7; }
+      if (anim.entryPreset === 'blurIn') { from.filter = 'blur(20px)'; }
+
+      tl.fromTo(el, from, {
+        opacity: 1, y: 0, x: 0, scale: 1, filter: 'blur(0px)',
+        duration: anim.entryDuration,
+        ease: anim.entryEase,
+      }, anim.entryDelay);
+    }
+
+    // Exit animation
+    if (anim.exitPreset !== 'none') {
+      const to: gsap.TweenVars = { opacity: 0 };
+      if (anim.exitPreset === 'fadeUp') { to.y = -30; }
+      if (anim.exitPreset === 'fadeDown') { to.y = 30; }
+      if (anim.exitPreset === 'slideLeft') { to.x = -60; }
+      if (anim.exitPreset === 'slideRight') { to.x = 60; }
+      if (anim.exitPreset === 'scaleOut') { to.scale = 0.7; }
+      if (anim.exitPreset === 'blurOut') { to.filter = 'blur(20px)'; }
+
+      const exitStartTime = (layer.duration || 15) - anim.exitDuration - anim.exitDelay;
+      tl.to(el, { ...to, duration: anim.exitDuration, ease: anim.exitEase }, exitStartTime > 0 ? exitStartTime : 0);
+    }
+
+    // Auto-animate
+    let autoTween: gsap.core.Tween | null = null;
+    if (anim.autoAnimate) {
+      const intensity = anim.autoAnimateIntensity / 100;
+      const preset = anim.autoAnimatePreset;
+      const duration = 1.5 + (1 - intensity) * 2;
+
+      if (preset === 'float') {
+        autoTween = gsap.to(el, { y: `-=${8 * intensity}`, repeat: -1, yoyo: true, duration, ease: 'sine.inOut' });
+      } else if (preset === 'pulse') {
+        autoTween = gsap.to(el, { scale: 1 + 0.05 * intensity, repeat: -1, yoyo: true, duration: duration * 0.7, ease: 'power2.inOut' });
+      } else if (preset === 'wiggle') {
+        autoTween = gsap.to(el, { rotation: 3 * intensity, repeat: -1, yoyo: true, duration: 0.2 + (1 - intensity) * 0.4, ease: 'sine.inOut' });
+      } else if (preset === 'breathe') {
+        autoTween = gsap.to(el, { scale: 1 + 0.03 * intensity, opacity: 0.9 + 0.1 * (1 - intensity), repeat: -1, yoyo: true, duration: duration * 1.2, ease: 'sine.inOut' });
+      } else if (preset === 'bounce') {
+        autoTween = gsap.to(el, { y: `-=${12 * intensity}`, repeat: -1, yoyo: true, duration: duration * 0.5, ease: 'power2.out' });
+      }
+    }
+
+    const tick = () => {
+      const time = useEditorStore.getState().currentTime;
+      const timeIn = layer.timeIn || 0;
+      const duration = layer.duration || 15;
+      
+      if (time < timeIn || time > timeIn + duration) {
+         el.style.display = 'none';
+         autoTween?.pause();
+      } else {
+         el.style.display = 'block';
+         autoTween?.play();
+         const localTime = time - timeIn;
+         tl.seek(localTime);
+      }
+    };
+
+    gsap.ticker.add(tick);
+
+    return () => {
+      gsap.ticker.remove(tick);
+      tl.kill();
+      autoTween?.kill();
+      gsap.killTweensOf(el);
+    };
+  }, [layer.animation, layer.timeIn, layer.duration, layer.visible, ref]);
+}
+
 // ─── Text Layer Renderer ─────────────────────────────────────────────────────
+
 
 function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelected: boolean }) {
   const d = layer.textData!;
@@ -34,49 +126,7 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
     return () => el.removeEventListener('trigger-text-edit', handleTriggerEdit);
   }, []);
 
-  useEffect(() => {
-    if (!ref.current || !layer.visible) return;
-    const el = ref.current;
-
-    // Entry animation
-    if (layer.animation.entryPreset !== 'none') {
-      const from: gsap.TweenVars = { opacity: 0 };
-      if (layer.animation.entryPreset === 'fadeUp') { from.y = 30; }
-      if (layer.animation.entryPreset === 'fadeDown') { from.y = -30; }
-      if (layer.animation.entryPreset === 'slideLeft') { from.x = 60; }
-      if (layer.animation.entryPreset === 'slideRight') { from.x = -60; }
-      if (layer.animation.entryPreset === 'scaleIn') { from.scale = 0.7; }
-      if (layer.animation.entryPreset === 'blurIn') { from.filter = 'blur(20px)'; }
-
-      gsap.fromTo(el, from, {
-        opacity: 1, y: 0, x: 0, scale: 1, filter: 'blur(0px)',
-        duration: layer.animation.entryDuration,
-        delay: layer.animation.entryDelay,
-        ease: layer.animation.entryEase,
-      });
-    }
-
-    // Auto-animate
-    if (layer.animation.autoAnimate) {
-      const intensity = layer.animation.autoAnimateIntensity / 100;
-      const preset = layer.animation.autoAnimatePreset;
-      const duration = 1.5 + (1 - intensity) * 2;
-
-      if (preset === 'float') {
-        gsap.to(el, { y: `-=${8 * intensity}`, repeat: -1, yoyo: true, duration, ease: 'sine.inOut' });
-      } else if (preset === 'pulse') {
-        gsap.to(el, { scale: 1 + 0.05 * intensity, repeat: -1, yoyo: true, duration: duration * 0.7, ease: 'power2.inOut' });
-      } else if (preset === 'wiggle') {
-        gsap.to(el, { rotation: 3 * intensity, repeat: -1, yoyo: true, duration: 0.2 + (1 - intensity) * 0.4, ease: 'sine.inOut' });
-      } else if (preset === 'breathe') {
-        gsap.to(el, { scale: 1 + 0.03 * intensity, opacity: 0.9 + 0.1 * (1 - intensity), repeat: -1, yoyo: true, duration: duration * 1.2, ease: 'sine.inOut' });
-      } else if (preset === 'bounce') {
-        gsap.to(el, { y: `-=${12 * intensity}`, repeat: -1, yoyo: true, duration: duration * 0.5, ease: 'power2.out' });
-      }
-    }
-
-    return () => gsap.killTweensOf(el);
-  }, [layer.animation, layer.visible]);
+  useLayerTimeSync(layer, ref);
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -139,7 +189,10 @@ function TextLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; isSel
 
 // ─── Overlay Layer Renderer ──────────────────────────────────────────────────
 
-function OverlayLayerRenderer({ layer }: { layer: UniversalLayer }) {
+function OverlayRenderer({ layer }: { layer: UniversalLayer }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayerTimeSync(layer, ref);
+
   if (!layer.visible) return null;
   const d = layer.overlayData!;
   const alpha = d.intensity / 100;
@@ -167,12 +220,15 @@ function OverlayLayerRenderer({ layer }: { layer: UniversalLayer }) {
     }
   };
 
-  return <div data-layer-id={layer.id} style={getStyle()} />;
+  return <div ref={ref} data-layer-id={layer.id} style={getStyle()} />;
 }
 
 // ─── Shadow Guard Renderer ───────────────────────────────────────────────────
 
 function ShadowGuardRenderer({ layer }: { layer: UniversalLayer }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayerTimeSync(layer, ref);
+
   if (!layer.visible) return null;
   const d = layer.shadowGuardData!;
   const alpha = d.intensity / 100;
@@ -197,12 +253,15 @@ function ShadowGuardRenderer({ layer }: { layer: UniversalLayer }) {
     }
   };
 
-  return <div data-layer-id={layer.id} style={getStyle()} />;
+  return <div ref={ref} data-layer-id={layer.id} style={getStyle()} />;
 }
 
 // ─── Text Box Renderer ───────────────────────────────────────────────────────
 
 function TextBoxRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelected: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayerTimeSync(layer, ref);
+
   if (!layer.visible) return null;
   const d = layer.textBoxData!;
   const t = layer.transform;
@@ -236,6 +295,7 @@ function TextBoxRenderer({ layer, isSelected }: { layer: UniversalLayer; isSelec
 
   return (
     <div
+      ref={ref}
       data-layer-id={layer.id}
       data-gizmo-target={isSelected ? 'active' : undefined}
       style={getBoxStyle()}
@@ -308,6 +368,8 @@ function ElementLayerRenderer({ layer, isSelected }: { layer: UniversalLayer; is
   const d = layer.elementData!;
   const t = layer.transform;
   const containerRef = useRef<HTMLDivElement>(null);
+  useLayerTimeSync(layer, containerRef);
+  
   const { isPlaying } = useEditorStore();
   const driversRef = useRef<Map<string, NoiseDriver>>(new Map());
 
@@ -451,7 +513,7 @@ export function UniversalCanvasPreview() {
           case 'text':
             return <TextLayerRenderer key={layer.id} layer={layer} isSelected={isSelected} />;
           case 'overlay':
-            return <OverlayLayerRenderer key={layer.id} layer={layer} />;
+            return <OverlayRenderer key={layer.id} layer={layer} />;
           case 'shadow-guard':
             return <ShadowGuardRenderer key={layer.id} layer={layer} />;
           case 'text-box':

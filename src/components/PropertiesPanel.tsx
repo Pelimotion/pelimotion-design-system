@@ -281,15 +281,18 @@ function AnimationSection({ layer }: { layer: UniversalLayer }) {
       <PropRow label="Entrada" tooltip="Como a camada aparece na cena">
         <SelectInput value={anim.entryPreset} onChange={(v) => update({ entryPreset: v as AnimationEntryPreset })} options={ENTRY_PRESETS} />
       </PropRow>
-      {anim.entryPreset !== 'none' && (
-        <SliderRow label="Duração" value={anim.entryDuration * 100} onChange={(v) => update({ entryDuration: v / 100 })} min={10} max={300} unit="%" tooltip="Duração da animação de entrada (10% = 0.1s, 100% = 1s)" />
-      )}
       <PropRow label="Saída" tooltip="Como a camada desaparece da cena">
         <SelectInput value={anim.exitPreset} onChange={(v) => update({ exitPreset: v as AnimationExitPreset })} options={EXIT_PRESETS} />
       </PropRow>
-      {anim.exitPreset !== 'none' && (
-        <SliderRow label="Duração" value={anim.exitDuration * 100} onChange={(v) => update({ exitDuration: v / 100 })} min={10} max={300} unit="%" />
-      )}
+      
+      <AdvancedSection>
+        {anim.entryPreset !== 'none' && (
+          <SliderRow label="Duração Entrada" value={anim.entryDuration * 100} onChange={(v) => update({ entryDuration: v / 100 })} min={10} max={300} unit="%" tooltip="Duração da animação de entrada" />
+        )}
+        {anim.exitPreset !== 'none' && (
+          <SliderRow label="Duração Saída" value={anim.exitDuration * 100} onChange={(v) => update({ exitDuration: v / 100 })} min={10} max={300} unit="%" />
+        )}
+      </AdvancedSection>
 
       {/* Auto-Animate */}
       <div style={{ marginTop: 10, padding: '10px', background: 'hsla(271,76%,53%,0.05)', borderRadius: 8, border: '1px solid hsla(271,76%,53%,0.15)' }}>
@@ -594,6 +597,15 @@ function ElementProperties({ layer }: { layer: UniversalLayer }) {
 
   return (
     <SectionHeader title="Elemento" icon={<Layers size={12} />}>
+      <PropRow label="Forma">
+        <SelectInput value={d.shapeType} onChange={(v) => update({ shapeType: v as ElementLayerData['shapeType'] })}
+          options={[
+            { value: 'circle', label: 'Círculo' }, { value: 'square', label: 'Quadrado' },
+            { value: 'star', label: 'Estrela' }, { value: 'hexagon', label: 'Hexágono' },
+            { value: 'spirograph', label: 'Espirógrafo' }, { value: 'orbital', label: 'Orbital' },
+            { value: 'mesh', label: 'Rede/Mesh' }, { value: 'concentric', label: 'Concêntrico' },
+          ]} />
+      </PropRow>
       <PropRow label="Cor">
         <div style={{ display: 'flex', gap: 6 }}>
           {d.colors.map((c, i) => (
@@ -880,18 +892,18 @@ export function PropertiesPanel() {
       </div>
 
       <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {/* Shared: Transform */}
+        <TransformSection layer={layer} />
+
+        {/* Shared: Animation */}
+        <AnimationSection layer={layer} />
+
         {/* Type-specific properties */}
         {layer.type === 'text' && <TextProperties layer={layer} />}
         {layer.type === 'element' && <ElementProperties layer={layer} />}
         {layer.type === 'overlay' && <OverlayProperties layer={layer} />}
         {layer.type === 'shadow-guard' && <ShadowGuardProperties layer={layer} />}
         {layer.type === 'text-box' && <TextBoxProperties layer={layer} />}
-
-        {/* Shared: Transform */}
-        <TransformSection layer={layer} />
-
-        {/* Shared: Animation */}
-        <AnimationSection layer={layer} />
       </div>
     </div>
   );

@@ -226,6 +226,8 @@ export interface UniversalLayer {
   visible: boolean;
   locked: boolean;
   zIndex: number;
+  timeIn: number;         // seconds
+  duration: number;       // seconds
   transform: UniversalTransform;
   animation: UniversalAnimation;
 
@@ -270,6 +272,8 @@ export function createTextLayer(overrides?: Partial<UniversalLayer> & { textData
     visible: true,
     locked: false,
     zIndex: 0,
+    timeIn: 0,
+    duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
     animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeUp', autoAnimatePreset: 'float' },
     textData: {
@@ -310,6 +314,8 @@ export function createElementLayer(overrides?: Partial<UniversalLayer> & { eleme
     visible: true,
     locked: false,
     zIndex: 0,
+    timeIn: 0,
+    duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
     animation: { ...DEFAULT_ANIMATION, autoAnimatePreset: 'wiggle' },
     elementData: {
@@ -336,6 +342,8 @@ export function createOverlayLayer(style: OverlayStyle = 'gradient-bottom'): Uni
     visible: true,
     locked: false,
     zIndex: 0,
+    timeIn: 0,
+    duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
     animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', exitPreset: 'fadeOut', autoAnimatePreset: 'pulse' },
     overlayData: {
@@ -354,6 +362,8 @@ export function createShadowGuardLayer(style: ShadowGuardStyle = 'text-protectio
     visible: true,
     locked: false,
     zIndex: 0,
+    timeIn: 0,
+    duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
     animation: { ...DEFAULT_ANIMATION, entryPreset: 'fadeIn', autoAnimatePreset: 'breathe' },
     shadowGuardData: {
@@ -373,6 +383,8 @@ export function createTextBoxLayer(style: TextBoxStyle = 'rounded-dark'): Univer
     visible: true,
     locked: false,
     zIndex: 0,
+    timeIn: 0,
+    duration: 15,
     transform: { ...DEFAULT_TRANSFORM },
     animation: { ...DEFAULT_ANIMATION },
     textBoxData: {

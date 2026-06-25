@@ -76,12 +76,15 @@ export function GlobalGizmo() {
       const scaleY = canvasBounds.height / canvasViewport.offsetHeight;
 
       const rotation = (gsap.getProperty(target, 'rotation') as number) || 0;
+      const elScaleX = (gsap.getProperty(target, 'scaleX') as number) || 1;
+      const elScaleY = (gsap.getProperty(target, 'scaleY') as number) || 1;
 
       const centerX = ((targetBounds.left - canvasBounds.left) + targetBounds.width / 2) / scaleX;
       const centerY = ((targetBounds.top - canvasBounds.top) + targetBounds.height / 2) / scaleY;
 
-      const gizmoW = targetBounds.width / scaleX;
-      const gizmoH = targetBounds.height / scaleY;
+      // Use offsetWidth/offsetHeight to avoid rotation inflation
+      const gizmoW = target.offsetWidth * elScaleX;
+      const gizmoH = target.offsetHeight * elScaleY;
 
       gsap.set(containerRef.current, {
         x: centerX,

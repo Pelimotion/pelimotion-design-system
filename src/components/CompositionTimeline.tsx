@@ -163,7 +163,19 @@ export function CompositionTimeline() {
           updateAudioTrack(dragging.id, { duration: newDur });
        }
     } else if (dragging.type === 'move' || dragging.type === 'trim-left' || dragging.type === 'trim-right') {
-       // Visual layers (UniversalLayer) don't support trimming yet.
+       const layer = layers.find(l => l.id === dragging.id);
+       if (!layer) return;
+
+       if (dragging.type === 'move') {
+          updateLayer(dragging.id, { timeIn: Math.min(time, exportConfig.duration - layer.duration) });
+       } else if (dragging.type === 'trim-left') {
+          const endTime = layer.timeIn + layer.duration;
+          const newStart = Math.min(time, endTime - 0.1);
+          updateLayer(dragging.id, { timeIn: newStart, duration: endTime - newStart });
+       } else if (dragging.type === 'trim-right') {
+          const newDur = Math.max(0.1, time - layer.timeIn);
+          updateLayer(dragging.id, { duration: newDur });
+       }
     }
   }, [dragging, exportConfig, layers, audioTracks, updateExportConfig, updateLayer, updateAudioTrack, seek]);
 
@@ -838,16 +850,27 @@ export function CompositionTimeline() {
                 <div style={{ ...trackStyle, marginTop: 0, height: 16 }}>
                   <div 
                     className="timeline-track-block"
-                    style={blockStyle(0, exportConfig.duration, 'rgba(0, 150, 255, 0.18)')}
+                    style={blockStyle(layer.timeIn || 0, layer.duration || exportConfig.duration, 'rgba(0, 150, 255, 0.18)')}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id });
                       setSelectedLayerId(layer.id);
                     }}
+                    onPointerDown={(e) => handlePointerDown(e, layer.id, 'move')}
                   >
-                    <span style={{ margin: '0 auto', fontSize: '0.55rem', color: 'white', opacity: 0.7 }}>
+                    <div className={getHandleClass(layer.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-left')}>
+                       {dragging?.id === layer.id && dragging?.type === 'trim-left' && (
+                         <div style={tooltipStyle}>{(layer.timeIn || 0).toFixed(2)}s</div>
+                       )}
+                    </div>
+                    <span style={{ margin: '0 auto', fontSize: '0.55rem', color: 'white', opacity: 0.7, pointerEvents: 'none' }}>
                       {layer.name}
                     </span>
+                    <div className={getHandleClass(layer.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, layer.id, 'trim-right')}>
+                       {dragging?.id === layer.id && dragging?.type === 'trim-right' && (
+                         <div style={tooltipStyle}>{((layer.timeIn || 0) + (layer.duration || exportConfig.duration)).toFixed(2)}s</div>
+                       )}
+                    </div>
                   </div>
                 </div>
               </div>
