@@ -1,0 +1,7 @@
+{
+  "suiteId": "s5_email_gate",
+  "timestamp": "2026-06-25T12:01:14.664Z",
+  "passed": true,
+  "findings": [],
+  "email_gate": "present"
+}

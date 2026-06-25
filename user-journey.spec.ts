@@ -235,12 +235,15 @@ test.describe('Suite 2 — Fluxo principal: criar elemento + medir degradação'
     if (fpsValid && fpsAfter < 50)  findings.push(`PERFORMANCE CRÍTICA: FPS loaded (${fpsAfter}) abaixo do mínimo (50).`);
     if (!elementAdded)  findings.push('UX: Nenhum botão de adicionar elemento encontrado. Verificar seletores.');
 
+    // fpsDelta inválido quando fpsAfter=0 (HMR/nav interference) — salvar 0 em vez do delta negativo
+    const safeFpsDelta = fpsValid ? fpsDelta : 0;
+
     writePartial('s2_fps_loaded', {
       passed: findings.length === 0,
       findings,
       fpsBefore,
       fpsAfter,
-      fpsDelta,
+      fpsDelta: safeFpsDelta,
     });
 
     // FPS 0 significa que HMR interferiu com a medição — não falhar, apenas registrar

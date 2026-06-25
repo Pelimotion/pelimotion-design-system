@@ -1,7 +1,6 @@
 {
-  "sessionsRun": 119,
+  "sessionsRun": 120,
   "historicalInsights": [
-    "S100 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=7/10.",
     "S101 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.",
     "S102 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=504KB. p2_done=8/10.",
     "S103 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=505KB. p2_done=8/11.",
@@ -20,7 +19,8 @@
     "S116 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.",
     "S117 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.",
     "S118 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=509KB. p2_done=11/11.",
-    "S119 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=510KB. p2_done=11/11."
+    "S119 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=510KB. p2_done=11/11.",
+    "S120 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=510KB. p2_done=11/11."
   ],
   "resolvedBugs": [
     "Added missing theme custom properties: --color-bg-base and --radius-full to prevent inputs, panels and timeline borders from rendering with incorrect fallback color definitions.",
@@ -68,25 +68,6 @@
     }
   ],
   "sessionLogs": [
-    {
-      "session": 71,
-      "date": "2026-06-25T04:41:02.597Z",
-      "errors": 0,
-      "uxCritical": 0,
-      "failedSuites": 0,
-      "fps": 60,
-      "fpsDelta": 0,
-      "bundleKB": 503,
-      "p2Done": 5,
-      "loopDetected": false,
-      "systemMode": "FEATURE_DISCOVERY",
-      "p0Status": {
-        "watermark": "present",
-        "emailGate": "present",
-        "emptyState": "present",
-        "glossary": "clean"
-      }
-    },
     {
       "session": 72,
       "date": "2026-06-25T04:51:02.344Z",
@@ -998,6 +979,25 @@
         "emptyState": "present",
         "glossary": "clean"
       }
+    },
+    {
+      "session": 120,
+      "date": "2026-06-25T12:01:21.314Z",
+      "errors": 0,
+      "uxCritical": 0,
+      "failedSuites": 0,
+      "fps": 60,
+      "fpsDelta": 0,
+      "bundleKB": 510,
+      "p2Done": 11,
+      "loopDetected": false,
+      "systemMode": "NORMAL",
+      "p0Status": {
+        "watermark": "present",
+        "emailGate": "present",
+        "emptyState": "present",
+        "glossary": "clean"
+      }
     }
   ],
   "lastModuleTouched": null,
@@ -1009,11 +1009,6 @@
     "glossary": "clean"
   },
   "bundleHistory": [
-    {
-      "session": 100,
-      "kb": 504,
-      "date": "2026-06-25"
-    },
     {
       "session": 101,
       "kb": 504,
@@ -1108,14 +1103,19 @@
       "session": 119,
       "kb": 510,
       "date": "2026-06-25"
+    },
+    {
+      "session": 120,
+      "kb": 510,
+      "date": "2026-06-25"
     }
   ],
   "featureFlags": {
     "skipVisualBrowserAgent": false
   },
   "activeRun": {
-    "status": "running",
-    "phase": "Executando Testes E2E (Fase 3)",
-    "updatedAt": "2026-06-25T12:00:13.663Z"
+    "status": "idle",
+    "phase": "Aguardando próxima rodada...",
+    "updatedAt": "2026-06-25T12:01:21.357Z"
   }
 }

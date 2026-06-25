@@ -1,6 +1,6 @@
 # 🎬 Pelimotion — Orquestrador V7 (Anti-Loop + Feature Discovery)
 
-*Gerado: 25/06/2026, 08:56:47 | Sessão #119 | Commit: `d31bbc3` | Modo: **NORMAL***
+*Gerado: 25/06/2026, 09:01:21 | Sessão #120 | Commit: `e10c8f8` | Modo: **NORMAL***
 *Branch: `main` | TS/TSX: 63 arquivos | E2E: 15 testes*
 
 > **AGENTE EXECUTOR:** Leia ORCHESTRATOR_PROMPT.md v6 antes de agir. Siga o modo NORMAL.
@@ -52,26 +52,27 @@
 
 | Sessão | KB | Gzip (est.) |
 |--------|----|--------------|
-| S115 (2026-06-25) | 508KB | ~157KB |
 | S116 (2026-06-25) | 508KB | ~157KB |
 | S117 (2026-06-25) | 508KB | ~157KB |
 | S118 (2026-06-25) | 509KB | ~158KB |
 | S119 (2026-06-25) | 510KB | ~158KB |
+| S120 (2026-06-25) | 510KB | ~158KB |
 
 ## 6. 🧠 Memória (últimas 7 sessões)
 
-- S113 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.
 - S114 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.
 - S115 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.
 - S116 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.
 - S117 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=508KB. p2_done=11/11.
 - S118 [FEATURE_DISCOVERY]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=1. bundle=509KB. p2_done=11/11.
 - S119 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=510KB. p2_done=11/11.
+- S120 [NORMAL]: fps=60/60 delta=0. P0: wm=present eg=present es=present gl=clean. glossary_violations=0. failed_suites=0. bundle=510KB. p2_done=11/11.
 
 ## 7. 📈 Sessões Recentes
 
 | # | Data | Modo | Build | Falhas | FPS | Bundle | P1 Done |
 |---|------|------|-------|--------|-----|--------|---------|
+| S120 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 510KB | 11/11 |
 | S119 | 2026-06-25 | NORMAL | ✅ | 0 | 60 | 510KB | 11/11 |
 | S118 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 1 | 60 | 509KB | 11/11 |
 | S117 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 508KB | 11/11 |
@@ -79,7 +80,6 @@
 | S115 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 508KB | 11/11 |
 | S114 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 508KB | 11/11 |
 | S113 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 508KB | 11/11 |
-| S112 | 2026-06-25 | FEATURE_DISCOVERY | ✅ | 0 | 60 | 508KB | 11/11 |
 
 ## 8. 🎯 Recomendação para Próxima Sessão
 
@@ -112,4 +112,4 @@ Exportações client-side pesadas travam a main thread da interface gráfica.
 
 
 ---
-*Orchestrator V7 | Modo: NORMAL | Loop: ✅ | 25/06/2026, 08:56:47*
+*Orchestrator V7 | Modo: NORMAL | Loop: ✅ | 25/06/2026, 09:01:21*
