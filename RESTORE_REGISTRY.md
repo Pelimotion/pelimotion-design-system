@@ -126,3 +126,4 @@ Este arquivo registra todos os pontos de restauração criados pelos agentes ou 
 | **restore-2026-06-25T03-25-02-185Z** | `backup-branch-2026-06-25T03-25-02-185Z` | `c69c635` | 25/06/2026, 00:25:02 | Fase P1 concluida - pronto para iniciar P2 |
 | **restore-2026-06-25T03-30-30-411Z** | `backup-branch-2026-06-25T03-30-30-411Z` | `e9cfa0f` | 25/06/2026, 00:30:30 | Antes de iniciar fase P2 do orquestrador |
 | **restore-2026-06-25T10-22-30-569Z** | `backup-branch-2026-06-25T10-22-30-569Z` | `e5f45ef` | 25/06/2026, 07:22:30 | Antes de implementar as features P2 pendentes |
+| **restore-2026-06-25T11-01-06-974Z** | `backup-branch-2026-06-25T11-01-06-974Z` | `40f3573` | 25/06/2026, 08:01:07 | v8.0-stable: P2 concluída 11/11, 15 suites E2E, personas V8, canvas interaction |

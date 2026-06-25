@@ -1,7 +1,7 @@
 // timeline-needle-sync
 // timeline-simplified
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Layers, Plus, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Circle, Settings } from 'lucide-react';
+import { Layers, Plus, Trash2, Film, ChevronDown, ChevronRight, Play, Pause, SkipBack, Music, Volume2, VolumeX, Eye, EyeOff, Lock, Unlock, Magnet, Copy, Scissors, Settings } from 'lucide-react';
 import { formatTimecode, parseTimecode } from '@/utils/timecode';
 import { useEditorStore } from '@/store/useEditorStore';
 import { gsap } from 'gsap';
@@ -13,7 +13,6 @@ export function CompositionTimeline() {
     audioTracks,
     updateLayer,
     addAudioTrack,
-    removeAudioTrack,
     updateAudioTrack,
     localLibraryItems,
     exportConfig,
@@ -109,6 +108,7 @@ export function CompositionTimeline() {
     }
   };
 
+  /*
   const toggleTrackColor = (id: string, type: 'audio' | 'comp', currentColor?: string) => {
     const COLORS = ['#ff4b4b', '#fca130', '#f9ed32', '#21ce99', '#14a9ff', '#b146c2', 'transparent'];
     const idx = currentColor ? COLORS.indexOf(currentColor) : -1;
@@ -120,6 +120,7 @@ export function CompositionTimeline() {
       // UniversalLayers don't have colorTag currently. Do nothing for now to prevent error.
     }
   };
+  */
 
   // --- Pointer Event Handlers ---
   const handlePointerDown = (e: React.PointerEvent, id: string, type: 'move' | 'trim-left' | 'trim-right', isBg?: boolean, isAudio?: boolean) => {
@@ -852,16 +853,16 @@ export function CompositionTimeline() {
             Nenhum elemento na Timeline.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 8 }}>
             <div 
-              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+              style={{ fontSize: '0.6rem', color: 'var(--color-text-ghost)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none', paddingBottom: 4 }}
               onClick={() => setIsCompExpanded(!isCompExpanded)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                {isCompExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                Elementos Visuais ({layers.length})
+                {isCompExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
+                <span>VISUAL ({layers.length})</span>
               </div>
-              <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
+              <div style={{ display: 'flex', gap: 4 }}>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -871,7 +872,7 @@ export function CompositionTimeline() {
                   style={{ background: 'none', border: 'none', color: (layers.length > 0 && layers.every(l => l.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
                   title="Bloquear/Desbloquear Todas"
                 >
-                  <Lock size={12} />
+                  <Lock size={10} />
                 </button>
                 <button 
                   onClick={(e) => {
@@ -879,67 +880,69 @@ export function CompositionTimeline() {
                     const allHidden = layers.length > 0 && layers.every(l => !l.visible);
                     useEditorStore.setState(state => ({ layers: state.layers.map(l => ({ ...l, visible: allHidden })) }));
                   }} 
-                  style={{ background: 'none', border: 'none', color: (layers.length > 0 && layers.every(l => !l.visible)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
                   title="Mostrar/Ocultar Todas"
                 >
-                  <Eye size={12} />
+                  <Eye size={10} />
                 </button>
               </div>
             </div>
-            {isCompExpanded && [...layers].reverse().map((layer, index) => (
+            {isCompExpanded && [...layers].reverse().map((layer) => (
               <div 
-                key={layer.id} 
+                key={layer.id}
                 onClick={() => { setSelectedLayerId(layer.id); setActiveAudioTrackId(null); }}
                 style={{ 
-                  display: 'flex', flexDirection: 'column', gap: 2,
-                  background: selectedLayerId === layer.id ? 'var(--color-surface-glass)' : 'transparent',
-                  padding: '4px 6px', borderRadius: 4, margin: '0 -6px',
-                  border: selectedLayerId === layer.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
-                  cursor: 'pointer'
+                  display: 'grid',
+                  gridTemplateColumns: '160px 1fr',
+                  alignItems: 'center',
+                  gap: 6,
+                  height: 22,
+                  background: selectedLayerId === layer.id ? 'hsla(191,100%,50%,0.07)' : 'transparent',
+                  borderRadius: 4,
+                  paddingLeft: 4,
+                  border: selectedLayerId === layer.id ? '1px solid hsla(191,100%,50%,0.2)' : '1px solid transparent',
+                  cursor: 'pointer',
+                  userSelect: 'none',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span>{index + 1}:</span>
-                    <input
-                      value={layer.name}
-                      onChange={(e) => updateLayer(layer.id, { name: e.target.value })}
-                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120 }}
-                      onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
-                      onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    <button 
-                      onClick={() => updateLayer(layer.id, { locked: !layer.locked })} 
-                      style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={layer.locked ? "Desbloquear elemento" : "Bloquear elemento"}
-                    >
-                      {layer.locked ? <Lock size={12} /> : <Unlock size={12} />}
-                    </button>
-                    <button 
-                      onClick={() => updateLayer(layer.id, { visible: !layer.visible })} 
-                      style={{ background: 'none', border: 'none', color: !layer.visible ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={layer.visible ? "Ocultar elemento" : "Mostrar elemento"}
-                    >
-                      {layer.visible ? <Eye size={12} /> : <EyeOff size={12} />}
-                    </button>
-                  </div>
+                {/* Track label row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden' }}>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); updateLayer(layer.id, { locked: !layer.locked }); }} 
+                    style={{ background: 'none', border: 'none', color: layer.locked ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: '0 2px', flexShrink: 0, display: 'flex' }}
+                    title={layer.locked ? 'Desbloquear' : 'Bloquear'}
+                  >
+                    {layer.locked ? <Lock size={10} /> : <Unlock size={10} />}
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); updateLayer(layer.id, { visible: !layer.visible }); }} 
+                    style={{ background: 'none', border: 'none', color: !layer.visible ? 'var(--color-text-ghost)' : 'var(--color-text-secondary)', cursor: 'pointer', padding: '0 2px', flexShrink: 0, display: 'flex', opacity: layer.visible ? 1 : 0.4 }}
+                    title={layer.visible ? 'Ocultar' : 'Mostrar'}
+                  >
+                    {layer.visible ? <Eye size={10} /> : <EyeOff size={10} />}
+                  </button>
+                  <input
+                    value={layer.name}
+                    onChange={(e) => { e.stopPropagation(); updateLayer(layer.id, { name: e.target.value }); }}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ background: 'transparent', border: 'none', color: selectedLayerId === layer.id ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: '0.6rem', outline: 'none', cursor: 'text', width: '100%', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                  />
                 </div>
-                <div style={trackStyle}>
-                   <div 
-                      className="timeline-track-block"
-                      style={blockStyle(0, exportConfig.duration, 'rgba(0, 150, 255, 0.2)')}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id });
-                        setSelectedLayerId(layer.id);
-                      }}
-                   >
-                     <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>
-                       0.0s - {(exportConfig.duration).toFixed(1)}s
-                     </span>
-                   </div>
+                {/* Clip track */}
+                <div style={{ ...trackStyle, marginTop: 0, height: 18 }}>
+                  <div 
+                    className="timeline-track-block"
+                    style={blockStyle(0, exportConfig.duration, 'rgba(0, 150, 255, 0.18)')}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setContextMenu({ x: e.clientX, y: e.clientY, layerId: layer.id });
+                      setSelectedLayerId(layer.id);
+                    }}
+                  >
+                    <span style={{ margin: '0 auto', fontSize: '0.55rem', color: 'white', opacity: 0.7 }}>
+                      {layer.name}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -948,16 +951,16 @@ export function CompositionTimeline() {
 
         {/* Audio Tracks */}
         {audioTracks.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 24, borderTop: '1px solid var(--color-surface-border)', paddingTop: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 16, borderTop: '1px solid var(--color-surface-border)', paddingTop: 10 }}>
             <div 
-              style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+              style={{ fontSize: '0.6rem', color: 'var(--color-text-ghost)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none', paddingBottom: 4 }}
               onClick={() => setIsAudioExpanded(!isAudioExpanded)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                {isAudioExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                Faixas de Áudio ({audioTracks.length})
+                {isAudioExpanded ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
+                <span>ÁUDIO ({audioTracks.length})</span>
               </div>
-              <div style={{ display: 'flex', gap: 8, marginRight: 8 }}>
+              <div style={{ display: 'flex', gap: 4 }}>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -967,7 +970,7 @@ export function CompositionTimeline() {
                   style={{ background: 'none', border: 'none', color: (audioTracks.length > 0 && audioTracks.every(t => t.locked)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
                   title="Bloquear/Desbloquear Todas"
                 >
-                  <Lock size={12} />
+                  <Lock size={10} />
                 </button>
                 <button 
                   onClick={(e) => {
@@ -975,131 +978,96 @@ export function CompositionTimeline() {
                     const allMuted = audioTracks.length > 0 && audioTracks.every(t => t.muted);
                     useEditorStore.setState(state => ({ audioTracks: state.audioTracks.map(t => ({ ...t, muted: !allMuted })) }));
                   }} 
-                  style={{ background: 'none', border: 'none', color: (audioTracks.length > 0 && audioTracks.every(t => t.muted)) ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2 }}
+                  style={{ background: 'none', border: 'none', color: (audioTracks.length > 0 && audioTracks.every(t => t.muted)) ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: 2 }}
                   title="Mutar/Desmutar Todas"
                 >
-                  <VolumeX size={12} />
+                  <VolumeX size={10} />
                 </button>
               </div>
             </div>
             {isAudioExpanded && audioTracks.map((track) => (
               <div 
-                key={track.id} 
+                key={track.id}
                 onClick={() => { setActiveAudioTrackId(track.id); setSelectedLayerId(null); }}
                 style={{ 
-                  display: 'flex', flexDirection: 'column', gap: 2,
-                  background: activeAudioTrackId === track.id ? 'var(--color-surface-glass)' : 'transparent',
-                  padding: '4px 6px', borderRadius: 4, margin: '0 -6px',
-                  border: activeAudioTrackId === track.id ? '1px solid var(--color-surface-border)' : '1px solid transparent',
-                  cursor: 'pointer'
+                  display: 'grid',
+                  gridTemplateColumns: '160px 1fr',
+                  alignItems: 'center',
+                  gap: 6,
+                  height: 22,
+                  background: activeAudioTrackId === track.id ? 'hsla(157,100%,50%,0.07)' : 'transparent',
+                  borderRadius: 4,
+                  paddingLeft: 4,
+                  border: activeAudioTrackId === track.id ? '1px solid hsla(157,100%,50%,0.2)' : '1px solid transparent',
+                  cursor: 'pointer',
+                  userSelect: 'none',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', color: 'var(--color-text-secondary)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <input
-                      value={track.name}
-                      onChange={(e) => updateAudioTrack(track.id, { name: e.target.value })}
-                      style={{ background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', color: 'var(--color-text-primary)', fontSize: '0.65rem', outline: 'none', cursor: 'text', width: 120, userSelect: 'text' }}
-                      onFocus={(e) => { e.currentTarget.style.borderBottom = '1px dashed var(--color-accent)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
-                      onBlur={(e) => { e.currentTarget.style.borderBottom = '1px dashed transparent'; e.currentTarget.style.color = 'var(--color-text-primary)'; }}
-                    />
-                    <button 
-                      onClick={() => toggleTrackColor(track.id, 'audio', track.colorTag)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
-                      title="Mudar Cor da Faixa"
-                    >
-                      <Circle size={10} fill={track.colorTag || 'transparent'} color={track.colorTag || 'var(--color-text-ghost)'} />
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    <button 
-                      onClick={() => updateAudioTrack(track.id, { locked: !track.locked })} 
-                      style={{ background: 'none', border: 'none', color: track.locked ? 'var(--color-error)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={track.locked ? "Desbloquear" : "Bloquear"}
-                    >
-                      {track.locked ? <Lock size={12} /> : <Unlock size={12} />}
-                    </button>
-                    <button 
-                      onClick={() => updateAudioTrack(track.id, { muted: !track.muted })} 
-                      style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-text-ghost)' : 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title={track.muted ? "Desmutar" : "Mutar"}
-                    >
-                      {track.muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-                    </button>
-                    <button 
-                      onClick={() => updateAudioTrack(track.id, { solo: !track.solo })} 
-                      style={{ 
-                        background: track.solo ? 'var(--color-warning)' : 'transparent', 
-                        border: '1px solid ' + (track.solo ? 'var(--color-warning)' : 'var(--color-text-ghost)'), 
-                        borderRadius: 3,
-                        color: track.solo ? '#000' : 'var(--color-text-ghost)', 
-                        cursor: 'pointer', padding: '0 4px', fontSize: '0.55rem', fontWeight: 800, marginLeft: 4 
-                      }}
-                      title={track.solo ? "Remover Solo" : "Solo"}
-                    >
-                      S
-                    </button>
-                    <button 
-                      onClick={() => {
-                        if (currentTime > track.startTime && currentTime < track.startTime + track.duration) {
-                          const splitTime = currentTime;
-                          const newDuration1 = splitTime - track.startTime;
-                          const newDuration2 = (track.startTime + track.duration) - splitTime;
-                          updateAudioTrack(track.id, { duration: newDuration1 });
-                          const duplicate = { ...track, id: crypto.randomUUID(), startTime: splitTime, duration: newDuration2 };
-                          addAudioTrack(duplicate);
-                        }
-                      }} 
-                      style={{ background: 'none', border: 'none', color: (currentTime > track.startTime && currentTime < track.startTime + track.duration) ? 'var(--color-text-primary)' : 'var(--color-surface-border)', cursor: (currentTime > track.startTime && currentTime < track.startTime + track.duration) ? 'pointer' : 'default', padding: 2, marginLeft: 4 }}
-                      title="Cortar na Agulha (Split)"
-                    >
-                      <Scissors size={10} />
-                    </button>
-                    <button 
-                      onClick={() => {
-                        const duplicate = { ...track, id: crypto.randomUUID(), startTime: Math.min(track.startTime + 0.5, exportConfig.duration) };
-                        addAudioTrack(duplicate);
-                      }} 
-                      style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', padding: 2, marginLeft: 4 }}
-                      title="Duplicar"
-                    >
-                      <Copy size={10} />
-                    </button>
-                    <button onClick={() => removeAudioTrack(track.id)} style={{ background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', padding: 2, marginLeft: 8 }}>
-                      <Trash2 size={10} />
-                    </button>
-                  </div>
+                {/* Audio track label */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 3, overflow: 'hidden' }}>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); updateAudioTrack(track.id, { locked: !track.locked }); }} 
+                    style={{ background: 'none', border: 'none', color: track.locked ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: '0 2px', flexShrink: 0, display: 'flex' }}
+                    title={track.locked ? 'Desbloquear' : 'Bloquear'}
+                  >
+                    {track.locked ? <Lock size={10} /> : <Unlock size={10} />}
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); updateAudioTrack(track.id, { muted: !track.muted }); }} 
+                    style={{ background: 'none', border: 'none', color: track.muted ? 'var(--color-error)' : 'var(--color-text-ghost)', cursor: 'pointer', padding: '0 2px', flexShrink: 0, display: 'flex' }}
+                    title={track.muted ? 'Desmutar' : 'Mutar'}
+                  >
+                    {track.muted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); updateAudioTrack(track.id, { solo: !track.solo }); }} 
+                    style={{ 
+                      background: track.solo ? 'var(--color-warning)' : 'transparent', 
+                      border: '1px solid ' + (track.solo ? 'var(--color-warning)' : 'transparent'), 
+                      borderRadius: 2,
+                      color: track.solo ? '#000' : 'var(--color-text-ghost)', 
+                      cursor: 'pointer', padding: '0 3px', fontSize: '0.5rem', fontWeight: 800, flexShrink: 0
+                    }}
+                    title={track.solo ? 'Remover Solo' : 'Solo'}
+                  >
+                    S
+                  </button>
+                  <input
+                    value={track.name}
+                    onChange={(e) => { e.stopPropagation(); updateAudioTrack(track.id, { name: e.target.value }); }}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ background: 'transparent', border: 'none', color: activeAudioTrackId === track.id ? 'hsla(157,100%,60%,1)' : 'var(--color-text-ghost)', fontSize: '0.6rem', outline: 'none', cursor: 'text', width: '100%', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                  />
                 </div>
-                <div style={trackStyle}>
-                   <div 
-                      className="timeline-track-block"
-                      style={{
-                        ...blockStyle(track.startTime, track.duration, 'rgba(0, 255, 100, 0.2)'),
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 10 L2 14 M6 6 L6 16 M10 8 L10 12 M14 4 L14 18 M18 10 L18 14' stroke='rgba(0,255,100,0.4)' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'repeat-x',
-                        backgroundPosition: 'center'
-                      }}
-                      onPointerDown={(e) => handlePointerDown(e, track.id, 'move', false, true)}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        setContextMenu({ x: e.clientX, y: e.clientY, layerId: track.id, isAudio: true });
-                        setActiveAudioTrackId(track.id);
-                      }}
-                   >
-                     <div className={getHandleClass(track.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-left', false, true)}>
-                        {dragging?.id === track.id && dragging?.type === 'trim-left' && (
-                          <div style={tooltipStyle}>{track.startTime.toFixed(2)}s</div>
-                        )}
-                     </div>
-                     <span style={{ margin: '0 auto', fontSize: '0.65rem', color: 'white', opacity: 0.8 }}>
-                       {track.startTime.toFixed(1)}s - {(track.startTime + track.duration).toFixed(1)}s
-                     </span>
-                     <div className={getHandleClass(track.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-right', false, true)}>
-                        {dragging?.id === track.id && dragging?.type === 'trim-right' && (
-                          <div style={tooltipStyle}>{(track.startTime + track.duration).toFixed(2)}s</div>
-                        )}
-                     </div>
-                   </div>
+                {/* Audio clip track */}
+                <div style={{ ...trackStyle, marginTop: 0, height: 18 }}>
+                  <div 
+                    className="timeline-track-block"
+                    style={{
+                      ...blockStyle(track.startTime, track.duration, track.colorTag ? `${track.colorTag}33` : 'rgba(0, 255, 100, 0.15)'),
+                      borderColor: track.colorTag || 'hsla(157,100%,50%,0.5)',
+                    }}
+                    onPointerDown={(e) => handlePointerDown(e, track.id, 'move', false, true)}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setContextMenu({ x: e.clientX, y: e.clientY, layerId: track.id, isAudio: true });
+                      setActiveAudioTrackId(track.id);
+                    }}
+                  >
+                    <div className={getHandleClass(track.id, 'trim-left', 'left')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-left', false, true)}>
+                      {dragging?.id === track.id && dragging?.type === 'trim-left' && (
+                        <div style={tooltipStyle}>{track.startTime.toFixed(2)}s</div>
+                      )}
+                    </div>
+                    <span style={{ margin: '0 auto', fontSize: '0.55rem', color: 'white', opacity: 0.7 }}>
+                      {track.name.length > 16 ? track.name.slice(0, 14) + '…' : track.name}
+                    </span>
+                    <div className={getHandleClass(track.id, 'trim-right', 'right')} onPointerDown={(e) => handlePointerDown(e, track.id, 'trim-right', false, true)}>
+                      {dragging?.id === track.id && dragging?.type === 'trim-right' && (
+                        <div style={tooltipStyle}>{(track.startTime + track.duration).toFixed(2)}s</div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
