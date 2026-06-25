@@ -1,9 +1,9 @@
 {
   "suiteId": "s9_full_workflow",
-  "timestamp": "2026-06-25T11:32:45.580Z",
+  "timestamp": "2026-06-25T11:34:09.479Z",
   "passed": true,
   "findings": [],
-  "downloadName": "pelimotion-asset-2026-06-25T11-32-45-447Z.mov",
+  "downloadName": "pelimotion-asset-2026-06-25T11-34-09-355Z.mov",
   "downloadSize": 9631,
   "scaleGizmoTest": "passed"
 }
