@@ -1114,8 +1114,8 @@
     "skipVisualBrowserAgent": false
   },
   "activeRun": {
-    "status": "idle",
-    "phase": "Aguardando próxima rodada...",
-    "updatedAt": "2026-06-25T11:56:47.922Z"
+    "status": "running",
+    "phase": "Executando Testes E2E (Fase 3)",
+    "updatedAt": "2026-06-25T12:00:13.663Z"
   }
 }
