@@ -139,6 +139,10 @@ interface EditorState {
   exportQualityPreset: 'draft' | 'standard' | 'broadcast';
   setExportQualityPreset: (preset: 'draft' | 'standard' | 'broadcast') => void;
 
+  // ─── Canvas Preview Theme ─────────────────────────────────────────────────
+  canvasPreviewTheme: 'dark' | 'light' | 'transparent';
+  setCanvasPreviewTheme: (theme: 'dark' | 'light' | 'transparent') => void;
+
 
   // ─── Actions ─────────────────────────────────────────────────────────────
 
@@ -353,6 +357,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   // Export quality preset
   exportQualityPreset: 'standard',
+
+  // Canvas preview theme
+  canvasPreviewTheme: 'dark',
+
 
 
   // Default UI state
@@ -1056,6 +1064,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       exportConfig: { ...state.exportConfig, ...presetConfigs[preset] },
     }));
   },
+
+  setCanvasPreviewTheme: (theme) => set({ canvasPreviewTheme: theme }),
 
 }));
 

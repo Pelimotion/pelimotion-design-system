@@ -98,11 +98,12 @@ function PropRow({ label, children, tooltip }: { label: string; children: React.
 function NumInput({ value, onChange, min, max, step = 0.1, unit }: {
   value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number; unit?: string;
 }) {
+  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'hsla(0,0%,100%,0.05)', borderRadius: 6, border: '1px solid var(--color-surface-border)', overflow: 'hidden' }}>
       <input
         type="number"
-        value={parseFloat(value.toFixed(2))}
+        value={parseFloat(safeValue.toFixed(2))}
         onChange={(e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) onChange(v); }}
         min={min} max={max} step={step}
         style={{

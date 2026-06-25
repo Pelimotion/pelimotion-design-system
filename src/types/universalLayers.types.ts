@@ -262,6 +262,7 @@ export const DEFAULT_ANIMATION: UniversalAnimation = {
 };
 
 export function createTextLayer(overrides?: Partial<UniversalLayer> & { textData?: Partial<TextLayerData> }): UniversalLayer {
+  const { textData, ...restOverrides } = overrides || {};
   return {
     id: crypto.randomUUID(),
     name: 'Novo Texto',
@@ -294,13 +295,14 @@ export function createTextLayer(overrides?: Partial<UniversalLayer> & { textData
       staggerFrom: 'start',
       entryStagger: 0.03,
       exitStagger: 0.02,
-      ...overrides?.textData,
+      ...textData,
     },
-    ...overrides,
+    ...restOverrides,
   };
 }
 
 export function createElementLayer(overrides?: Partial<UniversalLayer> & { elementData?: Partial<ElementLayerData> }): UniversalLayer {
+  const { elementData, ...restOverrides } = overrides || {};
   return {
     id: crypto.randomUUID(),
     name: 'Novo Elemento',
@@ -320,9 +322,9 @@ export function createElementLayer(overrides?: Partial<UniversalLayer> & { eleme
       noiseFrequency: 0.5,
       noiseOctaves: 2,
       noisePersistence: 0.5,
-      ...overrides?.elementData,
+      ...elementData,
     },
-    ...overrides,
+    ...restOverrides,
   };
 }
 

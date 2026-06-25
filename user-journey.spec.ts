@@ -577,14 +577,14 @@ test.describe('Suite 9 — Fluxo Avançado de Criação, Edição, Gizmo e Expor
     // Limpar localStorage para garantir que o modal de e-mail gate sempre apareça no primeiro export
     await page.evaluate(() => localStorage.removeItem('pelimotion_has_exported'));
 
-    // 1. Criar camada de texto
+    // 1. Criar camada de texto (usando dropdown do TopBar para testar texto simples)
     console.log('📌 Criando camada de texto...');
-    const addElementBtn = page.locator('button:has-text("Adicionar Elemento")').first();
-    await addElementBtn.waitFor({ state: 'visible', timeout: 10000 });
-    await addElementBtn.click();
+    const topBarTextBtn = page.locator('#top-bar button:has-text("Texto")').first();
+    await topBarTextBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await topBarTextBtn.click();
     await page.waitForTimeout(500);
 
-    const textOption = page.locator('#layers-panel button:has-text("Texto")').first();
+    const textOption = page.locator('button:has-text("Texto Simples")').first();
     await textOption.waitFor({ state: 'visible' });
     await textOption.click();
     await page.waitForTimeout(1000);
@@ -595,6 +595,8 @@ test.describe('Suite 9 — Fluxo Avançado de Criação, Edição, Gizmo e Expor
 
     // 2. Criar camada de forma/SVG
     console.log('📌 Criando camada de forma/SVG...');
+    const addElementBtn = page.locator('button:has-text("Adicionar Elemento")').first();
+    await addElementBtn.waitFor({ state: 'visible', timeout: 10000 });
     await addElementBtn.click();
     await page.waitForTimeout(500);
 

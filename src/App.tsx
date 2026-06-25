@@ -49,6 +49,7 @@ function App() {
   const {
     exportConfig, camera, featureFlags, libraryModalOpen,
     setLibraryModalOpen, referenceImage, exportState,
+    canvasPreviewTheme,
   } = useEditorStore();
 
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -261,9 +262,20 @@ function App() {
           width: targetW, height: targetH,
           position: 'absolute', top: '50%', left: '50%',
           overflow: 'hidden',
-          backgroundColor: exportConfig.backgroundColor,
           boxShadow: '0 0 0 1px rgba(255,255,255,0.05), 0 24px 80px rgba(0,0,0,0.6)',
           containerType: 'inline-size',
+          ...(exportState.isExporting ? {
+            backgroundColor: exportConfig.backgroundColor,
+          } : canvasPreviewTheme === 'light' ? {
+            backgroundColor: '#ffffff',
+          } : canvasPreviewTheme === 'transparent' ? {
+            backgroundImage: 'linear-gradient(45deg, #181818 25%, transparent 25%), linear-gradient(-45deg, #181818 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #181818 75%), linear-gradient(-45deg, transparent 75%, #181818 75%)',
+            backgroundSize: '16px 16px',
+            backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+            backgroundColor: '#0f0f0f',
+          } : {
+            backgroundColor: '#050505',
+          })
         }}
       >
         {/* Background media */}

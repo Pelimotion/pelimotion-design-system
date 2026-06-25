@@ -1,9 +1,14 @@
 import { useEditorStore } from '@/store/useEditorStore';
-import { ZoomIn, ZoomOut, Maximize, RotateCcw, ScanLine } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize, RotateCcw, ScanLine, Sun, Moon, Grid } from 'lucide-react';
+
 
 export function ViewportControls() {
   const store = useEditorStore();
-  const { camera, setCamera, activeTypoLayerId, activeCompositionLayerId, updateTypoLayerTransform, updateCompositionLayer } = store;
+  const {
+    camera, setCamera, activeTypoLayerId, activeCompositionLayerId,
+    updateTypoLayerTransform, updateCompositionLayer,
+    canvasPreviewTheme, setCanvasPreviewTheme, showToast
+  } = store;
 
   const zoomPercent = Math.round(camera.z * 100);
 
@@ -96,6 +101,30 @@ export function ViewportControls() {
         title="Fit to Screen"
       >
         <Maximize size={15} />
+      </button>
+
+      {/* Canvas preview background switcher */}
+      <button
+        id="canvas-theme-toggle"
+        onClick={() => {
+          const themes: ('dark' | 'light' | 'transparent')[] = ['dark', 'light', 'transparent'];
+          const currentIdx = themes.indexOf(canvasPreviewTheme);
+          const nextTheme = themes[(currentIdx + 1) % themes.length]!;
+          setCanvasPreviewTheme(nextTheme);
+          showToast({
+            type: 'info',
+            title: `Visualização: Modo ${nextTheme === 'transparent' ? 'Transparente' : nextTheme === 'light' ? 'Claro' : 'Escuro'}`,
+            message: 'Esta alteração afeta apenas o editor, não o arquivo final exportado.',
+            duration: 2500
+          });
+        }}
+        className="icon-btn-small btn-pressable"
+        title="Alternar tema de fundo do Canvas (Escuro / Claro / Transparente)"
+        style={{
+          color: canvasPreviewTheme === 'light' ? '#ffaa00' : canvasPreviewTheme === 'transparent' ? '#00cc88' : 'var(--color-text-secondary)',
+        }}
+      >
+        {canvasPreviewTheme === 'light' ? <Sun size={15} /> : canvasPreviewTheme === 'transparent' ? <Grid size={15} /> : <Moon size={15} />}
       </button>
 
       {/* Canvas grid/scan toggle hint */}
