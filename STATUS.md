@@ -1,19 +1,21 @@
 # STATUS — Pelimotion Design System
 
-## Versão Ativa: 🟢 v6.3 — Undo/Redo, Keyboard UX, Sprint P1 Completo
+## Versão Ativa: 🟢 v6.4 — Toast Notifications, Export Quality Presets, Sprint P1 Concluído!
 
-> **Commit atual:** `2d5cce5` | Branch: `main` | Deploy: Vercel (auto)
+> **Commit atual:** `f20f115` | Branch: `main` | Deploy: Vercel (auto)
 
 ---
 
-## 🏁 v6.3 — Resumo da Sessão
+## 🏁 v6.4 — Resumo da Sessão
 
-Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E passando, FPS 60/60, zero violações de glossário, todos P0 ativos. Esta sessão entregou o sprint P1 completo + infrastructure de qualidade avançada.
+Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E passando, FPS 60/60, zero violações de glossário, todos P0 ativos. Esta sessão concluiu 100% das features P1 pendentes: Toast Notifications + Export Quality Presets.
 
-### Entregas da Sessão (v6.3)
+### Entregas da Sessão (v6.4)
 
 | Feature | Arquivo(s) | Status |
 |---------|-----------|--------|
+| **Toast notification system** | `ToastNotification.tsx`, `toast.types.ts`, `useEditorStore.ts` | ✅ |
+| **Export Quality Presets** (Draft/Standard/Broadcast) | `ExportBar.tsx`, `useEditorStore.ts`, `motion.types.ts` | ✅ |
 | **Undo/Redo** (Cmd+Z / Cmd+Shift+Z) | `useEditorStore.ts`, `useKeyboardShortcuts.ts` | ✅ |
 | **Fix: Escape fecha ShortcutsHUD** | `useKeyboardShortcuts.ts` | ✅ |
 | **MOV Alpha timeout fallback** | `exportPipeline.ts` | ✅ |
@@ -22,6 +24,7 @@ Sistema em estado de **máxima saúde técnica**: build limpo, 14/14 suites E2E 
 | **Reference background** (30% opacity) | `ExportBar.tsx`, `App.tsx` | ✅ |
 | **ShortcutsHUD** — botão + modal + teclado | `TopBar.tsx`, `useEditorStore.ts` | ✅ |
 | **Suite 10 + Suite 11** E2E | `user-journey.spec.ts` | ✅ |
+
 
 ---
 
@@ -80,7 +83,7 @@ interface HistoryEntry {
 
 ## 📦 Bundle Size
 ```
-dist/assets/index-*.js    503 kB (gzip: 155 kB)
+dist/assets/index-*.js    512 kB (gzip: 158 kB)
 dist/assets/index-*.css    25 kB (gzip: 6 kB)
 dist/assets/exportWorker  199 kB
 ```
@@ -95,14 +98,12 @@ dist/assets/exportWorker  199 kB
 
 ---
 
-## 🚀 Próximas Prioridades (P1 Backlog)
+## 🚀 Próximas Prioridades (P2/Refactoring Backlog)
 
 | Feature | Impacto | Esforço |
 |---------|---------|---------|
-| Toast notification system | Alto | Baixo |
-| Export Quality Presets (Draft/Standard/Broadcast) | Alto | Médio |
 | Análise de Performance de Render por camada | Médio | Alto |
-| Suporte a fontes customizadas via drag-drop | Alto | Médio |
+| Suporte a fontes customizadas via drag-drop (P1) | Alto | Médio |
 | Preview modo escuro/claro do canvas | Médio | Baixo |
 | Integração BunnyCDN para assets premium reais | Alto | Alto |
 
@@ -110,11 +111,11 @@ dist/assets/exportWorker  199 kB
 
 ## 🔁 Orquestrador de Agentes
 
-- **Cron ativo:** `*/15 * * * *` (a cada 15 min)
-- **Versão:** V6 + modo Feature Discovery
+- **Cron ativo:** `*/10 * * * *` (a cada 10 min)
+- **Versão:** V7 + modo Feature Discovery
 - **Loop detection:** Anti-loop com `ZERO_UX_FINDINGS` resolvido
 - **E2E:** `user-journey.spec.ts` v6.1 — 14 suites
 
 ---
 
-*Atualizado: 24/06/2026 — Sessão 55 | v6.3*
+*Atualizado: 25/06/2026 — Sessão 58 | v6.4*
