@@ -37,6 +37,7 @@ import { CompositionTimeline } from '@/components/CompositionTimeline';
 
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { COLOR_PALETTES } from '@/config/color-palettes';
+import { ToastContainer } from '@/components/ToastNotification';
 
 gsap.registerPlugin(useGSAP);
 
@@ -408,6 +409,9 @@ function App() {
 
       {/* Library Modal (full-screen overlay) */}
       {libraryModalOpen && <LibraryModal onClose={() => setLibraryModalOpen(false)} />}
+
+      {/* Toast Notification System */}
+      <ToastContainer />
 
       {/* Headless Audio Engine */}
       <AudioEngine />

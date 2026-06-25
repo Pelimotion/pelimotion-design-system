@@ -34,6 +34,7 @@ import type { ColorPalette } from '@/config/color-palettes'
 import type { UniversalLayer } from '@/types/universalLayers.types'
 import type { FeatureFlags } from '@/config/featureFlags'
 import { loadFeatureFlags, saveFeatureFlags } from '@/config/featureFlags'
+import type { Toast, ToastInput } from '@/types/toast.types'
 
 import globalMotionData from '@/config/global-motion.json'
 import libraryData from '@/config/library.json'
@@ -127,6 +128,16 @@ interface EditorState {
   // Keyboard Shortcuts HUD visibility
   showShortcuts: boolean;
   setShowShortcuts: (show: boolean) => void;
+
+  // ─── Toast Notifications ──────────────────────────────────────────────────
+  toasts: Toast[];
+  showToast: (toast: ToastInput) => string;
+  dismissToast: (id: string) => void;
+  clearAllToasts: () => void;
+
+  // ─── Export Quality Preset ────────────────────────────────────────────────
+  exportQualityPreset: 'draft' | 'standard' | 'broadcast';
+  setExportQualityPreset: (preset: 'draft' | 'standard' | 'broadcast') => void;
 
 
   // ─── Actions ─────────────────────────────────────────────────────────────
@@ -336,6 +347,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   referenceImage: null,
   showShortcuts: false,
   history: { past: [], future: [] },
+
+  // Toast state
+  toasts: [],
+
+  // Export quality preset
+  exportQualityPreset: 'standard',
 
 
   // Default UI state
@@ -1009,6 +1026,37 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       console.error('Failed to fetch local fonts:', error);
     }
   },
+
+  // ─── Toast Actions ────────────────────────────────────────────────────────
+
+  showToast: (toastInput) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const toast: Toast = { ...toastInput, id };
+    set(state => ({ toasts: [...state.toasts, toast] }));
+    return id;
+  },
+
+  dismissToast: (id) => set(state => ({
+    toasts: state.toasts.filter(t => t.id !== id),
+  })),
+
+  clearAllToasts: () => set({ toasts: [] }),
+
+  // ─── Export Quality Preset Action ────────────────────────────────────────
+
+  setExportQualityPreset: (preset) => {
+    const presetConfigs: Record<'draft' | 'standard' | 'broadcast', Partial<ReturnType<typeof get>['exportConfig']>> = {
+      draft:     { resolution: '1280x720',  fps: 24, enableMotionBlur: false },
+      standard:  { resolution: '1920x1080', fps: 60, enableMotionBlur: false },
+      broadcast: { resolution: '3840x2160', fps: 60, enableMotionBlur: true },
+    };
+
+    set(state => ({
+      exportQualityPreset: preset,
+      exportConfig: { ...state.exportConfig, ...presetConfigs[preset] },
+    }));
+  },
+
 }));
 
 if (typeof window !== 'undefined') {

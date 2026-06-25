@@ -174,6 +174,8 @@ export interface GenerativeLayer {
 
 // ─── Canvas / Export Configuration ───────────────────────────────────────────
 
+export type ResolutionPreset = '1280x720' | '1920x1080' | '3840x2160';
+
 export interface CaptureResolution {
   width: number;
   height: number;
@@ -481,7 +483,7 @@ export interface ExportState {
 }
 
 export interface ExportConfig {
-  resolution: '1920x1080' | '1080x1080' | '1080x1920' | '1350x1080';
+  resolution: '1920x1080' | '1080x1080' | '1080x1920' | '1350x1080' | '1280x720' | '3840x2160';
   fps: number;
   duration: number; // in seconds
   format: 'png-sequence' | 'mp4' | 'mov' | 'png-still';

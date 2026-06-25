@@ -10,7 +10,7 @@ import { useEditorStore } from '@/store/useEditorStore';
 import { runExportPipeline } from '@/engines/Export/exportPipeline';
 import {
   Download, Square, ChevronDown, Loader2, X, Check,
-  Monitor, Smartphone, RefreshCw, Sparkles,
+  Monitor, Smartphone, RefreshCw, Sparkles, Zap,
 } from 'lucide-react';
 
 // ─── Aspect Ratio Config ─────────────────────────────────────────────────────
@@ -28,6 +28,32 @@ const FORMATS = [
   { value: 'mp4' as const, label: 'MP4', sublabel: 'Vídeo para redes sociais' },
   { value: 'mov' as const, label: 'MOV Alpha', sublabel: 'Transparência p/ edição' },
   { value: 'png-sequence' as const, label: 'PNG Seq', sublabel: 'Frames em ZIP' },
+];
+
+// ─── Quality Presets Config ───────────────────────────────────────────────────────
+
+const QUALITY_PRESETS = [
+  {
+    id: 'draft' as const,
+    label: 'Draft',
+    sublabel: '720p · 24fps · Rascunho rápido',
+    icon: '⚡',
+    color: '#ffaa00',
+  },
+  {
+    id: 'standard' as const,
+    label: 'Standard',
+    sublabel: '1080p · 60fps · Redes Sociais',
+    icon: '🎬',
+    color: '#6B5CE7',
+  },
+  {
+    id: 'broadcast' as const,
+    label: 'Broadcast',
+    sublabel: '4K · 60fps · Motion Blur',
+    icon: '🏆',
+    color: '#00cc88',
+  },
 ];
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -66,10 +92,12 @@ export function ExportBar() {
     exportConfig, exportState, updateExportConfig,
     setExportState, resetExport, setAspectRatio, activeAspectRatio,
     referenceImage, setReferenceImage,
+    showToast, exportQualityPreset, setExportQualityPreset,
   } = useEditorStore();
 
   const [ratioOpen, setRatioOpen] = useState(false);
   const [formatOpen, setFormatOpen] = useState(false);
+  const [qualityOpen, setQualityOpen] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [showSuccessTip, setShowSuccessTip] = useState(false);
@@ -112,6 +140,7 @@ export function ExportBar() {
   const startExport = async () => {
     console.log('[ExportBar] starting export pipeline');
     abortRef.current = false;
+    showToast({ type: 'info', title: 'Exportando...', message: `${exportConfig.format.toUpperCase()} · ${exportConfig.resolution} · ${exportConfig.fps}fps`, duration: 8000 });
     try {
       const element = document.getElementById('canvas-fixed-resolution') as HTMLElement;
       if (!element) throw new Error('Canvas element not found');
@@ -119,12 +148,18 @@ export function ExportBar() {
       await runExportPipeline(
         element,
         cfg,
-        (s) => setExportState(s),
+        (s) => {
+          setExportState(s);
+          if (s.stage === 'complete') {
+            showToast({ type: 'success', title: 'Exportação concluída!', message: 'Arquivo baixado com sucesso.', duration: 5000 });
+          }
+        },
       );
     } catch (e: any) {
       if (e?.message !== 'EXPORT_CANCELLED') {
         console.error('[ExportBar] export error:', e);
         setExportState({ stage: 'error', errorMessage: String(e?.message), isExporting: false });
+        showToast({ type: 'error', title: 'Erro na exportação', message: String(e?.message ?? 'Tente novamente.'), duration: 6000 });
         setTimeout(() => resetExport(), 4000);
       }
     }
@@ -261,7 +296,71 @@ export function ExportBar() {
         </div>
       </Dropdown>
 
-      {/* Duration */}
+      {/* Quality Preset Selector */}
+      {(() => {
+        const currentPreset = QUALITY_PRESETS.find(p => p.id === exportQualityPreset) ?? QUALITY_PRESETS[1]!;
+        return (
+          <Dropdown
+            open={qualityOpen}
+            onToggle={() => { setQualityOpen(!qualityOpen); setRatioOpen(false); setFormatOpen(false); }}
+            trigger={
+              <div
+                id="export-quality-trigger"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 10px', borderRadius: 7,
+                  border: `1px solid ${currentPreset.color}44`,
+                  background: `${currentPreset.color}11`,
+                  color: currentPreset.color,
+                  fontSize: '0.72rem', fontWeight: 600,
+                  fontFamily: 'var(--font-sans)', cursor: 'pointer', userSelect: 'none',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Zap size={11} />
+                <span>{currentPreset.label}</span>
+                <ChevronDown size={11} />
+              </div>
+            }
+          >
+            <div style={{ padding: 6 }}>
+              <div style={{ padding: '6px 10px 4px', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-ghost)' }}>
+                Qualidade
+              </div>
+              {QUALITY_PRESETS.map(p => (
+                <button
+                  key={p.id}
+                  id={`quality-preset-${p.id}`}
+                  onClick={() => {
+                    setExportQualityPreset(p.id);
+                    setQualityOpen(false);
+                    showToast({ type: 'info', title: `Preset: ${p.label}`, message: p.sublabel, duration: 3000 });
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    width: '100%', padding: '9px 10px', borderRadius: 8, border: 'none',
+                    background: exportQualityPreset === p.id ? `${p.color}18` : 'transparent',
+                    color: exportQualityPreset === p.id ? p.color : 'var(--color-text-secondary)',
+                    cursor: 'pointer', fontFamily: 'var(--font-sans)', textAlign: 'left',
+                    transition: 'all 0.1s ease',
+                  }}
+                  onMouseEnter={(e) => { if (exportQualityPreset !== p.id) e.currentTarget.style.background = 'hsla(0,0%,100%,0.04)'; }}
+                  onMouseLeave={(e) => { if (exportQualityPreset !== p.id) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span style={{ fontSize: 14 }}>{p.icon}</span>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p.label}</div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--color-text-ghost)', marginTop: 1 }}>{p.sublabel}</div>
+                  </div>
+                  {exportQualityPreset === p.id && <Check size={13} style={{ marginLeft: 'auto', color: p.color }} />}
+                </button>
+              ))}
+            </div>
+          </Dropdown>
+        );
+      })()}
+
+
       <div style={{
         display: 'flex', alignItems: 'center', gap: 5,
         padding: '4px 8px', borderRadius: 7,
