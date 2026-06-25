@@ -49,20 +49,20 @@ export function CompositionTimeline() {
     }
   }, [currentTime, exportConfig.fps, isEditingTimecode]);
   
-  // Playhead Realtime Sync
+  // Playhead Realtime Sync — always active, reads state directly to avoid stale closures
   useEffect(() => {
-    if (!isPlaying) return;
     const ticker = () => {
       const time = useEditorStore.getState().currentTime;
-      if (playheadRef.current) {
-        const pct = (time / exportConfig.duration) * 100;
-        const px = (time / exportConfig.duration) * 24;
+      const duration = useEditorStore.getState().exportConfig.duration;
+      if (playheadRef.current && duration > 0) {
+        const pct = (time / duration) * 100;
+        const px = (time / duration) * 24;
         playheadRef.current.style.left = `calc(12px + ${pct}% - ${px}px)`;
       }
     };
     gsap.ticker.add(ticker);
     return () => gsap.ticker.remove(ticker);
-  }, [isPlaying, exportConfig.duration]);
+  }, []); // no deps — runs forever, reads from store directly
   
   // Interaction State
   const [dragging, setDragging] = useState<{ id: string, type: 'move' | 'trim-left' | 'trim-right' | 'playhead', isBg?: boolean, isAudio?: boolean } | null>(null);
