@@ -97,11 +97,14 @@
 - [x] **Reference Background:** Reference image overlay at 30% opacity in `ExportBar.tsx` and `App.tsx`.
 - [x] **E2E Suite 10 & 11:** Added keyboard shortcuts HUD and reference background to the automated test suite.
 
-## Phase 16: Future Expansion (Backlog)
-- [x] **Toast Notification System:** Non-blocking feedback for undo/redo, copy, export and layer actions.
-- [x] **Export Quality Presets:** Draft (360p/15fps), Standard (720p/30fps), Broadcast (1080p/60fps) mapped to bitrate settings.
-- [x] **Custom Font Drag-Drop:** Accept TTF/OTF via drag-drop or file picker, register with FontFace API.
-- [x] **Canvas Safe Zone Guides:** Toggleable 16:9/9:16 safe-zone overlay for broadcast/social framing.
+## Phase 16: P2 - Qualidade Competitiva (Próxima Fase)
+- [ ] **Export MOV com alpha nomeado profissionalmente:** Garantir que o pipeline de exportação salve arquivos com nomes padronizados e profissionais (`pelimotion-asset-[timestamp].mov`).
+- [ ] **Otimização Core Web Vitals (Lighthouse score ≥ 90):** Auditar e otimizar tempo de carregamento, interatividade (INP, LCP) e acessibilidade.
+- [ ] **Landing Page SEO por categoria:** Implementar landing page e rotas programáticas otimizadas para SEO (criadores, agências, produtores de conteúdo).
+- [ ] **Presets de Elementos por Nicho:** Criar presets categorizados (saúde, eventos, lifestyle, institucional) no painel de elementos.
+- [ ] **Análise de Performance de Render por elemento:** Criar indicador de tempo de renderização para elementos pesados do canvas.
+
+## Phase 17: Future Expansion (Backlog)
 - [ ] **Real-time Server-Side Fallback:** Cloud rendering fallback using headless Puppeteer/Chrome for low-compute devices.
 - [ ] **AI-Assisted Composition:** LLM prompts to automatically generate typography wiggles, SVG selections, and timing cues.
 - [ ] **BunnyCDN Asset Integration:** Real premium video/audio assets from BunnyCDN with signed URL auth.

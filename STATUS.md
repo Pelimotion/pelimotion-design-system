@@ -1,8 +1,8 @@
 # STATUS — Pelimotion Design System
 
-## Versão Ativa: 🟢 v6.5 — Bugfix Adição de Texto Simples, Canvas Preview Theme, Estabilidade v7
+## Versão Ativa: 🟢 v7.0-beta — Conclusão da Fase P1, Pronto para P2 (Qualidade Competitiva)
 
-> **Commit atual:** `08a267e` | Branch: `main` | Deploy: Vercel (auto)
+> **Commit atual:** `086e351` | Branch: `main` | Deploy: Vercel (auto)
 
 ---
 
@@ -104,18 +104,22 @@ dist/assets/exportWorker  199 kB
 
 | Feature | Impacto | Esforço |
 |---------|---------|---------|
-| Análise de Performance de Render por camada | Médio | Alto |
+| Export MOV com alpha nomeado profissionalmente | Médio | Baixo |
+| Otimização de Core Web Vitals (Lighthouse score ≥ 90) | Alto | Médio |
+| Landing Page SEO segmentada por categoria (Criadores/Agências) | Alto | Alto |
+| Presets de elementos por nicho (saúde, eventos, lifestyle) | Alto | Médio |
 | Integração BunnyCDN para assets premium reais | Alto | Alto |
+| Análise de Performance de Render por elemento/camada | Médio | Alto |
 
 ---
 
 ## 🔁 Orquestrador de Agentes
 
-- **Cron ativo:** `*/10 * * * *` (a cada 10 min)
+- **Cron ativo:** Suspenso temporariamente (hand-off da fase P2, reativar no próximo ciclo com `npm run agent:research`)
 - **Versão:** V7 + modo Feature Discovery
 - **Loop detection:** Anti-loop com `ZERO_UX_FINDINGS` resolvido
 - **E2E:** `user-journey.spec.ts` v6.1 — 14 suites
 
 ---
 
-*Atualizado: 25/06/2026 — Sessão 61 | v6.6*
+*Atualizado: 25/06/2026 — Sessão 64 | v7.0-beta*
